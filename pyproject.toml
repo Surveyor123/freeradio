@@ -1,0 +1,161 @@
+[tool.ruff]
+line-length = 110
+
+builtins = [
+	# translation lookup
+	"_",
+	# translation lookup
+	"ngettext",
+	# translation lookup
+	"pgettext",
+	# translation lookup
+	"npgettext",
+]
+
+include = [
+	"*.py",
+	"sconstruct",
+]
+
+exclude = [
+	".git",
+	"__pycache__",
+]
+
+[tool.ruff.format]
+indent-style = "tab"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.lint]
+ignore = [
+	# indentation contains tabs
+	"W191",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# sconstruct contains many inbuilt functions not recognised by the lint,
+# so ignore F821.
+"sconstruct" = ["F821"]
+
+[tool.pyright]
+pythonPlatform = "Windows"
+typeCheckingMode = "strict"
+
+include = [
+	"**/*.py",
+]
+
+exclude = [
+	"sconstruct",
+	".git",
+	"__pycache__",
+	# When excluding concrete paths relative to a directory,
+	# not matching multiple folders by name e.g. `__pycache__`,
+	# paths are relative to the configuration file.
+	# WLAN API is a third-party module
+	"addon/globalPlugins/resourceMonitor/wlanapi.py",
+]
+
+# Tell pyright where to load python code from
+extraPaths = [
+	"./addon",
+]
+
+# General config
+analyzeUnannotatedFunctions = true
+deprecateTypingAliases = true
+
+# Stricter typing
+strictParameterNoneValue = true
+strictListInference = true
+strictDictionaryInference = true
+strictSetInference = true
+
+# Compliant rules
+reportAbstractUsage = true
+reportArgumentType = true
+reportAssertAlwaysTrue = true
+reportAssertTypeFailure = true
+reportAssignmentType = true
+reportAttributeAccessIssue = true
+reportCallInDefaultInitializer = true
+reportCallIssue = true
+reportConstantRedefinition = true
+reportDeprecated = true
+reportDuplicateImport = true
+reportFunctionMemberAccess = true
+reportGeneralTypeIssues = true
+reportImplicitOverride = true
+reportImportCycles = true
+reportIncompatibleMethodOverride = true
+reportIncompatibleVariableOverride = true
+reportIncompleteStub = true
+reportInconsistentConstructor = true
+reportInconsistentOverload = true
+reportIndexIssue = true
+reportInvalidStringEscapeSequence = true
+reportInvalidStubStatement = true
+reportInvalidTypeArguments = true
+reportInvalidTypeForm = true
+reportInvalidTypeVarUse = true
+reportMatchNotExhaustive = true
+reportMissingModuleSource = true
+reportMissingSuperCall = true
+reportMissingTypeArgument = true
+reportNoOverloadImplementation = true
+reportOperatorIssue = true
+reportOptionalCall = true
+reportOptionalContextManager = true
+reportOptionalIterable = true
+reportOptionalMemberAccess = true
+reportOptionalOperand = true
+reportOptionalSubscript = true
+reportOverlappingOverload = true
+reportPossiblyUnboundVariable = true
+reportPrivateImportUsage = true
+reportPropertyTypeMismatch = true
+reportRedeclaration = true
+reportReturnType = true
+reportSelfClsParameterName = true
+reportTypeCommentUsage = true
+reportTypedDictNotRequiredAccess = true
+reportUnhashable = true
+reportUninitializedInstanceVariable = true
+reportUnknownLambdaType = true
+reportUnnecessaryCast = true
+reportUnnecessaryComparison = true
+reportUnnecessaryContains = true
+reportUnnecessaryIsInstance = true
+reportUnnecessaryTypeIgnoreComment = true
+reportUnsupportedDunderAll = true
+reportUntypedClassDecorator = true
+reportUntypedNamedTuple = true
+reportUnusedCallResult = true
+reportUnusedClass = true
+reportUnusedCoroutine = true
+reportUnusedExcept = true
+reportUnusedExpression = true
+reportUnusedFunction = true
+reportUnusedImport = true
+reportUnusedVariable = true
+reportWildcardImportFromLibrary = true
+
+# Can be enabled by generating type stubs for modules via pyright CLI
+reportMissingTypeStubs = false
+
+# Bad rules
+# These are sorted alphabetically and should be enabled and moved to compliant rules section when resolved.
+reportImplicitStringConcatenation = false  # Split lengthy script description onto separate lines
+reportMissingImports = false  # NVDA Core modules
+reportMissingParameterType = false  # WLAN data and script gesture
+reportPrivateUsage = false  # _psutil_windows is part of psutil package
+reportUnboundVariable = false  # WLAN module and info, memory size reporting
+reportUndefinedVariable = false  # _ = gettext.gettext call, ngettext comes from gettext
+reportUnknownArgumentType = false  # Battery, WLAN, and other resource usage reporting texts
+reportUnknownMemberType  = false  # NVDA Core, psutil, WLAN module member types
+reportUnknownParameterType = false  # WLAN data/array and script gesture
+reportUnknownVariableType = false  # Tuple unpacking, third-party modules, unexpected variable types
+reportUntypedBaseClass = false  # globalPluginHandler.GlobalPlugin comes from NVDA Core
+reportUntypedFunctionDecorator = false  # scriptHandler.script decorator

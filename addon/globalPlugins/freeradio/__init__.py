@@ -1052,20 +1052,75 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 		if is_newer:
 			def _prompt():
-				msg = _(
-					"A new version of FreeRadio is available: %s.\n"
-					"You have version %s.\n\n"
-					"Would you like to open the download page?"
-				) % (latest_tag, current_version or _("unknown"))
+				# Decide button labels based on whether a direct .nvda-addon asset exists
+				direct_install = download_url != release_url
+				if direct_install:
+					msg = _(
+						"A new version of FreeRadio is available: %s.\n"
+						"You have version %s.\n\n"
+						"Would you like to download and install it now?"
+					) % (latest_tag, current_version or _("unknown"))
+					yes_label = _("&Install")
+				else:
+					msg = _(
+						"A new version of FreeRadio is available: %s.\n"
+						"You have version %s.\n\n"
+						"Would you like to open the download page?"
+					) % (latest_tag, current_version or _("unknown"))
+					yes_label = _("&Open Page")
+
 				dlg = wx.MessageDialog(
 					gui.mainFrame,
 					msg,
 					_("FreeRadio Update Available"),
 					wx.YES_NO | wx.YES_DEFAULT | wx.ICON_INFORMATION,
 				)
+				dlg.SetYesNoLabels(yes_label, _("&Cancel"))
 				if dlg.ShowModal() == wx.ID_YES:
-					webbrowser.open(download_url)
+					if direct_install:
+						# Download the .nvda-addon and hand it to NVDA for installation
+						threading.Thread(
+							target=_do_install,
+							args=(download_url, latest_tag),
+							daemon=True,
+						).start()
+					else:
+						webbrowser.open(release_url)
 				dlg.Destroy()
+
+			def _do_install(url, version):
+				import tempfile
+				wx.CallAfter(ui.message, _("Downloading FreeRadio %s…") % version)
+				try:
+					req = urllib.request.Request(
+						url,
+						headers={"User-Agent": "freeradio-nvda-addon"},
+					)
+					with urllib.request.urlopen(req, timeout=60) as resp:
+						data_bytes = resp.read()
+					tmp_path = os.path.join(
+						tempfile.gettempdir(),
+						"freeradio-%s.nvda-addon" % version,
+					)
+					with open(tmp_path, "wb") as fh:
+						fh.write(data_bytes)
+				except Exception as e:
+					log.error("FreeRadio: Download failed: %s", e)
+					wx.CallAfter(
+						ui.message,
+						_("Download failed: %s") % str(e),
+					)
+					return
+				# os.startfile triggers NVDA's built-in addon installer for .nvda-addon files
+				try:
+					os.startfile(tmp_path)
+				except Exception as e:
+					log.error("FreeRadio: Could not launch installer: %s", e)
+					wx.CallAfter(
+						ui.message,
+						_("Could not launch installer. File saved to: %s") % tmp_path,
+					)
+
 			wx.CallAfter(_prompt)
 		else:
 			if not silent:

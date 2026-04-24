@@ -41,7 +41,7 @@ Next / previous shortcuts only navigate the favourites list; they do not work wi
 
 FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
 
-The window opened with `Ctrl+Win+R` contains four tabs: All Stations, Favourites, Recording and Timer. You can navigate between tabs with `Ctrl+Tab`.
+The window opened with `Ctrl+Win+R` contains five tabs: All Stations, Favourites, Recording, Timer, and Liked Songs. You can navigate between tabs with `Ctrl+Tab`.
 
 When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly filters the loaded list; pressing `Enter` or the Search button performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
@@ -78,7 +78,7 @@ The following keys work only while the Station Browser window is active.
 | `←` | Previous station | When the All Stations or Favourites list is focused, moves to the previous station and plays it immediately. Jumps to the end when at the beginning. |
 | `Enter` | Play | When the All Stations or Favourites list is focused, starts playing the selected station immediately. Switches to the selected station even if another station is already playing. |
 | `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected station. |
-| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer). |
+| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs). |
 | `Ctrl+Shift+Tab` | Previous tab | Returns to the previous tab. |
 | `Escape` | Hide | Hides the window; the add-on continues playing in the background. |
 
@@ -100,6 +100,7 @@ The following keys work only while the Station Browser window is active.
 | `Alt+F` | Favourites | Switches to the Favourites tab and focuses the list. |
 | `Alt+Y` | Recording | Switches to the Recording tab. |
 | `Alt+Z` | Timer | Switches to the Timer tab. |
+| `Alt+B` | Liked Songs | Switches to the Liked Songs tab. |
 | `Alt+K` | Close | Closes the window; the add-on continues playing in the background. |
 
 ## Favourites
@@ -188,7 +189,6 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | When Ctrl+Win+P is pressed with no active playback | Determines what happens when this shortcut is pressed and nothing is playing: start the last station or open the favourites list. |
 | When Ctrl+Win+P is pressed twice | Selects what happens when the shortcut is pressed twice in quick succession: do nothing, open the favourites list, open the recording tab or open the timer tab. When "do nothing" is selected, the first press responds instantly with no delay. |
 | When Ctrl+Win+P is pressed three times | Selects what happens when the shortcut is pressed three times in quick succession: do nothing, open the favourites list, open the search tab, open the recording tab or open the timer tab. |
-| Automatically check for updates | When enabled, FreeRadio silently checks for a new version in the background each time NVDA starts and notifies you if one is found. Disabling this turns off automatic checks; manual checks from the Tools menu remain available. |
 | ffmpeg.exe path | Path to the ffmpeg.exe used for music recognition. If left blank, an ffmpeg.exe in the add-on folder is used automatically. |
 | VLC path | If VLC is not installed or is in a non-standard location, the full path to the executable can be entered here. |
 | wmplayer.exe path | Enter the path to Windows Media Player here if needed. |
@@ -209,6 +209,19 @@ When the **Save liked songs to a text file** option is enabled, track info copie
 
 On stations that broadcast ICY metadata, the track title and artist are saved directly. On stations without ICY metadata, the Shazam recognition result is saved to the same file — both sources share the same list. The file is created automatically if it does not exist; each entry is appended to the end of the file and previous entries are never deleted.
 
+## Liked Songs Tab
+
+The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened.
+
+Selecting a track from the list enables the following actions:
+
+- **Play on Spotify:** Tries to open the Spotify desktop app directly. If the app is not installed, falls back to the Spotify website and automatically starts playing the first result.
+- **Play on YouTube (`Alt+O`):** Searches YouTube for the selected track and opens the results in the default browser.
+- **Remove (`Alt+M`):** Deletes the selected track from `likedSongs.txt` and updates the list.
+- **Refresh (`Alt+E`):** Reloads the list from the file.
+
+The Spotify, YouTube, and Remove buttons are only enabled when a real track is selected in the list.
+
 ## Playback
 
 The add-on selects a playback backend using the following priority order:
@@ -217,21 +230,6 @@ The add-on selects a playback backend using the following priority order:
 2. **VLC** — takes over if BASS fails. Searched automatically in common installation locations, user profile folders and the system PATH.
 3. **PotPlayer** — tried if VLC is not found. Searched automatically in common installation locations.
 4. **Windows Media Player** — used as a last resort; requires the WMP component to be installed on the system.
-
-## Update Check
-
-FreeRadio automatically checks GitHub for new versions.
-
-**Automatic check:** Runs silently in the background 15 seconds after NVDA starts. If a new version is found, a notification is shown; if the add-on is already up to date, no message is displayed.
-
-**Manual check:** Can be triggered at any time from NVDA Tools → FreeRadio → **Check for Updates...**. When started this way, the result is always announced even if the add-on is already up to date.
-
-**When an update is found:** A dialog shows the new version number alongside your currently installed version.
-
-- If a directly downloadable `.nvda-addon` file is available in the GitHub release, an **Install** button is shown. After confirming, the file is downloaded in the background — NVDA announces when the download starts — and NVDA's built-in add-on installer opens automatically.
-- If no direct download link is available, an **Open Page** button is shown instead, which opens the GitHub releases page in your default browser.
-
-**To disable automatic checks:** Turn off the **Automatically check for updates** option from NVDA Menu → Preferences → Settings → FreeRadio.
 
 ## License
 

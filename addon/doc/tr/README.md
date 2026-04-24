@@ -41,7 +41,7 @@ Sonraki / önceki kısayollar yalnızca favoriler listesinde dolaşır; tüm ist
 
 FreeRadio ayrıca NVDA Araçlar menüsüne bir alt menü ekler. Bu alt menüden İstasyon Tarayıcısı'nı ve FreeRadio Ayarları'nı doğrudan açabilirsiniz.
 
-`Ctrl+Win+R` ile açılan pencerede dört sekme bulunur: Tüm İstasyonlar, Favoriler, Kayıt ve Zamanlayıcı. Sekmeler arasında `Ctrl+Tab` ile dolaşılabilir.
+`Ctrl+Win+R` ile açılan pencerede beş sekme bulunur: Tüm İstasyonlar, Favoriler, Kayıt, Zamanlayıcı ve Beğenilen Şarkılar. Sekmeler arasında `Ctrl+Tab` ile dolaşılabilir.
 
 Tüm İstasyonlar sekmesi açıldığında Radio Browser'dan en çok oylanan 1000 istasyon otomatik olarak yüklenir. Ülke açılır listesinden bir ülke seçildiğinde liste o ülkenin istasyonlarıyla güncellenir. Arama alanına harf girilmesi yüklü listeyi anlık olarak filtreler; `Enter` tuşuna veya Ara düğmesine basılması ise Radio Browser'ın tamamında ad, ülke ve tür üzerinden eş zamanlı arama yapar.
 
@@ -78,7 +78,7 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 | `←` | Önceki istasyon | Tüm İstasyonlar veya Favoriler listesi odaklanmışken bir önceki istasyona geçer ve hemen çalar. Listenin başındayken sona atlar. |
 | `Enter` | Çal | Tüm İstasyonlar veya Favoriler listesi odaklanmışken seçili istasyonu doğrudan çalmaya başlar. Başka bir istasyon çalıyor olsa bile çalmayı keserek seçili istasyona geçer. |
 | `Boşluk` | Çal / Duraklat | Çalan istasyon varsa duraklatır; yoksa listede seçili istasyonu çalmaya başlar. |
-| `Ctrl+Tab` | Sonraki sekme | Bir sonraki sekmeye geçer (Tüm İstasyonlar → Favoriler → Kayıt → Zamanlayıcı). |
+| `Ctrl+Tab` | Sonraki sekme | Bir sonraki sekmeye geçer (Tüm İstasyonlar → Favoriler → Kayıt → Zamanlayıcı → Beğenilen Şarkılar). |
 | `Ctrl+Shift+Tab` | Önceki sekme | Bir önceki sekmeye döner. |
 | `Escape` | Gizle | Pencereyi gizler; eklenti arka planda çalmaya devam eder. |
 
@@ -100,6 +100,7 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 | `Alt+F` | Favoriler | Favoriler sekmesine geçer ve listeye odaklanır. |
 | `Alt+Y` | Kayıt | Kayıt sekmesine geçer. |
 | `Alt+Z` | Zamanlayıcı | Zamanlayıcı sekmesine geçer. |
+| `Alt+B` | Beğenilen Şarkılar | Beğenilen Şarkılar sekmesine geçer. |
 | `Alt+K` | Kapat | Pencereyi kapatır; eklenti arka planda çalmaya devam eder. |
 
 ## Favoriler
@@ -207,6 +208,19 @@ Bu özellik varsayılan olarak kapalıdır; NVDA Menüsü → Tercihler → Ayar
 Ayarlar'dan **Beğenilen şarkıları metin dosyasına kaydet** seçeneği açıldığında `Ctrl+Win+İ` kısayoluna üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da satır satır eklenir (varsayılan: `Belgeler\FreeRadio Recordings\likedSongs.txt`).
 
 ICY metadata mevcut olan istasyonlarda parça adı ve sanatçı bilgisi, metadata bulunmayan istasyonlarda ise Shazam tanıma sonucu kaydedilir; her iki durumda da aynı dosya kullanılır. Dosya yoksa otomatik oluşturulur; her kayıt dosyanın sonuna eklenir, önceki girişler silinmez.
+
+## Beğenilen Şarkılar Sekmesi
+
+İstasyon tarayıcısındaki **Beğenilen Şarkılar** sekmesi, `likedSongs.txt` dosyasına kaydedilmiş tüm parçaları listeler. Sekme her açıldığında liste dosyadan otomatik olarak yeniden yüklenir.
+
+Listeden bir parça seçildiğinde üç işlem yapılabilir:
+
+- **Spotify'da Çal:** Önce Spotify masaüstü uygulamasını açmayı dener. Uygulama kurulu değilse Spotify web sitesinde aramayı başlatır ve ilk sonucu otomatik oynatır.
+- **YouTube'da Çal (`Alt+O`):** Seçili parçayla YouTube'da arama yapar ve sonuçları varsayılan tarayıcıda açar.
+- **Sil (`Alt+M`):** Seçili parçayı `likedSongs.txt` dosyasından kaldırır ve listeyi günceller.
+- **Yenile (`Alt+E`):** Listeyi dosyadan yeniden yükler.
+
+Spotify ve YouTube düğmeleri ile Sil düğmesi, yalnızca listeden gerçek bir parça seçiliyken etkin olur.
 
 ## Oynatma
 

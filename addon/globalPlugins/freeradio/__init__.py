@@ -970,7 +970,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			wx.CallAfter(self._dialog.focus_search)
 
 	def _open_dialog_on_tab(self, tab_index):
-		"""Open the dialog and switch to the given tab (0=All, 1=Favs, 2=Rec, 3=Timer)."""
+		"""Open the dialog and switch to the given tab (0=All, 1=Favs, 2=Rec, 3=Timer, 4=Liked Songs)."""
 		self._open_dialog()
 		if self._dialog:
 			wx.CallAfter(self._dialog.focus_tab, tab_index)

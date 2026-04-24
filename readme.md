@@ -41,7 +41,7 @@ Next / previous shortcuts only navigate the favourites list; they do not work wi
 
 FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
 
-The window opened with `Ctrl+Win+R` contains four tabs: All Stations, Favourites, Recording and Timer. You can navigate between tabs with `Ctrl+Tab`.
+The window opened with `Ctrl+Win+R` contains five tabs: All Stations, Favourites, Recording, Timer, and Liked Songs. You can navigate between tabs with `Ctrl+Tab`.
 
 When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly filters the loaded list; pressing `Enter` or the Search button performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
@@ -78,7 +78,7 @@ The following keys work only while the Station Browser window is active.
 | `←` | Previous station | When the All Stations or Favourites list is focused, moves to the previous station and plays it immediately. Jumps to the end when at the beginning. |
 | `Enter` | Play | When the All Stations or Favourites list is focused, starts playing the selected station immediately. Switches to the selected station even if another station is already playing. |
 | `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected station. |
-| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer). |
+| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs). |
 | `Ctrl+Shift+Tab` | Previous tab | Returns to the previous tab. |
 | `Escape` | Hide | Hides the window; the add-on continues playing in the background. |
 
@@ -100,6 +100,7 @@ The following keys work only while the Station Browser window is active.
 | `Alt+F` | Favourites | Switches to the Favourites tab and focuses the list. |
 | `Alt+Y` | Recording | Switches to the Recording tab. |
 | `Alt+Z` | Timer | Switches to the Timer tab. |
+| `Alt+B` | Liked Songs | Switches to the Liked Songs tab. |
 | `Alt+K` | Close | Closes the window; the add-on continues playing in the background. |
 
 ## Favourites
@@ -207,6 +208,19 @@ This feature is disabled by default and can be toggled from NVDA Menu → Prefer
 When the **Save liked songs to a text file** option is enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended line by line to `Documents\FreeRadio Recordings\likedSongs.txt`.
 
 On stations that broadcast ICY metadata, the track title and artist are saved directly. On stations without ICY metadata, the Shazam recognition result is saved to the same file — both sources share the same list. The file is created automatically if it does not exist; each entry is appended to the end of the file and previous entries are never deleted.
+
+## Liked Songs Tab
+
+The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened.
+
+Selecting a track from the list enables the following actions:
+
+- **Play on Spotify:** Tries to open the Spotify desktop app directly. If the app is not installed, falls back to the Spotify website and automatically starts playing the first result.
+- **Play on YouTube (`Alt+O`):** Searches YouTube for the selected track and opens the results in the default browser.
+- **Remove (`Alt+M`):** Deletes the selected track from `likedSongs.txt` and updates the list.
+- **Refresh (`Alt+E`):** Reloads the list from the file.
+
+The Spotify, YouTube, and Remove buttons are only enabled when a real track is selected in the list.
 
 ## Playback
 

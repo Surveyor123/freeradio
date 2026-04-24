@@ -209,14 +209,16 @@ class RadioDialog(wx.Dialog):
 
 		self._notebook    = wx.Notebook(self)
 		self._notebook.SetName("")
-		self._all_panel   = wx.Panel(self._notebook)
-		self._fav_panel   = wx.Panel(self._notebook)
-		self._rec_panel   = wx.Panel(self._notebook)
-		self._timer_panel = wx.Panel(self._notebook)
+		self._all_panel    = wx.Panel(self._notebook)
+		self._fav_panel    = wx.Panel(self._notebook)
+		self._rec_panel    = wx.Panel(self._notebook)
+		self._timer_panel  = wx.Panel(self._notebook)
+		self._liked_panel  = wx.Panel(self._notebook)
 		self._notebook.AddPage(self._all_panel,   _("&All Stations"))
 		self._notebook.AddPage(self._fav_panel,   _("&Favourites"))
 		self._notebook.AddPage(self._rec_panel,   _("&Recording"))
 		self._notebook.AddPage(self._timer_panel, _("&Timer"))
+		self._notebook.AddPage(self._liked_panel, _("&Liked Songs"))
 		self._notebook.SetSelection(0)  # Start on the All Stations tab
 		main_sizer.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -301,6 +303,7 @@ class RadioDialog(wx.Dialog):
 		self._build_fav_tab()
 		self._build_rec_tab()
 		self._build_timer_tab()
+		self._build_liked_tab()
 
 		self._play_btn.Bind(wx.EVT_BUTTON,    self._on_play_clicked)
 		self._del_btn.Bind(wx.EVT_BUTTON,     self._on_delete_station)
@@ -342,7 +345,8 @@ class RadioDialog(wx.Dialog):
 		self._search.SelectAll()
 
 	def focus_tab(self, tab_index):
-		"""Switch to the specified tab and focus on the first focusable item."""
+		"""Switch to the specified tab and focus on the first focusable item.
+		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs."""
 		self._notebook.SetSelection(tab_index)
 		# Go to the first focusable control of each tab
 		panel = self._notebook.GetPage(tab_index)
@@ -566,7 +570,7 @@ class RadioDialog(wx.Dialog):
 
 	def _on_tab_changed(self, event):
 		sel = event.GetSelection()
-		on_rec_or_timer = (sel in (2, 3))
+		on_rec_or_timer = (sel in (2, 3, 4))
 		self._play_btn.Show(not on_rec_or_timer)
 		self._fav_btn.Show(not on_rec_or_timer)
 		self._del_btn.Show(not on_rec_or_timer)
@@ -585,6 +589,8 @@ class RadioDialog(wx.Dialog):
 		elif sel == 3:
 			self._refresh_timer_stations()
 			self._refresh_timer_list()
+		elif sel == 4:
+			self._refresh_liked_list()
 		if sel != 1 and hasattr(self, "_save_audio_btn"):
 			self._save_audio_btn.Enable(False)
 		event.Skip()
@@ -1824,6 +1830,179 @@ class RadioDialog(wx.Dialog):
 
 	def _on_timer_selected(self, event):
 		self._timer_del_btn.Enable(self._timer_list.GetSelection() != wx.NOT_FOUND)
+
+	# ------------------------------------------------------------------ #
+	# Liked Songs tab                                                      #
+	# ------------------------------------------------------------------ #
+
+	def _liked_songs_path(self):
+		"""Return the path to likedSongs.txt, mirroring __init__.py logic."""
+		import config as _cfg
+		custom_dir = _cfg.conf["freeradio"].get("recordings_dir", "").strip()
+		if custom_dir and os.path.isabs(custom_dir):
+			recordings_dir = custom_dir
+		else:
+			recordings_dir = os.path.join(
+				os.path.expanduser("~"), "Documents", "FreeRadio Recordings"
+			)
+		return os.path.join(recordings_dir, "likedSongs.txt")
+
+	def _build_liked_tab(self):
+		"""Liked Songs tab: list + Spotify / YouTube / Remove / Refresh buttons."""
+		sizer = wx.BoxSizer(wx.VERTICAL)
+
+		sizer.Add(
+			wx.StaticText(self._liked_panel, label=_("Liked Songs:")),
+			0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8,
+		)
+		self._liked_list = wx.ListBox(self._liked_panel, style=wx.LB_SINGLE)
+		self._liked_list.SetName(_("Liked Songs"))
+		sizer.Add(self._liked_list, 1, wx.EXPAND | wx.ALL, 5)
+
+		btn_row = wx.BoxSizer(wx.HORIZONTAL)
+
+		self._liked_spotify_btn = wx.Button(
+			self._liked_panel, label=_("Play on &Spotify")
+		)
+		self._liked_youtube_btn = wx.Button(
+			self._liked_panel, label=_("Play on YouTube (Alt+&O)")
+		)
+		self._liked_remove_btn = wx.Button(
+			self._liked_panel, label=_("Re&move (Alt+M)")
+		)
+		self._liked_refresh_btn = wx.Button(
+			self._liked_panel, label=_("R&efresh (Alt+E)")
+		)
+
+		for btn in (
+			self._liked_spotify_btn,
+			self._liked_youtube_btn,
+			self._liked_remove_btn,
+			self._liked_refresh_btn,
+		):
+			btn_row.Add(btn, 0, wx.RIGHT, 6)
+
+		sizer.Add(btn_row, 0, wx.LEFT | wx.BOTTOM, 5)
+		self._liked_panel.SetSizer(sizer)
+
+		self._liked_list.Bind(wx.EVT_LISTBOX, self._on_liked_selected)
+		self._liked_spotify_btn.Bind(wx.EVT_BUTTON, self._on_liked_spotify)
+		self._liked_youtube_btn.Bind(wx.EVT_BUTTON, self._on_liked_youtube)
+		self._liked_remove_btn.Bind(wx.EVT_BUTTON,  self._on_liked_remove)
+		self._liked_refresh_btn.Bind(wx.EVT_BUTTON, self._on_liked_refresh)
+
+		self._liked_spotify_btn.Enable(False)
+		self._liked_youtube_btn.Enable(False)
+		self._liked_remove_btn.Enable(False)
+
+		# Alt+O → YouTube, Alt+M → Remove, Alt+E → Refresh
+		accel_entries = [
+			wx.AcceleratorEntry(wx.ACCEL_ALT, ord("O"), self._liked_youtube_btn.GetId()),
+			wx.AcceleratorEntry(wx.ACCEL_ALT, ord("M"), self._liked_remove_btn.GetId()),
+			wx.AcceleratorEntry(wx.ACCEL_ALT, ord("E"), self._liked_refresh_btn.GetId()),
+		]
+		self._liked_panel.SetAcceleratorTable(wx.AcceleratorTable(accel_entries))
+
+		self._refresh_liked_list()
+
+	def _refresh_liked_list(self):
+		"""Read likedSongs.txt and populate the listbox."""
+		self._liked_list.Clear()
+		path = self._liked_songs_path()
+		if os.path.isfile(path):
+			try:
+				with open(path, encoding="utf-8") as fh:
+					lines = [l.rstrip("\n") for l in fh if l.strip()]
+				for line in lines:
+					self._liked_list.Append(line)
+			except Exception as e:
+				self._liked_list.Append(_("Could not read file: %s") % str(e))
+		else:
+			self._liked_list.Append(_("No liked songs yet."))
+		self._liked_spotify_btn.Enable(False)
+		self._liked_youtube_btn.Enable(False)
+		self._liked_remove_btn.Enable(False)
+
+	def _on_liked_selected(self, event):
+		has_sel = self._liked_list.GetSelection() != wx.NOT_FOUND
+		# Disable buttons if the placeholder "no songs" line is shown
+		real_song = has_sel and self._liked_list.GetCount() > 0 and \
+			self._liked_list.GetString(self._liked_list.GetSelection()) not in (
+				_("No liked songs yet."),
+			)
+		self._liked_spotify_btn.Enable(real_song)
+		self._liked_youtube_btn.Enable(real_song)
+		self._liked_remove_btn.Enable(real_song)
+		event.Skip()
+
+	def _get_liked_selection(self):
+		"""Return the selected song string, or None."""
+		idx = self._liked_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return None
+		text = self._liked_list.GetString(idx)
+		if text == _("No liked songs yet."):
+			return None
+		return text
+
+	def _on_liked_spotify(self, event):
+		import urllib.parse
+		import webbrowser
+		song = self._get_liked_selection()
+		if not song:
+			return
+		query = urllib.parse.quote(song)
+		# Try the Spotify URI scheme first — opens the desktop app if installed.
+		# os.startfile launches the URI via the registered handler (spotify.exe).
+		# If the app is not installed, startfile raises OSError; fall back to browser.
+		try:
+			os.startfile("spotify:search:" + urllib.parse.quote(song, safe=""))
+		except OSError:
+			# autoplay=true makes the web player start the first result automatically
+			url = "https://open.spotify.com/search/" + query + "?autoplay=true"
+			webbrowser.open(url)
+
+	def _on_liked_youtube(self, event):
+		import urllib.parse
+		import webbrowser
+		song = self._get_liked_selection()
+		if not song:
+			return
+		url = "https://www.youtube.com/results?search_query=" + urllib.parse.quote(song)
+		webbrowser.open(url)
+
+	def _on_liked_remove(self, event):
+		idx = self._liked_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		song = self._liked_list.GetString(idx)
+		if song == _("No liked songs yet."):
+			return
+		path = self._liked_songs_path()
+		try:
+			with open(path, encoding="utf-8") as fh:
+				lines = [l.rstrip("\n") for l in fh]
+			# Remove only the first occurrence
+			removed = False
+			new_lines = []
+			for line in lines:
+				if not removed and line == song:
+					removed = True
+				else:
+					new_lines.append(line)
+			with open(path, "w", encoding="utf-8") as fh:
+				fh.write("\n".join(new_lines))
+				if new_lines:
+					fh.write("\n")
+		except Exception as e:
+			ui.message(_("Could not remove song: %s") % str(e))
+			return
+		self._refresh_liked_list()
+		ui.message(_("Removed: %s") % song)
+
+	def _on_liked_refresh(self, event):
+		self._refresh_liked_list()
+		ui.message(_("Liked songs list refreshed"))
 
 
 class AddCustomStationDialog(wx.Dialog):

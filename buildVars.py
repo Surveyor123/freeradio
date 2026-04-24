@@ -18,11 +18,17 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.17.3",
+	addon_version="2026.18.0",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
-	addon_changelog=_("""Documentation updates. Fixed small typos.
+	addon_changelog=_("""
+- **Liked Songs tab** — A new fifth tab has been added to the Station Browser window, after the Timer tab. It reads `likedSongs.txt` from the configured recordings folder and displays all saved tracks in a list. The list reloads automatically each time the tab is opened.
+  - **Play on Spotify** — Attempts to open the track in the Spotify desktop app via the `spotify:search:` URI scheme. Falls back to the Spotify website if the app is not installed; the URL includes `?autoplay=true` so the web player starts the first result without requiring an extra button press.
+  - **Play on YouTube (`Alt+O`)** — Opens a YouTube search for the selected track in the default browser.
+  - **Remove (`Alt+M`)** — Deletes the selected entry from `likedSongs.txt` and refreshes the list.
+  - **Refresh (`Alt+E`)** — Reloads the list from disk.
+  - The Spotify, YouTube, and Remove buttons are disabled until a real track is selected.
 
 """),
 	

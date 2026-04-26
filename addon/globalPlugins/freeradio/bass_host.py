@@ -49,6 +49,7 @@ _BASS_ACTIVE_STOPPED      = 0
 _BASS_ACTIVE_PLAYING      = 1
 _BASS_ACTIVE_STALLED      = 2
 _BASS_ACTIVE_PAUSED       = 3
+_BASS_DATA_AVAILABLE      = 0   # flag for BASS_ChannelGetData — returns buffered bytes
 
 # basshls.dll config constants
 _BASS_CONFIG_HLS_BANDWIDTH = 0x10400  # master playlist'te bitrate selection
@@ -190,6 +191,7 @@ class BassHost:
         # FX: set of active effect names and handles returned from BASS_ChannelSetFX
         self._fx_names   = set()   # active effect names
         self._fx_handles = {}      # {fx_name: handle}
+
 
     @staticmethod
     def enumerate_devices(dll):
@@ -368,7 +370,7 @@ class BassHost:
                             # Live delay: 8s provides enough buffer for CDN-backed HLS streams
                             # (e.g. TRT) that produce segments every 6-8s.
                             # 3s was too aggressive and caused underruns on slow CDN responses.
-                            dll.BASS_SetConfig(_BASS_CONFIG_HLS_DELAY, 8)
+                            dll.BASS_SetConfig(_BASS_CONFIG_HLS_DELAY, 3)
                     except Exception:
                         self._dll_hls = None
 
@@ -941,7 +943,9 @@ class BassHost:
     # Stall detection: ~3s each cycle, threshold=6 → stall event after ~18s.
     # Raised from 4 to reduce false positives on slow Japanese HLS streams
     # (smartstream.ne.jp) that buffer slowly but are not actually broken.
-    _STALL_THRESHOLD = 6
+    # 3 × 3s = ~9s — fast enough to catch Icecast dropouts without
+    # false positives on slow-but-healthy HLS streams.
+    _STALL_THRESHOLD = 3
 
     def _restart_meta_thread(self):
         self._stop_meta_thread()
@@ -959,22 +963,23 @@ class BassHost:
         self._meta_stop.clear()
 
     def _monitor_loop(self):
-        """ICY metadata polling + stall/stop detection in one thread.
+        """ICY metadata polling + stall/stop/buffer-drain detection.
 
-Reads ICY tag every ~3s and channels with BASS_ChannelIsActive
-        checks the status. Channel _STALL_THRESHOLD times repeatedly
-        If STALLED (2) or STOPPED (0) returns, return to parent
-          {"event": true, "type": "stall"}
-        message is sent. Intentional stop() is already _stop_meta_thread()
-        calls, so when _meta_stop is set the loop exits and
-        No false stall event is sent.
+        Three failure modes are detected:
+          1. BASS_ACTIVE_STALLED / STOPPED  — classic network dropout
+          2. Buffer drain while PLAYING     — AAC+ SBR decoder drift;
+             BASS reports PLAYING but internal decode buffer empties silently.
+             Detected via BASS_ChannelGetData(BASS_DATA_AVAILABLE).
+        Either condition increments stall_count; after _STALL_THRESHOLD
+        consecutive hits a stall event is sent to the parent process.
         """
-        last_title = ""
-        stall_count = 0
+        last_title      = ""
+        stall_count     = 0
+        buf_empty_count = 0
+        _BUF_EMPTY_THRESHOLD = 2   # consecutive near-empty reads before stall
 
         while not self._meta_stop.is_set():
-            # 3-second hold — with cancellation control in 0.5s steps
-            for _ in range(6):
+            for _ in range(6):   # 3-second hold, cancellable in 0.5s steps
                 if self._meta_stop.is_set():
                     return
                 time.sleep(0.5)
@@ -984,7 +989,8 @@ Reads ICY tag every ~3s and channels with BASS_ChannelIsActive
                     h, dll = self._handle, self._dll
 
                 if not h or not dll:
-                    stall_count = 0
+                    stall_count     = 0
+                    buf_empty_count = 0
                     continue
 
                 # 1. ICY metadata
@@ -999,7 +1005,7 @@ Reads ICY tag every ~3s and channels with BASS_ChannelIsActive
                 except Exception:
                     pass
 
-                # 2. channel status
+                # 2. Channel status
                 try:
                     state = dll.BASS_ChannelIsActive(h)
                 except Exception:
@@ -1007,15 +1013,32 @@ Reads ICY tag every ~3s and channels with BASS_ChannelIsActive
 
                 if state in (_BASS_ACTIVE_STALLED, _BASS_ACTIVE_STOPPED):
                     stall_count += 1
+                    buf_empty_count = 0
                     if stall_count >= self._STALL_THRESHOLD:
                         if not self._meta_stop.is_set():
                             _event(type="stall", state=state)
                         stall_count = 0
+
                 elif state == _BASS_ACTIVE_PLAYING:
-                    # Only reset on confirmed PLAYING — transient stalls during
-                    # HLS segment fetches should not reset the counter prematurely.
                     stall_count = 0
-                # PAUSED: leave stall_count unchanged
+                    # 3. Buffer-drain check — catches AAC+ SBR decoder drift.
+                    # BASS_ChannelGetData with BASS_DATA_AVAILABLE returns
+                    # buffered decoded bytes without consuming them.
+                    # Returning 0 while PLAYING means the decoder has stalled
+                    # internally even though the channel is nominally active.
+                    try:
+                        available = dll.BASS_ChannelGetData(h, None, _BASS_DATA_AVAILABLE)
+                        if available == 0:
+                            buf_empty_count += 1
+                            if buf_empty_count >= _BUF_EMPTY_THRESHOLD:
+                                if not self._meta_stop.is_set():
+                                    _event(type="stall", state=state)
+                                buf_empty_count = 0
+                        else:
+                            buf_empty_count = 0
+                    except Exception:
+                        buf_empty_count = 0
+                # PAUSED: leave counters unchanged
 
             except Exception:
                 pass

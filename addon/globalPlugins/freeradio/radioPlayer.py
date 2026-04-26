@@ -720,8 +720,9 @@ class RadioPlayer:
         def _reconnect(captured_gen=stall_gen):
             if not self._is_playing or self._intentional_stop:
                 return
-            # Backoff: fast for the first few tries, then slow down
-            for wait in (3, 5, 10, 20, 30):
+            # First attempt is immediate — Icecast dropouts should reconnect
+            # without delay. Subsequent retries back off progressively.
+            for wait in (0, 5, 10, 20, 30):
                 if not self._is_playing or self._intentional_stop:
                     return
                 # Abort if a newer play() already started

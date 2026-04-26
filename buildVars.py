@@ -18,15 +18,13 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.18.2",
+	addon_version="2026.18.3",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-_BASS_CONFIG_HLS_DELAY: 3 → 8 seconds
-CDN-backed HLS streams such as TRT produce segments every 6–8 seconds. A 3-second live delay fell within that window, causing buffer underruns and audio glitches during periods of slow CDN response (e.g. live sports broadcasts).
-_monitor_loop stall counter now resets only on BASS_ACTIVE_PLAYING.
-Previously any state other than STALLED/STOPPED — including PAUSED — would reset the counter, masking transient segment fetch delays and slowing down stall detection.
+Added buffer-drain detection to _monitor_loop.
+BASS_ChannelIsActive can keep returning PLAYING on some AAC+ streams while the decoder silently empties its internal buffer. The new check uses BASS_ChannelGetData(BASS_DATA_AVAILABLE) to measure the decode buffer size without consuming it. Two consecutive zero readings while in the PLAYING state trigger a stall event, handing off to the existing reconnect logic.
 """),
 	
 	# Author(s)

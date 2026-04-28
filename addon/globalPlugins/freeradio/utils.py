@@ -262,59 +262,68 @@ _NAME_TO_CODE: dict[str, str] = {v: k for k, v in _COUNTRY_NAMES.items()}
 _NAME_TO_CODE.update({v: k for k, v in _COUNTRY_MSGID.items()})
 
 
-def name_to_code(display_name: str) -> str:
-	"""Ekranda gösterilen ülke adından ISO kodunu döner.
-
-	Aktif dilde gösterilmiş adı (Türkçe, İngilizce veya .po çevirisi)
-	koda çevirir. Bulunamazsa display_name'i olduğu gibi döner.
-	"""
-	if not display_name:
-		return display_name
-	# 1. Doğrudan statik tablolarda ara (Türkçe + İngilizce)
-	code = _NAME_TO_CODE.get(display_name)
-	if code:
-		return code
-	# 2. Aktif dilde .po çevirisi varsa, tüm kodları tarayıp eşleştir
-	for iso, msgid in _COUNTRY_MSGID.items():
-		if _(msgid) == display_name:
-			return iso
-	# 3. Bulunamadı — olduğu gibi döndür (API kodu olarak denenebilir)
-	return display_name
-
-
 def country_name(code: str) -> str:
 	"""ISO 3166-1 alpha-2 kodundan aktif NVDA diline göre ülke adını döner.
-
-	_() her çağrıda çalıştırılır; dil değişiklikleri anında yansır.
 
 	Öncelik sırası:
 	  1. .po dosyasında çeviri varsa (msgid != çeviri) → gettext sonucu
 	  2. NVDA dili Türkçe ise → _COUNTRY_NAMES statik sözlüğü
-	  3. Diğer dillerde .po çevirisi yoksa → İngilizce msgid (uluslararası standart)
+	  3. Diğer dillerde → İngilizce msgid (uluslararası standart)
 	  4. Hiçbiri bulunamazsa → ISO kodu
 	"""
 	if not code:
 		return code
 	upper = code.strip().upper()
+
+	# 1. gettext .po çevirisi
 	msgid = _COUNTRY_MSGID.get(upper)
 	if msgid:
 		translated = _(msgid)
-		# .po'da gerçek bir çeviri varsa msgid'den farklı döner → onu kullan
 		if translated != msgid:
 			return translated
-		# .po çevirisi yok; NVDA dili Türkçe ise statik Türkçe sözlüğe düş
-		try:
-			import languageHandler
-			lang = languageHandler.getLanguage() or ""
-		except Exception:
-			lang = ""
-		if lang.startswith("tr"):
-			return _COUNTRY_NAMES.get(upper, msgid)
-		# Başka dil, .po yok → İngilizce msgid uluslararası standarttır
-		return msgid
-	# _COUNTRY_MSGID'de olmayan nadir kod
-	return _COUNTRY_NAMES.get(upper, upper)
 
+	# NVDA dilini al
+	try:
+		import languageHandler
+		lang = languageHandler.getLanguage() or "en"
+	except Exception:
+		lang = "en"
+
+	# 2. Türkçe statik sözlük
+	if lang.startswith("tr"):
+		return _COUNTRY_NAMES.get(upper, msgid or upper)
+
+	# 3. İngilizce msgid
+	if msgid:
+		return msgid
+
+	# 4. ISO kodu
+	return upper
+
+
+def name_to_code(display_name: str) -> str:
+	"""Ekranda gösterilen ülke adından ISO kodunu döner.
+
+	Hangi dilde görünüyorsa o addan koda çevirir:
+	  1. Statik tablolar (Türkçe + İngilizce)
+	  2. .po gettext çevirisi
+	  3. Bulunamazsa display_name olduğu gibi döner
+	"""
+	if not display_name:
+		return display_name
+
+	# 1. Statik tablolar
+	code = _NAME_TO_CODE.get(display_name)
+	if code:
+		return code
+
+	# 2. .po çevirisi
+	for iso, msgid in _COUNTRY_MSGID.items():
+		if _(msgid) == display_name:
+			return iso
+
+	# 3. Bulunamadı
+	return display_name
 
 
 # ---------------------------------------------------------------------------

@@ -181,6 +181,16 @@ class RadioDialog(wx.Dialog):
 		self.SetMinSize((560, 620))
 		self.Fit()
 
+		# Type-ahead state for country combo
+		self._country_search_str    = ""
+		self._country_search_timer  = None
+		self._country_search_cur    = None
+		self._country_search_anchor = None  # position before typing sequence started
+		# Type-ahead state for station list boxes (fav + all)
+		self._list_search_str    = ""
+		self._list_search_timer  = None
+		self._list_search_cur    = None
+		self._list_search_anchor = None  # position before typing sequence started
 		self._build_all_tab()
 		self._build_fav_tab()
 		self._build_rec_tab()
@@ -256,6 +266,7 @@ class RadioDialog(wx.Dialog):
 
 		self._fav_panel.SetSizer(sizer)
 
+		self._fav_list.Bind(wx.EVT_CHAR,           self._on_list_char)
 		self._fav_list.Bind(wx.EVT_LISTBOX,        self._on_selection_changed)
 		self._fav_list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_play_clicked)
 		self._fav_list.Bind(wx.EVT_KEY_DOWN,       self._on_fav_list_key)
@@ -304,7 +315,9 @@ class RadioDialog(wx.Dialog):
 		self._search.Bind(wx.EVT_KEY_DOWN,     self._on_search_key)
 		self._search_btn.Bind(wx.EVT_BUTTON,   self._on_api_search)
 		self._country_cb.Bind(wx.EVT_COMBOBOX, self._on_combo_changed)
+		self._country_cb.Bind(wx.EVT_CHAR,     self._on_country_char)
 
+		self._all_list.Bind(wx.EVT_CHAR,           self._on_list_char)
 		self._all_list.Bind(wx.EVT_LISTBOX,        self._on_selection_changed)
 		self._all_list.Bind(wx.EVT_LISTBOX_DCLICK, self._on_play_clicked)
 		self._all_list.Bind(wx.EVT_KEY_DOWN,       self._on_list_key)
@@ -905,6 +918,173 @@ class RadioDialog(wx.Dialog):
 			self._apply_filters()
 		event.Skip()
 
+	def _typeahead(self, ch, get_count, get_string, get_sel, set_sel, fire_evt, state_attr, fire_on_reset=False):
+		"""Windows Explorer type-ahead.
+
+		Single character:
+		  - If the current item already starts with this character, advance to the next match.
+		  - Otherwise search from index 0.
+
+		Multiple characters typed quickly (before the reset timer fires):
+		  - The search starts from the position recorded before the typing sequence began (anchor).
+		  - This prevents e.g. typing "tu" from jumping past the intended match: "t" may move
+		    the selection to an intermediate item, but the following "u" searches from the
+		    original anchor rather than from that intermediate position.
+		  - If the extended prefix has no match, fall back to the new character alone
+		    and search from the anchor.
+
+		Note: due to wx event ordering, SetSelection may not be reflected yet in the
+		next EVT_CHAR call. The last matched index and the anchor are therefore tracked
+		in instance state rather than read back from the widget.
+		"""
+		timer_attr  = state_attr + "_timer"
+		str_attr    = state_attr + "_str"
+		cur_attr    = state_attr + "_cur"     # index of the last matched item
+		anchor_attr = state_attr + "_anchor"  # selection index before the typing sequence started
+
+		timer = getattr(self, timer_attr, None)
+		if timer:
+			try:
+				timer.Stop()
+			except Exception:
+				pass
+
+		prev    = getattr(self, str_attr, "")
+		buf     = prev + ch
+		count   = get_count()
+
+		# Use our own tracked current rather than relying on wx selection state.
+		current = getattr(self, cur_attr, None)
+		if current is None:
+			current = get_sel()
+
+		# Anchor: recorded once on the first character of a typing sequence;
+		# unchanged for subsequent characters; cleared when the reset timer fires.
+		anchor = getattr(self, anchor_attr, None)
+		if anchor is None:
+			anchor = current if (current is not None and current != wx.NOT_FOUND) else 0
+			setattr(self, anchor_attr, anchor)
+
+		if len(buf) == 1:
+			# Single character: if the current item starts with it, advance to the next.
+			if (current is not None
+					and current != wx.NOT_FOUND
+					and 0 <= current < count
+					and get_string(current).lower().startswith(buf)):
+				start = (current + 1) % count
+			else:
+				start = 0
+		else:
+			# Multi-character prefix: always search forward from anchor + 1.
+			# This ensures that each additional character narrows the search
+			# relative to where the user was before typing started, not relative
+			# to where the previous character happened to land.
+			start = (anchor + 1) % count
+
+		match = wx.NOT_FOUND
+		for offset in range(count):
+			i = (start + offset) % count
+			if get_string(i).lower().startswith(buf):
+				match = i
+				break
+
+		if match == wx.NOT_FOUND and len(buf) > 1:
+			# Extended prefix found no match — retry with just the new character from anchor.
+			buf = ch
+			start = (anchor + 1) % count
+			for offset in range(count):
+				i = (start + offset) % count
+				if get_string(i).lower().startswith(buf):
+					match = i
+					break
+
+		setattr(self, str_attr, buf)
+
+		if match != wx.NOT_FOUND:
+			setattr(self, cur_attr, match)
+			set_sel(match)
+			if not fire_on_reset:
+				fire_evt()
+
+		def _reset():
+			setattr(self, str_attr,    "")
+			setattr(self, timer_attr,  None)
+			setattr(self, cur_attr,    None)
+			setattr(self, anchor_attr, None)
+			if fire_on_reset:
+				fire_evt()
+		setattr(self, timer_attr, wx.CallLater(600, _reset))
+
+	def _on_country_char(self, event):
+		"""Type-ahead search for the country combo box.
+
+		Matches standard Windows Explorer list behaviour:
+		- Single char: jump to first match; if already on a match, advance to next.
+		- Multiple chars typed quickly (within 600 ms s): prefix search.
+		"""
+		key = event.GetUnicodeKey()
+		if key == wx.WXK_NONE or key < 32:
+			event.Skip()
+			return
+
+		# GetUnicodeKey() may return WXK_NONE for some non-ASCII keys on
+		# certain keyboard layouts; fall back to GetKeyCode() in that case.
+		ch = chr(key).lower() if key != wx.WXK_NONE else chr(event.GetKeyCode()).lower()
+		if not ch.isprintable():
+			event.Skip()
+			return
+		self._typeahead(
+			ch           = ch,
+			get_count    = self._country_cb.GetCount,
+			get_string   = self._country_cb.GetString,
+			get_sel      = self._country_cb.GetSelection,
+			set_sel      = self._country_cb.SetSelection,
+			fire_evt     = lambda: wx.PostEvent(
+				self._country_cb,
+				wx.CommandEvent(wx.EVT_COMBOBOX.typeId, self._country_cb.GetId())),
+			state_attr   = "_country_search",
+			fire_on_reset = True,
+		)
+
+	def _reset_country_search(self):
+		self._country_search_str   = ""
+		self._country_search_timer = None
+
+	def _on_list_char(self, event):
+		"""Type-ahead search for station list boxes (_fav_list and _all_list).
+
+		Matches standard Windows Explorer list behaviour:
+		- Single char: jump to first match; if already on a match, advance to next.
+		- Multiple chars typed quickly (within 600 ms): prefix search.
+		"""
+		key = event.GetUnicodeKey()
+		if key == wx.WXK_NONE or key < 32:
+			event.Skip()
+			return
+
+		listbox = event.GetEventObject()
+		# GetUnicodeKey() may return WXK_NONE for some non-ASCII keys on
+		# certain keyboard layouts; fall back to GetKeyCode() in that case.
+		ch = chr(key).lower() if key != wx.WXK_NONE else chr(event.GetKeyCode()).lower()
+		if not ch.isprintable():
+			event.Skip()
+			return
+		self._typeahead(
+			ch         = ch,
+			get_count  = listbox.GetCount,
+			get_string = listbox.GetString,
+			get_sel    = listbox.GetSelection,
+			set_sel    = listbox.SetSelection,
+			fire_evt   = lambda: wx.PostEvent(
+				listbox,
+				wx.CommandEvent(wx.EVT_LISTBOX.typeId, listbox.GetId())),
+			state_attr = "_list_search",
+		)
+
+	def _reset_list_search(self):
+		self._list_search_str   = ""
+		self._list_search_timer = None
+
 	def _on_combo_changed(self, event):
 		if not self._all_stations:
 			event.Skip()
@@ -1278,8 +1458,8 @@ class RadioDialog(wx.Dialog):
 		import languageHandler
 		addon = addonHandler.getCodeAddon()
 		addon_path = addon.path
-		lang = languageHandler.getLanguage()          # ör: "tr_TR", "en", "fr"
-		short_lang = lang.split("_")[0]               # ör: "tr", "en", "fr"
+		lang = languageHandler.getLanguage()          # e.g. "tr_TR", "en", "fr"
+		short_lang = lang.split("_")[0]               # e.g. "tr", "en", "fr"
 
 		candidates = [
 			os.path.join(addon_path, "doc", lang, "readme.html"),

@@ -35,8 +35,8 @@ RADIO_BROWSER_MIRRORS = [
 ]
 USER_AGENT = "FreeRadio-NVDA/1.0"
 REQUEST_TIMEOUT = 10
-COUNTRY_STATION_LIMIT = 500
-SEARCH_LIMIT = 500
+COUNTRY_STATION_LIMIT = 1000
+SEARCH_LIMIT = 1000
 
 # Bir mirror bu kadar ardışık hata verirse cache sıfırlanır ve
 # bir sonraki istekte en sağlıklı mirror yeniden belirlenir.

@@ -18,12 +18,14 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.18.4",
+	addon_version="2026.18.5",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-Documentation and interface translated into Portuguese. Thanks to Ângelo Abrantes.
+Added type-ahead search to the country combo box and station lists.
+Keystrokes are accumulated and the first country name starting with the typed prefix is selected immediately, triggering a station list update. If no match is found for a multi-character prefix, the last keystroke is retried as a single-character search. The buffer resets after 600  milliseconds of inactivity, matching the behaviour of native Windows list controls.
+Search and country station limits increased to 1000.
 """),
 	
 	# Author(s)

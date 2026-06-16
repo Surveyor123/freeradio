@@ -1,0 +1,1986 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2026-06-15 17:22+0300\n"
+"PO-Revision-Date: 2026-06-15 17:51+0300\n"
+"Last-Translator: Volodymyr Pyrih <vp88.mobile@gmail.com>\n"
+"Language-Team: \n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+"X-Poedit-Basepath: ../../../../../../..\n"
+"X-Poedit-SearchPath-0: Documents/GitHub/freeradio/addon/globalPlugins\n"
+"X-Poedit-SearchPath-1: Downloads/freeradio-2026.19.9/addon/globalPlugins\n"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:267
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1304
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:992
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:267
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1304
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:992
+#, python-format
+msgid "Recording started: %s"
+msgstr "Запис розпочато: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:270
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:270
+#, python-format
+msgid "Recording finished: %s"
+msgstr "Запис завершено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:307
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:307
+msgid "Station &Browser...\tCtrl+Win+R"
+msgstr "Браузер &радіостанцій...\tCtrl+Win+R"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:316
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:316
+msgid "FreeRadio &Settings..."
+msgstr "&Налаштування FreeRadio..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:325
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:325
+msgid "Check for &Updates..."
+msgstr "Перевірити &оновлення..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:338
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:338
+msgid "&FreeRadio"
+msgstr "&FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:369
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:369
+#, python-format
+msgid "Recognition failed: %s"
+msgstr "Помилка розпізнавання: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:413
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:413
+msgid "Mirror audio to an additional output device"
+msgstr "Дзеркало аудіо на додатковий пристрій відтворення"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:414
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:480
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:488
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:585
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:637
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:673
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:709
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:725
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:880
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:892
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1205
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1314
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1331
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2094
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:414
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:480
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:488
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:585
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:637
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:673
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:709
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:725
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:880
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:892
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1205
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1314
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1331
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1345
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1367
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1375
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1383
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1460
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1497
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1520
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1539
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2309
+msgid "FreeRadio"
+msgstr "FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:420
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:420
+msgid "Audio mirror requires BASS backend. Enable it in FreeRadio settings."
+msgstr ""
+"Для роботи аудіо дзеркала необхідний бекенд BASS. Увімкніть його в "
+"налаштуваннях FreeRadio."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:426
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:426
+msgid "Audio mirror stopped"
+msgstr "Відзеркалювання аудіо зупинено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:430
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:715
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1234
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1298
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:986
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:430
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:715
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1234
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1298
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:986
+msgid "No station is playing"
+msgstr "Жодна станція не відтворюється"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:441
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:441
+msgid "No audio output devices found"
+msgstr "Пристроїв аудіовиведення не знайдено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:455
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:455
+msgid "Select additional output device for audio mirror:"
+msgstr "Виберіть додатковий пристрій виводу  для аудіо дзеркала:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:456
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:456
+msgid "Mirror Audio"
+msgstr "Дзеркало аудіо"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:468
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:468
+#, python-format
+msgid "Mirroring to: %s"
+msgstr "Дзеркалити на: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:470
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:470
+#, python-format
+msgid "Could not mirror to: %s"
+msgstr "Не вдалося віддзеркалити на: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:479
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:479
+msgid "Open FreeRadio station browser"
+msgstr "Відкрити браузер радіостанцій FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:487
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:487
+msgid "Pause or resume FreeRadio playback"
+msgstr "Призупинити або відновити відтворення FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:564
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1838
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2157
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2376
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2426
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:564
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1838
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2157
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2376
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2426
+msgid "Radio paused"
+msgstr "Радіо призупинено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:567
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2161
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:567
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2161
+msgid "Playing"
+msgstr "Відтворення"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:584
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:584
+msgid "Stop FreeRadio playback"
+msgstr "Зупинити відтворення FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:597
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1108
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:597
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1108
+#, python-format
+msgid "Instant recording: %s"
+msgstr "Миттєвий запис: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:599
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:781
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:796
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1020
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1028
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1110
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:599
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:781
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:796
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1020
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1028
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1110
+#, python-format
+msgid "Scheduled recording: %s"
+msgstr "Запланований запис: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:602
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1113
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:602
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1113
+#, python-format
+msgid ""
+"The following recordings are active and will be stopped:\n"
+"%s\n"
+"\n"
+"Stop radio and end all recordings?"
+msgstr ""
+"Нижченаведені записи активні та будуть зупинені:\n"
+"%s\n"
+"\n"
+"Зупинити радіо та завершити всі записи?"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:609
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1120
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:609
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1120
+msgid "Active Recordings"
+msgstr "Активні записи"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:622
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:633
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1133
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1145
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:622
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:633
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1133
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1145
+msgid "Radio stopped"
+msgstr "Радіо зупинено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:636
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:636
+msgid "Play next station"
+msgstr "Відтворити наступну станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:672
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:672
+msgid "Play previous station"
+msgstr "Відтворити попередню станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:708
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:708
+msgid "Add currently playing station to favourites"
+msgstr "Додати станцію, яка зараз відтворюється, до улюбленого"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:718
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:718
+#, python-format
+msgid "Already in favourites: %s"
+msgstr "Вже в улюбленому: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:721
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:721
+#, python-format
+msgid "Added to favourites: %s"
+msgstr "Додано до улюбленого: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:724
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:724
+msgid ""
+"Announce currently playing station. Press twice for full details, three "
+"times to copy track info, four times to force music recognition."
+msgstr ""
+"Оголосити поточну станцію. Натисніть двічі для повної інформації, тричі — "
+"щоб скопіювати інформацію про трек, чотири рази — щоб примусово розпізнати "
+"трек."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:736
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:968
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:736
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:968
+msgid "Radio inactive. Active scheduled recordings:"
+msgstr "Радіо неактивне. Активні заплановані записи:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:741
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:973
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1139
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1153
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:741
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:973
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1139
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1153
+msgid "FreeRadio is not active"
+msgstr "FreeRadio не активний"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:768
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1012
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1168
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:768
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1012
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1168
+#, python-format
+msgid "Playing: %(station)s — %(track)s"
+msgstr "Відтворюється: %(station)s — %(track)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:772
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1016
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1172
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:772
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1016
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1172
+#, python-format
+msgid "Playing: %s"
+msgstr "Відтворюється: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:776
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:791
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1018
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1026
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:991
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:776
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:791
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1018
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1026
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:991
+#, python-format
+msgid "Recording: %s"
+msgstr "Запис: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:787
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1024
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1176
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:787
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1024
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1176
+#, python-format
+msgid "Paused: %s"
+msgstr "Призупинено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:850
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:873
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1074
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1092
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:850
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:873
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1074
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1092
+msgid "No track info available"
+msgstr "Немає інформації про трек"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:854
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1076
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:854
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1076
+msgid "No track metadata found. Starting music recognition…"
+msgstr "Метадані трека не знайдені. Починається розпізнавання трека…"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:875
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1094
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:875
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1094
+msgid "Starting music recognition…"
+msgstr "Початок розпізнавання трека…"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:879
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:879
+msgid "Increase FreeRadio volume by 5"
+msgstr "Збільшити гучність FreeRadio на 5"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:887
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:899
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2125
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2138
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2228
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2235
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:887
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:899
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2125
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2138
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2228
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2235
+#, python-format
+msgid "Volume %d"
+msgstr "Гучність %d"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:891
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:891
+msgid "Decrease FreeRadio volume by 5"
+msgstr "Зменшити гучність FreeRadio на 5"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1201
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1201
+msgid "Audio device disconnected. Switched to system default."
+msgstr "Аудіопристрій відключено. Встановлено початковий пристрій."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1204
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1204
+msgid "Start or stop instant recording"
+msgstr "Почати або зупинити миттєвий запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1228
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1228
+#, python-format
+msgid "Song recording stopped: %s"
+msgstr "Запис трека зупинено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1230
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1968
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1230
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2183
+msgid "Song recording stopped"
+msgstr "Запис трека зупинено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1255
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1255
+msgid ""
+"This station does not broadcast track metadata. Song recording is not "
+"available."
+msgstr "Ця станція не транслює метадані треків. Запис трека недоступний."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1267
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1267
+#, python-format
+msgid "Song recording started: %s"
+msgstr "Запис трека розпочато: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1271
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1271
+msgid "Could not start song recording"
+msgstr "Не вдалося почати запис трека"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1292
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1292
+#, python-format
+msgid "Recording stopped: %s"
+msgstr "Запис зупинено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1294
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:983
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1294
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:983
+msgid "Recording stopped"
+msgstr "Запис зупинено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1307
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1307
+msgid "Could not start recording"
+msgstr "Не вдалося почати запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1313
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1313
+msgid "Open FreeRadio recordings folder"
+msgstr "Відкрити папку із записами FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1327
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1327
+#, python-format
+msgid "Could not open recordings folder: %s"
+msgstr "Не вдалося відкрити папку записів: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1330
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1330
+msgid ""
+"Toggle mute notifications (station changes, playback, recording, volume "
+"level)"
+msgstr ""
+"Перемкнути звукові сповіщення (про зміну станції, відтворення, запис, рівень "
+"гучності)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1339
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1339
+msgid "Notifications muted"
+msgstr "Сповіщення вимкнено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1341
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1341
+msgid "Notifications unmuted"
+msgstr "Сповіщення увімкнено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1481
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1696
+msgid "No releases found on GitHub yet."
+msgstr "На GitHub поки що не знайдено жодних випусків."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1485
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1700
+#, python-format
+msgid "Update check failed (HTTP %d)."
+msgstr "Не вдалося перевірити оновлення (HTTP %d)."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1490
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1705
+msgid "Update check failed. Please check your internet connection."
+msgstr "Не вдалося перевірити оновлення. Перевірте підключення до Інтернету."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1505
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1720
+msgid "Could not determine latest version."
+msgstr "Не вдалося визначити останню версію."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1523
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1738
+#, python-format
+msgid ""
+"A new version of FreeRadio is available: %s.\n"
+"You have version %s.\n"
+"\n"
+"Would you like to download and install it now?"
+msgstr ""
+"Доступна нова версія FreeRadio: %s.\n"
+"У вас версія %s.\n"
+"\n"
+"Бажаєте завантажити та встановити зараз?"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1526
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1533
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1594
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1741
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1748
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1809
+msgid "unknown"
+msgstr "невідомо"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1527
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1742
+msgid "&Install"
+msgstr "&Встановити"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1530
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1745
+#, python-format
+msgid ""
+"A new version of FreeRadio is available: %s.\n"
+"You have version %s.\n"
+"\n"
+"Would you like to open the download page?"
+msgstr ""
+"Доступна нова версія FreeRadio: %s.\n"
+"У вас версія %s.\n"
+"\n"
+"Бажаєте відкрити сторінку завантаження?"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1534
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1749
+msgid "&Open Page"
+msgstr "&Відкрити сторінку"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1539
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1754
+msgid "FreeRadio Update Available"
+msgstr "Доступне оновлення FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1542
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1757
+msgid "&Cancel"
+msgstr "&Скасувати"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1557
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1772
+#, python-format
+msgid "Downloading FreeRadio %s…"
+msgstr "Завантаження FreeRadio %s…"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1575
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1790
+#, python-format
+msgid "Download failed: %s"
+msgstr "Помилка завантаження: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1585
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1800
+#, python-format
+msgid "Could not launch installer. File saved to: %s"
+msgstr "Не вдалося запустити встановлювач. Файл збережено за адресою: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1594
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1809
+#, python-format
+msgid "FreeRadio is up to date. Installed: %s"
+msgstr "FreeRadio оновлюється. Встановлено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1595
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1810
+msgid "FreeRadio Update Check"
+msgstr "Перевірка оновлень FreeRadio"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1705
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1844
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1882
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1920
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2059
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1882
+msgid "Station"
+msgstr "Станція"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1709
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1826
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1924
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2041
+msgid "Now playing"
+msgstr "Зараз відтворюється"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1717
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1719
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1889
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1891
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1932
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1934
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1889
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1891
+msgid "Country"
+msgstr "Країна"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1723
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1894
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1938
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1894
+msgid "Language"
+msgstr "Мова"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1730
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1898
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1945
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1898
+msgid "Genre"
+msgstr "Жанр"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1739
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1906
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1954
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1906
+msgid "Format"
+msgstr "Формат"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1741
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1908
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1956
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1908
+msgid "Bitrate"
+msgstr "Бітрейт"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1743
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1910
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1958
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1910
+msgid "Codec"
+msgstr "Кодек"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1747
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1913
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1962
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1913
+msgid "Website"
+msgstr "Веб-сайт"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1751
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1916
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1966
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1916
+msgid "Stream URL"
+msgstr "URL потоку"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1759
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1923
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1974
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1923
+msgid "Votes"
+msgstr "Вподобання"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1767
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1886
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1926
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1982
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2101
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1926
+msgid "No station detail available"
+msgstr "Немає інформації про станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1772
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1931
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1987
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1931
+msgid "Station Details"
+msgstr "Деталі станції"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1804
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1958
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2019
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1958
+msgid "&Copy all to clipboard"
+msgstr "&Скопіювати все в буфер обміну"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1810
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1964
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2025
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1964
+msgid "Station details copied to clipboard"
+msgstr "Деталі станції скопійовано в буфер обміну"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1892
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2107
+#, python-format
+msgid "Copied: %s"
+msgstr "Скопійовано: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1894
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2109
+msgid "Could not access clipboard"
+msgstr "Не вдалося отримати доступ до буфера обміну"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1911
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2126
+#, python-format
+msgid "Already in liked songs: %s"
+msgstr "Вже в списку вподобаних треків: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1939
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:1965
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2154
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2180
+#, python-format
+msgid "Song recording saved: %s"
+msgstr "Запис трека збережено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2007
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2222
+msgid "Unknown station"
+msgstr "Невідома станція"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2013
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2228
+msgid "No stream URL available for this station"
+msgstr "URL потоку для цієї станції недоступний"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2020
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2235
+msgid "No internet connection. Please check your connection and try again."
+msgstr ""
+"Немає підключення до Інтернету. Перевірте підключення та повторіть спробу."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2084
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2299
+msgid ""
+"Could not play station: Windows Media Player is not available on this "
+"system. Please install VLC media player."
+msgstr ""
+"Не вдалося відтворити станцію: Windows Media Player недоступний у цій "
+"системі. Установіть медіаплеєр VLC."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2088
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2090
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2303
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2305
+#, python-format
+msgid "Could not play station: %s"
+msgstr "Не вдалося відтворити станцію: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2102
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1358
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2317
+msgid "&Disable BASS backend (use VLC/PotPlayer/WMP instead)"
+msgstr ""
+"&Вимкнути бекенд BASS (замість цього використовувати VLC/PotPlayer/WMP)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2111
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1398
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2326
+msgid ""
+"Note: Audio device selection, effects, and mirroring require BASS backend."
+msgstr ""
+"Примітка: Для вибору аудіопристрою, застосування ефектів та дзеркального "
+"відображення необхідний бекенд BASS."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2118
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2465
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2333
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2680
+msgid "Audio output device (BASS backend):"
+msgstr "Пристрій аудіовиводу (Бекенд BASS):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2122
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2493
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2337
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2708
+msgid "Loading devices..."
+msgstr "Завантаження пристроїв..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2127
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2342
+msgid "Volume (0-100):"
+msgstr "Гучність (0-100):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2135
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2350
+msgid "Audio Effects (BASS backend only):"
+msgstr "Аудіоефекти (лише для бекенд BASS):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2142
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:168
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2357
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:168
+msgid "Chorus"
+msgstr "Хор"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2143
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:168
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2358
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:168
+msgid "Compressor"
+msgstr "Компресор"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2144
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:168
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2359
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:168
+msgid "Distortion"
+msgstr "Спотворення"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2145
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:169
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2360
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:169
+msgid "Echo"
+msgstr "Ехо"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2146
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:169
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2361
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:169
+msgid "Flanger"
+msgstr "Фленджер"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2147
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:169
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2362
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:169
+msgid "Gargle"
+msgstr "Булькання"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2148
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:169
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2363
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:169
+msgid "Reverb"
+msgstr "Реверберація"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2149
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:170
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1371
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2364
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:170
+msgid "EQ: Bass Boost"
+msgstr "Еквалайзер: підсилення басів"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2150
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:170
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1379
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2365
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:170
+msgid "EQ: Treble Boost"
+msgstr "Еквалайзер: підсилення високих частот"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2151
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:170
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1387
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2366
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:170
+msgid "EQ: Vocal Boost"
+msgstr "Еквалайзер: підсилення вокалу"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2155
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2474
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2370
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2689
+msgid "Audio &effects:"
+msgstr "Аудіо &ефекти:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2168
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2383
+msgid "&Bass gain (dB):"
+msgstr "&Посилення низьких частот (дБ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2169
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2384
+msgid "&Treble gain (dB):"
+msgstr "&Посилення високих частот (дБ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2170
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2385
+msgid "&Vocal gain (dB):"
+msgstr "&Посилення вокалу (дБ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2184
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2399
+msgid "Station &switch transition (BASS backend only):"
+msgstr "Перехід між станціями та перемиканням (лише для бекенд BASS):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2186
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1466
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2401
+msgid "Instant cut (no crossfade)"
+msgstr "Миттєве обрізання (без плавного переходу)."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2187
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1467
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2402
+msgid "Short crossfade (1 second)"
+msgstr "Короткий перехід (1 секунда)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2188
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1468
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2403
+msgid "Normal crossfade (2 seconds)"
+msgstr "Звичайний перехід (2 секунди)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2202
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2417
+msgid "&Resume last station on NVDA startup"
+msgstr "&Відновити останню станцію під час запуску NVDA"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2208
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1514
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2423
+msgid "&Auto-announce track changes (ICY metadata)"
+msgstr "&Автоматичне сповіщення про зміни трека (метадані ICY)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2215
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2430
+msgid "Track change &voice:"
+msgstr "Відстеження змін &голос:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2219
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2434
+msgid "NVDA"
+msgstr "NVDA"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2219
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2434
+msgid "SAPI5"
+msgstr "SAPI5"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2230
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2445
+msgid "SAPI5 &voice:"
+msgstr "&Голос SAPI5:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2232
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2248
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2447
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2463
+msgid "Default (system)"
+msgstr "Стандартно (система)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2276
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2491
+msgid "&Mute notifications (station changes, playback, recording)"
+msgstr "&Вимкнути сповіщення (зміни станцій, відтворення, запис)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2285
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1554
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2500
+msgid "&Save liked songs to a text file"
+msgstr "&Зберегти вподобані треки у текстовий файл"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2292
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2507
+msgid "When Ctrl+Win+P is pressed with no active playback:"
+msgstr "Коли натиснути Ctrl+Win+P без активного відтворення:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2294
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2509
+msgid "Resume last station"
+msgstr "Відновити останню станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2295
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2308
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2331
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2510
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2523
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2546
+msgid "Open favourites list"
+msgstr "Відкрити список улюблених"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2305
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2520
+msgid "When Ctrl+Win+P is pressed twice:"
+msgstr "Коли двічі натиснути Ctrl+Win+P:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2307
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2330
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2522
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2545
+msgid "Do nothing"
+msgstr "Нічого не робити"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2309
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2332
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2524
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2547
+msgid "Open station search"
+msgstr "Відкрити пошук станцій"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2310
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2333
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2525
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2548
+msgid "Open recording tab"
+msgstr "Відкрити вкладку запису"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2311
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2334
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2526
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2549
+msgid "Open timer tab"
+msgstr "Відкрити вкладку таймера"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2312
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2335
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2527
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2550
+msgid "Open liked songs tab"
+msgstr "Відкрити вкладку «Вподобані треки»"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2313
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2336
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2528
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2551
+msgid "Open addon settings"
+msgstr "Відкрити налаштування додатка"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2314
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2337
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2529
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2552
+msgid "Announce currently playing station"
+msgstr "Оголосити станцію, яка зараз відтворюється"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2315
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2338
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2530
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2553
+msgid "Stop radio"
+msgstr "Зупинити радіо"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2328
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2543
+msgid "When Ctrl+Win+P is pressed three times:"
+msgstr "Коли тричі натиснути Ctrl+Win+P:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2352
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2567
+msgid "Music Recognition via Shazam (Ctrl+Win+I × 3):"
+msgstr "Розпізнавання треків через Shazam (Ctrl+Win+I × 3):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2353
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2568
+msgid "ffmpeg.exe path (optional; auto-used from addon folder if empty):"
+msgstr ""
+"Шлях до файлу ffmpeg.exe (не обов’язково; якщо поле порожнє, "
+"використовується автоматично шлях із папки додатка):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2361
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2576
+msgid "Brows&e..."
+msgstr "&Огляд..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2367
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2582
+msgid "VLC path (optional, auto-detected if empty):"
+msgstr ""
+"Шлях до VLC (не обов’язково, якщо поле порожнє, буде визначино автоматично):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2372
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2587
+msgid "&Browse..."
+msgstr "&Огляд..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2378
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2593
+msgid "wmplayer.exe path (optional, used if VLC not found):"
+msgstr ""
+"шлях wmplayer.exe (необов’язково, використовується, якщо VLC не знайдено):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2383
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2598
+msgid "B&rowse..."
+msgstr "&Огляд..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2389
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2604
+msgid "PotPlayer path (optional, auto-detected if empty):"
+msgstr ""
+"Шлях до PotPlayer (не обов’язково, якщо поле порожнє, буде визначино "
+"автоматично):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2394
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2609
+msgid "Bro&wse..."
+msgstr "&Огляд..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2401
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2616
+msgid "Recordings folder:"
+msgstr "Папка записів:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2411
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2626
+msgid "(empty = default: Documents\\FreeRadio Recordings)"
+msgstr "(порожньо = початково: Documents\\FreeRadio Recordings)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2414
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2629
+msgid "Brow&se folder..."
+msgstr "&Огляд папки..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2424
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2639
+msgid ""
+"&Disable internet connectivity check before playing (recommended if DNS is "
+"blocked)"
+msgstr ""
+"&Вимкнути перевірку підключення до Інтернету перед початком відтворення "
+"(рекомендується, якщо DNS заблоковано)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2434
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2649
+msgid "&Automatically check for updates on startup"
+msgstr "&Автоматично перевіряти наявність оновлень під час запуску"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2441
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2645
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2656
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2860
+msgid "Check for Updates &Now"
+msgstr "Перевірити наявність оновлень &зараз"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2517
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:739
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2732
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:739
+msgid "System default"
+msgstr "Стандартно"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2536
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2547
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:791
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:805
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1359
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1453
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1513
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1553
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2751
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2762
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:791
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:805
+#, python-format
+msgid "%(effect)s %(state)s"
+msgstr "%(effect)s %(state)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2538
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2549
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:793
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:807
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1361
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1455
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1515
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1555
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2753
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2764
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:793
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:807
+msgid "enabled"
+msgstr "увімкнено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2538
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2549
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:793
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:807
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1361
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1455
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1515
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1555
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2753
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2764
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:793
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:807
+msgid "disabled"
+msgstr "вимкнено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2592
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2807
+msgid "Select VLC executable"
+msgstr "Виберіть виконуваний файл VLC"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2602
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2817
+msgid "Select wmplayer.exe"
+msgstr "Виберіть wmplayer.exe"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2612
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2827
+msgid "Select PotPlayer executable"
+msgstr "Виберіть виконуваний файл PotPlayer"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2622
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2837
+msgid "Select ffmpeg.exe"
+msgstr "Виберіть ffmpeg.exe"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2632
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2847
+msgid "Checking..."
+msgstr "Перевірка..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2654
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:2869
+msgid "Select recordings folder"
+msgstr "Виберіть папку записів"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2827
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2531
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:3042
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2531
+msgid "Sleep timer"
+msgstr "Таймер сну"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2951
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2977
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:3166
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:3192
+msgid "Sleep timer: radio stopped"
+msgstr "Таймер сну: радіо зупинено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/__init__.py:2962
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:3177
+msgid "Sleep timer: fading out…"
+msgstr "Таймер сну: поступове зменшення гучності…"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/musicRecognizer.py:577
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/musicRecognizer.py:577
+msgid "No frequency peaks found — audio may be silence"
+msgstr "Піків частот не виявлено — аудіозапис може бути порожнім"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/musicRecognizer.py:626
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/musicRecognizer.py:626
+msgid "Song not recognized"
+msgstr "Трек не розпізнано"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/musicRecognizer.py:683
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/musicRecognizer.py:683
+msgid ""
+"ffmpeg.exe not found. Download ffmpeg from https://ffmpeg.org/download.html "
+"and place ffmpeg.exe in the FreeRadio addon folder, or set the path in "
+"settings."
+msgstr ""
+"Файл ffmpeg.exe не знайдено. Завантажте ffmpeg з сайту https://ffmpeg.org/"
+"download.html і помістіть файл ffmpeg.exe у папку з додатком FreeRadio або "
+"вкажіть шлях до нього в налаштуваннях."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:82
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:82
+msgid "FreeRadio - Station Browser"
+msgstr "FreeRadio - Браузер радіостанцій"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:121
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:121
+msgid "All Stations"
+msgstr "Усі станції"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:122
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:351
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:122
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:351
+msgid "Favourites"
+msgstr "Улюблене"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:123
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:123
+msgid "Recording"
+msgstr "Запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:124
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:124
+msgid "Timer"
+msgstr "Таймер"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:125
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2650
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:125
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2650
+msgid "Liked Songs"
+msgstr "Улюблені треки"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:133
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:136
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:133
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:136
+msgid "Output device:"
+msgstr "Пристрій виводу:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:135
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:135
+msgid "Loading..."
+msgstr "Завантаження..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:151
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:156
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:151
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:156
+msgid "Volume:"
+msgstr "Гучність:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:161
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:173
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:161
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:173
+msgid "Effects:"
+msgstr "Ефекти:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:189
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:189
+msgid "Bass gain (dB):"
+msgstr "Посилення низьких частот (дБ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:190
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:190
+msgid "Treble gain (dB):"
+msgstr "Підсилення високих частот (дБ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:191
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:191
+msgid "Vocal gain (dB):"
+msgstr "Підсилення вокалу (дБ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:219
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:219
+msgid "&Play/Pause"
+msgstr "&Відтворити/пауза"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:220
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:220
+msgid "&Delete Station"
+msgstr "&Видалити станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:222
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:222
+msgid "Add to Fa&vorites"
+msgstr "Додати до&улюбленого"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:223
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:223
+msgid "Station Detai&ls"
+msgstr "Інформація про &станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:225
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:225
+msgid "Add C&ustom Station..."
+msgstr "Додати &користувацьку станцію..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:226
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:226
+msgid "&Close"
+msgstr "&Закрити"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:343
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:343
+msgid "Filter:"
+msgstr "Фільтр:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:347
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:347
+msgid "Filter favourites"
+msgstr "Фільтрувати улюблене"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:355
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:355
+msgid "Save Audio Pr&ofile for This Station"
+msgstr "Зберегти аудіопрофіль для цієї &станції"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:359
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:359
+msgid "Clear Audio Prof&ile"
+msgstr "Очистити профіль &аудіо"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:363
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:363
+msgid "Re&name Station"
+msgstr "Пере&йменувати станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:390
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:397
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:390
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:397
+msgid "Sort:"
+msgstr "Сортувати:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:395
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:395
+msgid "Alphabetical"
+msgstr "За алфавітом"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:395
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:395
+msgid "By Rating"
+msgstr "За рейтингом"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:402
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:402
+msgid "Country:"
+msgstr "Країна:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:405
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1135
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1168
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1170
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:405
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1135
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1168
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1170
+msgid "All"
+msgstr "Все"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:413
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:413
+msgid "Result limit per country:"
+msgstr "Кількість результатів за країною:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:420
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:420
+msgid "Result limit:"
+msgstr "Максимальна кількість результатів:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:425
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:425
+msgid "Search:"
+msgstr "Пошук:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:432
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:432
+msgid "Type to search · results update automatically"
+msgstr "Введіть для пошуку · результати оновлюються автоматично"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:437
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:437
+msgid "Loading stations..."
+msgstr "Завантаження станцій..."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:440
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:440
+msgid "Stations:"
+msgstr "Станції:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:462
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:462
+msgid "Instant Recording"
+msgstr "Миттєвий запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:464
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:981
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:464
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:981
+msgid "Not recording"
+msgstr "Не записується"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:466
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:979
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:466
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:979
+msgid "Start &Recording"
+msgstr "Почати &запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:471
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:471
+msgid "Scheduled Recording"
+msgstr "Запланувати запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:474
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:563
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:571
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:474
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:563
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:571
+msgid "Station:"
+msgstr "Станція:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:484
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:555
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:559
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2493
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:484
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:555
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:559
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2493
+msgid "Start time (HH:MM):"
+msgstr "Час початку (ГГ:ХХ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:491
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:491
+msgid "Duration (minutes):"
+msgstr "Тривалість (хв.):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:498
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:498
+msgid "Playback during recording:"
+msgstr "Відтворення під час запису:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:502
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:502
+msgid "Record while &listening (play and record simultaneously)"
+msgstr "Запис під час &прослуховування (одночасне відтворення та запис)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:507
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:507
+msgid "Record &only (no audio output)"
+msgstr "Лише &запис (без відтворення)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:513
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:513
+msgid "&Add to Schedule"
+msgstr "&Додати до розкладу"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:516
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:516
+msgid "Upcoming scheduled recordings:"
+msgstr "Найближчі заплановані записи:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:521
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:521
+msgid "&Remove Selected"
+msgstr "&Видалити вибране"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:539
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:539
+msgid "Timer action:"
+msgstr "Дія таймера:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:543
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:543
+msgid "&Start radio at specified time (alarm)"
+msgstr "&Увімкнути радіо в зазначений час (сигнал)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:548
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:548
+msgid "St&op radio at specified time (sleep)"
+msgstr "Вимкнути радіо в &зазначений час (режим сну)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:575
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:575
+msgid "&Add Timer"
+msgstr "&Додати таймер"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:580
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:580
+msgid "Pending timers:"
+msgstr "Таймери, що очікують на виконання:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:585
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:585
+msgid "&Remove Selected Timer"
+msgstr "&Видалити вибраний таймер"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:881
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:881
+msgid ""
+"Press comma to pick a station, navigate to the target position, then press "
+"comma again to drop."
+msgstr ""
+"Натисніть клавішу «кома» для вибору станції, перейдіть до потрібної позиції, "
+"а потім знову натисніть клавішу «кома» щоб відпустити."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:896
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:896
+msgid "No favourites found"
+msgstr "Улюблене не знайдено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:898
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:898
+#, python-format
+msgid "%d favourites"
+msgstr "%d улюблених"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:975
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:996
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:975
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:996
+msgid "Recording is not available"
+msgstr "Запис недоступний"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:981
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:981
+#, python-format
+msgid "Saved: %s"
+msgstr "Збережено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:990
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:990
+msgid "Stop &Recording"
+msgstr "Зупинити &запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1008
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2569
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1008
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2569
+msgid "Invalid time format. Use HH:MM"
+msgstr "Недійсний формат часу. Використовуйте ГГ:ХХ"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1025
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2589
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1025
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2589
+msgid "Please select a station"
+msgstr "Будь ласка, виберіть станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1041
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1041
+msgid "record only"
+msgstr "тільки запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1041
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1041
+msgid "listen and record"
+msgstr "прослуховувати та записувати"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1044
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1044
+#, python-format
+msgid ""
+"Time has passed today. Schedule added for tomorrow: %(station)s at %(time)s "
+"(%(mode)s)"
+msgstr ""
+"Сьогодні час минув. Розклад додано на завтра: %(station)s о %(time)s "
+"(%(mode)s)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1048
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1048
+#, python-format
+msgid "Schedule added: %(station)s on %(date)s at %(time)s (%(mode)s)"
+msgstr "Розклад додано: %(station)s на %(date)s о %(time)s (%(mode)s)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1054
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1054
+#, python-format
+msgid "Time conflict with: %(names)s. Switched to record-only mode."
+msgstr "Конфлікт часу з: %(names)s. Переключено в режим лише запису."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1055
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1055
+msgid "Schedule Conflict"
+msgstr "Конфлікт розкладу"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1070
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1070
+msgid "Schedule deleted"
+msgstr "Розклад видалено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1128
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1128
+#, python-format
+msgid "Top stations (%d)"
+msgstr "Найпопулярніші станції (%d)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1219
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1219
+#, python-format
+msgid "\"%(query)s\" in %(country)s: %(count)d"
+msgstr "\"%(query)s\" в %(country)s: %(count)d"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1221
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1221
+#, python-format
+msgid "%(count)d stations in %(country)s"
+msgstr "%(count)d станцій в %(country)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1223
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1223
+#, python-format
+msgid "\"%(query)s\": %(count)d"
+msgstr "\"%(query)s\": %(count)d"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1225
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1225
+#, python-format
+msgid "%(count)d stations"
+msgstr "%(count)d станцій"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1242
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1242
+#, python-format
+msgid "(%(shown)d of %(total)d shown — increase result limit to see more)"
+msgstr ""
+"(%(shown)d з %(total)d показано — збільшіть кількість результатів, щоб "
+"переглянути більше)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1244
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1244
+msgid "(limit reached — increase result limit to see more)"
+msgstr "(Досягнуто ліміт — збільште ліміт результатів, щоб побачити більше)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1327
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1327
+msgid "Could not connect to radio directory. Check your internet connection."
+msgstr ""
+"Не вдалося підключитися до каталогу радіостанцій. Перевірте підключення до "
+"Інтернету."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1769
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1769
+#, python-format
+msgid "Audio profile saved for %(station)s"
+msgstr "Аудіопрофіль збережено для %(station)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1781
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1781
+#, python-format
+msgid "Audio profile cleared for %(station)s"
+msgstr "Аудіопрофіль для %(station)s очищено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1801
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1801
+msgid "Enter a new name for the station:"
+msgstr "Введіть нову назву для станції:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1802
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1802
+msgid "Rename Station"
+msgstr "Перейменувати станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1813
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1813
+msgid "Name cannot be empty"
+msgstr "Назва не може бути порожньою"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1826
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1826
+#, python-format
+msgid "Renamed to: %s"
+msgstr "Перейменовано на: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1865
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1865
+msgid "Added to favorites"
+msgstr "Додано до улюблених"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1986
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/utils.py:335
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1986
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/utils.py:335
+msgid "Unknown"
+msgstr "Невідомо"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1987
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1987
+#, python-format
+msgid "Do you want to delete the station \"%s\"?"
+msgstr "Ви бажаєте видалити станцію \"%s\"?"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1989
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1989
+msgid "Delete Station"
+msgstr "Видалити станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:1998
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:1998
+msgid "Station deleted"
+msgstr "Станцію видалено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2020
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2020
+#, python-format
+msgid "Station added: %s"
+msgstr "Додано станцію: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2070
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2070
+msgid "Help file not found."
+msgstr "Файл довідки не знайдено."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2316
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2316
+#, python-format
+msgid ""
+"%s selected. Navigate to the target position and press comma again to drop."
+msgstr ""
+"Вибрано %s. Перейдіть до потрібної позиції та натисніть ще раз клавішу "
+"«кома», щоб відпустити."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2322
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2322
+msgid "Move cancelled"
+msgstr "Переміщення скасовано"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2357
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2357
+#, python-format
+msgid "Moved: %s"
+msgstr "Переміщено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2493
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2493
+msgid "Stop time (HH:MM):"
+msgstr "Час зупинки (ГГ:ХХ):"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2533
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2533
+#, python-format
+msgid "Alarm %(time)s — %(station)s"
+msgstr "Сигнал %(time)s — %(station)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2537
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2537
+#, python-format
+msgid "Sleep %(time)s"
+msgstr "Сон %(time)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2557
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2557
+msgid "Timer manager is not available"
+msgstr "Менеджер таймерів недоступний"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2597
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2597
+#, python-format
+msgid "Alarm added: %(station)s at %(time)s"
+msgstr "Сигнал додано: %(station)s о %(time)s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2603
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2603
+#, python-format
+msgid "Sleep timer added: radio will stop at %s"
+msgstr "Додано таймер сну: радіо зупиниться о %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2606
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2606
+msgid "(tomorrow)"
+msgstr "(завтра)"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2621
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2621
+msgid "Timer removed"
+msgstr "Таймер видалено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2646
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2646
+msgid "Liked Songs:"
+msgstr "Вподобані треки:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2656
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2656
+msgid "Play on &Spotify"
+msgstr "Відтворити на &Spotify"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2659
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2659
+msgid "Play on Y&ouTube"
+msgstr "Відтворити на &YouTube"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2662
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2662
+msgid "Re&move"
+msgstr "&Видалити"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2665
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2665
+msgid "R&efresh"
+msgstr "&Оновити"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2712
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2712
+#, python-format
+msgid "Could not read file: %s"
+msgstr "Не вдалося прочитати файл: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2714
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2724
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2737
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2780
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2821
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2714
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2724
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2737
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2780
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2821
+msgid "No liked songs yet."
+msgstr "Ще немає треків, які сподобалися."
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2785
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2785
+#, python-format
+msgid "Do you want to remove \"%s\" from liked songs?"
+msgstr "Бажаєте видалити \"%s\" із треків, які сподобалися?"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2786
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2786
+msgid "Remove Song"
+msgstr "Видалити трек"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2810
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2810
+#, python-format
+msgid "Could not remove song: %s"
+msgstr "Не вдалося видалити трек: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2815
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2815
+#, python-format
+msgid "Removed: %s"
+msgstr "Видалено: %s"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2834
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2834
+msgid "Liked songs list refreshed"
+msgstr "Список вподобаних треків оновлено"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2840
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2840
+msgid "Add Custom Station"
+msgstr "Додати користувацьку станцію"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2843
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2843
+msgid "Station name:"
+msgstr "Назва станції:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2847
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2847
+msgid "Stream URL:"
+msgstr "URL потоку:"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/radioDialog.py:2852
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/radioDialog.py:2852
+msgid "&Add"
+msgstr "&Додати"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/recorder.py:588
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/recorder.py:588
+msgid "Record only"
+msgstr "Тільки запис"
+
+#: Documents/GitHub/freeradio/addon/globalPlugins/freeradio/recorder.py:588
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/recorder.py:588
+msgid "Listen and record"
+msgstr "Слухати та записувати"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1344
+msgid "Enable or disable the BASS audio backend"
+msgstr "Увімкнути або вимкнути аудіо бекенд BASS"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1363
+msgid "Restart NVDA for this change to take effect."
+msgstr "Перезапустіть NVDA, щоб ця зміна набула чинності."
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1366
+msgid "Toggle bass boost"
+msgstr "Перемкнути підсилення басів"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1374
+msgid "Toggle treble boost"
+msgstr "Перемкнути підсилення високих частот"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1382
+msgid "Toggle vocal boost"
+msgstr "Перемкнути підсилення вокалу"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1459
+msgid "Toggle station switch transition (crossfade)"
+msgstr "Перемкнути перехід між станціями (кроссфейд)"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1496
+msgid "Enable or disable auto-announce track changes (ICY metadata)"
+msgstr ""
+"Увімкнути або вимкнути автоматичне оголошення змін треку (ICY метадані)"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1519
+msgid "Switch track change announcement voice"
+msgstr "Перемкнути голос оголошення про зміну треку"
+
+#: Downloads/freeradio-2026.19.9/addon/globalPlugins/freeradio/__init__.py:1538
+msgid "Turn on or off saving liked songs to a text file"
+msgstr "Увімкнути або вимкнути збереження вподобаних треків у текстовий файл"

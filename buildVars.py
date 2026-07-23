@@ -24,7 +24,11 @@ addon_info = AddonInfo(
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-Add Dutch localization and user guide.
+## Changed
+- Station search, browsing by country/tag, and the top-stations list now use a local cache of the full station catalog instead of querying the Radio Browser API every time. This makes searches and filtering nearly instant and removes the network delay that could previously freeze the UI during a search.
+- The local cache is synced from the server automatically in the background (every 12 hours, or immediately if no cache exists yet). If a sync fails, the previous cache is kept so search keeps working.
+- Added an "Update Station List" button (next to Close) to manually re-sync the station list from the server on demand, instead of waiting for the automatic background refresh.
+- Add Dutch localization of the interface and user guide.
 """),
 	
 	# Author(s)

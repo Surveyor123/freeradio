@@ -2,10 +2,12 @@
 # FreeRadio - Station Manager
 # Fetches stations from Radio Browser API and manages favorites.
 
+import gzip
 import json
 import logging
 import os
 import socket
+import time
 import urllib.parse
 import urllib.request
 import uuid
@@ -38,6 +40,18 @@ USER_AGENT = "FreeRadio-NVDA/1.0"
 REQUEST_TIMEOUT = 10
 COUNTRY_STATION_LIMIT = 1000
 SEARCH_LIMIT = 1000
+
+# --- Local station catalog cache ---------------------------------------
+# Instead of hitting the Radio Browser API on every search, the full station
+# catalog is periodically synced into a local gzip-compressed JSON cache
+# (NVDA's bundled Python has no sqlite3 module, so a plain file is used
+# instead of a DB). Once loaded, searches/filters run entirely in memory
+# (no network round-trip), which keeps the UI responsive even on slow
+# connections.
+CACHE_FILENAME             = "freeradio_stations_cache.json.gz"
+CACHE_SYNC_INTERVAL        = 12 * 60 * 60  # re-sync the catalog every 12h
+CACHE_PAGE_SIZE            = 5000          # stations fetched per API page
+CACHE_MAX_PAGES            = 30            # safety cap (~150k stations)
 
 # Retry behaviour for HTTP 5xx responses (e.g. 503 Service Unavailable).
 _HTTP_RETRY_STATUSES = {503, 502, 504}
@@ -95,13 +109,132 @@ class StationManager:
 		self._api_base          = None  # working mirror; determined on first request
 		self._api_base_failures = 0     # consecutive failure count for cached mirror
 		self._mirrors           = None  # discovered mirror list; None = not yet fetched
-		# Kick off DNS discovery in the background so it's ready before first request.
+		self._catalog           = None  # in-memory station cache, sorted by votes desc
+		self._sync_lock         = None
 		import threading as _t
+		self._sync_lock = _t.Lock()
+		# Kick off DNS discovery and catalog cache loading in the background
+		# so both are ready (or well underway) before the first request.
 		_t.Thread(target=self._prefetch_mirrors, daemon=True).start()
+		_t.Thread(target=self._init_cache, daemon=True).start()
 
 	def _prefetch_mirrors(self):
 		if self._mirrors is None:
 			self._mirrors = _discover_mirrors()
+
+	# -------------------------------------------------------------------
+	# Local station catalog cache
+	# -------------------------------------------------------------------
+
+	def _cache_path(self):
+		return os.path.join(globalVars.appArgs.configPath, CACHE_FILENAME)
+
+	def _load_cache_file(self):
+		"""Return (stations, last_sync) from the local cache file.
+		Returns ([], None) if the file is missing, unreadable, or corrupt."""
+		path = self._cache_path()
+		if not os.path.exists(path):
+			return [], None
+		try:
+			with gzip.open(path, "rt", encoding="utf-8") as fh:
+				payload = json.load(fh)
+			return payload.get("stations", []), payload.get("last_sync")
+		except Exception as exc:
+			log.warning("FreeRadio: failed to read station cache: %s", exc)
+			return [], None
+
+	def _write_cache_file(self, stations):
+		"""Write the station catalog to the local cache file.
+		Writes to a temp file first and swaps it in with os.replace(), so a
+		crash mid-write can never leave a corrupt cache behind."""
+		path     = self._cache_path()
+		tmp_path = path + ".tmp"
+		payload  = {"last_sync": time.time(), "stations": stations}
+		with gzip.open(tmp_path, "wt", encoding="utf-8") as fh:
+			json.dump(payload, fh, ensure_ascii=False)
+		os.replace(tmp_path, path)
+
+	def _init_cache(self):
+		"""Load any existing cache into memory immediately (so searches can
+		use it right away), then trigger a background sync if it's missing
+		or stale. Runs on its own thread — never blocks the NVDA UI.
+		"""
+		catalog, last_sync = self._load_cache_file()
+		if catalog:
+			self._catalog = catalog
+			log.info("FreeRadio: loaded %d stations from local cache", len(catalog))
+		stale = (not last_sync) or (time.time() - float(last_sync) > CACHE_SYNC_INTERVAL)
+		if stale:
+			self._sync_catalog()
+
+	def _sync_catalog(self):
+		"""Fetch the full station catalog from the API and replace the local
+		cache with it. Safe to call repeatedly/concurrently — a second call
+		while one is already running is a no-op. On failure, the existing
+		cache (if any) is left untouched so search keeps working.
+		"""
+		if not self._sync_lock.acquire(blocking=False):
+			log.info("FreeRadio: catalog sync already in progress, skipping")
+			return
+		try:
+			all_stations = []
+			offset = 0
+			for _page in range(CACHE_MAX_PAGES):
+				params = (
+					f"limit={CACHE_PAGE_SIZE}&offset={offset}"
+					f"&order=votes&reverse=true&hidebroken=true"
+				)
+				try:
+					page = self._request("/stations/search", params)
+				except RadioBrowserError as exc:
+					log.warning("FreeRadio: catalog sync failed at offset %d: %s", offset, exc)
+					if not all_stations:
+						return  # first page failed — keep the existing cache untouched
+					break  # a partial refresh is still better than nothing
+				if not page:
+					break
+				all_stations.extend(page)
+				if len(page) < CACHE_PAGE_SIZE:
+					break
+				offset += CACHE_PAGE_SIZE
+
+			if not all_stations:
+				return
+
+			try:
+				self._write_cache_file(all_stations)
+			except Exception:
+				log.error("FreeRadio: failed to write station cache to disk", exc_info=True)
+
+			# Already sorted by votes desc (the API query requested that order).
+			self._catalog = all_stations
+			log.info("FreeRadio: catalog sync complete — %d stations cached", len(all_stations))
+		finally:
+			self._sync_lock.release()
+
+	def is_syncing(self):
+		"""True while a catalog sync is in progress (e.g. to disable a
+		'refresh now' button and avoid stacking requests)."""
+		return self._sync_lock.locked()
+
+	def refresh_catalog_async(self, on_done=None):
+		"""Kick off an immediate background catalog re-sync (e.g. from a
+		user-triggered 'refresh now' button). Callers should check
+		is_syncing() first to avoid stacking requests. *on_done*, if given,
+		is called with no arguments on this background thread once the
+		attempt finishes — callers driving a GUI should marshal it back to
+		the main thread themselves (e.g. wx.CallAfter)."""
+		import threading as _t
+
+		def _run():
+			self._sync_catalog()
+			if on_done:
+				on_done()
+
+		_t.Thread(target=_run, daemon=True).start()
+
+	def catalog_ready(self):
+		return bool(self._catalog)
 
 	def _get_api_base(self):
 		"""Return the first reachable mirror, caching the result."""
@@ -273,13 +406,45 @@ class StationManager:
 	def search_stations(self, query, limit=SEARCH_LIMIT, countrycode=None):
 		"""Search stations by name, country, and tag simultaneously.
 
+		If the local catalog cache is populated, the search runs entirely
+		in memory against it (no network round-trip, results in
+		milliseconds). Otherwise — e.g. on the very first run, before the
+		background sync has completed — this falls back to the older
+		network-based multi-mirror search so the feature still works.
+
+		If countrycode is provided, results are filtered to that country.
+		Raises RadioBrowserError subclasses on network/API failure (only
+		possible in the fallback path).
+		"""
+		catalog = self._catalog
+		if catalog:
+			return self._search_catalog(catalog, query, limit, countrycode)
+		return self._search_stations_online(query, limit, countrycode)
+
+	@staticmethod
+	def _search_catalog(catalog, query, limit, countrycode):
+		"""Filter the in-memory catalog for *query*, optionally scoped to
+		*countrycode*. The catalog is already sorted by votes desc, so the
+		filtered result preserves that order."""
+		from .utils import matches_query as _mq
+
+		query = query.strip()
+		cc = countrycode.upper() if countrycode else None
+		filtered = [
+			s for s in catalog
+			if (not cc or s.get("countrycode", "").upper() == cc) and _mq(s, query)
+		]
+		total_found = len(filtered)
+		return filtered[:limit], total_found
+
+	def _search_stations_online(self, query, limit=SEARCH_LIMIT, countrycode=None):
+		"""Network fallback for search_stations() — used only while the local
+		catalog cache has not been populated yet.
+
 		Each token in the query is sent to the API separately (name/tag/country),
 		results are unioned, then the full query is applied as a local post-filter
 		so every token must appear in the station data.  This gives the widest
 		possible API coverage while still enforcing AND semantics.
-
-		If countrycode is provided, results are filtered to that country.
-		Raises RadioBrowserError subclasses on network/API failure.
 		"""
 		from .utils import matches_query as _mq
 
@@ -342,7 +507,12 @@ class StationManager:
 		return merged[:limit], total_found
 
 	def get_top_stations(self, limit=1000):
-		"""Return the top-voted stations. Raises RadioBrowserError on failure."""
+		"""Return the top-voted stations. Raises RadioBrowserError on failure
+		(only possible when falling back to the network — the catalog cache
+		is already sorted by votes desc, so slicing it is instant)."""
+		catalog = self._catalog
+		if catalog:
+			return catalog[:limit]
 		return self._request(f"/stations/topvote/{limit}", "hidebroken=true")
 
 	def get_stations_by_country(self, countrycode, limit=COUNTRY_STATION_LIMIT):
@@ -350,8 +520,14 @@ class StationManager:
 		Returns (stations, total_found) where total_found is len(raw) — the
 		caller (radioDialog) is responsible for substituting the cached
 		stationcount from _fetch_countries when available.
-		Raises RadioBrowserError on failure.
+		Raises RadioBrowserError on failure (only possible in the network
+		fallback path).
 		"""
+		catalog = self._catalog
+		if catalog:
+			cc = countrycode.upper()
+			matches = [s for s in catalog if s.get("countrycode", "").upper() == cc]
+			return matches[:limit], len(matches)
 		code = urllib.parse.quote(countrycode.upper())
 		raw = self._request(
 			f"/stations/bycountrycodeexact/{code}",
@@ -361,7 +537,16 @@ class StationManager:
 		return raw, total_found
 
 	def get_stations_by_tag(self, tag, limit=500):
-		"""Return stations matching the given tag. Raises RadioBrowserError on failure."""
+		"""Return stations matching the given tag. Raises RadioBrowserError on
+		failure (only possible in the network fallback path)."""
+		catalog = self._catalog
+		if catalog:
+			needle = tag.strip().lower()
+			matches = [
+				s for s in catalog
+				if any(t.strip().lower() == needle for t in s.get("tags", "").split(","))
+			]
+			return matches[:limit]
 		encoded = urllib.parse.quote(tag.lower())
 		return self._request(
 			f"/stations/bytag/{encoded}",
@@ -369,11 +554,23 @@ class StationManager:
 		)
 
 	def get_countries(self):
-		"""Return all countries from the API.
-		Tries /countries first; falls back to /countrycodes (/countrycodes uses
-		name=code format instead of iso_3166_1).
-		Raises RadioBrowserError only if both endpoints fail.
+		"""Return all countries with their station counts.
+		Built from the local catalog cache when available; otherwise tries
+		the /countries API endpoint, falling back to /countrycodes
+		(/countrycodes uses name=code format instead of iso_3166_1).
+		Raises RadioBrowserError only in the network fallback path, and only
+		if both endpoints fail.
 		"""
+		catalog = self._catalog
+		if catalog:
+			counts = {}
+			for s in catalog:
+				code = s.get("countrycode", "").strip().upper()
+				if code:
+					counts[code] = counts.get(code, 0) + 1
+			result = [{"iso_3166_1": code, "stationcount": count} for code, count in counts.items()]
+			result.sort(key=lambda c: c["stationcount"], reverse=True)
+			return result
 		try:
 			data = self._request("/countries", "order=stationcount&reverse=true&hidebroken=true")
 			if data:

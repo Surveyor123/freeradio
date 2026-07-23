@@ -227,8 +227,14 @@ class RadioDialog(wx.Dialog):
 		self._details_btn = wx.Button(self, label=_("Station Detai&ls"))
 		self._details_btn.Enable(False)
 		self._add_btn     = wx.Button(self, label=_("Add C&ustom Station..."))
+		# Manually re-syncs the local station list cache from the Radio Browser
+		# API, instead of waiting for the periodic background refresh.
+		self._refresh_catalog_btn = wx.Button(self, label=_("&Update Station List"))
+		self._refresh_catalog_btn.SetToolTip(
+			_("Re-downloads the full station list from the server, so search and browsing use the latest data.")
+		)
 		self._close_btn   = wx.Button(self, label=_("&Close"))
-		for btn in (self._play_btn, self._del_btn, self._fav_btn, self._details_btn, self._add_btn, self._close_btn):
+		for btn in (self._play_btn, self._del_btn, self._fav_btn, self._details_btn, self._add_btn, self._refresh_catalog_btn, self._close_btn):
 			btn_sizer.Add(btn, 0, wx.ALL, 5)
 		main_sizer.Add(btn_sizer, 0, wx.CENTER | wx.BOTTOM, 8)
 
@@ -258,6 +264,7 @@ class RadioDialog(wx.Dialog):
 		self._fav_btn.Bind(wx.EVT_BUTTON,     self._on_toggle_favorite)
 		self._details_btn.Bind(wx.EVT_BUTTON, self._on_details_clicked)
 		self._add_btn.Bind(wx.EVT_BUTTON,     self._on_add_custom)
+		self._refresh_catalog_btn.Bind(wx.EVT_BUTTON, self._on_refresh_catalog)
 		self._close_btn.Bind(wx.EVT_BUTTON,   self._on_close_btn)
 
 		self._vol_spin.Bind(wx.EVT_SPINCTRL,    self._on_vol_changed)
@@ -269,7 +276,7 @@ class RadioDialog(wx.Dialog):
 		wx.CallAfter(self._init_eq_gains)
 
 		for btn in (self._play_btn, self._del_btn, self._fav_btn,
-		            self._details_btn, self._add_btn, self._close_btn):
+		            self._details_btn, self._add_btn, self._refresh_catalog_btn, self._close_btn):
 			btn.Bind(wx.EVT_SET_FOCUS, self._on_button_focused)
 
 		self._notebook.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self._on_tab_changed)
@@ -1391,6 +1398,34 @@ class RadioDialog(wx.Dialog):
 			combined,
 			_("Top stations (%d)") % len(combined),
 		)
+
+	def _on_refresh_catalog(self, event):
+		"""Manually re-sync the local station list cache from the Radio
+		Browser API, instead of waiting for the periodic background refresh."""
+		if self._manager.is_syncing():
+			ui.message(_("Station list refresh already in progress"))
+			return
+		self._refresh_catalog_btn.Disable()
+		ui.message(_("Refreshing station list from the server..."))
+		self._status.SetLabel(_("Refreshing station list..."))
+
+		def _done():
+			wx.CallAfter(self._on_catalog_refreshed)
+
+		self._manager.refresh_catalog_async(on_done=_done)
+
+	def _on_catalog_refreshed(self):
+		if not self:
+			return
+		self._refresh_catalog_btn.Enable()
+		ui.message(_("Station list updated"))
+		self._status.SetLabel(_("Station list updated."))
+		# Re-run whatever is currently shown so results reflect the new list.
+		query = self._search.GetValue().strip()
+		if query:
+			self._schedule_search(query)
+		else:
+			threading.Thread(target=self._fetch_all, daemon=True).start()
 
 	def _prepopulate_country_combo(self):
 		"""As soon as the dialog opens, add all countries from the local dictionary to the combo.

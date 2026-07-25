@@ -918,6 +918,31 @@ class RadioDialog(wx.Dialog):
 		self._update_eq_row_visibility(active)
 		event.Skip()
 
+	def _toggle_fx_by_index(self, idx):
+		"""Toggle a single effect on/off via Ctrl+1..Ctrl+0, mirroring
+		_on_fx_changed's apply/announce/save logic but driven by a keyboard
+		shortcut instead of a checklist click."""
+		if config.conf["freeradio"].get("disable_bass", False):
+			return
+		if not (0 <= idx < len(self._fx_keys)):
+			return
+		is_checked = not self._fx_choice.IsChecked(idx)
+		self._fx_choice.Check(idx, is_checked)
+		label = self._fx_choice.GetString(idx)
+		ui.message(_("%(effect)s %(state)s") % {
+			"effect": label,
+			"state": _("enabled") if is_checked else _("disabled"),
+		})
+		checked = self._fx_choice.GetCheckedItems()
+		active = [self._fx_keys[i] for i in checked if 0 <= i < len(self._fx_keys)]
+		fx_str = ",".join(active) if active else "none"
+		try:
+			self._player.set_fx(fx_str)
+		except Exception:
+			pass
+		config.conf["freeradio"]["audio_fx"] = fx_str
+		self._update_eq_row_visibility(active)
+
 	def _update_eq_row_visibility(self, active_fx_list=None):
 		"""Show EQ gain controls only for the EQ bands that are currently enabled."""
 		if config.conf["freeradio"].get("disable_bass", False):
@@ -2719,6 +2744,15 @@ class RadioDialog(wx.Dialog):
 				config.conf["freeradio"]["volume"] = min(100, vol)
 				_notify(_("Volume %d") % vol)
 				self._vol_spin.SetValue(vol)
+				return
+			# Ctrl+1..Ctrl+9 and Ctrl+0 toggle the 10 audio effects in the
+			# order they appear in self._fx_keys / the Effects checklist
+			# (1=Chorus, 2=Compressor, ..., 9=EQ: Bass Boost, 0=EQ: Vocal Boost).
+			if ord("1") <= key <= ord("9"):
+				self._toggle_fx_by_index(key - ord("1"))
+				return
+			if key == ord("0"):
+				self._toggle_fx_by_index(9)
 				return
 
 		if event.AltDown():

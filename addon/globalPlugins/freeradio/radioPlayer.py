@@ -1383,6 +1383,32 @@ class RadioPlayer:
                             pass
                     return
 
+            # If a mirror output is active, kick off its (re)connect on a
+            # separate thread at the same time as the main stream below,
+            # instead of waiting for the main connect to finish first.
+            # Each connect is a separate network round-trip through its own
+            # bass_host subprocess, so starting them together — rather than
+            # one after the other — keeps the two outputs much closer to
+            # in sync instead of the mirror trailing behind by however long
+            # the main connect took.
+            mirror_thread = None
+            if not self._disable_bass:
+                mirror = getattr(self, "_mirror_engine", None)
+                mirror_dev = getattr(self, "_mirror_device_index", None)
+                if mirror is not None and mirror_dev is not None:
+                    def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen):
+                        if self._play_gen != g:
+                            return
+                        try:
+                            m.stop()
+                            m.play(u, v / 100.0)
+                        except Exception:
+                            pass
+                    mirror_thread = threading.Thread(
+                        target=_sync_mirror, daemon=True,
+                        name="FreeRadio-mirror-sync")
+                    mirror_thread.start()
+
             try:
                 self._launch(stream_url, vol, gen=gen)
             except Exception:
@@ -1474,16 +1500,10 @@ class RadioPlayer:
                 except Exception as e:
                     log.warning("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
 
-            # If mirror output is active, update it to the new station's URL
-            if not self._disable_bass:
-                mirror = getattr(self, "_mirror_engine", None)
-                mirror_dev = getattr(self, "_mirror_device_index", None)
-                if mirror is not None and mirror_dev is not None:
-                    try:
-                        mirror.stop()
-                        mirror.play(stream_url, vol / 100.0)
-                    except Exception:
-                        pass
+            # The mirror (re)connect was already started concurrently above;
+            # just make sure it has finished before this launch is done.
+            if mirror_thread is not None:
+                mirror_thread.join(timeout=30.0)
 
         threading.Thread(target=_bg_launch, daemon=True, name="FreeRadio-launch").start()
 
@@ -1543,25 +1563,43 @@ class RadioPlayer:
         def _bg_resume(gen=my_gen):
             if self._play_gen != gen:
                 return
+
+            # Restart the mirror concurrently with the main stream below,
+            # instead of after it finishes, so both outputs reconnect at
+            # roughly the same moment after a long pause.
+            mirror_thread = None
+            if not self._disable_bass:
+                mirror = getattr(self, "_mirror_engine", None)
+                if mirror and mirror.ready():
+                    def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen):
+                        if self._play_gen != g:
+                            return
+                        try:
+                            m.stop()
+                            m.play(u, v / 100.0)
+                        except Exception:
+                            pass
+                    mirror_thread = threading.Thread(
+                        target=_sync_mirror, daemon=True,
+                        name="FreeRadio-mirror-sync")
+                    mirror_thread.start()
+
             try:
                 self._launch(stream_url, vol, gen=gen)
             except Exception:
                 if self._play_gen == gen:
                     self._is_playing = False
+                if mirror_thread is not None:
+                    mirror_thread.join(timeout=30.0)
                 return
             if self._play_gen != gen:
+                if mirror_thread is not None:
+                    mirror_thread.join(timeout=30.0)
                 return
             if self._backend != self.BACKEND_BASS:
                 self._start_icy_thread(stream_url)
-            # Restart the mirror after a long pause
-            if not self._disable_bass:
-                mirror = getattr(self, "_mirror_engine", None)
-                if mirror and mirror.ready():
-                    try:
-                        mirror.stop()
-                        mirror.play(stream_url, vol / 100.0)
-                    except Exception:
-                        pass
+            if mirror_thread is not None:
+                mirror_thread.join(timeout=30.0)
 
         threading.Thread(target=_bg_resume, daemon=True, name="FreeRadio-resume").start()
 

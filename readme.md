@@ -6,6 +6,8 @@ FreeRadio is an internet radio add-on for the NVDA screen reader. Its primary go
 
 FreeRadio uses the [Radio Browser](https://www.radio-browser.info/) open database for its station catalogue. Radio Browser is a community-managed, free directory hosting more than 50,000 internet radio stations from around the world. No registration or account is required and its API is open to everyone. Each station includes address, country, genre, language and bitrate information; stations are ranked by user votes. FreeRadio connects to this API through mirror servers located in Germany, the Netherlands and Austria; if one server is unreachable, it automatically switches to the next.
 
+To keep the browser responsive and avoid hitting the API on every search or country change, FreeRadio keeps a local cache of the station catalogue on disk. This cache is refreshed automatically in the background on a periodic schedule, so the list you see is normally already up to date without any action on your part. You can also force an immediate re-sync at any time with the **Update Station List** button — see [Station Browser](#station-browser) below.
+
 ## Adding a Station to Radio Browser
 
 If a station you are looking for is not in the Radio Browser directory, you can submit it yourself at [https://www.radio-browser.info/add](https://www.radio-browser.info/add). No account or registration is needed.
@@ -67,11 +69,13 @@ When the All Stations tab opens, the top 1,000 most-voted stations are automatic
 
 The **Output Device** dropdown at the bottom of the browser window — outside the tabs — lists all BASS-recognised audio output devices. Selecting a device immediately redirects audio output to it and saves the choice permanently; the same device is used automatically in the next session. If the selected device is not connected, the add-on falls back to the system default automatically. This control is only functional when the BASS backend is active.
 
-The **Volume** (0–200) and **Effects** controls in the same area can be adjusted at any time while the window is open. From the Effects list, Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost and EQ: Vocal Boost can be enabled simultaneously; changes are applied to the active stream instantly. These controls are fully functional only when the BASS backend is active.
+The **Volume** (0–200) and **Effects** controls in the same area can be adjusted at any time while the window is open. From the Effects list, Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost and EQ: Vocal Boost can be enabled simultaneously; changes are applied to the active stream instantly. Each effect can also be toggled instantly with `Ctrl+1` through `Ctrl+0` without leaving the keyboard — see [Effect Shortcuts](#effect-shortcuts). These controls are fully functional only when the BASS backend is active.
 
 When one or more EQ effects are enabled, a **gain control** appears for each active band. The gain can be set between −15 dB and +15 dB; the default values are Bass +9 dB, Treble +9 dB, and Vocal +6 dB. The gain controls are shown only for the EQ bands that are currently checked, and are hidden automatically when an EQ effect is unchecked. Gain values are saved globally and restored on the next session.
 
 The **Play/Pause** button is also located at the bottom of the window. If no station is playing it starts the selected station; if a station is already playing it pauses playback.
+
+The **Update Station List** button re-syncs the local station catalogue from the Radio Browser API immediately, instead of waiting for the periodic background refresh. While the refresh is running the button is disabled and NVDA announces that a refresh is in progress; if you press it again before the current refresh finishes, NVDA lets you know one is already underway. Once the refresh completes, NVDA announces that the station list has been updated and the currently displayed search results or country listing are refreshed automatically to reflect the new data.
 
 When a station is selected in the list, the **Station Details** button displays information such as country, language, genre, format, bitrate, website and stream URL in a separate dialog. Each field appears in its own read-only text box; you can move between fields with Tab and copy all information to the clipboard at once with the **Copy all to clipboard** button. This button is available in both the All Stations and Favourites tabs.
 
@@ -111,6 +115,23 @@ The following keys work only while the Station Browser window is active.
 |---|---|---|
 | `Ctrl+↑` | Volume up | Increases volume by 5. Only works while the browser window is open. |
 | `Ctrl+↓` | Volume down | Decreases volume by 5. Only works while the browser window is open. |
+
+### Effect Shortcuts
+
+| Shortcut | Function | Description |
+|---|---|---|
+| `Ctrl+1` | Toggle Chorus | Enables or disables the Chorus effect and applies it to the active stream instantly. |
+| `Ctrl+2` | Toggle Compressor | Enables or disables the Compressor effect and applies it to the active stream instantly. |
+| `Ctrl+3` | Toggle Distortion | Enables or disables the Distortion effect and applies it to the active stream instantly. |
+| `Ctrl+4` | Toggle Echo | Enables or disables the Echo effect and applies it to the active stream instantly. |
+| `Ctrl+5` | Toggle Flanger | Enables or disables the Flanger effect and applies it to the active stream instantly. |
+| `Ctrl+6` | Toggle Gargle | Enables or disables the Gargle effect and applies it to the active stream instantly. |
+| `Ctrl+7` | Toggle Reverb | Enables or disables the Reverb effect and applies it to the active stream instantly. |
+| `Ctrl+8` | Toggle EQ: Bass Boost | Enables or disables the Bass Boost EQ band and applies it to the active stream instantly. |
+| `Ctrl+9` | Toggle EQ: Treble Boost | Enables or disables the Treble Boost EQ band and applies it to the active stream instantly. |
+| `Ctrl+0` | Toggle EQ: Vocal Boost | Enables or disables the Vocal Boost EQ band and applies it to the active stream instantly. |
+
+Each shortcut mirrors checking or unchecking the corresponding entry in the **Effects** list: NVDA announces whether the effect was enabled or disabled, the change is saved automatically, and the EQ gain control for that band (if applicable) appears or disappears accordingly. Only available when the BASS backend is active.
 
 ### Alt Key Shortcuts
 

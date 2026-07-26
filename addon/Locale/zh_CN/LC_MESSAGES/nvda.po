@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"POT-Creation-Date: 2026-07-09 22:53+0300\n"
+"POT-Creation-Date: \n"
 "PO-Revision-Date: 2026-07-09 22:54+0300\n"
 "Last-Translator: Alan <alanzhangmw@outlook.com>\n"
 "Language-Team: \n"
@@ -20,7 +20,7 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/__init__.py:273
 #: addon/globalPlugins/freeradio/__init__.py:1568
-#: addon/globalPlugins/freeradio/radioDialog.py:1146
+#: addon/globalPlugins/freeradio/radioDialog.py:1178
 #, python-format
 msgid "Recording started: %s"
 msgstr "开始录音: %s"
@@ -112,7 +112,7 @@ msgstr "音频镜像已停止"
 #: addon/globalPlugins/freeradio/__init__.py:893
 #: addon/globalPlugins/freeradio/__init__.py:1498
 #: addon/globalPlugins/freeradio/__init__.py:1562
-#: addon/globalPlugins/freeradio/radioDialog.py:1140
+#: addon/globalPlugins/freeradio/radioDialog.py:1172
 msgid "No station is playing"
 msgstr "当前没有电台在播放"
 
@@ -147,15 +147,15 @@ msgid "Pause or resume FreeRadio playback"
 msgstr "暂停或恢复自由广播播放"
 
 #: addon/globalPlugins/freeradio/__init__.py:663
-#: addon/globalPlugins/freeradio/radioDialog.py:2273
-#: addon/globalPlugins/freeradio/radioDialog.py:2607
-#: addon/globalPlugins/freeradio/radioDialog.py:2826
-#: addon/globalPlugins/freeradio/radioDialog.py:2876
+#: addon/globalPlugins/freeradio/radioDialog.py:2333
+#: addon/globalPlugins/freeradio/radioDialog.py:2667
+#: addon/globalPlugins/freeradio/radioDialog.py:2895
+#: addon/globalPlugins/freeradio/radioDialog.py:2945
 msgid "Radio paused"
 msgstr "电台已暂停"
 
 #: addon/globalPlugins/freeradio/__init__.py:666
-#: addon/globalPlugins/freeradio/radioDialog.py:2611
+#: addon/globalPlugins/freeradio/radioDialog.py:2671
 msgid "Playing"
 msgstr "正在播放"
 
@@ -221,8 +221,6 @@ msgstr "时移：后退15秒（若尚未处于时移模式则进入该模式）"
 #: addon/globalPlugins/freeradio/__init__.py:813
 #: addon/globalPlugins/freeradio/__init__.py:823
 #: addon/globalPlugins/freeradio/__init__.py:841
-#| msgid ""
-#| "Audio mirror requires BASS backend. Enable it in FreeRadio settings."
 msgid "Time-shift buffer is disabled. Enable it in FreeRadio settings."
 msgstr "时移缓冲区已禁用。请在FreeRadio设置中启用。"
 
@@ -254,7 +252,6 @@ msgid "Could not switch to time-shifted playback."
 msgstr "无法切换到时移播放。"
 
 #: addon/globalPlugins/freeradio/__init__.py:830
-#| msgid "Could not start recording"
 msgid "Could not rewind"
 msgstr "无法后退"
 
@@ -273,7 +270,6 @@ msgid "Already listening live"
 msgstr "已在收听直播"
 
 #: addon/globalPlugins/freeradio/__init__.py:849
-#| msgid "Could not access clipboard"
 msgid "Could not fast-forward"
 msgstr "无法快进"
 
@@ -287,7 +283,6 @@ msgid "Fast-forwarded, still %.0f seconds behind live"
 msgstr "已快进，仍落后直播%.0f秒"
 
 #: addon/globalPlugins/freeradio/__init__.py:859
-#| msgid "Enable or disable the BASS audio backend"
 msgid "Enable or disable the time-shift (rewind) buffer"
 msgstr "启用或禁用时移（后退）缓冲区"
 
@@ -303,8 +298,9 @@ msgstr "时移缓冲区 %s"
 #: addon/globalPlugins/freeradio/__init__.py:1819
 #: addon/globalPlugins/freeradio/__init__.py:3030
 #: addon/globalPlugins/freeradio/__init__.py:3041
-#: addon/globalPlugins/freeradio/radioDialog.py:887
-#: addon/globalPlugins/freeradio/radioDialog.py:901
+#: addon/globalPlugins/freeradio/radioDialog.py:894
+#: addon/globalPlugins/freeradio/radioDialog.py:908
+#: addon/globalPlugins/freeradio/radioDialog.py:934
 msgid "enabled"
 msgstr "已启用"
 
@@ -315,8 +311,9 @@ msgstr "已启用"
 #: addon/globalPlugins/freeradio/__init__.py:1819
 #: addon/globalPlugins/freeradio/__init__.py:3030
 #: addon/globalPlugins/freeradio/__init__.py:3041
-#: addon/globalPlugins/freeradio/radioDialog.py:887
-#: addon/globalPlugins/freeradio/radioDialog.py:901
+#: addon/globalPlugins/freeradio/radioDialog.py:894
+#: addon/globalPlugins/freeradio/radioDialog.py:908
+#: addon/globalPlugins/freeradio/radioDialog.py:934
 msgid "disabled"
 msgstr "已禁用"
 
@@ -373,7 +370,7 @@ msgstr "正在播放: %s"
 #: addon/globalPlugins/freeradio/__init__.py:970
 #: addon/globalPlugins/freeradio/__init__.py:1282
 #: addon/globalPlugins/freeradio/__init__.py:1290
-#: addon/globalPlugins/freeradio/radioDialog.py:1145
+#: addon/globalPlugins/freeradio/radioDialog.py:1177
 #, python-format
 msgid "Recording: %s"
 msgstr "正在录音: %s"
@@ -426,10 +423,10 @@ msgstr "将 自由广播音量增加 5"
 
 #: addon/globalPlugins/freeradio/__init__.py:1151
 #: addon/globalPlugins/freeradio/__init__.py:1163
-#: addon/globalPlugins/freeradio/radioDialog.py:2575
-#: addon/globalPlugins/freeradio/radioDialog.py:2588
-#: addon/globalPlugins/freeradio/radioDialog.py:2678
-#: addon/globalPlugins/freeradio/radioDialog.py:2685
+#: addon/globalPlugins/freeradio/radioDialog.py:2635
+#: addon/globalPlugins/freeradio/radioDialog.py:2648
+#: addon/globalPlugins/freeradio/radioDialog.py:2738
+#: addon/globalPlugins/freeradio/radioDialog.py:2745
 #, python-format
 msgid "Volume %d"
 msgstr "音量 %d"
@@ -477,7 +474,7 @@ msgid "Recording stopped: %s"
 msgstr "录音已停止: %s"
 
 #: addon/globalPlugins/freeradio/__init__.py:1558
-#: addon/globalPlugins/freeradio/radioDialog.py:1137
+#: addon/globalPlugins/freeradio/radioDialog.py:1169
 msgid "Recording stopped"
 msgstr "录音已停止"
 
@@ -523,8 +520,9 @@ msgstr "禁用 BASS 后端 （改用 VLC/PotPlayer/WMP）(&D)"
 #: addon/globalPlugins/freeradio/__init__.py:1817
 #: addon/globalPlugins/freeradio/__init__.py:3028
 #: addon/globalPlugins/freeradio/__init__.py:3039
-#: addon/globalPlugins/freeradio/radioDialog.py:885
-#: addon/globalPlugins/freeradio/radioDialog.py:899
+#: addon/globalPlugins/freeradio/radioDialog.py:892
+#: addon/globalPlugins/freeradio/radioDialog.py:906
+#: addon/globalPlugins/freeradio/radioDialog.py:932
 #, python-format
 msgid "%(effect)s %(state)s"
 msgstr "%(effect)s %(state)s"
@@ -701,7 +699,7 @@ msgstr "自由广播更新检查"
 
 #: addon/globalPlugins/freeradio/__init__.py:2186
 #: addon/globalPlugins/freeradio/__init__.py:2325
-#: addon/globalPlugins/freeradio/radioDialog.py:2322
+#: addon/globalPlugins/freeradio/radioDialog.py:2382
 msgid "Station"
 msgstr "电台"
 
@@ -712,69 +710,69 @@ msgstr "正在播放"
 
 #: addon/globalPlugins/freeradio/__init__.py:2198
 #: addon/globalPlugins/freeradio/__init__.py:2200
-#: addon/globalPlugins/freeradio/radioDialog.py:2329
-#: addon/globalPlugins/freeradio/radioDialog.py:2331
+#: addon/globalPlugins/freeradio/radioDialog.py:2389
+#: addon/globalPlugins/freeradio/radioDialog.py:2391
 msgid "Country"
 msgstr "国家"
 
 #: addon/globalPlugins/freeradio/__init__.py:2204
-#: addon/globalPlugins/freeradio/radioDialog.py:2334
+#: addon/globalPlugins/freeradio/radioDialog.py:2394
 msgid "Language"
 msgstr "语言"
 
 #: addon/globalPlugins/freeradio/__init__.py:2211
-#: addon/globalPlugins/freeradio/radioDialog.py:2338
+#: addon/globalPlugins/freeradio/radioDialog.py:2398
 msgid "Genre"
 msgstr "流派"
 
 #: addon/globalPlugins/freeradio/__init__.py:2220
-#: addon/globalPlugins/freeradio/radioDialog.py:2346
+#: addon/globalPlugins/freeradio/radioDialog.py:2406
 msgid "Format"
 msgstr "格式"
 
 #: addon/globalPlugins/freeradio/__init__.py:2222
-#: addon/globalPlugins/freeradio/radioDialog.py:2348
+#: addon/globalPlugins/freeradio/radioDialog.py:2408
 msgid "Bitrate"
 msgstr "比特率"
 
 #: addon/globalPlugins/freeradio/__init__.py:2224
-#: addon/globalPlugins/freeradio/radioDialog.py:2350
+#: addon/globalPlugins/freeradio/radioDialog.py:2410
 msgid "Codec"
 msgstr "编码器"
 
 #: addon/globalPlugins/freeradio/__init__.py:2228
-#: addon/globalPlugins/freeradio/radioDialog.py:2353
+#: addon/globalPlugins/freeradio/radioDialog.py:2413
 msgid "Website"
 msgstr "网站"
 
 #: addon/globalPlugins/freeradio/__init__.py:2232
-#: addon/globalPlugins/freeradio/radioDialog.py:2356
+#: addon/globalPlugins/freeradio/radioDialog.py:2416
 msgid "Stream URL"
 msgstr "流媒体 URL"
 
 #: addon/globalPlugins/freeradio/__init__.py:2240
-#: addon/globalPlugins/freeradio/radioDialog.py:2363
+#: addon/globalPlugins/freeradio/radioDialog.py:2423
 msgid "Votes"
 msgstr "投票"
 
 #: addon/globalPlugins/freeradio/__init__.py:2248
 #: addon/globalPlugins/freeradio/__init__.py:2367
-#: addon/globalPlugins/freeradio/radioDialog.py:2366
+#: addon/globalPlugins/freeradio/radioDialog.py:2426
 msgid "No station detail available"
 msgstr "没有可用的电台详情"
 
 #: addon/globalPlugins/freeradio/__init__.py:2253
-#: addon/globalPlugins/freeradio/radioDialog.py:2371
+#: addon/globalPlugins/freeradio/radioDialog.py:2431
 msgid "Station Details"
 msgstr "电台详情"
 
 #: addon/globalPlugins/freeradio/__init__.py:2285
-#: addon/globalPlugins/freeradio/radioDialog.py:2398
+#: addon/globalPlugins/freeradio/radioDialog.py:2458
 msgid "&Copy all to clipboard"
 msgstr "全部复制到剪贴板(&C)"
 
 #: addon/globalPlugins/freeradio/__init__.py:2291
-#: addon/globalPlugins/freeradio/radioDialog.py:2404
+#: addon/globalPlugins/freeradio/radioDialog.py:2464
 msgid "Station details copied to clipboard"
 msgstr "电台详情已复制到剪贴板"
 
@@ -1055,7 +1053,7 @@ msgid "Check for Updates &Now"
 msgstr "立即检查更新(&N)"
 
 #: addon/globalPlugins/freeradio/__init__.py:3009
-#: addon/globalPlugins/freeradio/radioDialog.py:833
+#: addon/globalPlugins/freeradio/radioDialog.py:840
 msgid "System default"
 msgstr "系统默认"
 
@@ -1084,7 +1082,7 @@ msgid "Select recordings folder"
 msgstr "选择录音文件夹"
 
 #: addon/globalPlugins/freeradio/__init__.py:3325
-#: addon/globalPlugins/freeradio/radioDialog.py:2989
+#: addon/globalPlugins/freeradio/radioDialog.py:3058
 msgid "Sleep timer"
 msgstr "睡眠定时器"
 
@@ -1123,7 +1121,7 @@ msgid "All Stations"
 msgstr "所有电台"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:126
-#: addon/globalPlugins/freeradio/radioDialog.py:355
+#: addon/globalPlugins/freeradio/radioDialog.py:362
 msgid "Favourites"
 msgstr "收藏"
 
@@ -1136,7 +1134,7 @@ msgid "Timer"
 msgstr "计时器"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:129
-#: addon/globalPlugins/freeradio/radioDialog.py:3151
+#: addon/globalPlugins/freeradio/radioDialog.py:3220
 msgid "Liked Songs"
 msgstr "收藏的歌曲"
 
@@ -1191,444 +1189,474 @@ msgstr "电台详情(&L)"
 msgid "Add C&ustom Station..."
 msgstr "添加自定义电台(&U)..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:230
-#: addon/globalPlugins/freeradio/radioDialog.py:3429
+#: addon/globalPlugins/freeradio/radioDialog.py:232
+msgid "&Update Station List"
+msgstr "更新电台列表(&U)"
+
+#: addon/globalPlugins/freeradio/radioDialog.py:234
+msgid ""
+"Re-downloads the full station list from the server, so search and browsing "
+"use the latest data."
+msgstr "从服务器重新下载完整的电台列表，使搜索和浏览使用最新数据。"
+
+#: addon/globalPlugins/freeradio/radioDialog.py:236
+#: addon/globalPlugins/freeradio/radioDialog.py:3498
 msgid "&Close"
 msgstr "关闭(&C)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:347
-#: addon/globalPlugins/freeradio/radioDialog.py:494
-#: addon/globalPlugins/freeradio/radioDialog.py:649
-#: addon/globalPlugins/freeradio/radioDialog.py:3143
+#: addon/globalPlugins/freeradio/radioDialog.py:354
+#: addon/globalPlugins/freeradio/radioDialog.py:501
+#: addon/globalPlugins/freeradio/radioDialog.py:656
+#: addon/globalPlugins/freeradio/radioDialog.py:3212
 msgid "Filter:"
 msgstr "筛选:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:351
+#: addon/globalPlugins/freeradio/radioDialog.py:358
 msgid "Filter favourites"
 msgstr "筛选收藏"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:359
+#: addon/globalPlugins/freeradio/radioDialog.py:366
 msgid "Save Audio Pr&ofile for This Station"
 msgstr "为此电台保存音频配置文件(&O)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:363
+#: addon/globalPlugins/freeradio/radioDialog.py:370
 msgid "Clear Audio Prof&ile"
 msgstr "清除音频配置文件"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:367
+#: addon/globalPlugins/freeradio/radioDialog.py:374
 msgid "Re&name Station"
 msgstr "重命名电台(&N)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:375
+#: addon/globalPlugins/freeradio/radioDialog.py:382
 msgid "E&xport Favourites..."
 msgstr "导出收藏(&X)..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:377
+#: addon/globalPlugins/freeradio/radioDialog.py:384
 msgid "&Import Favourites..."
 msgstr "导入收藏...(&I)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:404
 #: addon/globalPlugins/freeradio/radioDialog.py:411
+#: addon/globalPlugins/freeradio/radioDialog.py:418
 msgid "Sort:"
 msgstr "排序:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:409
+#: addon/globalPlugins/freeradio/radioDialog.py:416
 msgid "Alphabetical"
 msgstr "按字母顺序"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:409
+#: addon/globalPlugins/freeradio/radioDialog.py:416
 msgid "By Rating"
 msgstr "按评分"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:416
+#: addon/globalPlugins/freeradio/radioDialog.py:423
 msgid "Country:"
 msgstr "国家:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:419
-#: addon/globalPlugins/freeradio/radioDialog.py:1399
-#: addon/globalPlugins/freeradio/radioDialog.py:1432
-#: addon/globalPlugins/freeradio/radioDialog.py:1434
+#: addon/globalPlugins/freeradio/radioDialog.py:426
+#: addon/globalPlugins/freeradio/radioDialog.py:1459
+#: addon/globalPlugins/freeradio/radioDialog.py:1492
+#: addon/globalPlugins/freeradio/radioDialog.py:1494
 msgid "All"
 msgstr "全部"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:427
+#: addon/globalPlugins/freeradio/radioDialog.py:434
 msgid "Result limit per country:"
 msgstr "每个国家的结果限制:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:434
+#: addon/globalPlugins/freeradio/radioDialog.py:441
 msgid "Result limit:"
 msgstr "结果限制:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:439
+#: addon/globalPlugins/freeradio/radioDialog.py:446
 msgid "Search:"
 msgstr "搜索:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:446
+#: addon/globalPlugins/freeradio/radioDialog.py:453
 msgid "Type to search · results update automatically"
 msgstr "输入以搜索 · 结果自动更新"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:451
+#: addon/globalPlugins/freeradio/radioDialog.py:458
 msgid "Loading stations..."
 msgstr "正在加载电台..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:454
+#: addon/globalPlugins/freeradio/radioDialog.py:461
 msgid "Stations:"
 msgstr "电台:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:476
+#: addon/globalPlugins/freeradio/radioDialog.py:483
 msgid "Instant Recording"
 msgstr "即时录音"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:478
-#: addon/globalPlugins/freeradio/radioDialog.py:1135
+#: addon/globalPlugins/freeradio/radioDialog.py:485
+#: addon/globalPlugins/freeradio/radioDialog.py:1167
 msgid "Not recording"
 msgstr "未录音"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:480
-#: addon/globalPlugins/freeradio/radioDialog.py:1133
+#: addon/globalPlugins/freeradio/radioDialog.py:487
+#: addon/globalPlugins/freeradio/radioDialog.py:1165
 msgid "Start &Recording"
 msgstr "开始录音(&R)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:485
+#: addon/globalPlugins/freeradio/radioDialog.py:492
 msgid "Scheduled Recording"
 msgstr "计划录音"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:488
-#: addon/globalPlugins/freeradio/radioDialog.py:643
-#: addon/globalPlugins/freeradio/radioDialog.py:662
+#: addon/globalPlugins/freeradio/radioDialog.py:495
+#: addon/globalPlugins/freeradio/radioDialog.py:650
+#: addon/globalPlugins/freeradio/radioDialog.py:669
 msgid "Station:"
 msgstr "电台:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:498
-#: addon/globalPlugins/freeradio/radioDialog.py:653
+#: addon/globalPlugins/freeradio/radioDialog.py:505
+#: addon/globalPlugins/freeradio/radioDialog.py:660
 msgid "Filter stations"
 msgstr "筛选电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:508
-#: addon/globalPlugins/freeradio/radioDialog.py:635
-#: addon/globalPlugins/freeradio/radioDialog.py:639
-#: addon/globalPlugins/freeradio/radioDialog.py:2946
-#: addon/globalPlugins/freeradio/radioDialog.py:3499
-#: addon/globalPlugins/freeradio/radioDialog.py:3501
+#: addon/globalPlugins/freeradio/radioDialog.py:515
+#: addon/globalPlugins/freeradio/radioDialog.py:642
+#: addon/globalPlugins/freeradio/radioDialog.py:646
+#: addon/globalPlugins/freeradio/radioDialog.py:3015
+#: addon/globalPlugins/freeradio/radioDialog.py:3568
+#: addon/globalPlugins/freeradio/radioDialog.py:3570
 msgid "Start time (HH:MM):"
 msgstr "开始时间 (HH:MM):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:515
-#: addon/globalPlugins/freeradio/radioDialog.py:3505
-#: addon/globalPlugins/freeradio/radioDialog.py:3507
+#: addon/globalPlugins/freeradio/radioDialog.py:522
+#: addon/globalPlugins/freeradio/radioDialog.py:3574
+#: addon/globalPlugins/freeradio/radioDialog.py:3576
 msgid "Duration (minutes):"
 msgstr "时长 (分钟):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:524
-#: addon/globalPlugins/freeradio/radioDialog.py:3511
+#: addon/globalPlugins/freeradio/radioDialog.py:531
+#: addon/globalPlugins/freeradio/radioDialog.py:3580
 msgid "Recurrence:"
 msgstr "重复:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:529
-#: addon/globalPlugins/freeradio/radioDialog.py:3512
+#: addon/globalPlugins/freeradio/radioDialog.py:536
+#: addon/globalPlugins/freeradio/radioDialog.py:3581
 msgid "Record &once"
 msgstr "仅录音一次(&O)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:537
-#: addon/globalPlugins/freeradio/radioDialog.py:3517
+#: addon/globalPlugins/freeradio/radioDialog.py:544
+#: addon/globalPlugins/freeradio/radioDialog.py:3586
 msgid "Repeat &weekly"
 msgstr "每周重复(&W)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:548
-#: addon/globalPlugins/freeradio/radioDialog.py:558
-#: addon/globalPlugins/freeradio/radioDialog.py:3530
-#: addon/globalPlugins/freeradio/radioDialog.py:3533
+#: addon/globalPlugins/freeradio/radioDialog.py:555
+#: addon/globalPlugins/freeradio/radioDialog.py:565
+#: addon/globalPlugins/freeradio/radioDialog.py:3599
+#: addon/globalPlugins/freeradio/radioDialog.py:3602
 msgid "Active days:"
 msgstr "活跃天数:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:552
-#: addon/globalPlugins/freeradio/radioDialog.py:1050
-#: addon/globalPlugins/freeradio/radioDialog.py:3527
+#: addon/globalPlugins/freeradio/radioDialog.py:559
+#: addon/globalPlugins/freeradio/radioDialog.py:1082
+#: addon/globalPlugins/freeradio/radioDialog.py:3596
 msgid "Monday"
 msgstr "周一"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:552
-#: addon/globalPlugins/freeradio/radioDialog.py:1050
-#: addon/globalPlugins/freeradio/radioDialog.py:3527
+#: addon/globalPlugins/freeradio/radioDialog.py:559
+#: addon/globalPlugins/freeradio/radioDialog.py:1082
+#: addon/globalPlugins/freeradio/radioDialog.py:3596
 msgid "Tuesday"
 msgstr "周二"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:552
-#: addon/globalPlugins/freeradio/radioDialog.py:1050
-#: addon/globalPlugins/freeradio/radioDialog.py:3527
+#: addon/globalPlugins/freeradio/radioDialog.py:559
+#: addon/globalPlugins/freeradio/radioDialog.py:1082
+#: addon/globalPlugins/freeradio/radioDialog.py:3596
 msgid "Wednesday"
 msgstr "周三"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:552
-#: addon/globalPlugins/freeradio/radioDialog.py:1050
-#: addon/globalPlugins/freeradio/radioDialog.py:3527
+#: addon/globalPlugins/freeradio/radioDialog.py:559
+#: addon/globalPlugins/freeradio/radioDialog.py:1082
+#: addon/globalPlugins/freeradio/radioDialog.py:3596
 msgid "Thursday"
 msgstr "周四"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:553
-#: addon/globalPlugins/freeradio/radioDialog.py:1051
-#: addon/globalPlugins/freeradio/radioDialog.py:3528
+#: addon/globalPlugins/freeradio/radioDialog.py:560
+#: addon/globalPlugins/freeradio/radioDialog.py:1083
+#: addon/globalPlugins/freeradio/radioDialog.py:3597
 msgid "Friday"
 msgstr "周五"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:553
-#: addon/globalPlugins/freeradio/radioDialog.py:1051
-#: addon/globalPlugins/freeradio/radioDialog.py:3528
+#: addon/globalPlugins/freeradio/radioDialog.py:560
+#: addon/globalPlugins/freeradio/radioDialog.py:1083
+#: addon/globalPlugins/freeradio/radioDialog.py:3597
 msgid "Saturday"
 msgstr "周六"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:553
-#: addon/globalPlugins/freeradio/radioDialog.py:1051
-#: addon/globalPlugins/freeradio/radioDialog.py:3528
+#: addon/globalPlugins/freeradio/radioDialog.py:560
+#: addon/globalPlugins/freeradio/radioDialog.py:1083
+#: addon/globalPlugins/freeradio/radioDialog.py:3597
 msgid "Sunday"
 msgstr "周日"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:565
-#: addon/globalPlugins/freeradio/radioDialog.py:3541
+#: addon/globalPlugins/freeradio/radioDialog.py:572
+#: addon/globalPlugins/freeradio/radioDialog.py:3610
 msgid "Playback during recording:"
 msgstr "录音期间播放:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:569
-#: addon/globalPlugins/freeradio/radioDialog.py:3542
+#: addon/globalPlugins/freeradio/radioDialog.py:576
+#: addon/globalPlugins/freeradio/radioDialog.py:3611
 msgid "Record while &listening (play and record simultaneously)"
 msgstr "录音时收听(&L)（同时播放和录音）"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:574
-#: addon/globalPlugins/freeradio/radioDialog.py:3543
+#: addon/globalPlugins/freeradio/radioDialog.py:581
+#: addon/globalPlugins/freeradio/radioDialog.py:3612
 msgid "Record &only (no audio output)"
 msgstr "仅录音(&O)（无音频输出）"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:580
+#: addon/globalPlugins/freeradio/radioDialog.py:587
 msgid "&Add to Schedule"
 msgstr "添加到计划(&A)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:583
+#: addon/globalPlugins/freeradio/radioDialog.py:590
 msgid "Upcoming scheduled recordings:"
 msgstr "即将到来的计划录音:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:588
+#: addon/globalPlugins/freeradio/radioDialog.py:595
 msgid "&Remove Selected"
 msgstr "移除选中项(&R)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:590
+#: addon/globalPlugins/freeradio/radioDialog.py:597
 msgid "&Edit Selected"
 msgstr "编辑选中项(&E)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:619
+#: addon/globalPlugins/freeradio/radioDialog.py:626
 msgid "Timer action:"
 msgstr "计时器动作:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:623
+#: addon/globalPlugins/freeradio/radioDialog.py:630
 msgid "&Start radio at specified time (alarm)"
 msgstr "在指定时间开始电台(&S)（闹钟）"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:628
+#: addon/globalPlugins/freeradio/radioDialog.py:635
 msgid "St&op radio at specified time (sleep)"
 msgstr "在指定时间停止电台 (睡眠)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:665
+#: addon/globalPlugins/freeradio/radioDialog.py:672
 msgid "&Add Timer"
 msgstr "添加计时器(&A)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:670
+#: addon/globalPlugins/freeradio/radioDialog.py:677
 msgid "Pending timers:"
 msgstr "待处理的计时器:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:675
+#: addon/globalPlugins/freeradio/radioDialog.py:682
 msgid "&Remove Selected Timer"
 msgstr "移除选中的计时器(&R)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:975
+#: addon/globalPlugins/freeradio/radioDialog.py:1007
 msgid ""
 "Press comma to pick a station, navigate to the target position, then press "
 "comma again to drop."
 msgstr "按逗号键选择一个电台，导航到目标位置，然后再次按逗号键放下。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:990
+#: addon/globalPlugins/freeradio/radioDialog.py:1022
 msgid "No favourites found"
 msgstr "未找到收藏"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:992
+#: addon/globalPlugins/freeradio/radioDialog.py:1024
 #, python-format
 msgid "%d favourite"
 msgid_plural "%d favourites"
 msgstr[0] "%d 个收藏"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1063
-#: addon/globalPlugins/freeradio/radioDialog.py:1222
-#: addon/globalPlugins/freeradio/radioDialog.py:1268
+#: addon/globalPlugins/freeradio/radioDialog.py:1095
+#: addon/globalPlugins/freeradio/radioDialog.py:1254
+#: addon/globalPlugins/freeradio/radioDialog.py:1300
 #: addon/globalPlugins/freeradio/recorder.py:679
 msgid "Record only"
 msgstr "仅录音"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1063
-#: addon/globalPlugins/freeradio/radioDialog.py:1222
-#: addon/globalPlugins/freeradio/radioDialog.py:1268
+#: addon/globalPlugins/freeradio/radioDialog.py:1095
+#: addon/globalPlugins/freeradio/radioDialog.py:1254
+#: addon/globalPlugins/freeradio/radioDialog.py:1300
 #: addon/globalPlugins/freeradio/recorder.py:679
 msgid "Listen and record"
 msgstr "收听并录音"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1068
+#: addon/globalPlugins/freeradio/radioDialog.py:1100
 msgid "Every day"
 msgstr "每天"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1070
+#: addon/globalPlugins/freeradio/radioDialog.py:1102
 #, python-format
 msgid "Every %s"
 msgstr "每 %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1103
-#: addon/globalPlugins/freeradio/radioDialog.py:3018
+#: addon/globalPlugins/freeradio/radioDialog.py:1135
+#: addon/globalPlugins/freeradio/radioDialog.py:3087
 msgid "No stations found"
 msgstr "未找到电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1105
-#: addon/globalPlugins/freeradio/radioDialog.py:3020
+#: addon/globalPlugins/freeradio/radioDialog.py:1137
+#: addon/globalPlugins/freeradio/radioDialog.py:3089
 #, python-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d 个电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1129
-#: addon/globalPlugins/freeradio/radioDialog.py:1150
+#: addon/globalPlugins/freeradio/radioDialog.py:1161
+#: addon/globalPlugins/freeradio/radioDialog.py:1182
 msgid "Recording is not available"
 msgstr "录音不可用"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1135
+#: addon/globalPlugins/freeradio/radioDialog.py:1167
 #, python-format
 msgid "Saved: %s"
 msgstr "已保存: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1144
+#: addon/globalPlugins/freeradio/radioDialog.py:1176
 msgid "Stop &Recording"
 msgstr "停止录音(&R)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1162
-#: addon/globalPlugins/freeradio/radioDialog.py:3046
-#: addon/globalPlugins/freeradio/radioDialog.py:3592
+#: addon/globalPlugins/freeradio/radioDialog.py:1194
+#: addon/globalPlugins/freeradio/radioDialog.py:3115
+#: addon/globalPlugins/freeradio/radioDialog.py:3661
 msgid "Invalid time format. Use HH:MM"
 msgstr "无效的时间格式。请使用 HH:MM"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1184
-#: addon/globalPlugins/freeradio/radioDialog.py:3080
+#: addon/globalPlugins/freeradio/radioDialog.py:1216
+#: addon/globalPlugins/freeradio/radioDialog.py:3149
 msgid "Please select a station"
 msgstr "请选择一个电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1223
+#: addon/globalPlugins/freeradio/radioDialog.py:1255
 #, python-format
 msgid "Schedule added: %(station)s at %(time)s on %(dates)s (%(mode)s)"
 msgstr "计划已添加: %(station)s 于 %(time)s 在 %(dates)s (%(mode)s)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1232
-#: addon/globalPlugins/freeradio/radioDialog.py:1276
+#: addon/globalPlugins/freeradio/radioDialog.py:1264
+#: addon/globalPlugins/freeradio/radioDialog.py:1308
 #, python-format
 msgid "Time conflict with: %(names)s. Switched to record-only mode."
 msgstr "时间与 %(names)s 冲突。已切换至“仅录音”模式。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1235
-#: addon/globalPlugins/freeradio/radioDialog.py:1277
+#: addon/globalPlugins/freeradio/radioDialog.py:1267
+#: addon/globalPlugins/freeradio/radioDialog.py:1309
 msgid "Schedule Conflict"
 msgstr "计划冲突"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1270
+#: addon/globalPlugins/freeradio/radioDialog.py:1302
 #, python-format
 msgid "Schedule added: %(station)s on %(date)s at %(time)s (%(mode)s)"
 msgstr "计划已添加: %(station)s 于 %(date)s 在 %(time)s (%(mode)s)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1293
+#: addon/globalPlugins/freeradio/radioDialog.py:1325
 msgid "Schedule deleted"
 msgstr "计划已删除"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1329
+#: addon/globalPlugins/freeradio/radioDialog.py:1361
 msgid "Schedule updated"
 msgstr "计划已更新"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1392
+#: addon/globalPlugins/freeradio/radioDialog.py:1424
 #, python-format
 msgid "Top stations (%d)"
 msgstr "热门电台 (%d)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1483
+#: addon/globalPlugins/freeradio/radioDialog.py:1431
+msgid "Station list refresh already in progress"
+msgstr "电台列表刷新已在进行中"
+
+#: addon/globalPlugins/freeradio/radioDialog.py:1434
+msgid "Refreshing station list from the server..."
+msgstr "正在从服务器刷新电台列表..."
+
+#: addon/globalPlugins/freeradio/radioDialog.py:1435
+msgid "Refreshing station list..."
+msgstr "正在刷新电台列表..."
+
+#: addon/globalPlugins/freeradio/radioDialog.py:1446
+msgid "Station list updated"
+msgstr "电台列表已更新"
+
+#: addon/globalPlugins/freeradio/radioDialog.py:1447
+msgid "Station list updated."
+msgstr "电台列表已更新。"
+
+#: addon/globalPlugins/freeradio/radioDialog.py:1543
 #, python-format
 msgid "\"%(query)s\" in %(country)s: %(count)d"
 msgstr "\"%(query)s\" 在 %(country)s: %(count)d"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1485
+#: addon/globalPlugins/freeradio/radioDialog.py:1545
 #, python-format
 msgid "%(count)d stations in %(country)s"
 msgstr "%(count)d 个电台在 %(country)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1487
+#: addon/globalPlugins/freeradio/radioDialog.py:1547
 #, python-format
 msgid "\"%(query)s\": %(count)d"
 msgstr "\"%(query)s\": %(count)d"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1489
+#: addon/globalPlugins/freeradio/radioDialog.py:1549
 #, python-format
 msgid "%(count)d stations"
 msgstr "%(count)d 个电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1506
+#: addon/globalPlugins/freeradio/radioDialog.py:1566
 #, python-format
 msgid "(%(shown)d of %(total)d shown — increase result limit to see more)"
 msgstr "(显示 %(shown)d / %(total)d — 增加结果限制以查看更多)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1508
+#: addon/globalPlugins/freeradio/radioDialog.py:1568
 msgid "(limit reached — increase result limit to see more)"
 msgstr "(已达到限制 — 增加结果限制以查看更多)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1591
+#: addon/globalPlugins/freeradio/radioDialog.py:1651
 msgid "Could not connect to radio directory. Check your internet connection."
 msgstr "无法连接到电台目录。请检查您的网络连接。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2028
+#: addon/globalPlugins/freeradio/radioDialog.py:2088
 msgid "Volume only"
 msgstr "仅音量"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2030
+#: addon/globalPlugins/freeradio/radioDialog.py:2090
 msgid "Effects only"
 msgstr "仅特效"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2032
+#: addon/globalPlugins/freeradio/radioDialog.py:2092
 msgid "Volume and effects"
 msgstr "音量和特效"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2037
+#: addon/globalPlugins/freeradio/radioDialog.py:2097
 msgid "What would you like to save in the audio profile?"
 msgstr "您想在音频配置文件中保存什么？"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2039
+#: addon/globalPlugins/freeradio/radioDialog.py:2099
 msgid "Save Audio Profile"
 msgstr "保存音频配置文件"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2080
+#: addon/globalPlugins/freeradio/radioDialog.py:2140
 #, python-format
 msgid "Audio profile saved for %(station)s"
 msgstr "已为 %(station)s 保存音频配置文件"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2092
+#: addon/globalPlugins/freeradio/radioDialog.py:2152
 #, python-format
 msgid "Audio profile cleared for %(station)s"
 msgstr "已清除 %(station)s 的音频配置文件"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2099
+#: addon/globalPlugins/freeradio/radioDialog.py:2159
 msgid "JSON favourites (*.json)|*.json|M3U playlist (*.m3u)|*.m3u"
 msgstr "JSON 收藏 (*.json)|*.json|M3U 播放列表 (*.m3u)|*.m3u"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2104
+#: addon/globalPlugins/freeradio/radioDialog.py:2164
 msgid "Export Favourites"
 msgstr "导出收藏"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2128
+#: addon/globalPlugins/freeradio/radioDialog.py:2188
 #, python-format
 msgid "Export failed: %(error)s"
 msgstr "导出失败: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2129
+#: addon/globalPlugins/freeradio/radioDialog.py:2189
 msgid "Export Error"
 msgstr "导出错误"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2138
+#: addon/globalPlugins/freeradio/radioDialog.py:2198
 #, python-format
 msgid ""
 "Exported %(count)d station to:\n"
@@ -1640,11 +1668,11 @@ msgstr[0] ""
 "已导出 %(count)d 个电台至:\n"
 "%(path)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2142
+#: addon/globalPlugins/freeradio/radioDialog.py:2202
 msgid "Export Complete"
 msgstr "导出完成"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2150
+#: addon/globalPlugins/freeradio/radioDialog.py:2210
 msgid ""
 "Supported files (*.json;*.m3u)|*.json;*.m3u|JSON favourites "
 "(*.json)|*.json|M3U playlist (*.m3u)|*.m3u"
@@ -1652,12 +1680,12 @@ msgstr ""
 "支持的文件 (*.json;*.m3u)|*.json;*.m3u|JSON 收藏 (*.json)|*.json|M3U 播放列表 "
 "(*.m3u)|*.m3u"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2156
-#: addon/globalPlugins/freeradio/radioDialog.py:2173
+#: addon/globalPlugins/freeradio/radioDialog.py:2216
+#: addon/globalPlugins/freeradio/radioDialog.py:2233
 msgid "Import Favourites"
 msgstr "导入收藏"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2169
+#: addon/globalPlugins/freeradio/radioDialog.py:2229
 msgid ""
 "How should the imported stations be added?\n"
 "\n"
@@ -1669,269 +1697,269 @@ msgstr ""
 "是 — 合并: 添加新电台而不删除现有的。\n"
 "否 — 替换: 清除当前列表并从文件加载。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2185
+#: addon/globalPlugins/freeradio/radioDialog.py:2245
 #, python-format
 msgid "Import failed: %(error)s"
 msgstr "导入失败: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2186
-#: addon/globalPlugins/freeradio/radioDialog.py:2194
+#: addon/globalPlugins/freeradio/radioDialog.py:2246
+#: addon/globalPlugins/freeradio/radioDialog.py:2254
 msgid "Import Error"
 msgstr "导入错误"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2193
+#: addon/globalPlugins/freeradio/radioDialog.py:2253
 #, python-format
 msgid "Could not read the file: %(error)s"
 msgstr "无法读取文件: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2206
+#: addon/globalPlugins/freeradio/radioDialog.py:2266
 #, python-format
 msgid "Import complete: %(count)d new station added."
 msgid_plural "Import complete: %(count)d new stations added."
 msgstr[0] "导入完成: 已添加 %(count)d 个新电台。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2213
+#: addon/globalPlugins/freeradio/radioDialog.py:2273
 #, python-format
 msgid "Favourites replaced with %(count)d station from the file."
 msgid_plural "Favourites replaced with %(count)d stations from the file."
 msgstr[0] "收藏已替换为文件中的 %(count)d 个电台。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2217
+#: addon/globalPlugins/freeradio/radioDialog.py:2277
 msgid "Import Complete"
 msgstr "导入完成"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2236
+#: addon/globalPlugins/freeradio/radioDialog.py:2296
 msgid "Enter a new name for the station:"
 msgstr "输入电台的新名称:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2237
+#: addon/globalPlugins/freeradio/radioDialog.py:2297
 msgid "Rename Station"
 msgstr "重命名电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2248
+#: addon/globalPlugins/freeradio/radioDialog.py:2308
 msgid "Name cannot be empty"
 msgstr "名称不能为空"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2261
+#: addon/globalPlugins/freeradio/radioDialog.py:2321
 #, python-format
 msgid "Renamed to: %s"
 msgstr "已重命名为: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2300
+#: addon/globalPlugins/freeradio/radioDialog.py:2360
 msgid "Added to favorites"
 msgstr "已添加到收藏"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2426
+#: addon/globalPlugins/freeradio/radioDialog.py:2486
 #: addon/globalPlugins/freeradio/utils.py:335
 msgid "Unknown"
 msgstr "未知"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2427
+#: addon/globalPlugins/freeradio/radioDialog.py:2487
 #, python-format
 msgid "Do you want to delete the station \"%s\"?"
 msgstr "您确定要删除电台 \"%s\" 吗？"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2429
+#: addon/globalPlugins/freeradio/radioDialog.py:2489
 msgid "Delete Station"
 msgstr "删除电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2438
+#: addon/globalPlugins/freeradio/radioDialog.py:2498
 msgid "Station deleted"
 msgstr "电台已删除"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2465
+#: addon/globalPlugins/freeradio/radioDialog.py:2525
 #, python-format
 msgid "Station added: %s"
 msgstr "电台已添加: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2520
+#: addon/globalPlugins/freeradio/radioDialog.py:2580
 msgid "Help file not found."
 msgstr "未找到帮助文件。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2766
+#: addon/globalPlugins/freeradio/radioDialog.py:2835
 #, python-format
 msgid ""
 "%s selected. Navigate to the target position and press comma again to drop."
 msgstr "%s 已选中。导航到目标位置并再次按逗号键放下。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2772
+#: addon/globalPlugins/freeradio/radioDialog.py:2841
 msgid "Move cancelled"
 msgstr "移动已取消"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2807
+#: addon/globalPlugins/freeradio/radioDialog.py:2876
 #, python-format
 msgid "Moved: %s"
 msgstr "已移动: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2946
+#: addon/globalPlugins/freeradio/radioDialog.py:3015
 msgid "Stop time (HH:MM):"
 msgstr "停止时间 (HH:MM):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2991
+#: addon/globalPlugins/freeradio/radioDialog.py:3060
 #, python-format
 msgid "Alarm %(time)s — %(station)s"
 msgstr "闹钟 %(time)s — %(station)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2995
+#: addon/globalPlugins/freeradio/radioDialog.py:3064
 #, python-format
 msgid "Sleep %(time)s"
 msgstr "睡眠 %(time)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3034
+#: addon/globalPlugins/freeradio/radioDialog.py:3103
 msgid "Timer manager is not available"
 msgstr "计时器管理器不可用"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3067
+#: addon/globalPlugins/freeradio/radioDialog.py:3136
 #, python-format
 msgid "A timer already exists at %(time)s (%(label)s). Remove it first."
 msgstr "%(time)s 处已存在计时器 (%(label)s)。请先将其删除。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3088
+#: addon/globalPlugins/freeradio/radioDialog.py:3157
 #, python-format
 msgid "Alarm added: %(station)s at %(time)s"
 msgstr "闹钟已添加: %(station)s 于 %(time)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3094
+#: addon/globalPlugins/freeradio/radioDialog.py:3163
 #, python-format
 msgid "Sleep timer added: radio will stop at %s"
 msgstr "睡眠定时器已添加: 电台将于 %s 停止"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3097
+#: addon/globalPlugins/freeradio/radioDialog.py:3166
 msgid "(tomorrow)"
 msgstr "(明天)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3112
+#: addon/globalPlugins/freeradio/radioDialog.py:3181
 msgid "Timer removed"
 msgstr "计时器已删除"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3137
+#: addon/globalPlugins/freeradio/radioDialog.py:3206
 msgid "Liked Songs:"
 msgstr "收藏的歌曲:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3147
+#: addon/globalPlugins/freeradio/radioDialog.py:3216
 msgid "Filter liked songs"
 msgstr "筛选收藏的歌曲"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3157
+#: addon/globalPlugins/freeradio/radioDialog.py:3226
 msgid "Play on &Spotify"
 msgstr "在 Spotify 上播放(&S)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3160
+#: addon/globalPlugins/freeradio/radioDialog.py:3229
 msgid "Play on Y&ouTube"
 msgstr "在 YouTube 上播放(&O)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3163
+#: addon/globalPlugins/freeradio/radioDialog.py:3232
 msgid "Show &Lyrics"
 msgstr "显示歌词(&L)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3166
+#: addon/globalPlugins/freeradio/radioDialog.py:3235
 msgid "Re&move"
 msgstr "删除(&M)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3169
+#: addon/globalPlugins/freeradio/radioDialog.py:3238
 msgid "R&efresh"
 msgstr "刷新(&E)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3228
-#: addon/globalPlugins/freeradio/radioDialog.py:3246
-#: addon/globalPlugins/freeradio/radioDialog.py:3282
-#: addon/globalPlugins/freeradio/radioDialog.py:3325
-#: addon/globalPlugins/freeradio/radioDialog.py:3366
+#: addon/globalPlugins/freeradio/radioDialog.py:3297
+#: addon/globalPlugins/freeradio/radioDialog.py:3315
+#: addon/globalPlugins/freeradio/radioDialog.py:3351
+#: addon/globalPlugins/freeradio/radioDialog.py:3394
+#: addon/globalPlugins/freeradio/radioDialog.py:3435
 msgid "No results found."
 msgstr "未找到结果。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3230
+#: addon/globalPlugins/freeradio/radioDialog.py:3299
 #, python-format
 msgid "Could not read file: %s"
 msgstr "无法读取文件: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3232
-#: addon/globalPlugins/freeradio/radioDialog.py:3246
-#: addon/globalPlugins/freeradio/radioDialog.py:3268
-#: addon/globalPlugins/freeradio/radioDialog.py:3282
-#: addon/globalPlugins/freeradio/radioDialog.py:3325
-#: addon/globalPlugins/freeradio/radioDialog.py:3366
+#: addon/globalPlugins/freeradio/radioDialog.py:3301
+#: addon/globalPlugins/freeradio/radioDialog.py:3315
+#: addon/globalPlugins/freeradio/radioDialog.py:3337
+#: addon/globalPlugins/freeradio/radioDialog.py:3351
+#: addon/globalPlugins/freeradio/radioDialog.py:3394
+#: addon/globalPlugins/freeradio/radioDialog.py:3435
 msgid "No liked songs yet."
 msgstr "暂无收藏的歌曲。"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3249
+#: addon/globalPlugins/freeradio/radioDialog.py:3318
 msgid "No results found"
 msgstr "未找到结果"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3251
+#: addon/globalPlugins/freeradio/radioDialog.py:3320
 #, python-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d 首歌"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3330
+#: addon/globalPlugins/freeradio/radioDialog.py:3399
 #, python-format
 msgid "Do you want to remove \"%s\" from liked songs?"
 msgstr "您要从收藏歌曲中删除 \"%s\" 吗？"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3331
+#: addon/globalPlugins/freeradio/radioDialog.py:3400
 msgid "Remove Song"
 msgstr "删除歌曲"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3355
+#: addon/globalPlugins/freeradio/radioDialog.py:3424
 #, python-format
 msgid "Could not remove song: %s"
 msgstr "无法删除歌曲: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3360
+#: addon/globalPlugins/freeradio/radioDialog.py:3429
 #, python-format
 msgid "Removed: %s"
 msgstr "已删除: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3379
+#: addon/globalPlugins/freeradio/radioDialog.py:3448
 msgid "Liked songs list refreshed"
 msgstr "收藏歌曲列表已刷新"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3386
+#: addon/globalPlugins/freeradio/radioDialog.py:3455
 msgid "Fetching lyrics…"
 msgstr "正在获取歌词…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3394
+#: addon/globalPlugins/freeradio/radioDialog.py:3463
 #, python-format
 msgid "Lyrics not found for: %s"
 msgstr "未找到歌词: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3410
+#: addon/globalPlugins/freeradio/radioDialog.py:3479
 #, python-format
 msgid "Lyrics — %s"
 msgstr "歌词 — %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3416
+#: addon/globalPlugins/freeradio/radioDialog.py:3485
 #, python-format
 msgid "Lyrics for: %s"
 msgstr "歌词: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3425
+#: addon/globalPlugins/freeradio/radioDialog.py:3494
 msgid "Lyrics"
 msgstr "歌词"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3453
+#: addon/globalPlugins/freeradio/radioDialog.py:3522
 msgid "Add Custom Station"
 msgstr "添加自定义电台"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3456
+#: addon/globalPlugins/freeradio/radioDialog.py:3525
 msgid "Station name:"
 msgstr "电台名称:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3460
+#: addon/globalPlugins/freeradio/radioDialog.py:3529
 msgid "Stream URL:"
 msgstr "流媒体 URL:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3465
+#: addon/globalPlugins/freeradio/radioDialog.py:3534
 msgid "&Add"
 msgstr "添加(&A)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3490
+#: addon/globalPlugins/freeradio/radioDialog.py:3559
 #, python-format
 msgid "Edit Schedule — %s"
 msgstr "编辑计划 — %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3553
+#: addon/globalPlugins/freeradio/radioDialog.py:3622
 msgid "&Save"
 msgstr "保存(&S)"
 
@@ -1960,32 +1988,39 @@ msgstr ""
 #: buildVars.py:26
 msgid ""
 "\n"
-"### New Features\n"
-"\n"
-"- **Time-shift buffer**: Rewind and fast-forward live radio like a DVR, using a rolling ~10-minute buffer. Enable it from Settings or toggle it instantly with `Ctrl+Win+T`. Rewind 15 seconds with `Ctrl+Win+J`; fast-forward 15 seconds with `Ctrl+Win+K` — reaching the live edge automatically returns you to normal live playback.\n"
-"- Time-shift now supports **HLS (`.m3u8`) stations** in addition to plain HTTP/HTTPS and Shoutcast/Icecast (ICY) streams — segments are downloaded and reassembled into the same rewindable buffer.\n"
-"\n"
-"### Fixes\n"
-"\n"
-"- Fixed time-shift capture (and recording) failing with an SSL certificate error on stations whose server presents an expired or otherwise invalid TLS certificate.\n"
-"\n"
-"### Documentation\n"
-"\n"
-"- Added a full \"Time-Shift (Rewind Live Radio)\" section to the README, plus new shortcut and settings table entries.\n"
+"- 10 sound effects (Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Enhancement, EQ: Treble Enhancement, EQ: Vocal Enhancement) can be turned on and off using the shortcuts Ctrl+1–Ctrl+0 in the main window. Effects are applied instantly and settings are saved.\n"
 msgstr ""
 "\n"
-"### 新功能\n"
-"\n"
-"- **时移缓冲区**：像DVR一样后退和快进直播收音机，使用约10分钟的滚动缓冲区。在\"设置\"中启用，或使用`Ctrl+Win+T`即时切换。使用`Ctrl+Win+J`后退15秒；使用`Ctrl+Win+K`快进15秒——到达直播边缘后自动恢复正常播放。\n"
-"- 时移现在支持**HLS（`.m3u8`）电台**，以及普通HTTP/HTTPS和Shoutcast/Icecast（ICY）流——片段被下载并重新组装到同一个可后退缓冲区中。\n"
-"\n"
-"### 修复\n"
-"\n"
-"- 修复了在服务器提供过期或无效TLS证书的电台上，时移捕获（和录音）因SSL证书错误而失败的问题。\n"
-"\n"
-"### 文档\n"
-"\n"
-"- 在README中添加了完整的\"时移（直播收音机后退）\"章节，以及快捷键和设置表中的新条目。\n"
+"- 可以使用主窗口中的快捷键 Ctrl+1–Ctrl+0 打开或关闭10个声音效果（Chorus、Compressor、Distortion、Echo、Flanger、Gargle、Reverb、EQ：低音增强、EQ：高音增强、EQ：人声增强）。效果即时生效，设置会自动保存。\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "### New Features\n"
+#~ "\n"
+#~ "- **Time-shift buffer**: Rewind and fast-forward live radio like a DVR, using a rolling ~10-minute buffer. Enable it from Settings or toggle it instantly with `Ctrl+Win+T`. Rewind 15 seconds with `Ctrl+Win+J`; fast-forward 15 seconds with `Ctrl+Win+K` — reaching the live edge automatically returns you to normal live playback.\n"
+#~ "- Time-shift now supports **HLS (`.m3u8`) stations** in addition to plain HTTP/HTTPS and Shoutcast/Icecast (ICY) streams — segments are downloaded and reassembled into the same rewindable buffer.\n"
+#~ "\n"
+#~ "### Fixes\n"
+#~ "\n"
+#~ "- Fixed time-shift capture (and recording) failing with an SSL certificate error on stations whose server presents an expired or otherwise invalid TLS certificate.\n"
+#~ "\n"
+#~ "### Documentation\n"
+#~ "\n"
+#~ "- Added a full \"Time-Shift (Rewind Live Radio)\" section to the README, plus new shortcut and settings table entries.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "### 新功能\n"
+#~ "\n"
+#~ "- **时移缓冲区**：像DVR一样后退和快进直播收音机，使用约10分钟的滚动缓冲区。在\"设置\"中启用，或使用`Ctrl+Win+T`即时切换。使用`Ctrl+Win+J`后退15秒；使用`Ctrl+Win+K`快进15秒——到达直播边缘后自动恢复正常播放。\n"
+#~ "- 时移现在支持**HLS（`.m3u8`）电台**，以及普通HTTP/HTTPS和Shoutcast/Icecast（ICY）流——片段被下载并重新组装到同一个可后退缓冲区中。\n"
+#~ "\n"
+#~ "### 修复\n"
+#~ "\n"
+#~ "- 修复了在服务器提供过期或无效TLS证书的电台上，时移捕获（和录音）因SSL证书错误而失败的问题。\n"
+#~ "\n"
+#~ "### 文档\n"
+#~ "\n"
+#~ "- 在README中添加了完整的\"时移（直播收音机后退）\"章节，以及快捷键和设置表中的新条目。\n"
 
 #~ msgid ""
 #~ "\n"

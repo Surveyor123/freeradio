@@ -6,6 +6,8 @@ FreeRadio es un complemento de radio por Internet para el lector de pantalla NVD
 
 FreeRadio utiliza la base de datos abierta de [Radio Browser](https://www.radio-browser.info/) por su catálogo de estaciones. Radio Browser es un directorio gratuito impulsado por la comunidad que alberga más de 50.000 estaciones de radio por Internet de todo el mundo. No se requiere registro ni cuenta y su API está abierta a todos. Cada estación incluye información sobre dirección, país, género, idioma y bitrate; las estaciones se clasifican según los votos de los usuarios. FreeRadio se conecta a esta API a través de servidores espejo ubicados en Alemania, Países Bajos y Austria; Si un servidor es inaccesible, pasa automáticamente al siguiente.
 
+Para mantener el navegador receptivo y evitar acceder a la API en cada búsqueda o cambio de país, FreeRadio mantiene un caché local del catálogo de estaciones en el disco. Este caché se actualiza automáticamente en segundo plano según una programación periódica, por lo que la lista que ve normalmente ya está actualizada sin que usted tenga que realizar ninguna acción. También puedes forzar una resincronización inmediata en cualquier momento con el botón **Actualizar lista de estaciones** — consulta la sección [Navegador de Estaciones](#station-browser) más abajo.
+
 ## Añadir una estación a Radio Browser
 
 Si una estación que está buscando no aparece en el directorio de Radio Browser, puedes enviarlo tú mismo a [https://www.radio-browser.info/add](https://www.radio-browser.info/add). No es necesario tener cuenta ni registrarse.
@@ -67,11 +69,13 @@ Cuando se abre la pestaña Todas las estaciones, las 1000 estaciones más votada
 
 La lista desplegable **Dispositivo de salida** en la parte inferior de la ventana del navegador (fuera de las pestañas) enumera todos los dispositivos de salida de audio reconocidos por BASS. Al seleccionar un dispositivo, se redirige inmediatamente la salida de audio a él y se guarda la elección de forma permanente; el mismo dispositivo se utiliza automáticamente en la siguiente sesión. Si el dispositivo seleccionado no está conectado, el complemento vuelve automáticamente al valor predeterminado del sistema. Este control solo funciona cuando el BASS backend está activo.
 
-Los controles de **Volumen** (0–200) y **Efectos** en la misma área se puede ajustar en cualquier momento cuando la ventana está abierta. Desde la lista de Efectos, Coro, Compresión, Distorsión, Eco, Flanger, Gargle, Reverberación, EQ: Bass Boost, EQ: Treble Boost y EQ: Vocal Boost se puede activar simultáneamente; Los cambios se aplican instantáneamente al flujo activo. Estos controles solo son completamente funcionales cuando el BASS backend está activo.
+Los controles de **Volumen** (0–200) y **Efectos** en la misma área se puede ajustar en cualquier momento cuando la ventana está abierta. Desde la lista de Efectos, Coro, Compresión, Distorsión, Eco, Flanger, Gargle, Reverberación, EQ: Bass Boost, EQ: Treble Boost y EQ: Vocal Boost se puede activar simultáneamente; Los cambios se aplican instantáneamente al flujo activo. Cada efecto también se puede alternar instantáneamente con `Ctrl+1` hasta `Ctrl+0` sin salir del teclado — consulta la sección [Atajos del Efecto](#effect-shortcuts). Estos controles solo son completamente funcionales cuando el BASS backend está activo.
 
 Cuando uno o más efectos de EQ están habilitados, aparece un **control de ganancia** para cada banda activa. La ganancia se puede configurar entre −15 dB y +15 dB; los valores predeterminados son Bass +9 dB, Treble +9 dB, y Vocal +6 dB. Los controles de ganancia se muestran solo para las bandas de EQ que están marcadas actualmente y se ocultan automáticamente cuando un efecto de EQ no está marcado. Los valores de ganancia se guardan globalmente y se restauran en la siguiente sesión.
 
 El botón **Reproducir/Pausar** También se encuentra en la parte inferior de la ventana. Si no se reproduce ninguna estación, se inicia la estación seleccionada; si ya se está reproduciendo una emisora, la reproducción se interrumpe.
+
+El botón **Actualizar lista de estaciones** vuelve a sincronizar el catálogo de estaciones locales desde la API Radio Browser inmediatamente, en lugar de esperar la actualización periódica en segundo plano. Mientras se ejecuta la actualización, el botón está desactivado y NVDA anuncia que hay una actualización en curso; Si lo pulsas nuevamente antes de que finalice la actualización actual, NVDA te informará que ya hay una en marcha. Una vez que se completa la actualización, NVDA anuncia que la lista de estaciones se ha actualizado y los resultados de búsqueda o la lista de países mostrados actualmente se actualizan automáticamente para reflejar los nuevos datos.
 
 Cuando se selecciona una estación en la lista, el botón **Detalles de la estación** muestra información como el país, el idioma, el género, el formato, el bitrate, el sitio web y el flujo URL en un cuadro de diálogo separado. Cada campo aparece en su propio cuadro de texto de solo lectura; puedes moverte entre los campos con Tab y copia toda la información al portapapeles de una vez con el botón **Copiar todo al portapapeles**. Este botón está disponible en las pestañas Todas las estaciones y Favoritos.
 
@@ -111,6 +115,23 @@ Las siguientes teclas solo funcionan cuando la ventana del Navegador de Estacion
 |---|---|---|
 | `Ctrl+↑` | Aumentar el volumen | Aumenta el volumen de 5. Funciona sólo cuando la ventana del navegador está abierta. |
 | `Ctrl+↓` | Disminuir el volumen | Disminuye el volumen de 5. Funciona sólo cuando la ventana del navegador está abierta. |
+
+### Atajos del Efecto
+
+| Atajo | Función | Descripción |
+|---|---|---|
+| `Ctrl+1` | Alternar Coro | Activa o desactiva el efecto Coro y lo aplica al flujo activo al instante. |
+| `Ctrl+2` | Alternar Compresión | Activa o desactiva el efecto Compresión y lo aplica al flujo activo al instante. |
+| `Ctrl+3` | Alternar Distorsión | Activa o desactiva el efecto Distorsión y lo aplica al flujo activo al instante. |
+| `Ctrl+4` | Alternar Eco | Activa o desactiva el efecto Eco y lo aplica al flujo activo al instante. |
+| `Ctrl+5` | Alternar Flanger | Activa o desactiva el efecto Flanger y lo aplica al flujo activo al instante. |
+| `Ctrl+6` | Alternar Gargle | Activa o desactiva el efecto Gargle y lo aplica al flujo activo al instante. |
+| `Ctrl+7` | Alternar Reverberación | Activa o desactiva el efecto Reverberación y lo aplica al flujo activo al instante. |
+| `Ctrl+8` | Alternar EQ: Bass Boost | Activa o desactiva la banda EQ Bass Boost y lo aplica al flujo activo al instante. |
+| `Ctrl+9` | Alternar EQ: Treble Boost | Activa o desactiva la banda EQ Treble Boost y lo aplica al flujo activo al instante. |
+| `Ctrl+0` | Alternar EQ: Vocal Boost | Activa o desactiva la banda EQ Vocal Boost y lo aplica al flujo activo al instante. |
+
+Cada atajo refleja marcado o desmarcado en la entrada correspondiente en la lista **Efectos**: NVDA anuncia si el efecto fue habilitado o deshabilitado, el cambio se guarda automáticamente y el control de ganancia del EQ para esa banda (si corresponde) aparece o desaparece en consecuencia. Solo disponible cuando el BASS backend está activo.
 
 ### Atajos de la Tecla Alt
 

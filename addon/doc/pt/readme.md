@@ -8,6 +8,8 @@ FreeRadio utiliza a base de dados aberta [Radio Browser](https://www.radio-brows
 
 Cada estação inclui endereço, país, género, idioma e bitrate; as estações são classificadas por votos dos utilizadores. O FreeRadio liga-se à API através de servidores espelho localizados na Alemanha, Países Baixos e Áustria; se um servidor estiver inacessível, muda automaticamente para o seguinte.
 
+Para manter o navegador rápido e evitar sobrecarregar a API a cada pesquisa ou mudança de país, o FreeRadio mantém uma cache local do catálogo de estações em disco. Esta cache é atualizada automaticamente em segundo plano de forma periódica, pelo que a lista apresentada está normalmente já atualizada sem qualquer ação da sua parte. Também pode forçar uma nova sincronização imediata a qualquer momento com o botão **Atualizar Lista de Estações** — consulte Navegador de Estações abaixo.
+
 ## Adicionar uma Estação ao Radio Browser
 
 Se a estação que procura não estiver no diretório Radio Browser, pode submetê-la em [https://www.radio-browser.info/add](https://www.radio-browser.info/add). Não é necessária conta nem registo.
@@ -69,11 +71,13 @@ Quando o separador Todas as Estações abre, as 1.000 estações mais votadas s�
 
 A lista pendente **Dispositivo de saída** na parte inferior da janela do navegador — fora dos separadores — lista todos os dispositivos de saída de áudio reconhecidos pelo BASS. Selecionar um dispositivo redireciona imediatamente o áudio para ele e guarda a escolha permanentemente; o mesmo dispositivo é utilizado automaticamente na próxima sessão. Se o dispositivo selecionado não estiver ligado, o complemento reverte automaticamente para a predefinição do sistema. Este controlo só é funcional quando o backend BASS está ativo.
 
-Os controlos **Volume** (0–200) e **Efeitos** na mesma área podem ser ajustados em qualquer altura com a janela aberta. Na lista de Efeitos, é possível ativar simultaneamente Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost e EQ: Vocal Boost; as alterações são aplicadas à transmissão ativa instantaneamente. Estes controlos só são totalmente funcionais quando o backend BASS está ativo.
+Os controlos **Volume** (0–200) e **Efeitos** na mesma área podem ser ajustados em qualquer altura com a janela aberta. Na lista de Efeitos, é possível ativar simultaneamente Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost e EQ: Vocal Boost; as alterações são aplicadas à transmissão ativa instantaneamente. Cada efeito também pode ser ativado ou desativado instantaneamente com `Ctrl+1` a `Ctrl+0`, sem largar o teclado — consulte Atalhos de Efeitos abaixo. Estes controlos só são totalmente funcionais quando o backend BASS está ativo.
 
 Quando um ou mais efeitos EQ estão ativos, surge automaticamente um **controlo de ganho** para cada banda ativa. O ganho pode ser ajustado entre −15 dB e +15 dB; os valores predefinidos são Graves +9 dB, Agudos +9 dB e Vocal +6 dB. Os controlos só aparecem para as bandas EQ selecionadas e ocultam-se automaticamente quando o efeito é desmarcado. Os valores são guardados permanentemente e restaurados na sessão seguinte.
 
 O botão **Reproduzir/Pausar** encontra-se também na parte inferior da janela. Se nenhuma estação estiver a reproduzir, inicia a estação selecionada; se uma estação já estiver em reprodução, pausa a reprodução.
+
+O botão **Atualizar Lista de Estações** sincroniza imediatamente o catálogo local de estações com a API do Radio Browser, em vez de esperar pela atualização periódica em segundo plano. Enquanto a atualização decorre, o botão fica desativado e o NVDA anuncia que está a decorrer uma atualização; se voltar a premi-lo antes de a atualização atual terminar, o NVDA informa que já está uma em curso. Assim que a atualização termina, o NVDA anuncia que a lista de estações foi atualizada e os resultados de pesquisa ou a listagem de país atualmente apresentados são atualizados automaticamente para refletir os novos dados.
 
 Quando uma estação está selecionada na lista, o botão **Detalhes da Estação** apresenta informações como país, idioma, género, formato, bitrate, website e URL da transmissão numa caixa de diálogo separada. Cada campo aparece na sua própria caixa de texto só de leitura; pode mover-se entre campos com Tab e copiar todas as informações para a área de transferência de uma só vez com o botão **Copiar tudo para a área de transferência**. Este botão está disponível nos separadores Todas as Estações e Favoritos.
 
@@ -113,6 +117,23 @@ As teclas seguintes funcionam apenas quando a janela do Navegador de Estações 
 |---|---|---|
 | `Ctrl+↑` | Aumentar volume | Aumenta o volume em 10. Só funciona com a janela do navegador aberta. |
 | `Ctrl+↓` | Diminuir volume | Diminui o volume em 10. Só funciona com a janela do navegador aberta. |
+
+### Atalhos de Efeitos
+
+| Atalho | Função | Descrição |
+|---|---|---|
+| `Ctrl+1` | Alternar Chorus | Ativa ou desativa o efeito Chorus e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+2` | Alternar Compressor | Ativa ou desativa o efeito Compressor e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+3` | Alternar Distortion | Ativa ou desativa o efeito Distortion e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+4` | Alternar Echo | Ativa ou desativa o efeito Echo e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+5` | Alternar Flanger | Ativa ou desativa o efeito Flanger e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+6` | Alternar Gargle | Ativa ou desativa o efeito Gargle e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+7` | Alternar Reverb | Ativa ou desativa o efeito Reverb e aplica-o instantaneamente à transmissão ativa. |
+| `Ctrl+8` | Alternar EQ: Bass Boost | Ativa ou desativa a banda EQ: Bass Boost e aplica-a instantaneamente à transmissão ativa. |
+| `Ctrl+9` | Alternar EQ: Treble Boost | Ativa ou desativa a banda EQ: Treble Boost e aplica-a instantaneamente à transmissão ativa. |
+| `Ctrl+0` | Alternar EQ: Vocal Boost | Ativa ou desativa a banda EQ: Vocal Boost e aplica-a instantaneamente à transmissão ativa. |
+
+Cada atalho reflete marcar ou desmarcar o item correspondente na lista **Efeitos**: o NVDA anuncia se o efeito foi ativado ou desativado, a alteração é guardada automaticamente e o controlo de ganho dessa banda (se aplicável) aparece ou desaparece em conformidade. Disponível apenas quando o backend BASS está ativo.
 
 ### Atalhos da Tecla Alt
 

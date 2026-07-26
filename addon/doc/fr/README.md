@@ -6,6 +6,8 @@ FreeRadio est une extension de radio Internet pour le lecteur d'écran NVDA. Son
 
 FreeRadio utilise la base de données ouverte de [Radio Browser](https://www.radio-browser.info/) pour son catalogue de stations. Radio Browser est un annuaire gratuit et géré par la communauté hébergeant plus de 50 000 stations de radio Internet du monde entier. Aucune inscription ni compte n'est requis et son API est ouverte à tous. Chaque station comprend des informations sur l'adresse, le pays, le genre, la langue et le bitrate ; les stations sont classées par votes des utilisateurs. FreeRadio se connecte à cette API via des serveurs miroir situés en Allemagne, aux Pays-Bas et en Autriche ; si un serveur est inaccessible, il passe automatiquement au suivant.
 
+Pour que le navigateur reste réactif et évite d'utiliser l'API à chaque recherche ou changement de pays, FreeRadio conserve un cache local du catalogue des stations sur le disque. Ce cache est actualisé automatiquement en arrière-plan selon une planification périodique, de sorte que la liste que vous voyez est normalement déjà à jour sans aucune action de votre part. Vous pouvez également forcer une resynchronisation immédiate à tout moment avec le bouton **Mettre à jour la liste des stations** — consultez la section [Navigateur de Stations](#station-browser) ci-dessous.
+
 ## Ajout d'une station à Radio Browser
 
 Si une station que vous recherchez ne figure pas dans l'annuaire de Radio Browser, vous pouvez la soumettre vous-même à [https://www.radio-browser.info/add](https://www.radio-browser.info/add). Aucun compte ou inscription n'est nécessaire.
@@ -67,11 +69,13 @@ Lorsque l'onglet Toutes les stations s'ouvre, le top 1 000 des stations les plus
 
 La liste déroulante **Périphérique de sortie** en bas de la fenêtre du navigateur (en dehors des onglets) répertorie tous les périphériques de sortie audio reconnus par BASS. La sélection d'un périphérique redirige immédiatement la sortie audio vers celui-ci et enregistre le choix de manière permanente ; le même périphérique est utilisé automatiquement lors de la session suivante. Si le périphérique sélectionné n'est pas connecté, l'extension revient automatiquement au valeur système par défaut. Ce contrôle n'est fonctionnel que lorsque le BASS backend est actif.
 
-Les contrôles de **Volume** (0–200) et **Effets** dans la même zone peut être ajusté à tout moment lorsque la fenêtre est ouverte. Depuis la liste des Effets, Chœur, Compression, Distorsion, Echo, Flanger, Gargle, Réverbération, EQ: Bass Boost, EQ: Treble Boost et EQ: Vocal Boost peut être activé simultanément ; les modifications sont appliquées instantanément au flux actif. Ces contrôles ne sont pleinement fonctionnelles que lorsque le BASS backend est actif.
+Les contrôles de **Volume** (0–200) et **Effets** dans la même zone peut être ajusté à tout moment lorsque la fenêtre est ouverte. Depuis la liste des Effets, Chœur, Compression, Distorsion, Echo, Flanger, Gargle, Réverbération, EQ: Bass Boost, EQ: Treble Boost et EQ: Vocal Boost peut être activé simultanément ; les modifications sont appliquées instantanément au flux actif. Chaque effet peut également être activé instantanément avec `Ctrl+1` jusqu'à `Ctrl+0` sans quitter le clavier — consultez la section [Raccourcis de l'Effet](#effect-shortcuts). Ces contrôles ne sont pleinement fonctionnelles que lorsque le BASS backend est actif.
 
 Lorsqu'un ou plusieurs effets EQ sont activés, un **contrôle de gain** apparaît pour chaque bande active. Le gain peut être réglé entre −15 dB et +15 dB; les valeurs par défaut sont Bass +9 dB, Treble +9 dB, et Vocal +6 dB. Les contrôles de gain sont affichées uniquement pour les bandes EQ  actuellement cochées et sont automatiquement masquées lorsqu'un effet EQ  n'est pas coché. Les valeurs de gain sont enregistrées globalement et restaurées lors de la prochaine session.
 
 Le bouton **Lecture/Pause** est également situé en bas de la fenêtre. Si aucune station n'est en cours de lecture, la station sélectionnée démarre ; si une station est déjà en cours de lecture, la lecture est interrompue.
+
+Le bouton **Mettre à jour la liste des stations** resynchronise immédiatement le catalogue des stations locales à partir de l'API Radio Browser, au lieu d'attendre l'actualisation périodique en arrière-plan. Pendant que l'actualisation est en cours, le bouton est désactivé et NVDA annonce qu'une actualisation est en cours ; si vous appuyez à nouveau dessus avant la fin de l'actualisation en cours, NVDA vous informe qu'une actualisation est déjà en cours. Une fois l'actualisation terminée, NVDA annonce que la liste des stations a été mise à jour et que les résultats de recherche ou la liste des pays actuellement affichés sont automatiquement actualisés pour refléter les nouvelles données.
 
 Lorsqu'une station est sélectionnée dans la liste, le bouton **Détails de la Station** affiche des informations telles que le pays, la langue, le genre, le format, le bitrate, le site web et le flux URL dans une boîte de dialogue séparée. Chaque champ apparaît dans sa propre zone de texte en lecture seule ; vous pouvez vous déplacer entre les champs avec Tab et copier toutes les informations dans le presse-papiers en même temps avec le bouton **Copier tout dans le presse-papier**. Ce bouton est disponible dans les onglets Toutes les stations et Favoris.
 
@@ -111,6 +115,23 @@ Les touches suivantes fonctionnent uniquement lorsque la fenêtre Navigateur de 
 |---|---|---|
 | `Ctrl+↑` | Augmenter le volume | Augmente le volume de 5. Fonctionne uniquement lorsque la fenêtre du navigateur est ouverte. |
 | `Ctrl+↓` | Diminuer le volume | Diminue le volume de 5. Fonctionne uniquement lorsque la fenêtre du navigateur est ouverte. |
+
+### Raccourcis de l'Effet
+
+| Raccourci | Fonction | Description |
+|---|---|---|
+| `Ctrl+1` | Activer/désactiver Chœur | Active ou désactive l'effet Chœur et l'applique instantanément au flux actif. |
+| `Ctrl+2` | Activer/désactiver Compression | Active ou désactive l'effet Compression et l'applique instantanément au flux actif. |
+| `Ctrl+3` | Activer/désactiver Distorsion | Active ou désactive l'effet Distorsion et l'applique instantanément au flux actif. |
+| `Ctrl+4` | Activer/désactiver Echo | Active ou désactive l'effet Echo et l'applique instantanément au flux actif. |
+| `Ctrl+5` | Activer/désactiver Flanger | Active ou désactive l'effet Flanger et l'applique instantanément au flux actif. |
+| `Ctrl+6` | Activer/désactiver Gargle | Active ou désactive l'effet Gargle et l'applique instantanément au flux actif. |
+| `Ctrl+7` | Activer/désactiver Réverbération | Active ou désactive l'effet Réverbération et l'applique instantanément au flux actif. |
+| `Ctrl+8` | Activer/désactiver EQ: Bass Boost | Active ou désactive la bande EQ Bass Boost et l'applique instantanément au flux actif. |
+| `Ctrl+9` | Activer/désactiver EQ: Treble Boost | Active ou désactive la bande EQ Treble Boost et l'applique instantanément au flux actif. |
+| `Ctrl+0` | Activer/désactiver EQ: Vocal Boost | Active ou désactive la bande EQ Vocal Boost et l'applique instantanément au flux actif. |
+
+Chaque raccourci reflète cocher ou décocher dans l'entrée correspondante dans la liste **Effets**: NVDA annonce si l'effet a été activé ou désactivé, la modification est enregistrée automatiquement et le contrôle de gain de l'EQ pour cette bande (le cas échéant) apparaît ou disparaît en conséquence. Uniquement disponible lorsque le BASS backend est actif.
 
 ### Raccourcis de la Touche Alt
 

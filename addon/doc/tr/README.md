@@ -6,6 +6,8 @@ FreeRadio, ekran okuyucu NVDA için geliştirilmiş bir internet radyo eklentisi
 
 FreeRadio, istasyon kataloğu için [Radio Browser](https://www.radio-browser.info/) açık veritabanını kullanır. Radio Browser; dünya genelinde 50.000'i aşkın internet radyo istasyonunu barındıran, topluluk tarafından yönetilen ücretsiz bir dizindir. Kayıt veya hesap gerektirmez ve API'si herkese açıktır. Her istasyon için adres, ülke, tür, dil ve bit hızı bilgileri mevcuttur; istasyonlar kullanıcı oylarıyla sıralanır. FreeRadio bu API'ye Almanya, Hollanda ve Avusturya'da bulunan yansı sunucuları üzerinden bağlanır; bir sunucuya ulaşılamazsa otomatik olarak bir sonrakine geçer.
 
+Tarayıcının hızlı kalması ve her arama veya ülke değişiminde API'ye yük bindirilmemesi için FreeRadio, istasyon kataloğunun yerel bir önbelleğini diskte tutar. Bu önbellek arka planda belirli aralıklarla otomatik olarak yenilenir; bu sayede gördüğünüz liste sizin herhangi bir işlem yapmanıza gerek kalmadan genellikle zaten güncel olur. Ayrıca istediğiniz an **İstasyon Listesini Güncelle** düğmesiyle anında yeniden eşitleme başlatabilirsiniz — aşağıdaki İstasyon Tarayıcısı bölümüne bakın.
+
 ## Radio Browser'a İstasyon Ekleme
 
 Aradığınız istasyon Radio Browser dizininde yoksa [https://www.radio-browser.info/add](https://www.radio-browser.info/add) adresinden kendiniz ekleyebilirsiniz. Hesap veya kayıt gerekmez.
@@ -53,7 +55,7 @@ NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden ye
 | `Ctrl+Win+K` | Zaman kaydırma ileri sarma | Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve yeniden geri sarılana kadar bu komut işlevsiz kalır. |
 | `Ctrl+Win+T` | Zaman kaydırma tamponunu aç/kapat | Zaman kaydırma tamponunu anında etkinleştirir veya devre dışı bırakır; Ayarlar'daki onay kutusunu yansıtır. Devre dışı bırakıldığında zaman kaydırma modundaysa hemen canlıya döner ve arka plan yakalamayı durdurur. |
 | *(atanmamış)* | Bildirimleri sessize al / aç | Bildirim sessize alma ayarını anlık olarak değiştirir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
-| *(atanmamış)* | Favori istasyonu doğrudan çal | Favoriler listenizdeki her istasyon, NVDA Menüsü → Tercihler → Girdi Hareketleri → **FreeRadio Stations** kategorisinde ayrı bir girdi olarak görünür. Bir istasyona klavye kısayolu atayarak tarayıcıyı açmadan her yerden doğrudan çalmaya başlayabilirsiniz. |
+| *(atanmamış)* | Favori istasyonu doğrudan çal | Favoriler listenizdeki her istasyon, NVDA Menüsü → Tercihler → Girdi Hareketleri → **FreeRadio İstasyonları** kategorisinde ayrı bir girdi olarak görünür. Bir istasyona klavye kısayolu atayarak tarayıcıyı açmadan her yerden doğrudan çalmaya başlayabilirsiniz. |
 
 Sonraki / önceki kısayollar yalnızca favoriler listesinde dolaşır; tüm istasyonlar listesinde çalışmaz. Tarayıcı penceresinde listeler odaklanmışken sol ve sağ ok tuşları da aynı işlevi görür: bkz. Diyalog İçi Kısayollar.
 
@@ -67,11 +69,13 @@ Tüm İstasyonlar sekmesi açıldığında Radio Browser'dan en çok oylanan 100
 
 Tarayıcı penceresinin alt kısmında sekmelerin dışında yer alan **Çıkış Cihazı** açılır listesi, o an BASS tarafından tanınan ses çıkış aygıtlarını listeler. Listeden bir aygıt seçildiğinde ses çıkışı anında o aygıta yönlendirilir ve seçim kalıcı olarak kaydedilir; bir sonraki oturumda aynı aygıt otomatik olarak kullanılır. Seçili aygıt sisteme bağlı değilse otomatik olarak sistem varsayılanına dönülür. Bu denetim yalnızca BASS arka ucu aktifken işlev görür.
 
-Aynı bölümde yer alan **Ses Seviyesi** (0–200) ve **Efektler** denetim çubuğu, pencere açıkken anlık olarak ayarlanabilir. Efektler listesinden Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ile EQ: Bass Boost, EQ: Treble Boost ve EQ: Vocal Boost seçenekleri aynı anda birden fazla seçilerek etkinleştirilebilir; değişiklikler çalan akışa anında uygulanır. Bu denetimler yalnızca BASS arka ucu aktifken tam işlev görür.
+Aynı bölümde yer alan **Ses Seviyesi** (0–200) ve **Efektler** denetim çubuğu, pencere açıkken anlık olarak ayarlanabilir. Efektler listesinden Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ile EQ: Bass Boost, EQ: Treble Boost ve EQ: Vocal Boost seçenekleri aynı anda birden fazla seçilerek etkinleştirilebilir; değişiklikler çalan akışa anında uygulanır. Her efekt, klavyeden elinizi kaldırmadan `Ctrl+1` ile `Ctrl+0` arasındaki kısayollarla da anında açılıp kapatılabilir — aşağıdaki Efekt Kısayolları bölümüne bakın. Bu denetimler yalnızca BASS arka ucu aktifken tam işlev görür.
 
 EQ efektlerinden biri veya birkaçı etkinleştirildiğinde, her aktif band için bir **kazanç denetimi** otomatik olarak görünür. Kazanç −15 dB ile +15 dB arasında ayarlanabilir; varsayılan değerler Bas +9 dB, Tiz +9 dB ve Vokal +6 dB'dir. Kazanç denetimleri yalnızca işaretli EQ bandları için gösterilir, efekt kapatıldığında otomatik olarak gizlenir. Değerler kalıcı olarak kaydedilir ve bir sonraki oturumda geri yüklenir.
 
 Pencerenin alt kısmında ayrıca **Çal/Duraklat** düğmesi bulunur. Herhangi bir istasyon çalmıyorsa seçili istasyonu başlatır; bir istasyon çalıyorsa oynatmayı duraklatır.
+
+**İstasyon Listesini Güncelle** düğmesi, periyodik arka plan güncellemesini beklemek yerine yerel istasyon kataloğunu Radio Browser API'siyle anında yeniden eşitler. Güncelleme sürerken düğme devre dışı kalır ve NVDA bir güncellemenin sürmekte olduğunu bildirir; mevcut güncelleme tamamlanmadan düğmeye tekrar basarsanız NVDA zaten bir güncellemenin sürmekte olduğunu söyler. Güncelleme tamamlandığında NVDA istasyon listesinin güncellendiğini bildirir ve o an ekranda gösterilen arama sonuçları veya ülke listesi, yeni verileri yansıtacak şekilde otomatik olarak yenilenir.
 
 Listede bir istasyon seçiliyken **İstasyon Detayları** düğmesi, o istasyona ait ülke, dil, tür, format, bit hızı, web sitesi ve akış adresi gibi bilgileri ayrı bir iletişim kutusunda gösterir. İletişim kutusunda her alan ayrı bir salt-okunur metin kutusunda yer alır; Tab tuşuyla alanlar arasında gezinilebilir. **Tümünü panoya kopyala** düğmesiyle tüm bilgiler tek seferde panoya alınabilir. Bu düğme hem Tüm İstasyonlar hem de Favoriler sekmesinde bulunur.
 
@@ -111,6 +115,23 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 |---|---|---|
 | `Ctrl+↑` | Ses artır | Ses seviyesini 5 birim artırır. Yalnızca tarayıcı penceresi açıkken çalışır. |
 | `Ctrl+↓` | Ses azalt | Ses seviyesini 5 birim düşürür. Yalnızca tarayıcı penceresi açıkken çalışır. |
+
+### Efekt Kısayolları
+
+| Kısayol | İşlev | Açıklama |
+|---|---|---|
+| `Ctrl+1` | Chorus'u aç/kapat | Chorus efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+2` | Compressor'ı aç/kapat | Compressor efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+3` | Distortion'ı aç/kapat | Distortion efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+4` | Echo'yu aç/kapat | Echo efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+5` | Flanger'ı aç/kapat | Flanger efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+6` | Gargle'ı aç/kapat | Gargle efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+7` | Reverb'i aç/kapat | Reverb efektini açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+8` | EQ: Bass Boost'u aç/kapat | EQ: Bass Boost bandını açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+9` | EQ: Treble Boost'u aç/kapat | EQ: Treble Boost bandını açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+0` | EQ: Vocal Boost'u aç/kapat | EQ: Vocal Boost bandını açar veya kapatır ve çalan akışa anında uygular. |
+
+Her kısayol, **Efektler** listesindeki ilgili öğeyi işaretlemek veya işaretini kaldırmakla aynı etkiyi yaratır: NVDA efektin açıldığını veya kapandığını bildirir, değişiklik otomatik olarak kaydedilir ve ilgili bandın kazanç denetimi (varsa) buna göre görünür veya gizlenir. Yalnızca BASS arka ucu aktifken kullanılabilir.
 
 ### Alt Kısayolları
 

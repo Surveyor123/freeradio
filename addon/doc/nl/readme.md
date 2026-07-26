@@ -6,6 +6,8 @@ FreeRadio is een internetradio-add-on voor de NVDA-schermlezer. Het primaire doe
 
 FreeRadio gebruikt de open database van [Radio Browser](https://www.radio-browser.info/) voor zijn stationcatalogus. Radio Browser is een door de gemeenschap beheerde, gratis directory die meer dan 50.000 internetradiostations van over de hele wereld host. Er is geen registratie of account vereist en de API is voor iedereen open. Elk station bevat informatie over adres, land, genre, taal en bitrate; stations worden gerangschikt op basis van stemmen van gebruikers. FreeRadio maakt verbinding met deze API via mirror-servers in Duitsland, Nederland en Oostenrijk; als een server onbereikbaar is, schakelt hij automatisch over naar de volgende.
 
+Om de verkenner responsief te houden en niet bij elke zoekopdracht of landwijziging de API te belasten, houdt FreeRadio een lokale cache van de stationcatalogus op schijf bij. Deze cache wordt automatisch op de achtergrond ververst op een periodiek schema, zodat de lijst die je ziet meestal al up-to-date is zonder dat je iets hoeft te doen. Je kunt op elk moment ook zelf een directe hersynchronisatie afdwingen met de knop **Stationslijst bijwerken** — zie Stationsverkenner hieronder.
+
 ## Een station toevoegen aan Radio Browser
 
 Als een station dat je zoekt niet in de Radio Browser-directory staat, kun je het zelf aanmelden op [https://www.radio-browser.info/add](https://www.radio-browser.info/add). Er is geen account of registratie nodig.
@@ -67,11 +69,13 @@ Wanneer het tabblad Alle stations opent, worden de 1.000 meest gestemde stations
 
 De **Uitvoerapparaat** vervolgkeuzelijst onderaan de stationsverkenner — buiten de tabbladen — bevat alle door BASS herkende audio-uitvoerapparaten. Het selecteren van een apparaat leidt de audio-uitvoer direct daarnaartoe en slaat de keuze permanent op; hetzelfde apparaat wordt automatisch in de volgende sessie gebruikt. Als het geselecteerde apparaat niet is verbonden, valt de add-on automatisch terug op de systeemstandaard. Deze besturing werkt alleen wanneer de BASS-backend actief is.
 
-De **Volume** (0–200) en **Effecten** besturingen in hetzelfde gebied kunnen op elk moment worden aangepast terwijl het venster geopend is. Uit de Effecten-lijst kunnen Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost en EQ: Vocal Boost tegelijkertijd worden ingeschakeld; wijzigingen worden direct toegepast op de actieve stream. Deze besturingen werken alleen volledig wanneer de BASS-backend actief is.
+De **Volume** (0–200) en **Effecten** besturingen in hetzelfde gebied kunnen op elk moment worden aangepast terwijl het venster geopend is. Uit de Effecten-lijst kunnen Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost en EQ: Vocal Boost tegelijkertijd worden ingeschakeld; wijzigingen worden direct toegepast op de actieve stream. Elk effect kan ook direct worden in- of uitgeschakeld met `Ctrl+1` tot en met `Ctrl+0`, zonder het toetsenbord te verlaten — zie Effectsneltoetsen hieronder. Deze besturingen werken alleen volledig wanneer de BASS-backend actief is.
 
 Wanneer een of meer EQ-effecten zijn ingeschakeld, verschijnt een **gain-regeling** voor elke actieve band. De gain kan worden ingesteld tussen -15 dB en +15 dB; de standaardwaarden zijn Bass +9 dB, Treble +9 dB en Vocal +6 dB. De gain-regelingen worden alleen getoond voor de EQ-banden die momenteel zijn aangevinkt, en worden automatisch verborgen wanneer een EQ-effect wordt uitgeschakeld. Gain-waarden worden globaal opgeslagen en hersteld in de volgende sessie.
 
 De **Afspelen/Pauze**-knop bevindt zich ook onderaan het venster. Als er geen station speelt, wordt het geselecteerde station gestart; als er al een station speelt, wordt het afspelen gepauzeerd.
+
+De knop **Stationslijst bijwerken** synchroniseert de lokale stationcatalogus onmiddellijk opnieuw met de Radio Browser-API, in plaats van te wachten op de periodieke achtergrondverversing. Terwijl de verversing bezig is, is de knop uitgeschakeld en meldt NVDA dat er een verversing bezig is; als je nogmaals drukt voordat de huidige verversing klaar is, laat NVDA weten dat er al een bezig is. Zodra de verversing is voltooid, meldt NVDA dat de stationslijst is bijgewerkt en worden de op dat moment getoonde zoekresultaten of landweergave automatisch ververst om de nieuwe gegevens te tonen.
 
 Wanneer een station in de lijst is geselecteerd, toont de **Stationsinformatie**-knop informatie zoals land, taal, genre, formaat, bitrate, website en stream-URL in een apart dialoogvenster. Elk veld verschijnt in zijn eigen alleen-lezen tekstvak; je kunt tussen velden bewegen met Tab en alle informatie in één keer naar het klembord kopiëren met de **Alles naar klembord kopiëren**-knop. Deze knop is beschikbaar in zowel de tabbladen Alle stations als Favorieten.
 
@@ -111,6 +115,23 @@ De volgende toetsen werken alleen terwijl het Stationsverkenner-venster actief i
 |---|---|---|
 | `Ctrl+↑` | Volume omhoog | Verhoogt het volume met 5. Werkt alleen terwijl de stationsverkenner geopend is. |
 | `Ctrl+↓` | Volume omlaag | Verlaagt het volume met 5. Werkt alleen terwijl de stationsverkenner geopend is. |
+
+### Effectsneltoetsen
+
+| Sneltoets | Functie | Beschrijving |
+|---|---|---|
+| `Ctrl+1` | Chorus in-/uitschakelen | Schakelt het Chorus-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+2` | Compressor in-/uitschakelen | Schakelt het Compressor-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+3` | Distortion in-/uitschakelen | Schakelt het Distortion-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+4` | Echo in-/uitschakelen | Schakelt het Echo-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+5` | Flanger in-/uitschakelen | Schakelt het Flanger-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+6` | Gargle in-/uitschakelen | Schakelt het Gargle-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+7` | Reverb in-/uitschakelen | Schakelt het Reverb-effect in of uit en past het direct toe op de actieve stream. |
+| `Ctrl+8` | EQ: Bass Boost in-/uitschakelen | Schakelt de Bass Boost EQ-band in of uit en past deze direct toe op de actieve stream. |
+| `Ctrl+9` | EQ: Treble Boost in-/uitschakelen | Schakelt de Treble Boost EQ-band in of uit en past deze direct toe op de actieve stream. |
+| `Ctrl+0` | EQ: Vocal Boost in-/uitschakelen | Schakelt de Vocal Boost EQ-band in of uit en past deze direct toe op de actieve stream. |
+
+Elke sneltoets komt overeen met het aan- of uitvinken van het bijbehorende item in de **Effecten**-lijst: NVDA meldt of het effect is in- of uitgeschakeld, de wijziging wordt automatisch opgeslagen en de gain-regeling voor die band (indien van toepassing) verschijnt of verdwijnt dienovereenkomstig. Alleen beschikbaar wanneer de BASS-backend actief is.
 
 ### Alt-toets sneltoetsen
 

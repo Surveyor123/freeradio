@@ -6,6 +6,8 @@ FreeRadio to dodatek radia internetowego dla czytnika ekranu NVDA. Jego główny
 
 FreeRadio używa otwartej bazy [Radio Browser](https://www.radio-browser.info/) jako katalogu stacji. Radio Browser to bezpłatny katalog zarządzany przez społeczność, zawierający ponad 50 000 internetowych stacji radiowych z całego świata. Nie wymaga rejestracji ani konta, a jego API jest otwarte dla wszystkich. Każda stacja zawiera adres, kraj, gatunek, język i informacje o przepływności; stacje są sortowane również według głosów użytkowników. FreeRadio łączy się z API przez serwery lustrzane w Niemczech, Holandii i Austrii; jeśli jeden serwer jest niedostępny, automatycznie przełącza się na następny.
 
+Aby przeglądarka pozostawała responsywna i nie obciążała API przy każdym wyszukiwaniu lub zmianie kraju, FreeRadio przechowuje na dysku lokalną kopię (cache) katalogu stacji. Ta kopia jest automatycznie odświeżana w tle według okresowego harmonogramu, więc wyświetlana lista jest zwykle już aktualna bez żadnego działania z Twojej strony. W dowolnym momencie możesz też wymusić natychmiastową ponowną synchronizację przyciskiem **Aktualizuj listę stacji** — patrz Przeglądarka stacji poniżej.
+
 ## Dodawanie stacji do Radio Browser
 
 Jeśli szukanej stacji nie ma w katalogu Radio Browser, możesz dodać ją samodzielnie na stronie [https://www.radio-browser.info/add](https://www.radio-browser.info/add). Konto nie jest potrzebne.
@@ -67,11 +69,13 @@ Po otwarciu karty Wszystkie stacje automatycznie ładowanych jest 1000 najczęś
 
 Lista **Urządzenie wyjściowe** na dole okna przeglądarki, poza kartami, zawiera wszystkie urządzenia audio rozpoznane przez BASS. Wybranie urządzenia natychmiast przekierowuje na nie dźwięk i zapisuje wybór na stałe; to samo urządzenie będzie użyte automatycznie w następnej sesji. Jeśli wybrane urządzenie nie jest podłączone, dodatek sam wraca do domyślnego urządzenia systemowego. Ta kontrolka działa tylko wtedy, gdy aktywny jest backend BASS.
 
-Kontrolki **Głośność** (0-200) i **Efekty** w tym samym obszarze można zmieniać w dowolnej chwili, gdy okno jest otwarte. Z listy efektów można jednocześnie włączyć Chorus, Kompresor, Przesterowanie, Echo, Flanger, Gargle, Pogłos, EQ: wzmocnienie basu, EQ: wzmocnienie sopranów i EQ: wzmocnienie wokalu; zmiany są natychmiast stosowane do aktywnego strumienia. Te kontrolki działają w pełni tylko przy aktywnym backendzie BASS.
+Kontrolki **Głośność** (0-200) i **Efekty** w tym samym obszarze można zmieniać w dowolnej chwili, gdy okno jest otwarte. Z listy efektów można jednocześnie włączyć Chorus, Kompresor, Przesterowanie, Echo, Flanger, Gargle, Pogłos, EQ: wzmocnienie basu, EQ: wzmocnienie sopranów i EQ: wzmocnienie wokalu; zmiany są natychmiast stosowane do aktywnego strumienia. Każdy efekt można też natychmiast przełączyć skrótami od `Ctrl+1` do `Ctrl+0`, bez odrywania rąk od klawiatury — patrz Skróty efektów poniżej. Te kontrolki działają w pełni tylko przy aktywnym backendzie BASS.
 
 Gdy włączony jest co najmniej jeden efekt EQ, dla każdego aktywnego pasma pojawia się **kontrolka wzmocnienia**. Wzmocnienie można ustawić od -15 dB do +15 dB; wartości domyślne to bas +9 dB, soprany +9 dB i wokal +6 dB. Kontrolki są widoczne tylko dla aktualnie zaznaczonych pasm EQ i znikają automatycznie po odznaczeniu efektu. Wartości wzmocnienia są zapisywane globalnie i przywracane w następnej sesji.
 
 Przycisk **Odtwórz/Wstrzymaj** również znajduje się na dole okna. Jeśli nic nie gra, uruchamia zaznaczoną stację; jeśli stacja już gra, wstrzymuje odtwarzanie.
+
+Przycisk **Aktualizuj listę stacji** natychmiast synchronizuje ponownie lokalny katalog stacji z API Radio Browser, zamiast czekać na okresowe odświeżanie w tle. Podczas odświeżania przycisk jest nieaktywny, a NVDA ogłasza, że trwa odświeżanie; jeśli naciśniesz go ponownie przed zakończeniem bieżącego odświeżania, NVDA poinformuje, że jedno jest już w toku. Po zakończeniu odświeżania NVDA ogłasza, że lista stacji została zaktualizowana, a aktualnie wyświetlane wyniki wyszukiwania lub lista danego kraju są automatycznie odświeżane, aby odzwierciedlić nowe dane.
 
 Po zaznaczeniu stacji na liście przycisk **Szczegóły stacji** pokazuje informacje takie jak kraj, język, gatunek, format, przepływność, strona internetowa i adres URL strumienia w osobnym oknie. Każde pole znajduje się w osobnym, tylko do odczytu, polu tekstowym; można przechodzić między nimi Tabem i skopiować wszystkie informacje naraz przyciskiem **Kopiuj wszystko do schowka**. Ten przycisk jest dostępny na kartach Wszystkie stacje i Ulubione.
 
@@ -111,6 +115,23 @@ Poniższe klawisze działają tylko wtedy, gdy aktywne jest okno Przeglądarka s
 |---|---|---|
 | `Ctrl+Up` | Głośniej | Zwiększa głośność o 5. Działa tylko wtedy, gdy okno przeglądarki jest otwarte. |
 | `Ctrl+Down` | Ciszej | Zmniejsza głośność o 5. Działa tylko wtedy, gdy okno przeglądarki jest otwarte. |
+
+### Skróty efektów
+
+| Skrót | Funkcja | Opis |
+|---|---|---|
+| `Ctrl+1` | Przełącz Chorus | Włącza lub wyłącza efekt Chorus i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+2` | Przełącz Kompresor | Włącza lub wyłącza efekt Kompresor i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+3` | Przełącz Przesterowanie | Włącza lub wyłącza efekt Przesterowanie i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+4` | Przełącz Echo | Włącza lub wyłącza efekt Echo i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+5` | Przełącz Flanger | Włącza lub wyłącza efekt Flanger i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+6` | Przełącz Gargle | Włącza lub wyłącza efekt Gargle i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+7` | Przełącz Pogłos | Włącza lub wyłącza efekt Pogłos i natychmiast stosuje go do aktywnego strumienia. |
+| `Ctrl+8` | Przełącz EQ: wzmocnienie basu | Włącza lub wyłącza pasmo EQ: wzmocnienie basu i natychmiast stosuje je do aktywnego strumienia. |
+| `Ctrl+9` | Przełącz EQ: wzmocnienie sopranów | Włącza lub wyłącza pasmo EQ: wzmocnienie sopranów i natychmiast stosuje je do aktywnego strumienia. |
+| `Ctrl+0` | Przełącz EQ: wzmocnienie wokalu | Włącza lub wyłącza pasmo EQ: wzmocnienie wokalu i natychmiast stosuje je do aktywnego strumienia. |
+
+Każdy skrót odpowiada zaznaczeniu lub odznaczeniu odpowiedniej pozycji na liście **Efekty**: NVDA ogłasza, czy efekt został włączony czy wyłączony, zmiana jest zapisywana automatycznie, a kontrolka wzmocnienia dla danego pasma (jeśli dotyczy) pojawia się lub znika odpowiednio. Dostępne tylko przy aktywnym backendzie BASS.
 
 ### Skróty Alt
 

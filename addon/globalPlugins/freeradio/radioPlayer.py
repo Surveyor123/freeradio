@@ -1594,6 +1594,15 @@ class RadioPlayer:
                             mirror.resume()
                         except Exception:
                             pass
+                    # The time-shift capture connection was never touched by
+                    # pause() (it keeps recording the live edge the whole
+                    # time - see timeshift.py's design notes), so the buffer
+                    # itself is still valid for this station. Only _play_gen
+                    # advanced here (twice: once on pause(), once here) -
+                    # sync _timeshift_buffer_gen to match so rewind_timeshift()
+                    # doesn't mistake this still-good buffer for a stale one
+                    # left over from a station switch and refuse to rewind.
+                    self._timeshift_buffer_gen = my_gen
                     return
                 # Long pause — restart BASS
                 self._bass_engine.stop()
@@ -1640,6 +1649,13 @@ class RadioPlayer:
                 return
             if self._backend != self.BACKEND_BASS:
                 self._start_icy_thread(stream_url)
+            elif self._timeshift_buffer_gen is not None:
+                # Same reasoning as the short-pause path above: this is a
+                # reconnect of the SAME station after a long pause, not a
+                # station switch, so the capture buffer was never stopped or
+                # restarted and is still valid - only re-sync the generation
+                # counter so rewind_timeshift() doesn't treat it as stale.
+                self._timeshift_buffer_gen = gen
             if mirror_thread is not None:
                 mirror_thread.join(timeout=30.0)
 

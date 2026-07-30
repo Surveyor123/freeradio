@@ -60,6 +60,7 @@
 #     open/close syscalls per second can contribute to audio stutter on the
 #     live stream, since capture competes for system resources).
 
+import collections
 import logging
 import os
 import tempfile
@@ -105,6 +106,15 @@ class TimeShiftBuffer:
 		self._flac_probe_done = True   # False while probing early bytes for a native-FLAC header
 		self._flac_probe_buf  = b""
 		self._generation = 0         # bumped on every start(); stale threads self-terminate
+		# HLS only: exact captured-audio duration, derived from each
+		# segment's own #EXTINF value rather than wall-clock time (see
+		# buffered_seconds() for why wall-clock is unreliable for HLS).
+		self._hls_captured_seconds = 0.0
+		# HLS only: (byte_length, duration_seconds) for each segment
+		# currently in the buffer file, oldest first - lets trimming drop
+		# whole segments (never splitting one) and keep
+		# _hls_captured_seconds exact afterwards.
+		self._hls_segment_durations = collections.deque()
 
 	# -- Public API ---------------------------------------------------------
 
@@ -132,6 +142,8 @@ class TimeShiftBuffer:
 		self._reserved_prefix_len = 0
 		self._flac_probe_done = self._is_hls   # only plain HTTP/ICY streams can be native FLAC
 		self._flac_probe_buf  = b""
+		self._hls_captured_seconds = 0.0
+		self._hls_segment_durations = collections.deque()
 
 		try:
 			fd, path = tempfile.mkstemp(prefix="freeradio_timeshift_", suffix=".buf", dir=self._tmp_dir)
@@ -253,9 +265,26 @@ class TimeShiftBuffer:
 
 	def buffered_seconds(self):
 		"""Rough estimate of how much audio is currently available in the
-		buffer, i.e. how far back the user can rewind."""
+		buffer, i.e. how far back the user can rewind.
+
+		For HLS, this is the exact sum of each downloaded segment's own
+		#EXTINF duration (see _run_hls) rather than wall-clock time -
+		wall-clock time since start() does NOT track actual captured audio
+		for HLS: manifest polling, segment-fetch latency and bursty catch-up
+		downloads (grabbing several already-available segments at once)
+		all make real time elapsed diverge from real audio-seconds
+		captured, which previously made rewind/forward land at the wrong
+		point and made the "N seconds behind live" readout nonsensical
+		(sometimes even negative) - especially on HLS stations. Plain
+		HTTP/ICY streams don't have this problem (bytes arrive at roughly
+		the real playback rate over one continuous connection), so they
+		keep using elapsed wall-clock time as before.
+		"""
 		if not self._session_start:
 			return 0.0
+		if self._is_hls and self._hls_captured_seconds > 0:
+			return max(0.0, min(self._hls_captured_seconds,
+								  self.CAPACITY_SECONDS + self._TRIM_MARGIN_SECONDS))
 		elapsed = time.time() - self._session_start
 		return max(0.0, min(elapsed, self.CAPACITY_SECONDS + self._TRIM_MARGIN_SECONDS))
 
@@ -587,15 +616,25 @@ class TimeShiftBuffer:
 							current_map_url = _abs(m.group(1), base_url)
 						break
 
-				new_segments = []
+				new_segments = []   # list of (seg_url, duration_seconds)
+				pending_duration = 0.0
 				for line in lines:
 					line = line.strip()
+					if line.startswith("#EXTINF"):
+						m = _re.search(r'#EXTINF:\s*([\d.]+)', line)
+						if m:
+							try:
+								pending_duration = float(m.group(1))
+							except ValueError:
+								pending_duration = 0.0
+						continue
 					if line and not line.startswith("#"):
 						seg_url = _abs(line, base_url)
 						if seg_url not in seen_segments:
-							new_segments.append(seg_url)
+							new_segments.append((seg_url, pending_duration))
+						pending_duration = 0.0
 
-				for seg_url in new_segments:
+				for seg_url, seg_duration in new_segments:
 					if self._stop_event.is_set() or self._is_stale(my_gen):
 						return
 					seen_segments.add(seg_url)
@@ -631,6 +670,9 @@ class TimeShiftBuffer:
 					self._write_chunk(data, my_gen)
 					first_segment_written = True
 					chunk_count += 1
+					with self._file_lock:
+						self._hls_segment_durations.append((len(data), seg_duration))
+						self._hls_captured_seconds += seg_duration
 
 					now = time.time()
 					if now - last_trim_check >= self._TRIM_CHECK_INTERVAL:
@@ -673,11 +715,22 @@ class TimeShiftBuffer:
 
 	def _maybe_trim(self, my_gen):
 		"""Drop the oldest portion of the buffer file once it exceeds
-		CAPACITY_SECONDS + margin, estimated from the average byte rate
-		observed so far in this session."""
+		CAPACITY_SECONDS + margin.
+
+		Plain HTTP/ICY: estimated from the average byte rate observed so
+		far in this session (bytes arrive at roughly real time over one
+		continuous connection, so this stays reasonably accurate).
+
+		HLS: delegated to _maybe_trim_hls(), which drops whole segments
+		using their real #EXTINF durations instead - see that method and
+		buffered_seconds() for why an estimate isn't good enough for HLS.
+		"""
 		if self._is_stale(my_gen):
 			return
 		if not self._session_start:
+			return
+		if self._is_hls:
+			self._maybe_trim_hls(my_gen)
 			return
 		elapsed = time.time() - self._session_start
 		if elapsed <= self.CAPACITY_SECONDS + self._TRIM_MARGIN_SECONDS:
@@ -730,6 +783,79 @@ class TimeShiftBuffer:
 				self._file_handle = open(path, "ab", buffering=0)
 			except OSError as e:
 				log.info("FreeRadio TimeShift: trim failed: %s", e)
+				try:
+					self._file_handle = open(path, "ab", buffering=0)
+				except OSError:
+					self._file_handle = None
+
+	def _maybe_trim_hls(self, my_gen):
+		"""HLS version of _maybe_trim(): drops the oldest whole segments
+		(tracked in _hls_segment_durations) instead of an estimated byte
+		count.
+
+		Never splits a segment mid-way - besides keeping
+		_hls_captured_seconds exact, this also avoids a correctness risk
+		the old estimate-based trim had for HLS: cutting a fMP4 fragment or
+		MPEG-TS packet in half at an arbitrary byte offset could produce a
+		corrupt tail that fails to decode, whereas a segment boundary is
+		always a safe place to cut.
+		"""
+		if self._hls_captured_seconds <= self.CAPACITY_SECONDS + self._TRIM_MARGIN_SECONDS:
+			return
+		if not self._hls_segment_durations:
+			return
+
+		path = self._file_path
+		if not path:
+			return
+
+		with self._file_lock:
+			if self._is_stale(my_gen):
+				return
+			try:
+				if self._file_handle:
+					try:
+						self._file_handle.close()
+					except Exception:
+						pass
+					self._file_handle = None
+
+				target_drop_duration = self._hls_captured_seconds - self.CAPACITY_SECONDS
+				drop_bytes = 0
+				drop_duration = 0.0
+				# Always leave at least one segment in place so the buffer
+				# never goes fully empty mid-trim.
+				while (len(self._hls_segment_durations) > 1
+						and drop_duration < target_drop_duration):
+					seg_bytes, seg_dur = self._hls_segment_durations.popleft()
+					drop_bytes += seg_bytes
+					drop_duration += seg_dur
+
+				if drop_bytes <= 0:
+					self._file_handle = open(path, "ab", buffering=0)
+					return
+
+				size = os.path.getsize(path)
+				prefix_len = min(self._reserved_prefix_len, size)
+				drop_bytes = min(drop_bytes, max(0, size - prefix_len))
+				if drop_bytes <= 0:
+					self._file_handle = open(path, "ab", buffering=0)
+					return
+
+				with open(path, "rb") as f:
+					prefix = f.read(prefix_len) if prefix_len else b""
+					f.seek(prefix_len + drop_bytes)
+					remainder = f.read()
+				with open(path, "wb") as f:
+					if prefix:
+						f.write(prefix)
+					f.write(remainder)
+
+				self._hls_captured_seconds = max(0.0, self._hls_captured_seconds - drop_duration)
+				self._bytes_written = len(prefix) + len(remainder)
+				self._file_handle = open(path, "ab", buffering=0)
+			except OSError as e:
+				log.info("FreeRadio TimeShift: HLS trim failed: %s", e)
 				try:
 					self._file_handle = open(path, "ab", buffering=0)
 				except OSError:

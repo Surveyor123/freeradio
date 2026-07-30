@@ -19,12 +19,27 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.20.8",
+	addon_version="2026.20.9",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-- 10 sound effects (Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Enhancement, EQ: Treble Enhancement, EQ: Vocal Enhancement) can be turned on and off using the shortcuts Ctrl+1–Ctrl+0 in the main window. Effects are applied instantly and settings are saved.
+## What's New
+**Station context menu (All Stations & Favorites tabs)**
+Right-click a station (or press the Applications key / Shift+F10) to bring up a new context menu with quick actions:
+- Station Details
+- Add to Favorites / Delete Station
+- Rename Station (Favorites)
+- Save/Clear Audio Profile for the station (Favorites)
+- **Test URL** — checks whether the station's stream is currently reachable and announces the result
+**Add Custom Station dialog improvements**
+- **Test URL** button — checks the stream URL you've typed in before adding the station, so you know it works first
+- **Add to Radio-Browser directory…** button — opens the Radio-Browser submission page in your browser, so you can share a station you've found with the wider Radio-Browser community
+## Fixes
+**Music recognition and recording no longer get fooled by ads**
+On some stations, every new connection to the stream gets served a short ad before the real broadcast — even though the station is already playing normally for you. Previously, "Recognize song" and "Record" would each open a brand-new connection to check or capture the audio, so they'd sometimes end up identifying or recording the ad instead of the actual song. Both features now reuse the connection that's already listening to the station, so they capture whatever is actually playing.
+**More reliable background stream capture**
+The background capture used for rewind (and now also for the fix above) automatically reconnects after a brief network interruption instead of silently giving up for the rest of the session.
 """),
 	
 	# Author(s)

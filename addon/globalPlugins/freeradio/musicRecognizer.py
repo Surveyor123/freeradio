@@ -656,7 +656,15 @@ def _beep_loop():
             pass
 
 
-def recognize(stream_url, ffmpeg_path, _unused_api_key=""):
+def recognize(stream_url, ffmpeg_path, _unused_api_key="", local_file=None):
+    """local_file: path to a small standalone audio file already extracted
+    from FreeRadio's time-shift buffer (see timeshift.extract_recent_snippet).
+    When given, this is used instead of reconnecting to stream_url - some
+    stations serve a fresh ad to every brand-new connection, so opening a
+    second connection just to sample audio for recognition would capture
+    that ad instead of whatever is actually playing. stream_url is still
+    used for logging/fallback context even when local_file is provided.
+    """
     acquired = _semaphore.acquire(blocking=False)
     if not acquired:
         return RecognitionResult(
@@ -686,25 +694,36 @@ def recognize(stream_url, ffmpeg_path, _unused_api_key=""):
                 )),
             )
 
-        # 2. URL çözümle
-        # HLS playlists (.m3u8) are passed directly to ffmpeg, which handles
-        # segment concatenation natively. Resolving them to a single segment
-        # would yield only one ~6s chunk — not enough for recognition.
-        log.info("FreeRadio Recognizer: resolving %s", stream_url)
-        if stream_url.lower().endswith(".m3u8"):
-            log.info("FreeRadio Recognizer: HLS playlist detected, passing directly to ffmpeg")
+        # 2. Ses kaynağını belirle: zaten çalmakta olan yayının time-shift
+        # arabelleğinden alınmış yerel bir parça varsa onu kullan - bu,
+        # istasyona ikinci bir bağlantı açmadan "şu an neyin çaldığını"
+        # yakalamamızı sağlar. Arabellek yoksa (ör. özellik/istasyon
+        # desteklemiyorsa) eskisi gibi canlı URL'ye bağlanılır.
+        if local_file and os.path.isfile(local_file):
+            log.warning("FreeRadio Recognizer: using time-shift buffer snippet (%s), "
+                      "skipping a new connection to %s", local_file, stream_url)
+            source_for_ffmpeg = local_file
         else:
-            resolved = _resolve_to_audio_url(stream_url)
-            if resolved and resolved != stream_url:
-                log.info("FreeRadio Recognizer: resolved → %s", resolved)
-                stream_url = resolved
-            elif not resolved:
-                log.warning("FreeRadio Recognizer: could not resolve, trying original")
+            local_file = None
+            # HLS playlists (.m3u8) are passed directly to ffmpeg, which handles
+            # segment concatenation natively. Resolving them to a single segment
+            # would yield only one ~6s chunk — not enough for recognition.
+            log.warning("FreeRadio Recognizer: resolving %s", stream_url)
+            if stream_url.lower().endswith(".m3u8"):
+                log.info("FreeRadio Recognizer: HLS playlist detected, passing directly to ffmpeg")
+            else:
+                resolved = _resolve_to_audio_url(stream_url)
+                if resolved and resolved != stream_url:
+                    log.info("FreeRadio Recognizer: resolved → %s", resolved)
+                    stream_url = resolved
+                elif not resolved:
+                    log.warning("FreeRadio Recognizer: could not resolve, trying original")
+            source_for_ffmpeg = stream_url
 
         # 3. ffmpeg ile PCM al
         log.info("FreeRadio Recognizer: decoding %ds PCM via ffmpeg", _SAMPLE_DURATION)
         try:
-            pcm_bytes = _decode_to_pcm(ffmpeg_path, stream_url, _SAMPLE_DURATION)
+            pcm_bytes = _decode_to_pcm(ffmpeg_path, source_for_ffmpeg, _SAMPLE_DURATION)
         except Exception as exc:
             log.warning("FreeRadio Recognizer: ffmpeg error: %s", exc)
             return RecognitionResult(
@@ -756,10 +775,11 @@ def recognize(stream_url, ffmpeg_path, _unused_api_key=""):
         _semaphore.release()
 
 
-def recognize_async(stream_url, ffmpeg_path, api_key, callback):
-    """api_key geriye dönük uyumluluk için korunmuştur (kullanılmaz)."""
+def recognize_async(stream_url, ffmpeg_path, api_key, callback, local_file=None):
+    """api_key geriye dönük uyumluluk için korunmuştur (kullanılmaz).
+    local_file: bkz. recognize()."""
     def _worker():
-        result = recognize(stream_url, ffmpeg_path, api_key)
+        result = recognize(stream_url, ffmpeg_path, api_key, local_file=local_file)
         try:
             callback(result)
         except Exception as exc:

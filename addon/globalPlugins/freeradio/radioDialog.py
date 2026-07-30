@@ -67,6 +67,74 @@ from .utils import (
 
 
 
+def check_stream_url(url, timeout=8):
+	"""Probe *url* and return (ok: bool, detail: str).
+
+	Resolves playlists (.m3u/.pls/ASX) to their first stream URL, then
+	attempts a HEAD/GET to verify the endpoint responds with an audio
+	content-type.  Runs synchronously; call from a worker thread.
+
+	Returns:
+	    (True,  resolved_url)   – reachable audio stream
+	    (False, error_message)  – unreachable or non-audio response
+	"""
+	import urllib.request as _req
+	import urllib.error   as _err
+	from urllib.parse import urljoin as _urljoin
+
+	if not url or not url.strip():
+		return False, _("URL is empty.")
+
+	url = url.strip()
+
+	# --- playlist resolution (same logic as radioPlayer._resolve_playlist_url) ---
+	try:
+		req = _req.Request(
+			url,
+			headers={"User-Agent": "FreeRadio-NVDA/1.0", "Icy-MetaData": "1"},
+		)
+		with _req.urlopen(req, timeout=timeout) as resp:
+			final_url = resp.url if hasattr(resp, "url") else url
+			ct = (resp.headers.get("content-type") or "").lower().split(";")[0].strip()
+			data = resp.read(8192).decode("utf-8", "ignore")
+
+		audio_types = ("audio/", "application/ogg", "video/")
+		if any(ct.startswith(t) for t in audio_types):
+			return True, final_url
+
+		# Playlist containers
+		base = final_url
+		if ct in ("audio/x-mpegurl", "application/x-mpegurl",
+		          "audio/mpegurl", "application/vnd.apple.mpegurl") or \
+				url.lower().endswith((".m3u", ".m3u8")):
+			for line in data.splitlines():
+				line = line.strip()
+				if line and not line.startswith("#"):
+					return True, _urljoin(base, line)
+		if ct == "audio/x-scpls" or url.lower().endswith(".pls"):
+			for line in data.splitlines():
+				if line.lower().startswith("file1="):
+					return True, _urljoin(base, line.split("=", 1)[1].strip())
+		import re as _re
+		if ct in ("video/x-ms-asf", "audio/x-ms-wax", "audio/x-ms-wmx") or \
+				any(url.lower().endswith(e) for e in (".asx", ".wmx", ".wax")):
+			m = _re.search(r"href\s*=\s*[\"']([^\"']+)[\"']", data, _re.IGNORECASE)
+			if m:
+				return True, _urljoin(base, m.group(1))
+
+		# Got a response but content-type is not audio — still reachable
+		return False, _("Response received but content type is not audio: %s") % ct
+
+	except _err.HTTPError as e:
+		return False, _("HTTP error %d: %s") % (e.code, e.reason)
+	except _err.URLError as e:
+		return False, _("Connection failed: %s") % str(e.reason)
+	except OSError as e:
+		return False, _("Network error: %s") % str(e)
+	except Exception as e:
+		return False, str(e)
+
+
 class RadioDialog(wx.Dialog):
 	"""Station browser with Favourites and All Stations tabs.
 
@@ -2063,7 +2131,7 @@ class RadioDialog(wx.Dialog):
 		if not hasattr(self, "_save_audio_btn"):
 			return
 		is_fav_tab = (self._notebook.GetSelection() == 1)
-		station, _ = self._get_selected_station()
+		station, _idx = self._get_selected_station()
 		is_fav = bool(station and self._manager.is_favorite(station))
 		has_profile = bool(station and station.get("station_audio"))
 		self._save_audio_btn.Enable(is_fav_tab and is_fav)
@@ -2367,7 +2435,7 @@ class RadioDialog(wx.Dialog):
 				pass
 
 	def _on_details_clicked(self, event):
-		station, _ = self._get_selected_station()
+		station, _idx = self._get_selected_station()
 		if not station:
 			return
 		self._show_station_details_for(station)
@@ -2531,6 +2599,90 @@ class RadioDialog(wx.Dialog):
 		dlg.Destroy()
 
 
+	def _test_selected_station(self):
+		"""Probe the selected station's stream URL in a background thread and
+		announce the result via ui.message / NVDA speech."""
+		station, _idx = self._get_selected_station()
+		if not station:
+			ui.message(_("No station selected."))
+			return
+		url = station.get("url_resolved") or station.get("url") or ""
+		if not url:
+			ui.message(_("This station has no URL."))
+			return
+		name = station.get("name", "?").strip()
+		ui.message(_("Checking stream for %s, please wait…") % name)
+
+		def _worker():
+			ok, detail = check_stream_url(url)
+			wx.CallAfter(self._on_test_station_done, name, ok, detail)
+
+		threading.Thread(target=_worker, daemon=True).start()
+
+	def _on_test_station_done(self, name, ok, detail):
+		if ok:
+			ui.message(_("%(name)s: stream is reachable.") % {"name": name})
+		else:
+			ui.message(_("%(name)s: stream check failed — %(detail)s") % {
+				"name": name, "detail": detail})
+
+	def _show_station_context_menu(self):
+		"""Context menu for the selected station in the All-stations or Favourites list.
+
+		Items are always appended so screen readers announce them in a consistent
+		order.  Fav-only actions are disabled (greyed out) when the selected
+		station is not a favourite or the active tab is All Stations.
+		"""
+		station, _idx = self._get_selected_station()
+		if not station:
+			return
+
+		is_fav_tab = (self._notebook.GetSelection() == 1)
+		is_fav     = bool(station and self._manager.is_favorite(station))
+		has_profile = bool(station and station.get("station_audio"))
+
+		menu = wx.Menu()
+
+		# --- Details ---
+		item_details = menu.Append(wx.ID_ANY, _("Station Detai&ls"))
+		self.Bind(wx.EVT_MENU, lambda e: self._show_station_details_for(station), item_details)
+
+		menu.AppendSeparator()
+
+		# --- Favourite management ---
+		item_add_fav = menu.Append(wx.ID_ANY, _("Add to Fa&vorites"))
+		item_add_fav.Enable(bool(station) and not is_fav)
+		self.Bind(wx.EVT_MENU, self._on_toggle_favorite, item_add_fav)
+
+		item_del_fav = menu.Append(wx.ID_ANY, _("&Delete Station"))
+		item_del_fav.Enable(is_fav)
+		self.Bind(wx.EVT_MENU, self._on_delete_station, item_del_fav)
+
+		item_rename = menu.Append(wx.ID_ANY, _("Re&name Station"))
+		item_rename.Enable(is_fav_tab and is_fav)
+		self.Bind(wx.EVT_MENU, self._on_rename_station, item_rename)
+
+		menu.AppendSeparator()
+
+		# --- Audio profile ---
+		item_save_profile = menu.Append(wx.ID_ANY, _("Save Audio Pr&ofile for This Station"))
+		item_save_profile.Enable(is_fav_tab and is_fav)
+		self.Bind(wx.EVT_MENU, self._on_save_audio_profile, item_save_profile)
+
+		item_del_profile = menu.Append(wx.ID_ANY, _("Clear Audio Prof&ile"))
+		item_del_profile.Enable(is_fav_tab and is_fav and has_profile)
+		self.Bind(wx.EVT_MENU, self._on_clear_audio_profile, item_del_profile)
+
+		menu.AppendSeparator()
+
+		# --- Stream test ---
+		item_test = menu.Append(wx.ID_ANY, _("&Test URL"))
+		self.Bind(wx.EVT_MENU, lambda e: self._test_selected_station(), item_test)
+
+		lst = self._active_list()
+		self.PopupMenu(menu, lst.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
 	def _on_close_btn(self, event):
 		self.Hide()
 		gui.mainFrame.postPopup()
@@ -2684,6 +2836,13 @@ class RadioDialog(wx.Dialog):
 
 		if key == wx.WXK_F1:
 			self._open_help()
+			return
+
+		# Applications key or Shift+F10 → context menu for the active station list
+		is_context_key = (key == wx.WXK_WINDOWS_MENU or
+		                  (key == wx.WXK_F10 and event.ShiftDown()))
+		if is_context_key and focused in (self._all_list, self._fav_list):
+			self._show_station_context_menu()
 			return
 
 		if key == wx.WXK_TAB and event.ControlDown() and not event.AltDown():
@@ -3452,7 +3611,7 @@ class RadioDialog(wx.Dialog):
 		if not song:
 			return
 		self._liked_lyrics_btn.Enable(False)
-		ui.message(_("Fetching lyrics\u2026"))
+		ui.message(_("Fetching lyrics…"))
 		from . import lyricsService
 
 		def _on_result(lyrics, error):
@@ -3476,7 +3635,7 @@ class LyricsDialog(wx.Dialog):
 	def __init__(self, parent, song, lyrics):
 		super().__init__(
 			parent,
-			title=_("Lyrics \u2014 %s") % song,
+			title=_("Lyrics — %s") % song,
 			style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
 		)
 		sizer = wx.BoxSizer(wx.VERTICAL)
@@ -3530,6 +3689,17 @@ class AddCustomStationDialog(wx.Dialog):
 		self._url = wx.TextCtrl(self)
 		sizer.Add(self._url, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
 
+		# URL test button + status label
+		test_row = wx.BoxSizer(wx.HORIZONTAL)
+		self._test_btn = wx.Button(self, label=_("&Test URL"))
+		test_row.Add(self._test_btn, 0, wx.RIGHT, 8)
+		self._test_status = wx.StaticText(self, label="")
+		test_row.Add(self._test_status, 1, wx.ALIGN_CENTER_VERTICAL)
+		sizer.Add(test_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
+
+		self._rb_btn = wx.Button(self, label=_("Add to &Radio Browser directory…"))
+		sizer.Add(self._rb_btn, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 5)
+
 		btn_sizer = wx.StdDialogButtonSizer()
 		ok_btn = wx.Button(self, wx.ID_OK, label=_("&Add"))
 		ok_btn.SetDefault()
@@ -3540,8 +3710,46 @@ class AddCustomStationDialog(wx.Dialog):
 
 		self.SetSizer(sizer)
 		self.Fit()
-		self.SetMinSize((350, -1))
+		self.SetMinSize((400, -1))
 		wx.CallAfter(self._name.SetFocus)
+
+		self._test_btn.Bind(wx.EVT_BUTTON, self._on_test_url)
+		self._rb_btn.Bind(wx.EVT_BUTTON, self._on_open_radio_browser)
+
+	def _on_open_radio_browser(self, event):
+		import webbrowser
+		webbrowser.open("https://www.radio-browser.info/add")
+
+	def _on_test_url(self, event):
+		url = self._url.GetValue().strip()
+		if not url:
+			self._test_status.SetLabel(_("Please enter a URL first."))
+			ui.message(_("Please enter a URL first."))
+			return
+		self._test_btn.Enable(False)
+		self._test_status.SetLabel(_("Checking…"))
+		ui.message(_("Checking stream URL, please wait…"))
+
+		def _worker():
+			ok, detail = check_stream_url(url)
+			wx.CallAfter(self._on_test_done, ok, detail)
+
+		threading.Thread(target=_worker, daemon=True).start()
+
+	def _on_test_done(self, ok, detail):
+		if not self:
+			return
+		self._test_btn.Enable(True)
+		if ok:
+			label = _("✓ Stream reachable")
+			self._test_status.SetLabel(label)
+			ui.message(_("Stream is reachable."))
+		else:
+			label = _("✗ %s") % detail
+			self._test_status.SetLabel(label)
+			ui.message(_("Stream check failed: %s") % detail)
+		self.Layout()
+		self.Fit()
 
 	def get_values(self):
 		return self._name.GetValue().strip(), self._url.GetValue().strip()

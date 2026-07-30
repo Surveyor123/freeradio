@@ -2,6 +2,7 @@
 
 import config
 import os
+import tempfile
 import globalPluginHandler
 import globalVars
 import gui
@@ -450,6 +451,31 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ffmpeg_path = config.conf["freeradio"].get("ffmpeg_path", "").strip() \
 		              or os.path.join(dll_dir, "ffmpeg.exe")
 
+		# Try to pull a short snippet of "what's airing right now" out of the
+		# player's own time-shift buffer instead of opening a second
+		# connection to stream_url. Some stations serve a freshly-inserted
+		# ad to every brand-new connection, so a second connection made just
+		# for recognition would sample that ad instead of the actual track -
+		# even though the main playback connection is already well past it.
+		local_snippet = None
+		try:
+			buf = self._player.get_timeshift_buffer()
+		except Exception:
+			buf = None
+		if buf is not None and buf.is_active() and buf.is_tail_safe():
+			try:
+				fd, snippet_path = tempfile.mkstemp(prefix="freeradio_recognize_", suffix=".buf")
+				os.close(fd)
+				if buf.extract_recent_snippet(18, snippet_path):
+					local_snippet = snippet_path
+				else:
+					try:
+						os.remove(snippet_path)
+					except OSError:
+						pass
+			except Exception:
+				log.warning("FreeRadio: could not extract recognition snippet from time-shift buffer", exc_info=True)
+
 		def _on_result(result):
 			if result.success:
 				label = result.full_label()
@@ -459,8 +485,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					ui.message,
 					_("Recognition failed: %s") % result.error_msg,
 				)
+			if local_snippet:
+				try:
+					os.remove(local_snippet)
+				except OSError:
+					pass
 
-		musicRecognizer.recognize_async(stream_url, ffmpeg_path, "", _on_result)
+		musicRecognizer.recognize_async(stream_url, ffmpeg_path, "", _on_result, local_file=local_snippet)
 
 	def terminate(self):
 		# Remove all dynamically created favourite-station scripts from the class.
@@ -1525,7 +1556,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					self._recorder.stop(self._player)
 
 				try:
-					self._recorder.start_song_capture(self._player, icy)
+					self._recorder.start_song_capture(self._player, icy, timeshift_buffer=self._player.get_timeshift_buffer())
 					wx.CallAfter(
 						ui.message,
 						_("Song recording started: %s") % icy,
@@ -1564,7 +1595,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 			name = self._player.get_current_name()
 			try:
-				self._recorder.start(self._player, name)
+				self._recorder.start(self._player, name, timeshift_buffer=self._player.get_timeshift_buffer())
 				wx.CallAfter(_notify, _("Recording started: %s") % name)
 			except Exception as exc:
 				log.error("FreeRadio: instant recording failed to start: %s", exc)

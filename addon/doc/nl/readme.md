@@ -79,6 +79,18 @@ De knop **Stationslijst bijwerken** synchroniseert de lokale stationcatalogus on
 
 Wanneer een station in de lijst is geselecteerd, toont de **Stationsinformatie**-knop informatie zoals land, taal, genre, formaat, bitrate, website en stream-URL in een apart dialoogvenster. Elk veld verschijnt in zijn eigen alleen-lezen tekstvak; je kunt tussen velden bewegen met Tab en alle informatie in één keer naar het klembord kopiëren met de **Alles naar klembord kopiëren**-knop. Deze knop is beschikbaar in zowel de tabbladen Alle stations als Favorieten.
 
+### Contextmenu van station
+
+Klik met de rechtermuisknop op een station in de lijst Alle stations of Favorieten, of selecteer het en druk op de Toepassingentoets of `Shift+F10`, om een contextmenu met snelle acties te openen:
+
+- **Stationdetails** — hetzelfde als de hierboven beschreven knop Stationdetails.
+- **Toevoegen aan favorieten** *(tabblad Alle stations)* / **Station verwijderen** *(tabblad Favorieten)*.
+- **Station hernoemen** *(tabblad Favorieten)* — hetzelfde als `F9`.
+- **Audioprofiel voor dit station opslaan** / **Audioprofiel wissen** *(tabblad Favorieten)* — zie Audio-profiel van station.
+- **URL testen** — controleert of de stream van het geselecteerde station momenteel bereikbaar is zonder afspelen te starten, en kondigt het resultaat aan (bereikbaar, of de reden van mislukking, zoals een HTTP-fout of netwerktime-out).
+
+Alleen de items die relevant zijn voor het huidige tabblad en de huidige selectie worden als beschikbaar getoond.
+
 ### In-dialoog sneltoetsen
 
 De volgende toetsen werken alleen terwijl het Stationsverkenner-venster actief is.
@@ -190,6 +202,11 @@ De sneltoets activeert het station onmiddellijk. Als het station later uit je fa
 
 Om een station toe te voegen dat niet in Radio Browser staat, gebruik je de knop Aangepast station toevoegen. In het dialoogvenster dat verschijnt, voer je de stationnaam en stream-URL in om het direct aan je favorieten toe te voegen. Aangepaste stations kunnen worden afgespeeld en opnieuw worden gerangschikt, net als elke andere favoriet.
 
+In dit dialoogvenster zijn twee extra knoppen beschikbaar:
+
+- **URL testen** — controleert de stream-URL die je hebt ingevoerd voordat het station wordt toegevoegd, en kondigt aan of deze bereikbaar is. Handig om een typefout of dode link te ontdekken voordat deze in je favorietenlijst terechtkomt.
+- **Toevoegen aan Radio Browser-directory…** — opent de [Radio Browser-indieningspagina](https://www.radio-browser.info/add) in je standaardbrowser, zodat je het station kunt delen met de bredere Radio Browser-gemeenschap zodra je hebt bevestigd dat het werkt. Zie Een station toevoegen aan Radio Browser hierboven voor wat het indieningsformulier verwacht.
+
 ### Audio-profiel van station
 
 Het tabblad Favorieten bevat twee knoppen voor het beheren van audio-instellingen per station:
@@ -209,6 +226,8 @@ Herkenning werkt als volgt: een kort audiofragment wordt vastgelegd van de strea
 **Audiofeedback:** Twee stijgende piepjes klinken wanneer de herkenning start, en twee dalende piepjes wanneer deze eindigt. Een korte pieptoon klinkt elke 2 seconden terwijl het proces loopt.
 
 **Vereiste:** ffmpeg.exe is vereist. Een ffmpeg.exe die in de add-on-map is geplaatst, wordt automatisch gebruikt; als deze op een andere locatie staat, kan het pad worden ingesteld in de Instellingen. Download ffmpeg van [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**Een opmerking over stations die reclame invoegen:** sommige stations sturen een korte advertentie naar elke gloednieuwe verbinding die met hun stream wordt gemaakt, los van de uitzending waarnaar je al aan het luisteren bent. Herkenning vermijdt het bemonsteren van die advertentie door de bestaande achtergrondstreamverbinding van FreeRadio te hergebruiken (dezelfde die wordt gebruikt voor Tijdverschuiving) in plaats van een nieuwe te openen, zodat het herkent wat er daadwerkelijk speelt in plaats van een advertentie. Dit werkt automatisch en vereist geen configuratie.
 
 ## Audio duplicatie
 
@@ -246,11 +265,15 @@ Opnames worden standaard opgeslagen in `Documents\FreeRadio Recordings\`. De bes
 
 NVDA kondigt aan wanneer een opname start en wanneer deze eindigt. Als NVDA opnieuw wordt opgestart terwijl een geplande opname actief is, wordt de opname bij het opstarten automatisch hervat.
 
+Net als bij muziekherkenning hergebruiken directe opname en nummeropname de bestaande achtergrondstreamverbinding van FreeRadio wanneer beschikbaar, in plaats van een nieuwe te openen, zodat een opname vastlegt wat er daadwerkelijk wordt uitgezonden, zelfs bij stations die anders een nieuwe advertentie zouden sturen naar een gloednieuwe verbinding. Dit geldt niet voor geplande opnames in de modus **Alleen opnemen**, aangezien er op dat moment nog geen station speelt.
+
 ## Tijdverschuiving (Live radio terugspoelen)
 
 Met Tijdverschuiving kun je het station waarnaar je momenteel luistert terugspoelen, zoals een DVR of een cassettebandje — pauzeer het moment, ga een paar minuten terug en haal de live-uitzending in wanneer je maar wilt. Het afspelen hoeft hiervoor nooit te stoppen: terugspoelen en vooruitspoelen gebeuren beide onmiddellijk op dezelfde audiostream.
 
 Deze functie is **standaard uitgeschakeld**. Schakel het in via NVDA-menu → Opties → Instellingen → FreeRadio → **Tijdverschuivingsbuffer inschakelen (live radio terugspoelen, ~10 minuten)**, of schakel het op elk gewenst moment direct in met `Ctrl+Win+T`.
+
+> **Opmerking:** FreeRadio houdt nu altijd een kleine achtergrondopname van het momenteel spelende station actief — niet alleen wanneer deze instelling is ingeschakeld — omdat zowel Muziekherkenning als Opname hierop vertrouwen voor het advertentievermijdingsgedrag dat in die secties wordt beschreven. Wanneer deze instelling **uit** staat, blijft die achtergrondopname beperkt tot ongeveer de laatste 45 seconden en blijven `Ctrl+Win+J`/`Ctrl+Win+K` onbeschikbaar — alleen de buffergrootte verandert, niet of hij actief is. Het inschakelen van deze instelling laat dezelfde opname groeien tot de volledige ~10 minuten durende terugspoelbuffer die hieronder wordt beschreven.
 
 ### Hoe het werkt
 
@@ -279,7 +302,7 @@ In het zeldzame geval dat de afspeellijst van een station helemaal niet kan word
 
 ### Vereisten en beperkingen
 
-- **Vereist de BASS-backend.** Tijdverschuiving is niet beschikbaar wanneer BASS is uitgeschakeld en het afspelen terugvalt op VLC, PotPlayer of Windows Media Player.
+- **Vereist de BASS-backend.** Tijdverschuiving is niet beschikbaar wanneer BASS is uitgeschakeld en het afspelen terugvalt op VLC, PotPlayer of Windows Media Player. De achtergrondopname zelf (en de advertentievermijding die deze biedt aan Muziekherkenning en Opname) is in dat geval ook niet beschikbaar, aangezien deze afhankelijk is van dezelfde BASS-gebaseerde verbinding.
 - De buffer is ongeveer 10 minuten; je kunt niet verder terugspoelen dan dat.
 - De buffer is per station: wisselen van station, stoppen met afspelen of opnieuw opstarten van NVDA wist deze en begint opnieuw.
 - Tijdverschuivingsmodus gebruikt zijn eigen lokale bufferbestand en genereert geen opgeslagen opname — als je de audio permanent wilt behouden, gebruik dan ook Direct opnemen (`Ctrl+Win+E`).
@@ -308,7 +331,7 @@ De volgende opties kunnen worden geconfigureerd via NVDA-menu → Opties → Ins
 | Laatste station hervatten bij NVDA-opstart | Indien ingeschakeld, start het laatst gespeelde station automatisch elke keer dat NVDA opstart. |
 | Automatisch trackwijzigingen aankondigen (ICY-metadata) | Indien ingeschakeld, leest NVDA automatisch de nieuwe tracknaam telkens wanneer deze verandert op een station dat ICY-metadata uitzendt. De eerste track wordt ook direct aangekondigd bij het overschakelen naar een nieuw station. Standaard uitgeschakeld. |
 | Meldingen dempen | Indien ingeschakeld, kondigt NVDA geen zenderwijzigingen, wijzigingen in afspeelstatus (spelen, pauze, stoppen) of opnamegebeurtenissen (gestart, gestopt, voltooid) aan. Foutmeldingen, feedback over favorieten, resultaten van muziekherkenning en update-meldingen worden niet beïnvloed. Kan ook direct worden in-/uitgeschakeld via een niet-toegewezen invoergebaar. Standaard uitgeschakeld. |
-| Tijdverschuivingsbuffer inschakelen (live radio terugspoelen, ~10 minuten) | Schakelt de Tijdverschuiving-functie in of uit. Indien ingeschakeld, wordt het momenteel spelende station continu op de achtergrond vastgelegd zodat het kan worden teruggespoeld met `Ctrl+Win+J` en vooruitgespoeld met `Ctrl+Win+K`. Kan ook direct worden in-/uitgeschakeld met `Ctrl+Win+T`. Vereist de BASS-backend. Standaard uitgeschakeld — zie de sectie **Tijdverschuiving** hieronder voor volledige details. |
+| Tijdverschuivingsbuffer inschakelen (live radio terugspoelen, ~10 minuten) | Schakelt de terugspoelbediening (`Ctrl+Win+J`/`Ctrl+Win+K`) in of uit en vergroot de achtergrondopname van ~45 seconden tot ~10 minuten. Een kleine achtergrondopname van het momenteel spelende station draait altijd, zelfs wanneer dit is uitgeschakeld — zie de opmerking in de sectie **Tijdverschuiving** hieronder. Kan ook direct worden in-/uitgeschakeld met `Ctrl+Win+T`. Vereist de BASS-backend. Standaard uitgeschakeld — zie de sectie **Tijdverschuiving** hieronder voor volledige details. |
 | Gelikete nummers opslaan in een tekstbestand | Indien ingeschakeld, wordt trackinformatie die naar het klembord is gekopieerd door drie keer op `Ctrl+Win+I` te drukken, ook toegevoegd aan `Documents\FreeRadio Recordings\likedSongs.txt`. Als er geen ICY-metadata beschikbaar is, wordt het Shazam-herkenningsresultaat in hetzelfde bestand opgeslagen. Standaard uitgeschakeld. |
 | Wanneer Ctrl+Win+P wordt ingedrukt zonder actief afspelen | Bepaalt wat er gebeurt wanneer deze sneltoets wordt ingedrukt en er niets speelt: het laatste station starten of de favorietenlijst openen. |
 | Wanneer Ctrl+Win+P tweemaal wordt ingedrukt | Selecteert wat er gebeurt wanneer de sneltoets twee keer snel achter elkaar wordt ingedrukt: niets doen, favorietenlijst openen, opnametabblad openen of timertabblad openen. Wanneer "niets doen" is geselecteerd, reageert de eerste druk onmiddellijk zonder vertraging. |

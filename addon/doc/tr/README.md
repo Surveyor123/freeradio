@@ -79,6 +79,18 @@ Pencerenin alt kısmında ayrıca **Çal/Duraklat** düğmesi bulunur. Herhangi 
 
 Listede bir istasyon seçiliyken **İstasyon Detayları** düğmesi, o istasyona ait ülke, dil, tür, format, bit hızı, web sitesi ve akış adresi gibi bilgileri ayrı bir iletişim kutusunda gösterir. İletişim kutusunda her alan ayrı bir salt-okunur metin kutusunda yer alır; Tab tuşuyla alanlar arasında gezinilebilir. **Tümünü panoya kopyala** düğmesiyle tüm bilgiler tek seferde panoya alınabilir. Bu düğme hem Tüm İstasyonlar hem de Favoriler sekmesinde bulunur.
 
+### İstasyon Bağlam Menüsü
+
+Tüm İstasyonlar veya Favoriler listesinde bir istasyona sağ tıklayarak ya da istasyonu seçip Uygulamalar tuşuna veya `Shift+F10`'a basarak hızlı eylemler içeren bir bağlam menüsü açabilirsiniz:
+
+- **İstasyon Detayları** — yukarıda açıklanan İstasyon Detayları düğmesiyle aynıdır.
+- **Favorilere Ekle** *(Tüm İstasyonlar sekmesi)* / **İstasyonu Sil** *(Favoriler sekmesi)*.
+- **İstasyonu Yeniden Adlandır** *(Favoriler sekmesi)* — `F9` ile aynıdır.
+- **Bu İstasyon İçin Ses Profili Kaydet** / **Ses Profilini Temizle** *(Favoriler sekmesi)* — bkz. [İstasyon Ses Profili](#i̇stasyon-ses-profili).
+- **Adresi Test Et** — seçili istasyonun akışının, oynatmayı başlatmadan şu an erişilebilir olup olmadığını denetler ve sonucu (erişilebilir ya da HTTP hatası veya zaman aşımı gibi başarısızlık nedeni) seslendirir.
+
+Yalnızca geçerli sekme ve seçime uygun olan öğeler kullanılabilir olarak gösterilir.
+
 ### Diyalog İçi Kısayollar
 
 Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalışır.
@@ -190,6 +202,11 @@ Kısayola basıldığında istasyon hemen çalmaya başlar. Bir istasyon favoril
 
 Radio Browser'da bulunmayan bir istasyon eklemek için Özel İstasyon Ekle düğmesini kullanın. Açılan iletişim kutusuna istasyon adını ve akış adresini girerek istasyonu doğrudan favorilerinize ekleyebilirsiniz. Özel istasyonlar diğer favoriler gibi çalınabilir ve yeniden sıralanabilir.
 
+Bu iletişim kutusunda iki ek düğme daha bulunur:
+
+- **Adresi Test Et** — istasyonu eklemeden önce girdiğiniz akış adresini denetler ve erişilebilir olup olmadığını seslendirir. Bir yazım hatasını veya ölü bir bağlantıyı favoriler listenize eklenmeden önce yakalamak için kullanışlıdır.
+- **Radio Browser dizinine ekle…** — istasyonu doğrulandıktan sonra daha geniş Radio Browser topluluğuyla paylaşabilmeniz için [Radio Browser gönderim sayfasını](https://www.radio-browser.info/add) varsayılan tarayıcınızda açar. Gönderim formunun neler beklediğini görmek için yukarıdaki [Radio Browser'a İstasyon Ekleme](#radio-browsera-i̇stasyon-ekleme) bölümüne bakın.
+
 ### İstasyon Ses Profili
 
 Favoriler sekmesinde per-istasyon ses ayarlarını yönetmek için iki düğme bulunur:
@@ -209,6 +226,8 @@ Tanıma şu şekilde çalışır: ffmpeg kullanılarak akıştan kısa bir ses �
 **Sesli geri bildirim:** Tanıma başladığında iki yükselen bip, bittiğinde iki alçalan bip sesi duyulur. İşlem süresince her 2 saniyede bir kısa bir bip çalar.
 
 **Gereksinim:** ffmpeg.exe gereklidir. Eklenti klasörüne yerleştirilen ffmpeg.exe otomatik olarak kullanılır; farklı bir konumdaysa yol Ayarlar'dan belirtilebilir. ffmpeg'i [ffmpeg.org](https://ffmpeg.org/download.html) adresinden indirin.
+
+**Reklam ekleyen istasyonlar hakkında bir not:** bazı istasyonlar, akışlarına yapılan her yeni bağlantıya, o an dinlediğiniz yayından ayrı olarak kısa bir reklam sunar. Tanıma işlemi, bu reklamdan örnek almaktan kaçınmak için yeni bir bağlantı açmak yerine FreeRadio'nun zaten var olan arka plan akış bağlantısını (aynısı [Zaman Kaydırma](#zaman-kaydırma-canlı-radyoyu-geri-sarma) için de kullanılır) yeniden kullanır; böylece bir reklam yerine gerçekte çalan içeriği tanımlar. Bu, herhangi bir yapılandırma gerektirmeden otomatik olarak çalışır.
 
 ## Ses Yansıtma
 
@@ -246,11 +265,15 @@ Kayıtlar varsayılan olarak `Belgeler\FreeRadio Recordings\` klasörüne kayded
 
 NVDA kayıt başladığında ve bittiğinde bildirim verir. Zamanlanmış bir kayıt devam ederken NVDA yeniden başlatılırsa kayıt başlangıçta otomatik olarak devam eder.
 
+Müzik tanıma gibi, anlık ve şarkı kaydı da mevcutsa FreeRadio'nun zaten var olan arka plan akış bağlantısını, yeni bir bağlantı açmak yerine yeniden kullanır; böylece aksi hâlde yeni bir bağlantıya taze bir reklam sunacak istasyonlarda bile kayıt gerçekte yayınlanan içeriği yakalar. Bu, henüz hiçbir istasyon çalmıyor olduğu için zamanlanmış **Yalnızca Kayıt** kayıtlarına uygulanmaz.
+
 ## Zaman Kaydırma (Canlı Radyoyu Geri Sarma)
 
 Zaman kaydırma, o an dinlediğiniz istasyonu bir DVR veya kaset gibi geri sarmanızı sağlar — anı durdurun, birkaç dakika geri gidin ve istediğinizde canlıya tekrar yetişin. Oynatmanın durması gerekmez: geri ve ileri sarma aynı ses akışında anında gerçekleşir.
 
 Bu özellik **varsayılan olarak devre dışıdır**. NVDA Menüsü → Tercihler → Ayarlar → FreeRadio → **Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar, ~10 dakika)** seçeneğiyle veya `Ctrl+Win+T` ile istediğiniz zaman anında etkinleştirebilirsiniz.
+
+> **Not:** FreeRadio artık, yalnızca bu ayar etkinleştirildiğinde değil, her zaman o an çalan istasyonun küçük bir arka plan yakalamasını çalışır durumda tutar; çünkü [Müzik Tanıma](#müzik-tanıma) ve [Kayıt](#kayıt) bu bölümlerde açıklanan reklamdan kaçınma davranışı için buna dayanır. Bu ayar **kapalıyken** bu arka plan yakalaması yaklaşık son 45 saniyeyle sınırlı kalır ve `Ctrl+Win+J`/`Ctrl+Win+K` kullanılamaz durumda kalır — yalnızca tampon boyutu değişir, çalışıp çalışmadığı değil. Ayarı etkinleştirmek aynı yakalamayı aşağıda açıklanan tam ~10 dakikalık geri sarma tamponuna büyütür.
 
 ### Nasıl Çalışır
 
@@ -279,7 +302,7 @@ Bir istasyonun çalma listesi hiç okunamazsa (örneğin bozuk veya erişilemeye
 
 ### Gereksinimler ve Sınırlamalar
 
-- **BASS arka ucunu gerektirir.** BASS devre dışıyken zaman kaydırma kullanılamaz.
+- **BASS arka ucunu gerektirir.** BASS devre dışıyken ve oynatma VLC, PotPlayer veya Windows Media Player'a düştüğünde zaman kaydırma kullanılamaz. Arka plan yakalamasının kendisi (ve Müzik Tanıma ile Kayıt'a sağladığı reklamdan kaçınma) da aynı BASS tabanlı bağlantıya dayandığından bu durumda kullanılamaz.
 - Tampon yaklaşık 10 dakikadır; bundan daha geriye gidemezsiniz.
 - Tampon istasyona özgüdür: istasyon değiştirme, oynatmayı durdurma veya NVDA'yı yeniden başlatma tamponu sıfırlar.
 - Zaman kaydırmalı oynatma kendi yerel tampon dosyasını kullanır ve kayıtlı bir kayıt üretmez — sesi kalıcı olarak saklamak istiyorsanız Anlık Kayıt (`Ctrl+Win+E`) özelliğini de kullanın.
@@ -308,7 +331,7 @@ NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki
 | NVDA başlangıcında devam ettir | Açıksa NVDA her başlatıldığında en son çalınan istasyon otomatik olarak yeniden başlar. |
 | Parça değişimlerini otomatik seslendir (ICY metadata) | Açıksa çalan istasyon ICY metadata yayınlıyorken parça her değiştiğinde NVDA yeni parça adını otomatik olarak okur. İstasyon değiştiğinde de ilk parça bilgisi anında seslendirilir. Varsayılan olarak kapalıdır. |
 | Bildirimleri sessize al | Açıksa NVDA; istasyon değişikliklerini, oynatma durumu değişikliklerini (çal, duraklat, durdur) ve kayıt olaylarını (başladı, durdu, bitti) anons etmez. Hata mesajları, favori geri bildirimleri, müzik tanıma sonuçları ve güncelleme bildirimleri bu kapsamın dışındadır. Atanmamış bir girdi hareketi aracılığıyla anlık olarak da değiştirilebilir. Varsayılan olarak kapalıdır. |
-| Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar, ~10 dakika) | Zaman kaydırma özelliğini açar veya kapatır. Etkinleştirildiğinde çalan istasyon arka planda sürekli yakalanır; `Ctrl+Win+J` ile geri sarılabilir ve `Ctrl+Win+K` ile ileri sarılabilir. `Ctrl+Win+T` ile de anında geçiş yapılabilir. BASS arka ucunu gerektirir. Varsayılan olarak devre dışıdır. |
+| Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar, ~10 dakika) | Geri sarma denetimlerini (`Ctrl+Win+J`/`Ctrl+Win+K`) açar veya kapatır ve arka plan yakalamasını ~45 saniyeden ~10 dakikaya kadar büyütür. Bu ayar kapalıyken bile o an çalan istasyonun küçük bir arka plan yakalaması her zaman çalışır — ayrıntılar için aşağıdaki **Zaman Kaydırma** bölümündeki nota bakın. `Ctrl+Win+T` ile de anında geçiş yapılabilir. BASS arka ucunu gerektirir. Varsayılan olarak devre dışıdır — tam ayrıntılar için aşağıdaki **Zaman Kaydırma** bölümüne bakın. |
 | Beğenilen şarkıları metin dosyasına kaydet | Açıksa `Ctrl+Win+İ` üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da eklenir. ICY metadata yoksa Shazam tanıma sonucu da aynı dosyaya kaydedilir. Varsayılan olarak kapalıdır. |
 | Ctrl+Win+P hiç istasyon çalmıyorken: | Bu kısayola basıldığında aktif oynatma yoksa ne yapılacağını belirler: son çalınan istasyonu başlat veya favoriler listesini aç. |
 | Ctrl+Win+P iki kez basıldığında: | Kısayola art arda iki kez basıldığında gerçekleşecek işlemi seçer: hiçbir şey yapma, favoriler listesini aç, kayıt sekmesini aç veya zamanlayıcı sekmesini aç. "Hiçbir şey yapma" seçiliyken ilk basışta gecikme uygulanmaz ve yanıt anında gerçekleşir. |

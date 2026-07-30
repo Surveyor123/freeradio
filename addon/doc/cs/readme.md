@@ -79,6 +79,18 @@ Tlačítko **Aktualizovat seznam stanic** okamžitě znovu synchronizuje místn�
 
 Je-li v seznamu vybrána stanice, tlačítko **Podrobnosti o stanici** zobrazí v samostatném dialogovém okně informace, jako je země, jazyk, žánr, formát, datový tok, webová stránka a adresa URL streamu. Každé pole se zobrazuje ve vlastním textovém poli určeném pouze pro čtení; mezi poli se můžete pohybovat pomocí klávesy Tab a všechny informace najednou zkopírovat do schránky pomocí tlačítka **Kopírovat vše do schránky**. Toto tlačítko je k dispozici na kartách Všechny stanice i Oblíbené.
 
+### Kontextová nabídka stanice
+
+Klepnutím pravým tlačítkem na stanici v seznamu Všechny stanice nebo Oblíbené, případně jejím vybráním a stiskem klávesy Nabídka nebo `Shift+F10`, otevřete kontextovou nabídku s rychlými akcemi:
+
+- **Podrobnosti o stanici** — totéž jako tlačítko Podrobnosti o stanici popsané výše.
+- **Přidat do oblíbených** *(karta Všechny stanice)* / **Odstranit stanici** *(karta Oblíbené)*.
+- **Přejmenovat stanici** *(karta Oblíbené)* — totéž jako `F9`.
+- **Uložit zvukový profil pro tuto stanici** / **Vymazat zvukový profil** *(karta Oblíbené)* — viz Zvukový profil stanice.
+- **Otestovat adresu URL** — zkontroluje, zda je datový tok vybrané stanice aktuálně dostupný, aniž by spustil přehrávání, a oznámí výsledek (dostupné, nebo důvod selhání, například chybu HTTP nebo vypršení časového limitu).
+
+Zobrazí se pouze položky relevantní pro aktuální kartu a výběr.
+
 ### Zkratky v dialogovém okně
 
 Následující klávesy fungují pouze při aktivním okně Průzkumník stanic.
@@ -190,6 +202,11 @@ Po stisknutí zkratky se stanice okamžitě spustí. Pokud stanici odeberete z o
 
 Chcete-li přidat stanici, která se nenachází v Prohlížeči rádií, použijte tlačítko Přidat vlastní stanici. V zobrazeném dialogovém okně zadejte název stanice a adresu URL streamu a přidejte ji přímo mezi oblíbené. Vlastní stanice lze přehrávat a měnit jejich pořadí stejně jako ostatní oblíbené stanice.
 
+V tomto dialogovém okně jsou k dispozici dvě další tlačítka:
+
+- **Otestovat adresu URL** — před přidáním stanice zkontroluje zadanou adresu URL streamu a oznámí, zda je dostupná. Užitečné pro zachycení překlepu nebo nefunkčního odkazu dříve, než skončí ve vašem seznamu oblíbených.
+- **Přidat do adresáře Radio Browser…** — otevře [stránku pro odeslání do Radio Browser](https://www.radio-browser.info/add) ve výchozím prohlížeči, abyste mohli stanici po ověření její funkčnosti sdílet se širší komunitou Radio Browser. Co formulář pro odeslání očekává, najdete výše v části Přidání stanice do aplikace Radio Browser.
+
 ### Zvukový profil stanice
 
 Karta Oblíbené obsahuje dvě tlačítka pro správu nastavení zvuku jednotlivých stanic:
@@ -209,6 +226,8 @@ Rozpoznávání funguje následovně: pomocí ffmpeg se ze streamu zachytí krá
 **Zvuková zpětná vazba:** Při zahájení rozpoznávání zazní dvě stoupající pípnutí a při jeho ukončení dvě klesající pípnutí. Během procesu se každé 2 sekundy ozve krátké pípnutí.
 
 **Požadavky:** Je vyžadován soubor ffmpeg.exe. Automaticky se použije soubor ffmpeg.exe umístěný ve složce doplňku; pokud je v jiném umístění, cestu k němu lze nastavit v Nastavení. Stáhněte si soubor ffmpeg ze stránek [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**Poznámka ke stanicím vkládajícím reklamy:** některé stanice přehrávají krátkou reklamu při každém novém připojení ke svému streamu, oddělenou od vysílání, které již posloucháte. Rozpoznávání se vyhýbá vzorkování této reklamy tím, že místo otevření nového připojení znovu použije stávající připojení FreeRadia k datovému toku na pozadí (stejné, jaké se používá pro Časový posun) — díky tomu rozpozná to, co skutečně hraje, a ne reklamu. Toto funguje automaticky a nevyžaduje žádné nastavení.
 
 ## Zrcadlo zvuku
 
@@ -246,6 +265,8 @@ Nahrávky se ve výchozím nastavení ukládají do složky `Dokumenty\VolnéRad
 
 NVDA oznámí, kdy nahrávání začne a kdy skončí. Pokud je NVDA restartována v průběhu plánovaného nahrávání, nahrávání se při spuštění automaticky obnoví.
 
+Stejně jako u rozpoznávání hudby, i okamžité nahrávání a nahrávání skladby znovu použijí stávající připojení FreeRadia k datovému toku na pozadí, pokud je k dispozici, místo otevření nového — nahrávka tak zachytí to, co skutečně hraje, i u stanic, které by jinak novému připojení nabídly čerstvou reklamu. Toto se nevztahuje na plánovaná nahrávání v režimu **Pouze nahrávání**, protože v okamžiku jejich spuštění ještě žádná stanice nehraje.
+
 ## Časovač
 
 Otevřete kartu Časovač v prohlížeči stanice (`Alt+4`). Lze přidat dva typy časovače:
@@ -270,7 +291,7 @@ Následující možnosti lze konfigurovat v nabídce NVDA → Předvolby → Nas
 | Obnovit poslední stanici při spuštění NVDA | Je-li tato funkce povolena, při každém spuštění NVDA se automaticky obnoví naposledy přehrávaná stanice. |
 | Automatické oznamování změn skladeb (metadata ICY) | Je-li povoleno, NVDA automaticky načte nový název skladby při každé změně na stanici, která vysílá metadata ICY. Při přepnutí na novou stanici se také okamžitě ohlásí první stopa. Ve výchozím nastavení zakázáno. |
 | Ztlumení oznámení | Je-li povoleno, NVDA neoznamuje změny stanic, změny stavu přehrávání (přehrávání, pozastavení, zastavení) ani události nahrávání (spuštěno, zastaveno, ukončeno). Chybová hlášení, zpětná vazba oblíbených položek, výsledky rozpoznávání hudby a oznámení o aktualizacích nejsou ovlivněny. Lze přepínat i za běhu pomocí nepřiřazeného vstupního gesta. Ve výchozím nastavení vypnuto. |
-| Zapnout vyrovnávací paměť časového posunu (přetočení živého rádia, ~10 minut) | Zapíná nebo vypíná funkci časového posunu. Pokud je povolena, aktuálně přehrávaná stanice je průběžně zachytávána na pozadí, takže ji lze přetočit zpět pomocí `Ctrl+Win+J` a dopředu pomocí `Ctrl+Win+K`. Lze také okamžitě přepnout pomocí `Ctrl+Win+T`. Vyžaduje backend BASS. Ve výchozím nastavení zakázáno. |
+| Zapnout vyrovnávací paměť časového posunu (přetočení živého rádia, ~10 minut) | Zapíná nebo vypíná ovládací prvky přetáčení (`Ctrl+Win+J`/`Ctrl+Win+K`) a zvětšuje zachytávání na pozadí z ~45 sekund až na ~10 minut. Malé zachytávání aktuálně přehrávané stanice na pozadí běží vždy, i když je tato volba vypnutá — viz poznámka v části Časový posun níže. Lze také okamžitě přepnout pomocí `Ctrl+Win+T`. Vyžaduje backend BASS. Ve výchozím nastavení zakázáno — úplné podrobnosti najdete v části Časový posun níže. |
 | Uložení oblíbených skladeb do textového souboru | Pokud je tato funkce povolena, informace o skladbě zkopírované do schránky trojím stisknutím kláves `Ctrl+Win+I` se také připojí do souboru `Dokumenty\Nahrávky freeradia rádia\oblíbené skladby.txt`. Pokud nejsou k dispozici žádná metadata ICY, uloží se výsledek rozpoznání Shazam do stejného souboru. Ve výchozím nastavení vypnuto. |
 | Při stisknutí klávesové zkratky Ctrl+Win+P bez aktivního přehrávání | Určuje, co se stane, když je tato klávesová zkratka stisknuta a nic se nepřehrává: spustí poslední stanici nebo otevře seznam oblíbených. |
 | Při dvojím stisknutí klávesové zkratky Ctrl+Win+P | Určuje, co se stane, když je tato klávesová zkratka stisknuta dvakrát za sebou: nic nedělat, otevřít seznam oblíbených položek, otevřít kartu nahrávání nebo otevřít kartu časovače. Pokud je vybrána možnost "nedělat nic", první stisknutí reaguje okamžitě bez zpoždění. |
@@ -362,6 +383,8 @@ FreeRadio automaticky kontroluje nové verze prostřednictvím služby GitHub.
 
 Tato funkce je **ve výchozím nastavení vypnutá**. Zapněte ji v NVDA Menu → Předvolby → Nastavení → FreeRadio → **Zapnout vyrovnávací paměť časového posunu (přetočení živého rádia, ~10 minut)**, nebo ji kdykoli okamžitě přepněte pomocí `Ctrl+Win+T`.
 
+> **Poznámka:** FreeRadio nyní neustále udržuje malé zachytávání aktuálně přehrávané stanice na pozadí — nejen když je toto nastavení zapnuté — protože Rozpoznávání hudby i Nahrávání se na něj spoléhají kvůli chování vyhýbajícímu se reklamám popsanému v těchto částech. Když je toto nastavení **vypnuté**, toto zachytávání na pozadí se drží na přibližně posledních 45 sekundách a `Ctrl+Win+J`/`Ctrl+Win+K` zůstávají nedostupné — mění se pouze velikost vyrovnávací paměti, ne to, zda běží. Zapnutím tohoto nastavení se stejné zachytávání zvětší na plnou ~10minutovou vyrovnávací paměť pro přetáčení popsanou níže.
+
 ### Jak to funguje
 
 Po zapnutí FreeRadio nepřetržitě zachytává aktuálně přehrávanou stanici do místní průběžné vyrovnávací paměti na pozadí. Ta pojme zhruba **posledních 10 minut** zvuku; starší audio je automaticky odstraňováno z čela fronty s příchodem nového, takže vyrovnávací paměť vždy představuje „nedávnou minulost" vzhledem k živé hraně.
@@ -389,7 +412,7 @@ V ojedinělém případě, kdy playlist stanice vůbec nelze přečíst (napří
 
 ### Požadavky a omezení
 
-- **Vyžaduje backend BASS.** Časový posun není k dispozici, když je BASS vypnutý.
+- **Vyžaduje backend BASS.** Časový posun není k dispozici, když je BASS vypnutý a přehrávání se přepne na VLC, PotPlayer nebo Windows Media Player. Samotné zachytávání na pozadí (a s ním spojené vyhýbání se reklamám pro Rozpoznávání hudby a Nahrávání) je v takovém případě také nedostupné, protože závisí na stejném připojení založeném na BASS.
 - Vyrovnávací paměť pojme přibližně 10 minut; dále zpět přetočit nelze.
 - Vyrovnávací paměť je na každou stanici zvlášť: přepnutí stanic, zastavení přehrávání nebo restart NVDA ji vynuluje.
 - Přehrávání s časovým posunem používá vlastní místní soubor vyrovnávací paměti a nevytváří uloženou nahrávku — pokud chcete zvuk trvale uchovat, použijte zároveň Okamžité nahrávání (`Ctrl+Win+E`).

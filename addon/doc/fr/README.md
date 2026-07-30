@@ -79,6 +79,18 @@ Le bouton **Mettre à jour la liste des stations** resynchronise immédiatement 
 
 Lorsqu'une station est sélectionnée dans la liste, le bouton **Détails de la Station** affiche des informations telles que le pays, la langue, le genre, le format, le bitrate, le site web et le flux URL dans une boîte de dialogue séparée. Chaque champ apparaît dans sa propre zone de texte en lecture seule ; vous pouvez vous déplacer entre les champs avec Tab et copier toutes les informations dans le presse-papiers en même temps avec le bouton **Copier tout dans le presse-papier**. Ce bouton est disponible dans les onglets Toutes les stations et Favoris.
 
+### Menu Contextuel de la Station
+
+Cliquez avec le bouton droit sur une station dans la liste  Toutes les stations ou Favoris, ou sélectionnez-la et appuyez sur la touche Applications ou sur `Shift+F10`, pour ouvrir un menu contextuel avec des actions rapides:
+
+- **Détails de la Station** — identique au bouton Détails de la station décrit ci-dessus.
+- **Ajouter aux Favoris** *(onglet Toutes les stations)* / **Supprimer la station** *(onglet Favoris)*.
+- **Renommer la station** *(onglet Favoris)* — identique à `F9`.
+- **Enregistrer le profil audio de cette station** / **Effacer le profil audio** *(onglet Favoris)* — consultez la section [Profil Audio de la Station](#station-audio-profile).
+- **Tester l'URL** — vérifie si le flux de la station sélectionnée est actuellement accessible sans démarrer la lecture et annonce le résultat (accessible ou la raison de l'échec, comme une erreur HTTP ou un délai d'attente du réseau).
+
+Seuls les éléments pertinents pour l'onglet et la sélection actuels sont affichés comme disponibles.
+
 ### Raccourcis dans la boîte de dialogue
 
 Les touches suivantes fonctionnent uniquement lorsque la fenêtre Navigateur de Stations est active.
@@ -190,6 +202,11 @@ Le raccourci démarre la station immédiatement. Si la station est retirée des 
 
 Pour ajouter une station qui n'est pas dans Radio Browser, utilisez le bouton Ajouter une station personnalisée. Dans la boîte de dialogue qui apparaît, saisissez le nom de la station et l'URL du flux pour l'ajouter directement à vos favoris. Les stations personnalisées peuvent être écoutées et réorganisées comme n'importe quel autre favori.
 
+Deux boutons supplémentaires sont disponibles dans cette boîte de dialogue:
+
+- **Tester l'URL** — vérifie l'URL du flux que vous avez saisie avant d'ajouter la station et annonce si elle est accessible. Utile pour détecter une faute de frappe ou un lien mort avant qu'il ne se retrouve dans votre liste de favoris.
+- **Ajouter au annuaire de Radio Browser…** — ouvre la [page de soumission de Radio Browser](https://www.radio-browser.info/add) dans votre navigateur par défaut, afin que vous puissiez partager la station avec la communauté plus large de Radio Browser une fois que vous avez confirmé qu'elle fonctionne. Consultez la section [Ajout d'une station à Radio Browser](#adding-a-station-to-radio-browser) ci-dessus pour savoir ce que le formulaire de soumission attend.
+
 ### Profil Audio de la Station
 
 L'onglet Favoris comprend deux boutons pour gérer les paramètres audio par station:
@@ -209,6 +226,8 @@ La reconnaissance fonctionne comme suit : un court échantillon audio est captu
 **Retour audio:** Deux bips montants retentissent lorsque la reconnaissance démarre et deux bips descendants lorsqu'elle se termine. Un bip court retentit toutes les 2 secondes pendant que le processus est en cours.
 
 **Exigence:** ffmpeg.exe est requis. Un ffmpeg.exe placé dans le dossier de l'extension est utilisé automatiquement ; s'il se trouve à un emplacement différent, le chemin peut être défini dans les Paramètres. Téléchargez ffmpeg depuis [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**Remarque sur les stations qui insèrent des publicités:** certaines stations diffusent une courte publicité à chaque nouvelle connexion établie à leur flux, indépendamment de la diffusion que vous écoutez déjà. La reconnaissance évite d'échantillonner cette publicité en réutilisant la connexion du flux en arrière-plan existante de FreeRadio (la même que celle utilisée pour le [Décalage temporel (retour en arrière sur la radio en direct)](#time-shift-rewind-live-radio)) au lieu d'en ouvrir une nouvelle, de sorte qu'elle identifie ce qui est réellement diffusé plutôt qu'une publicité. Cela fonctionne automatiquement et ne nécessite aucune configuration.
 
 ## Miroir Audio
 
@@ -246,11 +265,15 @@ Les enregistrements sont enregistrés par défaut dans `Documents\FreeRadio Reco
 
 NVDA annonce quand un enregistrement commence et quand il se termine. Si NVDA est redémarré alors qu'un enregistrement planifié est actif, l'enregistrement reprend automatiquement au démarrage.
 
+Comme la reconnaissance musicale, l'enregistrement instantané et l'enregistrement des morceaux réutilisent la connexion du flux en arrière-plan existante de FreeRadio lorsqu'elle est disponible, plutôt que d'en ouvrir une nouvelle, de sorte qu'un enregistrement capture ce qui est réellement diffusé, même sur des stations qui autrement diffuseraient une nouvelle publicité sur une toute nouvelle connexion. Cela ne s'applique pas aux enregistrements planifiés **Enregistrer seulement**, car aucune station n'est déjà en cours de lecture au moment où ils démarrent.
+
 ## Décalage temporel (retour en arrière sur la radio en direct)
 
 Le décalage temporel vous permet de rembobiner la station que vous écoutez, comme un DVR ou une cassette : suspendez le moment, revenez quelques minutes en arrière et rattrapez le direct quand vous le souhaitez. La lecture n'a pas besoin de s'arrêter : le retour en arrière et l'avance rapide se font instantanément sur le même flux audio.
 
 Cette fonctionnalité est **désactivée par défaut**. Activez-la depuis le Menu NVDA → Préférences → Paramètres → FreeRadio → **Activer la mémoire tampon de décalage temporel (retour en arrière sur la radio en direct, ~10 minutes)**, ou basculez-la instantanément à tout moment avec `Ctrl+Win+T`.
+
+> **Remarque:** FreeRadio conserve désormais à tout moment une petite capture en arrière-plan de la station en cours de lecture - pas seulement lorsque ce paramètre est activé - car la [Reconnaissance Musicale](#music-recognition) et l'[Enregistrement](#recording) en dépendent tous deux pour le comportement d'évitement de la publicité décrit dans ces sections. Lorsque ce paramètre est **désactivé**, cette capture en arrière-plan est conservée pendant environ 45 secondes et `Ctrl+Win+J`/`Ctrl+Win+K` restent indisponibles — seule la taille de la mémoire tampon change, pas si elle s'exécute. L'activation du paramètre augmente la même capture jusqu'à le rembobinage complet de la mémoire tampon de ~10 minutes décrit ci-dessous.
 
 ### Comment ça fonctionne
 
@@ -279,7 +302,7 @@ Dans le cas rare où la liste de lecture d'une station ne peut pas du tout être
 
 ### Exigences et limitations
 
-- **Nécessite le BASS backend.** Le décalage temporel n'est pas disponible lorsque le BASS est désactivé.
+- **Nécessite le BASS backend.** Le décalage temporel n'est pas disponible lorsque le BASS est désactivé et la lecture revient à VLC, PotPlayer, ou Windows Media Player. La capture en arrière-plan elle-même (et l'évitement publicitaire qu'elle offre à la Reconnaissance Musicale et à l'Enregistrement) est également indisponible dans ce cas, car elle dépend de la même connexion basée sur BASS.
 - La mémoire tampon dure environ 10 minutes ; vous ne pouvez pas rembobiner au-delà.
 - La mémoire tampon est par station : changer de station, arrêter la lecture ou redémarrer NVDA l'efface et repart de zéro.
 - La lecture en décalage temporel utilise son propre fichier de mémoire tampon local et ne produit pas d'enregistrement sauvegardé — si vous souhaitez conserver l'audio de façon permanente, utilisez également l'Enregistrement instantané (`Ctrl+Win+E`).
@@ -308,7 +331,7 @@ Les options suivantes peuvent être configurées à partir de NVDA Menu → Pré
 | Reprendre la dernière station au démarrage de NVDA | Lorsqu'elle est activée, la dernière station écoutée redémarre automatiquement à chaque démarrage de NVDA. |
 | Annoncer automatiquement les changements de piste (métadonnées ICY) | Lorsqu'il est activé, NVDA lit automatiquement le nouveau nom de la piste à chaque fois qu'il change sur une station qui diffuse des métadonnées ICY. Le premier morceau est également annoncé immédiatement lors du passage à une nouvelle station. Désactivé par défaut. |
 | Notifications muettes | Lorsqu'il est activé, NVDA n'annonce pas les changements de station, changements d'état de lecture (lecture, pause, arrêt) ou événements d'enregistrement (démarré, arrêté, terminé). Les messages d'erreur, les commentaires sur les favoris, les résultats de la reconnaissance musicale et les notifications de mise à jour ne sont pas affectés. Peut également être activé à la volée via un geste de commande non assigné. Désactivé par défaut. |
-| Activer la mémoire tampon de décalage temporel (retour en arrière sur la radio en direct, ~10 minutes) | Active ou désactive la fonctionnalité de décalage temporel. Lorsqu'elle est activée, la station en cours de lecture est capturée en continu en arrière-plan afin de pouvoir la rembobiner avec `Ctrl+Win+J` et avancer avec `Ctrl+Win+K`. Peut également être basculée instantanément avec `Ctrl+Win+T`. Nécessite le BASS backend. Désactivée par défaut. |
+| Activer la mémoire tampon de décalage temporel (retour en arrière sur la radio en direct, ~10 minutes) | Active ou désactive les contrôles de rembobinage (`Ctrl+Win+J`/`Ctrl+Win+K`) et augmente la capture en arrière-plan de ~45 secondes à ~10 minutes. Une petite capture en arrière-plan de la station en cours de lecture s'exécute toujours, même lorsqu'elle est désactivée — consultez la note dans la section **Décalage temporel (retour en arrière sur la radio en direct)** ci-dessous. Peut également être basculée instantanément avec `Ctrl+Win+T`. Nécessite le BASS backend. Désactivée par défaut — consultez la section **Décalage temporel (retour en arrière sur la radio en direct)** ci-dessous pour plus de détails. |
 | Enregistrer les morceaux aimés dans un fichier texte | Lorsqu'il est activé, les informations de piste sont copiées dans le presse-papiers en appuyant sur `Ctrl+Win+I` trois fois est également ajouté à `Documents\FreeRadio Recordings\likedSongs.txt`. Si aucune métadonnée ICY n'est disponible, le résultat de la reconnaissance Shazam est enregistré dans le même fichier. Désactivé par défaut. |
 | Lorsque Ctrl+Win+P est appuyé sans lecture active | Détermine ce qui se passe lorsque ce raccourci est appuyé et que rien n'est joué: démarrer la dernière station ou ouvrir la liste des favoris. |
 | Lorsque Ctrl+Win+P est appuyé deux fois | Sélectionne ce qui se passe lorsque le raccourci est appuyé deux fois de suite rapidement: ne rien faire, ouvrir la liste des favoris, ouvrir l'onglet d'enregistrement ou ouvrir l'onglet minuterie. Lorsque "Ne rien faire " est sélectionné, la première pulsation répond instantanément sans délai. |

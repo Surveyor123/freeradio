@@ -79,6 +79,18 @@ Przycisk **Aktualizuj listę stacji** natychmiast synchronizuje ponownie lokalny
 
 Po zaznaczeniu stacji na liście przycisk **Szczegóły stacji** pokazuje informacje takie jak kraj, język, gatunek, format, przepływność, strona internetowa i adres URL strumienia w osobnym oknie. Każde pole znajduje się w osobnym, tylko do odczytu, polu tekstowym; można przechodzić między nimi Tabem i skopiować wszystkie informacje naraz przyciskiem **Kopiuj wszystko do schowka**. Ten przycisk jest dostępny na kartach Wszystkie stacje i Ulubione.
 
+### Menu kontekstowe stacji
+
+Kliknij prawym przyciskiem myszy stację na liście Wszystkie stacje lub Ulubione, albo zaznacz ją i naciśnij klawisz Menu lub `Shift+F10`, aby otworzyć menu kontekstowe z szybkimi akcjami:
+
+- **Szczegóły stacji** — to samo, co opisany wyżej przycisk Szczegóły stacji.
+- **Dodaj do ulubionych** *(karta Wszystkie stacje)* / **Usuń stację** *(karta Ulubione)*.
+- **Zmień nazwę stacji** *(karta Ulubione)* — to samo, co `F9`.
+- **Zapisz profil audio dla tej stacji** / **Wyczyść profil audio** *(karta Ulubione)* — zobacz Profil audio stacji.
+- **Testuj adres URL** — sprawdza, czy strumień wybranej stacji jest aktualnie dostępny, bez rozpoczynania odtwarzania, i ogłasza wynik (dostępny albo powód niepowodzenia, np. błąd HTTP lub przekroczenie limitu czasu sieci).
+
+Wyświetlane są tylko pozycje odpowiednie dla bieżącej karty i zaznaczenia.
+
 ### Skróty w oknie dialogowym
 
 Poniższe klawisze działają tylko wtedy, gdy aktywne jest okno Przeglądarka stacji.
@@ -190,6 +202,11 @@ Po naciśnięciu skrótu stacja uruchamia się natychmiast. Jeśli stacja zostan
 
 Aby dodać stację, której nie ma w Radio Browser, użyj przycisku Dodaj własną stację. W wyświetlonym dialogu wpisz nazwę stacji i adres URL strumienia, aby dodać ją bezpośrednio do ulubionych. Własne stacje można odtwarzać i przenosić tak samo jak pozostałe ulubione.
 
+W tym oknie dialogowym dostępne są dwa dodatkowe przyciski:
+
+- **Testuj adres URL** — sprawdza wpisany adres URL strumienia przed dodaniem stacji i ogłasza, czy jest on dostępny. Przydatne do wykrycia literówki lub martwego łącza, zanim trafi ono do listy ulubionych.
+- **Dodaj do katalogu Radio Browser…** — otwiera [stronę zgłoszeniową Radio Browser](https://www.radio-browser.info/add) w domyślnej przeglądarce, dzięki czemu po potwierdzeniu działania stacji można podzielić się nią z szerszą społecznością Radio Browser. Zobacz sekcję Dodawanie stacji do Radio Browser powyżej, aby dowiedzieć się, czego oczekuje formularz zgłoszeniowy.
+
 ### Profil audio stacji
 
 Karta Ulubione zawiera dwa przyciski do zarządzania ustawieniami audio dla konkretnej stacji:
@@ -209,6 +226,8 @@ Rozpoznawanie działa tak: krótka próbka audio jest przechwytywana ze strumien
 **Informacja dźwiękowa:** dwa rosnące sygnały oznaczają start rozpoznawania, a dwa opadające sygnały jego koniec. Krótki sygnał jest odtwarzany co 2 sekundy, gdy proces trwa.
 
 **Wymaganie:** potrzebny jest `ffmpeg.exe`. Plik `ffmpeg.exe` umieszczony w folderze dodatku zostanie użyty automatycznie; jeśli znajduje się gdzie indziej, ścieżkę można ustawić w Ustawieniach. Pobierz ffmpeg ze strony [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**Uwaga dotycząca stacji wstawiających reklamy:** niektóre stacje wysyłają krótką reklamę do każdego nowego połączenia nawiązanego z ich strumieniem, oddzielnie od audycji, której już słuchasz. Rozpoznawanie unika próbkowania tej reklamy, ponownie wykorzystując istniejące połączenie FreeRadio ze strumieniem w tle (to samo, które jest używane dla Time-shift) zamiast otwierać nowe, dzięki czemu rozpoznaje to, co faktycznie gra, a nie reklamę. Działa to automatycznie i nie wymaga konfiguracji.
 
 ## Kopia dźwięku
 
@@ -247,11 +266,15 @@ Nagrania są domyślnie zapisywane w `Documents\FreeRadio Recordings\`. Nazwa pl
 
 NVDA ogłasza rozpoczęcie i zakończenie nagrywania. Jeśli NVDA zostanie uruchomione ponownie podczas aktywnego zaplanowanego nagrywania, nagrywanie zostanie automatycznie wznowione po uruchomieniu.
 
+Podobnie jak rozpoznawanie muzyki, nagrywanie natychmiastowe i nagrywanie utworu ponownie wykorzystują istniejące połączenie FreeRadio ze strumieniem w tle, gdy jest dostępne, zamiast otwierać nowe, dzięki czemu nagranie rejestruje to, co faktycznie jest nadawane, nawet na stacjach, które w przeciwnym razie wysłałyby świeżą reklamę do nowego połączenia. Nie dotyczy to zaplanowanych nagrań w trybie **Tylko nagrywaj**, ponieważ w chwili ich rozpoczęcia żadna stacja jeszcze nie gra.
+
 ## Time-shift (cofanie radia na żywo)
 
 Time-shift pozwala cofnąć aktualnie słuchaną stację jak DVR lub kaseta magnetofonowa — zatrzymaj chwilę, cofnij się kilka minut i dogońcie live, kiedy chcesz. Odtwarzanie nie musi się zatrzymywać: cofanie i przewijanie do przodu odbywają się natychmiastowo na tym samym strumieniu audio.
 
 Funkcja jest **domyślnie wyłączona**. Włącz ją w Menu NVDA → Preferencje → Ustawienia → FreeRadio → **Włącz bufor time-shift (cofanie radia na żywo, ~10 minut)** lub przełącz natychmiast w dowolnym momencie za pomocą `Ctrl+Win+T`.
+
+> **Uwaga:** FreeRadio utrzymuje teraz niewielkie przechwytywanie aktualnie odtwarzanej stacji w tle przez cały czas — nie tylko wtedy, gdy ta opcja jest włączona — ponieważ zarówno Rozpoznawanie muzyki, jak i Nagrywanie polegają na tym w kwestii opisanego w tych sekcjach unikania reklam. Gdy ta opcja jest **wyłączona**, to przechwytywanie w tle ograniczone jest do mniej więcej ostatnich 45 sekund, a `Ctrl+Win+J`/`Ctrl+Win+K` pozostają niedostępne — zmienia się tylko rozmiar bufora, a nie to, czy działa. Włączenie tej opcji powiększa to samo przechwytywanie do pełnego, opisanego niżej bufora cofania o długości ~10 minut.
 
 ### Jak to działa
 
@@ -280,7 +303,7 @@ W rzadkim przypadku, gdy playlista stacji nie może zostać w ogóle odczytana (
 
 ### Wymagania i ograniczenia
 
-- **Wymaga backendu BASS.** Time-shift nie jest dostępny, gdy BASS jest wyłączony.
+- **Wymaga backendu BASS.** Time-shift nie jest dostępny, gdy BASS jest wyłączony, a odtwarzanie przełącza się na VLC, PotPlayer lub Windows Media Player. Samo przechwytywanie w tle (oraz zapewniane przez nie unikanie reklam dla Rozpoznawania muzyki i Nagrywania) jest w takim przypadku również niedostępne, ponieważ zależy od tego samego połączenia opartego na BASS.
 - Bufor wynosi około 10 minut; nie można cofnąć się dalej.
 - Bufor jest per-stacja: zmiana stacji, zatrzymanie odtwarzania lub restart NVDA czyści go i zaczyna od nowa.
 - Odtwarzanie z time-shiftem używa własnego lokalnego pliku bufora i nie tworzy zapisanego nagrania — jeśli chcesz trwale zachować audio, użyj również Nagrywania natychmiastowego (`Ctrl+Win+E`).
@@ -309,7 +332,7 @@ Poniższe opcje można skonfigurować w menu NVDA -> Preferencje -> Ustawienia -
 | Wznów ostatnią stację przy starcie NVDA | Gdy włączone, ostatnio odtwarzana stacja jest automatycznie uruchamiana przy każdym starcie NVDA. |
 | Automatycznie ogłaszaj zmiany utworów (metadane ICY) | Gdy włączone, NVDA automatycznie odczytuje nową nazwę utworu za każdym razem, gdy zmieni się na stacji nadającej metadane ICY. Pierwszy utwór jest ogłaszany również natychmiast po przełączeniu na nową stację. Domyślnie wyłączone. |
 | Wycisz powiadomienia | Gdy włączone, NVDA nie ogłasza zmian stacji, zmian stanu odtwarzania (odtwórz, pauza, stop) ani zdarzeń nagrywania (rozpoczęte, zatrzymane, zakończone). Komunikaty błędów, informacje o ulubionych, wyniki rozpoznawania muzyki i powiadomienia aktualizacji nie są wyciszane. Można też przełączać w locie przez nieprzypisane zdarzenie wejścia. Domyślnie wyłączone. |
-| Włącz bufor time-shift (cofanie radia na żywo, ~10 minut) | Włącza lub wyłącza funkcję time-shift. Po włączeniu aktualnie odtwarzana stacja jest stale przechwytywana w tle, dzięki czemu można ją cofnąć za pomocą `Ctrl+Win+J` i przewinąć do przodu za pomocą `Ctrl+Win+K`. Można też natychmiast przełączyć za pomocą `Ctrl+Win+T`. Wymaga backendu BASS. Domyślnie wyłączone. |
+| Włącz bufor time-shift (cofanie radia na żywo, ~10 minut) | Włącza lub wyłącza sterowanie cofaniem (`Ctrl+Win+J`/`Ctrl+Win+K`) i powiększa przechwytywanie w tle z ~45 sekund do ~10 minut. Niewielkie przechwytywanie w tle aktualnie odtwarzanej stacji działa zawsze, nawet gdy ta opcja jest wyłączona — zobacz uwagę w sekcji **Time-shift** poniżej. Można też natychmiast przełączyć za pomocą `Ctrl+Win+T`. Wymaga backendu BASS. Domyślnie wyłączone — pełne szczegóły znajdziesz w sekcji **Time-shift** poniżej. |
 | Zapisuj polubione utwory do pliku tekstowego | Gdy włączone, informacje o utworze skopiowane do schowka trzykrotnym naciśnięciem `Ctrl+Win+I` są też dopisywane do `Documents\FreeRadio Recordings\likedSongs.txt`. Jeśli metadane ICY nie są dostępne, do tego samego pliku zapisany zostaje wynik rozpoznawania przez Shazam. Domyślnie wyłączone. |
 | Gdy Ctrl+Win+P zostanie naciśnięty bez aktywnego odtwarzania | Określa, co stanie się po naciśnięciu skrótu, gdy nic nie gra: uruchomienie ostatniej stacji albo otwarcie listy ulubionych. |
 | Gdy Ctrl+Win+P zostanie naciśnięty dwa razy | Wybiera akcję po dwukrotnym szybkim naciśnięciu skrótu: nic nie rób, otwórz listę ulubionych, otwórz kartę nagrywania albo otwórz kartę timera. Gdy wybrane jest "nic nie rób", pierwsze naciśnięcie reaguje natychmiast, bez opóźnienia. |

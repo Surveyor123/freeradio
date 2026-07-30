@@ -79,6 +79,18 @@ El botón **Actualizar lista de estaciones** vuelve a sincronizar el catálogo d
 
 Cuando se selecciona una estación en la lista, el botón **Detalles de la estación** muestra información como el país, el idioma, el género, el formato, el bitrate, el sitio web y el flujo URL en un cuadro de diálogo separado. Cada campo aparece en su propio cuadro de texto de solo lectura; puedes moverte entre los campos con Tab y copia toda la información al portapapeles de una vez con el botón **Copiar todo al portapapeles**. Este botón está disponible en las pestañas Todas las estaciones y Favoritos.
 
+### Menú Contextual de la Estación
+
+Haga clic derecho en una estación en la lista Todas las estaciones o Favoritos, o selecciónela y pulse la tecla Aplicaciones o `Shift+F10`, para abrir un menú contextual con acciones rápidas:
+
+- **Detalles de la estación** — igual que el botón Detalles de la estación descrito anteriormente.
+- **Añadir a favoritos** *(pestaña Todas las estaciones)* / **Eliminar estación** *(pestaña Favoritos)*.
+- **Renombrar la estación** *(pestaña Favoritos)* — igual que `F9`.
+- **Guardar perfil de audio para esta estación** / **Borrar perfil de audio** *(pestaña Favoritos)* — consulta la sección [Perfil de Audio de la Estación](#station-audio-profile).
+- **Probar URL** — comprueba si se puede acceder actualmente al flujo de la estación seleccionada sin iniciar la reproducción y anuncia el resultado (accesible o el motivo del error, como un error HTTP o tiempo de espera de red).
+
+Sólo los elementos relevantes para la pestaña y selección actual se muestran como disponibles.
+
 ### Atajos en el cuadro de diálogo
 
 Las siguientes teclas solo funcionan cuando la ventana del Navegador de Estaciones está activa.
@@ -190,6 +202,11 @@ El atajo inicia la estación de inmediato. Si la estación se elimina de favorit
 
 Para añadir una estación que no está en Radio Browser, use el botón Añadir una estación personalizada. En el cuadro de diálogo que aparece, ingresa el nombre de la estación y la URL del flujo  de transmisión para añadirla directamente a tus favoritos. Las estaciones personalizadas se pueden escuchar y reorganizar como cualquier otro favorito.
 
+Dos botones adicionales están disponibles en este cuadro de diálogo:
+
+- **Probar URL** — comprueba la URL del flujo que ingresó antes de añadir la estación y anuncia si es accesible. Útil para detectar un error tipográfico o un enlace muerto antes de que termine en su lista de favoritos.
+- **Añadir al directorio de Radio Browser…** — abre la [página de envío de Radio Browser](https://www.radio-browser.info/add) en su navegador predeterminado, para que pueda compartir la estación con la comunidad más amplia de Radio Browser una vez que haya confirmado que funciona. Consulta la sección [Añadir una estación a Radio Browser](#adding-a-station-to-radio-browser) más arriba para saber qué espera el formulario de envío.
+
 ### Perfil de Audio de la Estación
 
 La pestaña Favoritos incluye dos botones para administrar los ajustes de audio por estación:
@@ -209,6 +226,8 @@ El reconocimiento funciona de la siguiente manera: se captura una breve muestra 
 **Retorno de audio:** Suenan dos pitidos ascendentes cuando comienza el reconocimiento y dos pitidos descendentes cuando finaliza. Suena un pitido corto cada 2 segundos mientras el proceso está en progreso.
 
 **Requisito:** ffmpeg.exe requerido. Un ffmpeg.exe colocado en la carpeta del complementos se utiliza automáticamente; si está en una ubicación diferente, la ruta se puede establecer en las Opciones. Descargar ffmpeg desde [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**Una nota sobre las estaciones que insertan anuncios publicitarios:** algunas estaciones muestran un anuncio publicitario breve en cada nueva conexión realizada a su flujo, aparte de la transmisión que ya estás escuchando. El reconocimiento evita muestrear ese anuncio publicitario al reutilizar la conexión del flujo en segundo plano existente de FreeRadio (la misma que se usa para el [Desplazamiento temporal (rebobinar radio en directo)](#time-shift-rewind-live-radio)) en lugar de abrir una nueva, por lo que identifica lo que realmente se está reproduciendo en lugar de un anuncio publicitario. Esto funciona automáticamente y no necesita configuración.
 
 ## Espejo de Audio
 
@@ -246,11 +265,15 @@ Las grabaciones se guardan de forma predeterminada en `Documentos\FreeRadio Reco
 
 NVDA anuncia cuándo comienza y cuándo termina una grabación. Si NVDA se reinicia mientras hay una grabación programada activa, la grabación se reanuda automáticamente al iniciar.
 
+Al igual que el reconocimiento de música, la grabación instantánea y de canciones reutiliza la conexión del flujo en segundo plano existente de FreeRadio cuando está disponible, en lugar de abrir una nueva, por lo que una grabación captura lo que realmente se transmite incluso en estaciones que de otro modo mostrarían un anuncio publicitario nuevo en una conexión nueva. Esto no se aplica a las grabaciones programadas **Solo grabación**, ya que ninguna estación se está reproduciendo  al momento donde ellas empiezan.
+
 ## Desplazamiento temporal (rebobinar radio en directo)
 
 El desplazamiento temporal permite rebobinar la emisora que estás escuchando, como un DVR o una cinta de casete: pausa el momento, retrocede unos minutos y vuelve al directo cuando quieras. La reproducción no tiene que detenerse: rebobinar y avanzar ocurren al instante en el mismo flujo de audio.
 
 Esta función está **deshabilitada por defecto**. Actívala desde el Menú NVDA → Preferencias → Opciones → FreeRadio → **Activar búfer de desplazamiento temporal (rebobinar radio en directo, ~10 minutos)**, o actívala al instante en cualquier momento con `Ctrl+Win+T`.
+
+> **Nota:** FreeRadio ahora conserva en todo momento una pequeña captura en segundo plano de la estación que se está reproduciendo — no solo cuando esta configuración está habilitada — porque el [Reconocimiento de Música](#music-recognition) y la [Grabación](#recording) dependen de ella para el comportamiento de evasión del anuncio publicitario descrita en estas secciones. Cuando esta configuración está **deshabilitada**, esta captura en segundo plano se conserva durante aproximadamente 45 segundos y `Ctrl+Win+J`/`Ctrl+Win+K` permanecen no disponibles — solo cambia el tamaño del búfer, no si se ejecuta. Al habilitar la configuración aumenta la misma captura hasta el rebobinado completo del búfer de ~10 minutos que se describe a continuación.
 
 ### Cómo funciona
 
@@ -279,7 +302,7 @@ En el raro caso de que la lista de reproducción de una emisora no pueda leerse 
 
 ### Requisitos y limitaciones
 
-- **Requiere el BASS backend.** El desplazamiento temporal no está disponible cuando el BASS está deshabilitado.
+- **Requiere el BASS backend.** El desplazamiento temporal no está disponible cuando el BASS está deshabilitado y la reproducción vuelve a VLC, PotPlayer, o Windows Media Player. La captura en segundo plano en sí (y la función de evitar el anuncio publicitario que proporciona al Reconocimiento de Música y el de Grabación) tampoco está disponible en ese caso, ya que depende de la misma conexión basada en BASS.
 - El búfer tiene aproximadamente 10 minutos; no se puede retroceder más allá de ese límite.
 - El búfer es por emisora: cambiar de emisora, detener la reproducción o reiniciar NVDA lo borra y empieza de nuevo.
 - La reproducción con desplazamiento temporal usa su propio archivo de búfer local y no produce una grabación guardada. Si quieres conservar el audio de forma permanente, usa también la Grabación instantánea (`Ctrl+Win+E`).
@@ -308,7 +331,7 @@ Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencia
 | Reanudar la última estación al iniciar NVDA | Cuando está habilitado, la última estación escuchada se reinicia automáticamente cada vez que se inicia NVDA. |
 | Anunciar automáticamente los cambios de pista (metadatos ICY) | Cuando está habilitado, NVDA lee automáticamente el nombre de la nueva pista cada vez que cambia en una estación que transmite metadatos ICY. La primera canción también se anuncia inmediatamente al cambiar a una nueva estación. Deshabilitado por defecto. |
 | Silenciar notificaciones | Cuando está habilitado, NVDA no anuncia cambios de estación, cambios de estado de reproducción (reproducir, pausar, detener) o eventos de grabación (iniciado, detenido, terminado). Mensajes de error, comentarios sobre favoritos, resultados de reconocimiento de música y notificaciones de las actualizaciones no se ven afectadas. También se puede activar sobre la marcha mediante un gesto de entrada no asignado. Deshabilitado por defecto. |
-| Activar búfer de desplazamiento temporal (rebobinar radio en directo, ~10 minutos) | Activa o desactiva la función de desplazamiento temporal. Cuando está habilitada, la emisora en reproducción se captura continuamente en segundo plano para poder rebobinarla con `Ctrl+Win+J` y avanzar con `Ctrl+Win+K`. También se puede alternar al instante con `Ctrl+Win+T`. Requiere el BASS backend. Deshabilitado por defecto. |
+| Activar búfer de desplazamiento temporal (rebobinar radio en directo, ~10 minutos) | Activa o desactiva los controles de rebobinado `Ctrl+Win+J`/`Ctrl+Win+K`) y aumenta la captura en segundo plano de ~45 segundos a ~10 minutos. Una pequeña captura en segundo plano de la emisora ​​en reproducción siempre se ejecuta, incluso cuando está deshabilitada — consulta la nota en la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación. También se puede alternar al instante con `Ctrl+Win+T`. Requiere el BASS backend. Deshabilitado por defecto — consulta la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación para obtener más detalles. |
 | Guardar las canciones favoritas en un archivo de texto | Cuando está habilitado, la información de la pista se copia al portapapeles pulsando `Ctrl+Win+I` tres veces y también se añade a `Documentos\FreeRadio Recordings\likedSongs.txt`. Si no hay metadatos ICY disponibles, el resultado del reconocimiento de Shazam se guarda en el mismo archivo. Deshabilitado por defecto. |
 | Cuando Ctrl+Win+P se pulsa sin reproducción activa | Determina qué sucede cuando se pulsa este atajo y no hay nada  en reproducción: iniciar la última estación o abrir la lista de favoritos. |
 | Cuando Ctrl+Win+P se pulsa dos veces | Selecciona lo que sucede cuando se pulsa el atajo dos veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir la pestaña de grabación o abrir la pestaña del temporizador. Cuando "No hacer nada" es seleccionado, la primera pulsación responde instantáneamente sin demora. |

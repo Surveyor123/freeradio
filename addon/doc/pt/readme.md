@@ -81,6 +81,18 @@ O botão **Atualizar Lista de Estações** sincroniza imediatamente o catálogo 
 
 Quando uma estação está selecionada na lista, o botão **Detalhes da Estação** apresenta informações como país, idioma, género, formato, bitrate, website e URL da transmissão numa caixa de diálogo separada. Cada campo aparece na sua própria caixa de texto só de leitura; pode mover-se entre campos com Tab e copiar todas as informações para a área de transferência de uma só vez com o botão **Copiar tudo para a área de transferência**. Este botão está disponível nos separadores Todas as Estações e Favoritos.
 
+### Menu de Contexto da Estação
+
+Clique com o botão direito numa estação na lista Todas as Estações ou Favoritos, ou selecione-a e prima a tecla Aplicações ou `Shift+F10`, para abrir um menu de contexto com ações rápidas:
+
+- **Detalhes da Estação** — igual ao botão Detalhes da Estação descrito acima.
+- **Adicionar aos Favoritos** *(separador Todas as Estações)* / **Eliminar Estação** *(separador Favoritos)*.
+- **Mudar Nome da Estação** *(separador Favoritos)* — igual a `F9`.
+- **Guardar Perfil de Áudio para Esta Estação** / **Limpar Perfil de Áudio** *(separador Favoritos)* — ver Perfil de Áudio da Estação.
+- **Testar URL** — verifica se a transmissão da estação selecionada está atualmente acessível, sem iniciar a reprodução, e anuncia o resultado (acessível, ou o motivo da falha, como um erro HTTP ou um tempo limite de rede).
+
+Apenas os itens relevantes para o separador e seleção atuais são apresentados como disponíveis.
+
 ### Atalhos na Caixa de Diálogo
 
 As teclas seguintes funcionam apenas quando a janela do Navegador de Estações está ativa.
@@ -192,6 +204,11 @@ O atalho inicia a estação imediatamente. Se a estação for removida dos favor
 
 Para adicionar uma estação que não esteja no Radio Browser, utilize o botão Adicionar Estação Personalizada. Na caixa de diálogo que aparece, introduza o nome da estação e o URL da transmissão para a adicionar diretamente aos favoritos. As estações personalizadas podem ser reproduzidas e reordenadas tal como qualquer outro favorito.
 
+Estão disponíveis dois botões adicionais nesta caixa de diálogo:
+
+- **Testar URL** — verifica o URL da transmissão introduzido antes de adicionar a estação e anuncia se está acessível. Útil para detetar um erro de escrita ou uma ligação inválida antes de esta ficar na sua lista de favoritos.
+- **Adicionar ao diretório Radio Browser…** — abre a [página de submissão do Radio Browser](https://www.radio-browser.info/add) no navegador predefinido, para que possa partilhar a estação com a comunidade Radio Browser assim que confirmar que funciona. Consulte Adicionar uma Estação ao Radio Browser acima para saber o que o formulário de submissão espera.
+
 ### Perfil de Áudio da Estação
 
 O separador Favoritos inclui dois botões para gerir as definições de áudio por estação:
@@ -211,6 +228,8 @@ O reconhecimento funciona da seguinte forma: uma curta amostra de áudio é capt
 **Feedback sonoro:** Dois sinais sonoros ascendentes indicam o início do reconhecimento e dois descendentes indicam o fim. Um sinal sonoro curto soa a cada 2 segundos enquanto o processo está em execução.
 
 **Requisito:** É necessário `ffmpeg.exe`. Um `ffmpeg.exe` colocado na pasta do complemento é utilizado automaticamente; se estiver noutro local, o caminho pode ser definido nas Definições. Descarregue o ffmpeg em [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**Uma nota sobre estações que inserem anúncios:** algumas estações reproduzem um anúncio curto em cada nova ligação feita à sua transmissão, separado da emissão que já está a ouvir. O reconhecimento evita amostrar esse anúncio ao reutilizar a ligação de transmissão em segundo plano já existente do FreeRadio (a mesma utilizada para o Time-Shift) em vez de abrir uma nova, identificando assim o que está realmente a tocar em vez de um anúncio. Isto funciona automaticamente e não requer configuração.
 
 ## Espelho de Áudio
 
@@ -248,11 +267,15 @@ As gravações são guardadas por predefinição em `Documents\FreeRadio Recordi
 
 O NVDA anuncia quando uma gravação inicia e quando termina. Se o NVDA for reiniciado enquanto uma gravação agendada estiver ativa, a gravação é retomada automaticamente no arranque.
 
+Tal como o reconhecimento musical, a gravação instantânea e a gravação de faixa reutilizam a ligação de transmissão em segundo plano já existente do FreeRadio quando disponível, em vez de abrir uma nova, para que a gravação capture o que está realmente a ser emitido mesmo em estações que de outra forma reproduziriam um anúncio novo numa ligação recente. Isto não se aplica às gravações agendadas em modo **Apenas Gravar**, uma vez que nenhuma estação já está a reproduzir no momento em que estas começam.
+
 ## Time-Shift (Recuar na Rádio em Direto)
 
 O time-shift permite recuar na estação que está a ouvir, como um DVR ou uma cassete — pause o momento, volte uns minutos atrás e recupere o direto quando quiser. A reprodução nunca precisa de parar: recuar e avançar acontecem instantaneamente no mesmo fluxo de áudio.
 
 Esta funcionalidade está **desativada por defeito**. Ative-a em Menu NVDA → Preferências → Definições → FreeRadio → **Ativar buffer de time-shift (recuar na rádio em direto, ~10 minutos)**, ou ative-a instantaneamente a qualquer momento com `Ctrl+Win+T`.
+
+> **Nota:** o FreeRadio mantém agora uma pequena captura em segundo plano da estação em reprodução em execução permanente — não apenas quando esta definição está ativada — porque tanto o Reconhecimento Musical como a Gravação dependem dela para o comportamento de evitar anúncios descrito nessas secções. Quando esta definição está **desativada**, essa captura em segundo plano mantém-se limitada a cerca dos últimos 45 segundos e `Ctrl+Win+J`/`Ctrl+Win+K` permanecem indisponíveis — apenas o tamanho do buffer muda, não se está ou não em execução. Ativar a definição amplia a mesma captura para o buffer completo de recuo de ~10 minutos descrito abaixo.
 
 ### Como funciona
 
@@ -281,7 +304,7 @@ No caso raro de a playlist de uma estação não poder ser lida de todo (por exe
 
 ### Requisitos e limitações
 
-- **Requer o backend BASS.** O time-shift não está disponível quando o BASS está desativado.
+- **Requer o backend BASS.** O time-shift não está disponível quando o BASS está desativado e a reprodução recorre ao VLC, PotPlayer ou Windows Media Player. A própria captura em segundo plano (e a prevenção de anúncios que esta fornece ao Reconhecimento Musical e à Gravação) também não está disponível nesse caso, uma vez que depende da mesma ligação baseada em BASS.
 - O buffer tem aproximadamente 10 minutos; não é possível recuar além disso.
 - O buffer é por estação: mudar de estação, parar a reprodução ou reiniciar o NVDA limpa-o e começa de novo.
 - A reprodução com time-shift usa o seu próprio ficheiro de buffer local e não produz uma gravação guardada — se quiser conservar o áudio permanentemente, use também a Gravação instantânea (`Ctrl+Win+E`).
@@ -310,7 +333,7 @@ As seguintes opções podem ser configuradas em Menu NVDA → Preferências → 
 | Retomar última estação ao iniciar o NVDA | Quando ativado, a última estação reproduzida reinicia automaticamente sempre que o NVDA inicia. |
 | Anunciar automaticamente mudanças de faixa (metadados ICY) | Quando ativado, o NVDA lê automaticamente o novo nome da faixa sempre que muda numa estação que difunde metadados ICY. A primeira faixa também é anunciada imediatamente ao mudar para uma nova estação. Desativado por predefinição. |
 | Silenciar notificações (mudanças de estação, reprodução, gravação) | Quando ativado, o NVDA deixa de anunciar mudanças de estação, alterações do estado de reprodução (reproduzir, pausar, parar) e eventos de gravação (iniciada, parada, concluída). Mensagens de erro, feedback de favoritos, resultados do reconhecimento musical e notificações de atualização não são afetados. Pode também ser alternado em tempo real através de um gesto de entrada não atribuído. Desativado por predefinição. |
-| Ativar buffer de time-shift (recuar na rádio em direto, ~10 minutos) | Ativa ou desativa a funcionalidade de time-shift. Quando ativada, a estação em reprodução é capturada continuamente em segundo plano para poder ser recuada com `Ctrl+Win+J` e avançada com `Ctrl+Win+K`. Também pode ser alternada instantaneamente com `Ctrl+Win+T`. Requer o backend BASS. Desativada por defeito. |
+| Ativar buffer de time-shift (recuar na rádio em direto, ~10 minutos) | Ativa ou desativa os controlos de recuo (`Ctrl+Win+J`/`Ctrl+Win+K`) e amplia a captura em segundo plano de ~45 segundos até ~10 minutos. Uma pequena captura em segundo plano da estação em reprodução está sempre em execução, mesmo quando esta definição está desativada — ver a nota na secção **Time-Shift** abaixo. Também pode ser alternada instantaneamente com `Ctrl+Win+T`. Requer o backend BASS. Desativada por defeito — consulte a secção **Time-Shift** abaixo para todos os detalhes. |
 | Guardar músicas gostadas em ficheiro de texto | Quando ativado, as informações de faixa copiadas para a área de transferência ao premir `Ctrl+Win+I` três vezes são também adicionadas a `Documents\FreeRadio Recordings\likedSongs.txt`. Se não existirem metadados ICY, o resultado do reconhecimento Shazam é guardado no mesmo ficheiro. Desativado por predefinição. |
 | Quando Ctrl+Win+P é premido sem reprodução ativa | Determina o que acontece quando este atalho é premido e nada está a reproduzir: iniciar a última estação ou abrir a lista de favoritos. |
 | Quando Ctrl+Win+P é premido duas vezes | Seleciona o que acontece quando o atalho é premido duas vezes rapidamente: não fazer nada, abrir a lista de favoritos, abrir o separador de gravação ou abrir o separador do temporizador. Quando "não fazer nada" está selecionado, a primeira pressão responde instantaneamente sem atraso. |

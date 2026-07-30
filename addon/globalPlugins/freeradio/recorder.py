@@ -171,6 +171,18 @@ def _detect_container_from_segment(segment_data):
 	# MPEG-TS starts with 0x47 (G) sync byte
 	if segment_data[0] == 0x47:
 		return "ts"
+	# Native FLAC stream marker
+	if segment_data[:4] == b"fLaC":
+		return "flac"
+	# Ogg container (Ogg Vorbis / Ogg Opus / Ogg FLAC)
+	if segment_data[:4] == b"OggS":
+		return "ogg"
+	# MP3: either an ID3v2 tag at the very start, or an MPEG audio frame
+	# sync word (11 set bits: 0xFF followed by 0xE0-0xFF).
+	if segment_data[:3] == b"ID3":
+		return "mp3"
+	if segment_data[0] == 0xFF and (segment_data[1] & 0xE0) == 0xE0:
+		return "mp3"
 	# MP4/ISO base media: scan first 64 bytes for 'ftyp' box signature.
 	# Some encoders prepend a styp or moof box before ftyp, so check beyond byte 4.
 	for offset in range(0, min(64, len(segment_data) - 4)):
@@ -903,6 +915,147 @@ def _load_schedules():
 
 
 
+class _TimeshiftTailWriter:
+	"""Writes a recording by tailing FreeRadio's already-running time-shift
+	capture buffer instead of opening a brand-new connection to the stream.
+
+	Why: some stations serve a fresh, per-connection ad to every new
+	listener session (server-side ad insertion). The main player's own
+	connection has already passed that ad by the time the user presses
+	record, but a second, independent connection made at that moment (the
+	old _StreamWriter behaviour) looks like a brand-new listener to the ad
+	server and gets served a new ad instead of whatever track is actually
+	airing. The time-shift buffer already has its own long-running
+	connection open (started when the station began playing) - tailing it,
+	rather than reconnecting, captures what is actually playing right now.
+	"""
+
+	_POLL_INTERVAL = 1.0
+
+	def __init__(self, timeshift_buffer, output_path):
+		self._buffer     = timeshift_buffer
+		self.output_path = output_path
+		self._stop       = threading.Event()
+		self._thread     = None
+		self._error      = None
+
+	def start(self):
+		# Suspend the buffer's trimming for as long as we're reading it,
+		# same guard the rewind feature uses for the same reason.
+		try:
+			self._buffer.enter_playback()
+		except Exception:
+			pass
+		self._thread = threading.Thread(
+			target=self._run, daemon=True, name="FreeRadio-RecorderTail",
+		)
+		self._thread.start()
+
+	def stop(self):
+		self._stop.set()
+		if self._thread:
+			self._thread.join(timeout=5)
+		try:
+			self._buffer.exit_playback()
+		except Exception:
+			pass
+
+	def _run(self):
+		path = self._buffer.get_file_path()
+		if not path:
+			self._error = RuntimeError("Time-shift buffer has no active file")
+			return
+
+		# If this stream needs a container header to be decodable (fMP4-
+		# packaged HLS), it lives in the first prefix_len bytes of the
+		# buffer and must be prepended to our own output file too, or the
+		# finished recording won't be playable on its own.
+		prefix_len = 0
+		try:
+			prefix_len = self._buffer.get_reserved_prefix_len()
+		except Exception:
+			pass
+		prefix_bytes = b""
+		if prefix_len:
+			try:
+				with open(path, "rb") as f:
+					prefix_bytes = f.read(prefix_len)
+			except OSError:
+				prefix_bytes = b""
+
+		try:
+			pos = os.path.getsize(path)
+		except OSError:
+			pos = 0
+
+		out_f = None
+		try:
+			while not self._stop.is_set():
+				try:
+					size = os.path.getsize(path)
+				except OSError:
+					size = pos
+				if size > pos:
+					try:
+						with open(path, "rb") as buf_f:
+							buf_f.seek(pos)
+							chunk = buf_f.read(size - pos)
+					except OSError as e:
+						log.warning("FreeRadio Recorder: tail read failed: %s", e)
+						chunk = b""
+					if chunk:
+						if out_f is None:
+							self._detect_and_fix_extension(prefix_bytes[:64] or chunk[:64])
+							out_f = open(self.output_path, "ab")
+							if prefix_bytes:
+								out_f.write(prefix_bytes)
+						out_f.write(chunk)
+						pos += len(chunk)
+				self._stop.wait(self._POLL_INTERVAL)
+		finally:
+			if out_f:
+				try:
+					out_f.close()
+				except Exception:
+					pass
+
+	_CONTAINER_EXT = {
+		"mp4":  ".m4a",
+		"ts":   ".ts",
+		"flac": ".flac",
+		"ogg":  ".ogg",
+		"mp3":  ".mp3",
+	}
+
+	def _detect_and_fix_extension(self, first_bytes):
+		container = _detect_container_from_segment(first_bytes)
+		base, current_ext = os.path.splitext(self.output_path)
+		ext = self._CONTAINER_EXT.get(container)
+		if ext:
+			if current_ext != ext:
+				self.output_path = base + ext
+				log.warning("FreeRadio Recorder: detected %s container, saving as %s",
+						  container, self.output_path)
+			return
+		# Byte sniffing came back inconclusive. For HLS (.m3u8) stations,
+		# most AAC content is MP4-boxed even when the sniffed first bytes
+		# didn't show it (e.g. mid-fragment), so keep the old .m4a default
+		# for those. Otherwise guess from the station's own URL rather than
+		# assuming every buffer-tailed recording is HLS/AAC.
+		try:
+			url = self._buffer.get_url() or ""
+		except Exception:
+			url = ""
+		if url.lower().split("?")[0].endswith(".m3u8"):
+			guessed = ".m4a"
+		else:
+			guessed = "." + _guess_ext(url)
+		if current_ext != guessed:
+			self.output_path = base + guessed
+			log.warning("FreeRadio Recorder: unknown container from buffer, "
+					  "guessed %s from station URL", guessed)
+
+
 class Recorder:
 	"""Manages instant and scheduled recordings."""
 
@@ -962,32 +1115,46 @@ class Recorder:
 				result.append(rec)
 		return result
 
-	def start(self, player, station_name):
+	def start(self, player, station_name, timeshift_buffer=None):
 		"""Start instant recording. VLC keeps playing; Python writes the stream.
+
+		timeshift_buffer: the RadioPlayer's TimeShiftBuffer, if available. When
+		it is actively capturing, the recording tails that already-open
+		connection instead of opening a fresh one - some stations serve a new
+		ad to every brand-new connection, which a second connection made
+		just for this recording would otherwise capture instead of the
+		track actually airing.
+
 		Returns output file path.
 		"""
 		original_url = getattr(player, "_current_url_resolved", None) or player._current_url
 		if not original_url:
 			raise RuntimeError("No station playing")
-		log.info("FreeRadio Recorder: instant recording URL = %s", original_url)
+		log.warning("FreeRadio Recorder: instant recording URL = %s", original_url)
 		if self._writer:
 			self._writer.stop()
 
 		out = _make_output_path(station_name)
 		self._output_path  = out
 		self._station_name = station_name
-		self._writer = _StreamWriter(original_url, out)
+		if timeshift_buffer is not None and timeshift_buffer.is_active() and timeshift_buffer.is_tail_safe():
+			self._writer = _TimeshiftTailWriter(timeshift_buffer, out)
+			log.warning("FreeRadio Recorder: instant recording via time-shift buffer tail (no new connection)")
+		else:
+			self._writer = _StreamWriter(original_url, out)
 		self._writer.start()
-		log.info("FreeRadio Recorder: instant recording started → %s", out)
+		log.warning("FreeRadio Recorder: instant recording started → %s", out)
 		return out
 
-	def start_song_capture(self, player, song_title):
+	def start_song_capture(self, player, song_title, timeshift_buffer=None):
 		"""Start a song-capture recording named after the current ICY track title.
 
 		This mode is intended for stations that broadcast ICY metadata.  The file
 		is named after the song rather than the station so recordings are easy to
 		identify later.  The caller is responsible for stopping the recording when
 		the track changes (see Recorder.stop_song_capture).
+
+		timeshift_buffer: see start().
 
 		Returns the output file path.
 		"""
@@ -1003,9 +1170,13 @@ class Recorder:
 		self._output_path  = out
 		self._station_name = song_title   # store the song title in the station-name slot
 		self._song_capture = True         # flag: this recording was started in song-capture mode
-		self._writer = _StreamWriter(original_url, out)
+		if timeshift_buffer is not None and timeshift_buffer.is_active() and timeshift_buffer.is_tail_safe():
+			self._writer = _TimeshiftTailWriter(timeshift_buffer, out)
+			log.warning("FreeRadio Recorder: song-capture recording via time-shift buffer tail (no new connection)")
+		else:
+			self._writer = _StreamWriter(original_url, out)
 		self._writer.start()
-		log.info("FreeRadio Recorder: song-capture recording started → %s", out)
+		log.warning("FreeRadio Recorder: song-capture recording started → %s", out)
 		return out
 
 	def stop_song_capture(self):

@@ -79,6 +79,18 @@ The **Update Station List** button re-syncs the local station catalogue from the
 
 When a station is selected in the list, the **Station Details** button displays information such as country, language, genre, format, bitrate, website and stream URL in a separate dialog. Each field appears in its own read-only text box; you can move between fields with Tab and copy all information to the clipboard at once with the **Copy all to clipboard** button. This button is available in both the All Stations and Favourites tabs.
 
+### Station Context Menu
+
+Right-click a station in the All Stations or Favourites list, or select it and press the Applications key or `Shift+F10`, to open a context menu with quick actions:
+
+- **Station Details** — same as the Station Details button described above.
+- **Add to Favourites** *(All Stations tab)* / **Delete Station** *(Favourites tab)*.
+- **Rename Station** *(Favourites tab)* — same as `F9`.
+- **Save Audio Profile for This Station** / **Clear Audio Profile** *(Favourites tab)* — see [Station Audio Profile](#station-audio-profile).
+- **Test URL** — checks whether the selected station's stream is currently reachable without starting playback, and announces the result (reachable, or the reason it failed, such as an HTTP error or network timeout).
+
+Only the items relevant to the current tab and selection are shown as available.
+
 ### In-Dialog Shortcuts
 
 The following keys work only while the Station Browser window is active.
@@ -190,6 +202,11 @@ The shortcut activates the station immediately. If the station is later removed 
 
 To add a station that is not in Radio Browser, use the Add Custom Station button. In the dialog that appears, enter the station name and stream URL to add it directly to your favourites. Custom stations can be played and reordered just like any other favourite.
 
+Two additional buttons are available in this dialog:
+
+- **Test URL** — checks the stream URL you've entered before adding the station, and announces whether it is reachable. Useful for catching a typo or a dead link before it ends up in your favourites list.
+- **Add to Radio Browser directory…** — opens the [Radio Browser submission page](https://www.radio-browser.info/add) in your default browser, so you can share the station with the wider Radio Browser community once you've confirmed it works. See [Adding a Station to Radio Browser](#adding-a-station-to-radio-browser) above for what the submission form expects.
+
 ### Station Audio Profile
 
 The Favourites tab includes two buttons for managing per-station audio settings:
@@ -209,6 +226,8 @@ Recognition works as follows: a short audio sample is captured from the stream u
 **Audio feedback:** Two rising beeps sound when recognition starts, and two falling beeps when it ends. A short beep plays every 2 seconds while the process is running.
 
 **Requirement:** ffmpeg.exe is required. An ffmpeg.exe placed in the add-on folder is used automatically; if it is in a different location, the path can be set in Settings. Download ffmpeg from [ffmpeg.org](https://ffmpeg.org/download.html).
+
+**A note on stations that insert ads:** some stations serve a short ad to every brand-new connection made to their stream, separate from the broadcast you're already listening to. Recognition avoids sampling that ad by reusing FreeRadio's existing background stream connection (the same one used for [Time-Shift](#time-shift-rewind-live-radio)) instead of opening a new one, so it identifies whatever is actually playing rather than an ad. This works automatically and needs no configuration.
 
 ## Audio Mirror
 
@@ -246,11 +265,15 @@ Recordings are saved to `Documents\FreeRadio Recordings\` by default. The filena
 
 NVDA announces when a recording starts and when it finishes. If NVDA is restarted while a scheduled recording is active, the recording resumes automatically on startup.
 
+Like music recognition, instant and song recording reuse FreeRadio's existing background stream connection when it's available, rather than opening a new one, so a recording captures what's actually airing even on stations that would otherwise serve a fresh ad to a brand-new connection. This does not apply to scheduled **Record only** recordings, since no station is already playing at the time they start.
+
 ## Time-Shift (Rewind Live Radio)
 
 Time-shift lets you rewind the station you're currently listening to, like a DVR or a cassette tape — pause the moment, go back a few minutes, and catch up to live again whenever you want. Playback never has to stop for this: rewinding and fast-forwarding both happen instantly on the same audio stream.
 
 This feature is **disabled by default**. Enable it from NVDA Menu → Preferences → Settings → FreeRadio → **Enable time-shift buffer (rewind live radio, ~10 minutes)**, or toggle it instantly at any time with `Ctrl+Win+T`.
+
+> **Note:** FreeRadio now keeps a small background capture of the currently playing station running at all times — not just when this setting is enabled — because [Music Recognition](#music-recognition) and [Recording](#recording) both rely on it for the ad-avoidance behaviour described in those sections. When this setting is **off**, that background capture is kept to about the last 45 seconds and `Ctrl+Win+J`/`Ctrl+Win+K` remain unavailable — only the buffer size changes, not whether it runs. Enabling the setting grows the same capture to the full ~10-minute rewind buffer described below.
 
 ### How It Works
 
@@ -279,7 +302,7 @@ In the rare case that a station's playlist cannot be read at all (for example, a
 
 ### Requirements and Limitations
 
-- **Requires the BASS backend.** Time-shift is not available when BASS is disabled and playback falls back to VLC, PotPlayer, or Windows Media Player.
+- **Requires the BASS backend.** Time-shift is not available when BASS is disabled and playback falls back to VLC, PotPlayer, or Windows Media Player. The background capture itself (and the ad-avoidance it provides to Music Recognition and Recording) is also unavailable in that case, since it depends on the same BASS-based connection.
 - The buffer is approximately 10 minutes; you cannot rewind further back than that.
 - The buffer is per-station: switching stations, stopping playback, or restarting NVDA clears it and starts fresh.
 - Time-shifted playback uses its own local buffer file and does not produce a saved recording — if you want to keep the audio permanently, use Instant Recording (`Ctrl+Win+E`) as well.
@@ -308,7 +331,7 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | Resume last station on NVDA startup | When enabled, the last played station automatically restarts every time NVDA starts. |
 | Auto-announce track changes (ICY metadata) | When enabled, NVDA automatically reads the new track name each time it changes on a station that broadcasts ICY metadata. The first track is also announced immediately when switching to a new station. Disabled by default. |
 | Mute notifications | When enabled, NVDA does not announce station changes, playback state changes (play, pause, stop), or recording events (started, stopped, finished). Error messages, favourites feedback, music recognition results, and update notifications are not affected. Can also be toggled on the fly via an unassigned input gesture. Disabled by default. |
-| Enable time-shift buffer (rewind live radio, ~10 minutes) | Turns the time-shift feature on or off. When enabled, the currently playing station is continuously captured in the background so it can be rewound with `Ctrl+Win+J` and fast-forwarded with `Ctrl+Win+K`. Can also be toggled instantly with `Ctrl+Win+T`. Requires the BASS backend. Disabled by default — see the **Time-Shift** section below for full details. |
+| Enable time-shift buffer (rewind live radio, ~10 minutes) | Turns the rewind controls (`Ctrl+Win+J`/`Ctrl+Win+K`) on or off and grows the background capture from ~45 seconds up to ~10 minutes. A small background capture of the currently playing station always runs, even when this is off — see the note in the **Time-Shift** section below. Can also be toggled instantly with `Ctrl+Win+T`. Requires the BASS backend. Disabled by default — see the **Time-Shift** section below for full details. |
 | Save liked songs to a text file | When enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended to `Documents\FreeRadio Recordings\likedSongs.txt`. If no ICY metadata is available, the Shazam recognition result is saved to the same file. Disabled by default. |
 | When Ctrl+Win+P is pressed with no active playback | Determines what happens when this shortcut is pressed and nothing is playing: start the last station or open the favourites list. |
 | When Ctrl+Win+P is pressed twice | Selects what happens when the shortcut is pressed twice in quick succession: do nothing, open the favourites list, open the recording tab or open the timer tab. When "do nothing" is selected, the first press responds instantly with no delay. |

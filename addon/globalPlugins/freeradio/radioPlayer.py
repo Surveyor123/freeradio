@@ -39,6 +39,16 @@ _BASS_CONFIG_NET_READTIMEOUT = 37
 # Device / output routing
 _BASS_DEVICE_DEFAULT  = -1   # system default output
 
+# Seconds of rolling capture kept when the user has NOT enabled the
+# user-facing rewind feature. The time-shift buffer's capture connection is
+# now kept running at all times (not just when rewind is enabled) because
+# music recognition and recording both tail it instead of opening their own
+# fresh connection - some stations serve a new ad to every brand-new
+# connection, and reusing this already-open one avoids re-triggering that.
+# When rewind IS enabled, TimeShiftBuffer.CAPACITY_SECONDS (10 min) is used
+# instead so the existing rewind window is unaffected.
+_LIGHT_BUFFER_SECONDS = 45
+
 _BASS_ERROR_SSL      = 41
 _BASS_ERROR_FILEFORM = 40
 _BASS_ERROR_TIMEOUT  = 38
@@ -799,6 +809,16 @@ class RadioPlayer:
         self._timeshift_enabled = False
         self._timeshift_active  = False   # True while time-shifted (buffered) playback is active
         self._timeshift_buffer  = _timeshift_mod.TimeShiftBuffer()
+        # _play_gen value for which _timeshift_buffer currently holds the
+        # right station's capture session. _timeshift_active is reset to
+        # False as soon as _bg_launch starts (see below), well before the
+        # buffer itself is actually stopped/restarted for the new stream -
+        # so without this, a rewind press landing in that gap would treat
+        # the *previous* station's still-live buffer file as "ready" and
+        # start time-shift playback from it instead of correctly reporting
+        # "not buffered yet". None until the first station has ever fully
+        # swapped the buffer over.
+        self._timeshift_buffer_gen = None
 
         if not disable_bass:
             self._device_monitor_thread = threading.Thread(target=self._device_monitor_loop, daemon=True)
@@ -866,6 +886,15 @@ class RadioPlayer:
                 try:
                     if self._launch_bass(url, vol):
                         log.info("FreeRadio: BASS stall reconnect OK")
+                        # The time-shift capture connection is independent of
+                        # BASS playback and was never interrupted by this
+                        # stall, so the buffer is still valid for the current
+                        # station - only _play_gen advanced here, not the
+                        # buffer's own generation. Sync them so rewind_timeshift()
+                        # doesn't mistake this still-good buffer for a stale
+                        # one and refuse to rewind (see its gen check).
+                        if self._backend == self.BACKEND_BASS:
+                            self._timeshift_buffer_gen = captured_gen
                         return
                 except Exception as e:
                     pass
@@ -1468,8 +1497,12 @@ class RadioPlayer:
             if self._backend != self.BACKEND_BASS:
                 self._start_icy_thread(stream_url)
 
-            # Time-shift buffer: restart capture for the new station, if the
-            # feature is enabled. Only supported on the BASS backend.
+            # Time-shift buffer: restart capture for the new station. Always
+            # running on the BASS backend now (see _LIGHT_BUFFER_SECONDS above)
+            # so recognition/recording have an already-open connection to tail
+            # instead of opening their own; capacity is only smaller when the
+            # user-facing rewind feature itself is off. Only supported on the
+            # BASS backend.
             #
             # IMPORTANT: the previous station's capture session is always
             # torn down first, unconditionally - even if resolving/starting
@@ -1477,7 +1510,10 @@ class RadioPlayer:
             # Otherwise a stale buffer from the *previous* station would
             # keep capturing in the background and could get played back
             # by rewind, even though a different station is now selected.
-            if self._timeshift_enabled and self._backend == self.BACKEND_BASS:
+            if self._backend == self.BACKEND_BASS:
+                self._timeshift_buffer.CAPACITY_SECONDS = (
+                    600 if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
+                )
                 try:
                     self._timeshift_buffer.stop()
                 except Exception:
@@ -1491,6 +1527,7 @@ class RadioPlayer:
                         # does its own HLS master/media playlist resolution
                         # internally (see timeshift.py's _run_hls), so the
                         # raw .m3u8 URL is passed through unresolved here.
+                        log.info("FreeRadio TimeShift: starting HLS capture for %s", stream_url)
                         self._timeshift_buffer.start(stream_url)
                     else:
                         resolved_for_capture = _resolve_playlist_url(stream_url)
@@ -1498,7 +1535,12 @@ class RadioPlayer:
                                   resolved_for_capture, stream_url)
                         self._timeshift_buffer.start(resolved_for_capture)
                 except Exception as e:
-                    log.warning("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+                    log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+                # Whether or not the new session actually started, the old
+                # station's buffer is gone by now (stop() above is
+                # unconditional) - so from here on, this buffer instance
+                # genuinely belongs to *this* launch's station.
+                self._timeshift_buffer_gen = gen
 
             # The mirror (re)connect was already started concurrently above;
             # just make sure it has finished before this launch is done.
@@ -1624,12 +1666,13 @@ class RadioPlayer:
         # Also stop Mirror (except lock - no risk of deadlock)
         self.stop_mirror()
 
-        # Stop time-shift capture (outside lock — no risk of deadlock)
-        if self._timeshift_enabled:
-            try:
-                self._timeshift_buffer.stop()
-            except Exception:
-                pass
+        # Stop time-shift capture (outside lock — no risk of deadlock).
+        # This always runs now regardless of the rewind toggle - see
+        # _LIGHT_BUFFER_SECONDS above.
+        try:
+            self._timeshift_buffer.stop()
+        except Exception:
+            pass
         self._timeshift_active = False
 
     def set_volume(self, volume):
@@ -1759,11 +1802,16 @@ class RadioPlayer:
         if not self._timeshift_enabled:
             if self._timeshift_active:
                 self.exit_timeshift_to_live()
-            try:
-                self._timeshift_buffer.stop()
-            except Exception:
-                pass
+            # NOTE: capture itself is deliberately NOT stopped here anymore -
+            # recognition and recording tail this same connection to avoid
+            # re-triggering per-session ad insertion on stations that serve
+            # one to every brand-new connection. Just shrink the retention
+            # window back down to the lightweight default; the existing
+            # connection (and its "past the ad" position in the stream) is
+            # left untouched.
+            self._timeshift_buffer.CAPACITY_SECONDS = _LIGHT_BUFFER_SECONDS
         elif self._is_playing and self._backend == self.BACKEND_BASS:
+            self._timeshift_buffer.CAPACITY_SECONDS = 600
             stream_url = self._current_url_resolved or self._current_url
             if stream_url:
                 def _bg_start_capture(url=stream_url):
@@ -1773,7 +1821,7 @@ class RadioPlayer:
                                   resolved_for_capture, url)
                         self._timeshift_buffer.start(resolved_for_capture)
                     except Exception as e:
-                        log.warning("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+                        log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
                 threading.Thread(
                     target=_bg_start_capture, daemon=True,
                     name="FreeRadio-TimeShiftResolve",
@@ -1781,6 +1829,12 @@ class RadioPlayer:
 
     def is_timeshift_enabled(self):
         return self._timeshift_enabled
+
+    def get_timeshift_buffer(self):
+        """Return the TimeShiftBuffer instance backing this player. Used by
+        the recorder and music recognizer to tail the already-open capture
+        connection instead of opening a fresh one."""
+        return self._timeshift_buffer
 
     def get_timeshift_buffered_seconds(self):
         """How many seconds of audio are currently available to rewind."""
@@ -1812,6 +1866,14 @@ class RadioPlayer:
             return False, 0.0, 0.0, "wrong_backend"
         if self._timeshift_buffer.is_hls_skipped():
             return False, 0.0, 0.0, "hls_unsupported"
+
+        # The buffer object is reused across stations and only actually
+        # torn down/restarted partway through _bg_launch - well after
+        # _timeshift_active is reset for the new station. A rewind that
+        # lands in that gap must not be allowed to treat the *previous*
+        # station's still-open buffer file as ready.
+        if self._timeshift_buffer_gen != self._play_gen:
+            return False, 0.0, 0.0, "no_buffer_yet"
 
         buffered = self._timeshift_buffer.buffered_seconds()
         if buffered <= 0:

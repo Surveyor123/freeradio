@@ -3538,12 +3538,54 @@ class RadioDialog(wx.Dialog):
 		webbrowser.open(url)
 
 	def _on_liked_list_key(self, event):
-		"""Liked Songs list — Delete key triggers Remove button when enabled."""
-		if event.GetKeyCode() == wx.WXK_DELETE:
+		"""Liked Songs list — Delete key triggers Remove button when enabled;
+		Applications key / Shift+F10 opens the context menu."""
+		key = event.GetKeyCode()
+		if key == wx.WXK_DELETE:
 			if self._liked_remove_btn.IsEnabled():
 				self._on_liked_remove(event)
-		else:
-			event.Skip()
+			return
+		if key == wx.WXK_WINDOWS_MENU or (key == wx.WXK_F10 and event.ShiftDown()):
+			self._show_liked_context_menu()
+			return
+		event.Skip()
+
+	def _show_liked_context_menu(self):
+		"""Context menu for the selected item in the Liked Songs list.
+
+		Mirrors the existing action buttons on the tab; items are disabled
+		when no real song is selected so screen readers still announce a
+		consistent menu.
+		"""
+		song = self._get_liked_selection()
+
+		menu = wx.Menu()
+
+		item_spotify = menu.Append(wx.ID_ANY, _("Play on &Spotify"))
+		item_spotify.Enable(bool(song))
+		self.Bind(wx.EVT_MENU, self._on_liked_spotify, item_spotify)
+
+		item_youtube = menu.Append(wx.ID_ANY, _("Play on Y&ouTube"))
+		item_youtube.Enable(bool(song))
+		self.Bind(wx.EVT_MENU, self._on_liked_youtube, item_youtube)
+
+		item_lyrics = menu.Append(wx.ID_ANY, _("Show &Lyrics"))
+		item_lyrics.Enable(bool(song))
+		self.Bind(wx.EVT_MENU, self._on_liked_lyrics, item_lyrics)
+
+		menu.AppendSeparator()
+
+		item_remove = menu.Append(wx.ID_ANY, _("Re&move"))
+		item_remove.Enable(bool(song))
+		self.Bind(wx.EVT_MENU, self._on_liked_remove, item_remove)
+
+		menu.AppendSeparator()
+
+		item_refresh = menu.Append(wx.ID_ANY, _("R&efresh"))
+		self.Bind(wx.EVT_MENU, self._on_liked_refresh, item_refresh)
+
+		self.PopupMenu(menu, self._liked_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
 
 	def _on_liked_remove(self, event):
 		idx = self._liked_list.GetSelection()

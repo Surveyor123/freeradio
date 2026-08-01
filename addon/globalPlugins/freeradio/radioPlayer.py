@@ -145,7 +145,11 @@ def _read_icy_title(url):
             if meta_len == 0:
                 return None
             meta_raw = resp.read(meta_len).decode("utf-8", errors="ignore")
-            m = re.search(r"StreamTitle='([^']*)'", meta_raw)
+            # NOTE: match up to the closing "';" (not just the next "'"),
+            # since the title itself may contain an apostrophe (e.g.
+            # "Don't Stop Believin'"). ICY metadata always terminates each
+            # key='value' pair with "';", so this is a safe delimiter.
+            m = re.search(r"StreamTitle='(.*?)';", meta_raw)
             if m:
                 title = m.group(1).strip()
                 return title if title else None
@@ -1829,8 +1833,9 @@ class RadioPlayer:
         elif self._is_playing and self._backend == self.BACKEND_BASS:
             self._timeshift_buffer.CAPACITY_SECONDS = 600
             stream_url = self._current_url_resolved or self._current_url
+            captured_gen = self._play_gen
             if stream_url:
-                def _bg_start_capture(url=stream_url):
+                def _bg_start_capture(url=stream_url, gen=captured_gen):
                     try:
                         resolved_for_capture = _resolve_playlist_url(url)
                         log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
@@ -1838,6 +1843,18 @@ class RadioPlayer:
                         self._timeshift_buffer.start(resolved_for_capture)
                     except Exception as e:
                         log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+                    # Whether or not the new session actually started, sync the
+                    # buffer generation the same way _bg_launch's own start()
+                    # does - otherwise a prior play_gen bump elsewhere (e.g. a
+                    # BASS stall reconnect) that never got mirrored into
+                    # _timeshift_buffer_gen would keep rewind_timeshift()
+                    # permanently refusing with "no_buffer_yet", and toggling
+                    # this setting off/on would never be able to fix it since
+                    # this was the one start-capture path that skipped the
+                    # sync. Only skip it if a newer play() has since
+                    # superseded this station.
+                    if self._play_gen == gen:
+                        self._timeshift_buffer_gen = gen
                 threading.Thread(
                     target=_bg_start_capture, daemon=True,
                     name="FreeRadio-TimeShiftResolve",

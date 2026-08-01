@@ -19,27 +19,34 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.20.9",
+	addon_version="2026.21.0",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-## What's New
-**Station context menu (All Stations & Favorites tabs)**
-Right-click a station (or press the Applications key / Shift+F10) to bring up a new context menu with quick actions:
-- Station Details
-- Add to Favorites / Delete Station
-- Rename Station (Favorites)
-- Save/Clear Audio Profile for the station (Favorites)
-- **Test URL** — checks whether the station's stream is currently reachable and announces the result
-**Add Custom Station dialog improvements**
-- **Test URL** button — checks the stream URL you've typed in before adding the station, so you know it works first
-- **Add to Radio-Browser directory…** button — opens the Radio-Browser submission page in your browser, so you can share a station you've found with the wider Radio-Browser community
-## Fixes
-**Music recognition and recording no longer get fooled by ads**
-On some stations, every new connection to the stream gets served a short ad before the real broadcast — even though the station is already playing normally for you. Previously, "Recognize song" and "Record" would each open a brand-new connection to check or capture the audio, so they'd sometimes end up identifying or recording the ad instead of the actual song. Both features now reuse the connection that's already listening to the station, so they capture whatever is actually playing.
-**More reliable background stream capture**
-The background capture used for rewind (and now also for the fix above) automatically reconnects after a brief network interruption instead of silently giving up for the rest of the session.
+**Fixed**
+- **ICY "Now Playing" titles containing an apostrophe were truncated.** The `StreamTitle` regex in `radioPlayer.py` stopped at the first `'` it found, so any title with an apostrophe (e.g. *"Don't Stop Believin'"*) was cut short. The parser now matches up to the closing `';` delimiter that ICY metadata actually uses, so apostrophes inside the title no longer break the match.
+- Added: **Liked song context menu (Liked Songs Tab)**
+- Right-click a station (or press the Applications key / Shift+F10) to bring up a new context menu with quick actions
+- Fixed: rewind/fast-forward stopped working after pausing and resuming
+  playback. Pausing and resuming advanced the internal playback generation
+  counter twice without re-syncing the time-shift buffer's own counter,
+  so the buffer was permanently (and incorrectly) treated as stale for
+  the rest of the session.
+- Fixed: on HLS (.m3u8) stations, rewinding or fast-forwarding could land
+  at the wrong point in time, and the "N seconds behind live" readout
+  could show inconsistent or even negative values. The buffered-duration
+  estimate was based on wall-clock time since capture started, which
+  drifts from the actual amount of audio captured on HLS stations
+  (manifest polling delays, segment-fetch latency, and bursty catch-up
+  downloads all throw it off). Buffered duration for HLS is now computed
+  from each segment's own declared duration, matching what is actually
+  in the buffer.
+
+- Improved: trimming the old end of an HLS time-shift buffer now always
+  drops whole segments instead of an estimated byte count, avoiding a
+  rare risk of cutting a segment in half and producing a corrupt tail.
+- **Time-shift (rewind) buffer could silently stop engaging, even after re-enabling it.** `rewind_timeshift()` gates on two internal generation counters staying in sync; a few code paths (station launch, resume-from-pause, a successful stall reconnect) correctly re-synced them, but `set_timeshift_enabled()` did not. If playback generation advanced elsewhere (e.g. a brief stream stall/reconnect) without a matching sync, rewind would permanently report "not enough buffered audio," regardless of wait time, and toggling time-shift off/on for the same station could not fix it — only switching stations (which goes through the syncing path) sometimes did. `set_timeshift_enabled()` now re-syncs the buffer generation after (re)starting capture, closing that gap.
 """),
 	
 	# Author(s)

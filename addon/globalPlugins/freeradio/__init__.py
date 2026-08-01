@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import braille
 import config
 import os
 import tempfile
@@ -39,11 +40,14 @@ def _speak_on_demand(msg):
 	try:
 		previous_mode = speech.getState().speechMode
 		speech.setSpeechMode(speech.SpeechMode.talk)
-		speech.speakMessage(msg)
-		speech.setSpeechMode(previous_mode)
+		try:
+			speech.speakMessage(msg)
+		finally:
+			speech.setSpeechMode(previous_mode)
 	except Exception:
 		# Fallback: plain ui.message (works on older NVDA without on-demand mode).
 		ui.message(msg)
+	_braille_message(msg)
 
 import addonHandler
 addonHandler.initTranslation()
@@ -54,10 +58,29 @@ def _notifications_muted():
 	return config.conf["freeradio"].get("mute_notifications", False)
 
 
+def _braille_messages_enabled():
+	return config.conf["freeradio"].get(
+		"braille_messages",
+		config.conf["freeradio"].get("braille_messages_outside_dialog", False),
+	)
+
+
+def _braille_message(msg):
+	if not msg or not _braille_messages_enabled():
+		return
+	try:
+		handler = getattr(braille, "handler", None)
+		if handler:
+			handler.message(str(msg))
+	except Exception as e:
+		log.debug("FreeRadio: braille message failed: %s", e)
+
+
 def _notify(msg):
 	"""Announce msg via ui.message unless notifications are muted."""
 	if not _notifications_muted():
 		ui.message(msg)
+		_braille_message(msg)
 
 
 def _notify_on_demand(msg):
@@ -78,6 +101,7 @@ def _sapi5_speak(msg):
 	"""
 	if _notifications_muted():
 		return
+	wx.CallAfter(_braille_message, msg)
 	def _speak():
 		import config as _config
 		voice_name = _config.conf["freeradio"].get("sapi5_voice_name", "")
@@ -190,6 +214,14 @@ if globalVars.appArgs.secure:
 	GlobalPlugin = globalPluginHandler.GlobalPlugin
 
 
+_AUDIO_DEVICE_REFRESH_MODE_KEYS = ["reliable", "fast"]
+
+
+def _audio_device_refresh_mode():
+	mode = config.conf["freeradio"].get("audio_device_refresh_mode", "reliable")
+	return mode if mode in _AUDIO_DEVICE_REFRESH_MODE_KEYS else "reliable"
+
+
 def _init_config():
 	config.conf.spec["freeradio"] = {
 		"volume":           "integer(default=100, min=0, max=100)",
@@ -206,6 +238,8 @@ def _init_config():
 		"ffmpeg_path":       "string(default='')",
 		"audio_fx":          "string(default='none')",
 		"audio_device":      "integer(default=-1)",
+		"audio_device_name": "string(default='')",
+		"audio_device_refresh_mode": "string(default='reliable')",
 		"eq_gain_eq_bass":   "integer(default=9)",
 		"eq_gain_eq_treble": "integer(default=9)",
 		"eq_gain_eq_vocal":  "integer(default=6)",
@@ -214,6 +248,8 @@ def _init_config():
 		"track_change_voice":    "string(default='nvda')",
 		"sapi5_voice_name":      "string(default='')",
 		"mute_notifications":    "boolean(default=False)",
+		"braille_messages":      "boolean(default=False)",
+		"braille_messages_outside_dialog": "boolean(default=False)",
 		"save_liked_songs":       "boolean(default=False)",
 		"recordings_dir":         "string(default='')",
 		"auto_check_updates":     "boolean(default=True)",
@@ -232,6 +268,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		super().__init__()
 		disable_bass = config.conf["freeradio"].get("disable_bass", False)
 		self._player  = radioPlayer.RadioPlayer(disable_bass=disable_bass)
+		self._player.set_audio_device_refresh_mode(_audio_device_refresh_mode())
 		self._player.set_volume(config.conf["freeradio"]["volume"])
 		# Time-shift buffer (rewind/fast-forward live radio) - disabled by
 		# default, opt-in via the settings panel or config.
@@ -241,9 +278,48 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# Apply saved audio output device (only if BASS is enabled)
 		if not disable_bass:
 			_saved_device = config.conf["freeradio"].get("audio_device", -1)
+			_saved_device_name = config.conf["freeradio"].get("audio_device_name", "")
+			_devices = []
+			try:
+				_devices = self._player.get_audio_devices()
+			except Exception:
+				pass
+			if _devices:
+				if _saved_device_name:
+					try:
+						_resolved_device, _resolved_name, _match = self._player.resolve_audio_device(
+							_devices,
+							_saved_device,
+							_saved_device_name,
+						)
+						if _match == "name" and _resolved_device != _saved_device:
+							_saved_device = _resolved_device
+							config.conf["freeradio"]["audio_device"] = _resolved_device
+							config.conf["freeradio"]["audio_device_name"] = _resolved_name
+					except Exception:
+						pass
+				elif _saved_device != -1:
+					try:
+						_resolved_device, _resolved_name, _match = self._player.resolve_audio_device(
+							_devices,
+							_saved_device,
+							"",
+						)
+						if _match == "index":
+							config.conf["freeradio"]["audio_device_name"] = _resolved_name
+					except Exception:
+						pass
 			if _saved_device != -1:
 				try:
-					self._player.switch_output_device(_saved_device)
+					_actual_device = self._player.switch_output_device(_saved_device)
+					if _actual_device != _saved_device:
+						config.conf["freeradio"]["audio_device"] = _actual_device
+						_actual_name = ""
+						for _idx, _name in _devices:
+							if _idx == _actual_device:
+								_actual_name = _name
+								break
+						config.conf["freeradio"]["audio_device_name"] = _actual_name
 				except Exception:
 					pass
 			# Apply saved audio FX setting
@@ -1477,6 +1553,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		"""
 		try:
 			config.conf["freeradio"]["audio_device"] = -1
+			config.conf["freeradio"]["audio_device_name"] = ""
 		except Exception:
 			pass
 		wx.CallAfter(self._on_audio_device_lost_ui, lost_index)
@@ -1912,6 +1989,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			gui.mainFrame.prePopup()
 			self._dialog.Show()
 		self._dialog.Raise()
+		try:
+			self._dialog.refresh_audio_devices(force=True)
+		except Exception:
+			pass
 
 		# Apply the requested tab/focus after yielding to the event loop once
 		# (wx.CallLater with 0 ms).  This gives wx time to render Show()/Raise()
@@ -2646,6 +2727,23 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		)
 		self._device_choice.SetName(device_label)
 
+		refresh_label = _("Audio device refresh mode (BASS backend):")
+		self._audio_device_refresh_label = wx.StaticText(self, label=refresh_label)
+		sHelper.addItem(self._audio_device_refresh_label)
+		self._audio_device_refresh_choice = wx.Choice(
+			self,
+			choices=[
+				_("Reliable, refresh device numbers live"),
+				_("Fast, use current BASS device list"),
+			],
+		)
+		self._audio_device_refresh_choice.SetName(refresh_label)
+		_saved_refresh_mode = _audio_device_refresh_mode()
+		self._audio_device_refresh_choice.SetSelection(
+			_AUDIO_DEVICE_REFRESH_MODE_KEYS.index(_saved_refresh_mode)
+		)
+		sHelper.addItem(self._audio_device_refresh_choice)
+
 		self._volume = sHelper.addLabeledControl(
 			_("Volume (0-100):"),
 			wx.SpinCtrl,
@@ -2803,6 +2901,13 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		)
 		sHelper.addItem(self._mute_notifications)
 
+		self._braille_messages = wx.CheckBox(
+			self,
+			label=_("&Show FreeRadio messages on the braille display"),
+		)
+		self._braille_messages.SetValue(_braille_messages_enabled())
+		sHelper.addItem(self._braille_messages)
+
 		self._save_liked_songs = wx.CheckBox(
 			self,
 			label=_("&Save liked songs to a text file"),
@@ -2931,7 +3036,7 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		self._recordings_dir.SetName(rec_dir_label)
 		_default_hint = wx.StaticText(
 			self,
-			label=_("(empty = default: Documents\FreeRadio Recordings)"),
+			label=_("(empty = default: Documents\\FreeRadio Recordings)"),
 		)
 		_default_hint.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT))
 		rec_dir_browse = wx.Button(self, label=_("Brow&se folder..."))
@@ -2982,6 +3087,8 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		
 		# Audio device selection - BASS only
 		self._device_choice.Show(not disable_bass)
+		self._audio_device_refresh_label.Show(not disable_bass)
+		self._audio_device_refresh_choice.Show(not disable_bass)
 		# Find the label for device choice (it's a StaticText)
 		parent = self._device_choice.GetParent()
 		for child in parent.GetChildren():
@@ -3033,6 +3140,12 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 					break
 		wx.CallAfter(self._populate_devices, devices)
 
+	def _audio_device_name_for_index(self, device_index):
+		for idx, name in self._audio_devices:
+			if idx == device_index:
+				return "" if idx == -1 else name
+		return ""
+
 	def _populate_devices(self, devices):
 		"""Populate the Choice control with the device list and select the saved device."""
 		if not self or not self._device_choice:
@@ -3041,11 +3154,40 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		self._device_choice.Clear()
 		for _idx, name in self._audio_devices:
 			self._device_choice.Append(name)
-		# Select the saved device
 		saved = config.conf["freeradio"].get("audio_device", -1)
+		saved_name = config.conf["freeradio"].get("audio_device_name", "")
+		resolved = saved
+		match = "missing"
+		for plugin in globalPluginHandler.runningPlugins:
+			if isinstance(plugin, GlobalPlugin):
+				try:
+					resolved, resolved_name, match = plugin._player.resolve_audio_device(
+						devices,
+						saved,
+						saved_name,
+					)
+				except Exception:
+					resolved_name = saved_name
+				break
+		if match == "name" and resolved != saved:
+			config.conf["freeradio"]["audio_device"] = resolved
+			config.conf["freeradio"]["audio_device_name"] = resolved_name
+			for plugin in globalPluginHandler.runningPlugins:
+				if isinstance(plugin, GlobalPlugin):
+					try:
+						actual = plugin._player.switch_output_device(resolved)
+					except Exception:
+						actual = getattr(plugin._player, "_output_device_index", resolved)
+					if actual != resolved:
+						config.conf["freeradio"]["audio_device"] = actual
+						config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual)
+						resolved = actual
+					break
+		elif match == "index" and not saved_name and resolved != -1:
+			config.conf["freeradio"]["audio_device_name"] = resolved_name
 		sel = 0
 		for i, (idx, _name) in enumerate(self._audio_devices):
-			if idx == saved:
+			if idx == resolved:
 				sel = i
 				break
 		self._device_choice.SetSelection(sel)
@@ -3195,25 +3337,40 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			if 0 <= _sapi5v_sel < len(self._sapi5_voice_names) else ""
 		)
 		config.conf["freeradio"]["mute_notifications"]     = self._mute_notifications.GetValue()
+		config.conf["freeradio"]["braille_messages"]       = self._braille_messages.GetValue()
 		config.conf["freeradio"]["save_liked_songs"]        = self._save_liked_songs.GetValue()
 		
 		# Save disable_bass setting
 		new_disable_bass = self._disable_bass.GetValue()
 		old_disable_bass = config.conf["freeradio"].get("disable_bass", False)
 		config.conf["freeradio"]["disable_bass"] = new_disable_bass
+
+		_refresh_sel = self._audio_device_refresh_choice.GetSelection()
+		new_audio_device_refresh_mode = (
+			_AUDIO_DEVICE_REFRESH_MODE_KEYS[_refresh_sel]
+			if 0 <= _refresh_sel < len(_AUDIO_DEVICE_REFRESH_MODE_KEYS)
+			else "reliable"
+		)
+		config.conf["freeradio"]["audio_device_refresh_mode"] = new_audio_device_refresh_mode
 		
 		# Audio output device (only if BASS enabled)
+		old_device_index = config.conf["freeradio"].get("audio_device", -1)
+		old_device_name = config.conf["freeradio"].get("audio_device_name", "")
 		if not new_disable_bass:
 			sel = self._device_choice.GetSelection()
 			if 0 <= sel < len(self._audio_devices):
-				new_device_index = self._audio_devices[sel][0]
+				new_device_index, new_device_name = self._audio_devices[sel]
+				if new_device_index == -1:
+					new_device_name = ""
 			else:
 				new_device_index = -1
-			old_device_index = config.conf["freeradio"].get("audio_device", -1)
+				new_device_name = ""
 			config.conf["freeradio"]["audio_device"] = new_device_index
+			config.conf["freeradio"]["audio_device_name"] = new_device_name
 		else:
 			new_device_index = -1
-			old_device_index = config.conf["freeradio"].get("audio_device", -1)
+			new_device_name = ""
+			config.conf["freeradio"]["audio_device_name"] = ""
 		
 		config.conf["freeradio"]["hotkey_p_action"] = (
 			"resume" if self._hotkey_p_action.GetSelection() == 0 else "favorites"
@@ -3265,6 +3422,7 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 
 		for plugin in globalPluginHandler.runningPlugins:
 			if isinstance(plugin, GlobalPlugin):
+				plugin._player.set_audio_device_refresh_mode(new_audio_device_refresh_mode)
 				plugin._player.set_volume(vol)
 				plugin._player.set_timeshift_enabled(new_timeshift_enabled)
 				
@@ -3279,9 +3437,20 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 					
 					plugin._player.terminate()
 					plugin._player = radioPlayer.RadioPlayer(disable_bass=new_disable_bass)
+					plugin._player.set_audio_device_refresh_mode(new_audio_device_refresh_mode)
 					plugin._player.set_volume(vol)
 					plugin._player.set_timeshift_enabled(new_timeshift_enabled)
 					plugin._player.on_device_lost = plugin._on_audio_device_lost
+					if not new_disable_bass:
+						try:
+							actual_device_index = plugin._player.switch_output_device(new_device_index)
+						except Exception:
+							actual_device_index = getattr(plugin._player, "_output_device_index", new_device_index)
+						if actual_device_index != new_device_index:
+							config.conf["freeradio"]["audio_device"] = actual_device_index
+							config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual_device_index)
+							new_device_index = actual_device_index
+							new_device_name = config.conf["freeradio"].get("audio_device_name", "")
 					
 					if was_playing and current_url:
 						wx.CallAfter(
@@ -3293,12 +3462,19 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 						)
 				elif not new_disable_bass:
 					# Apply new audio output device immediately if changed
-					if new_device_index != old_device_index:
+					if new_device_index != old_device_index or new_device_name != old_device_name:
 						try:
-							plugin._player.switch_output_device(new_device_index)
+							actual_device_index = plugin._player.switch_output_device(new_device_index)
 						except Exception:
-							pass
+							actual_device_index = getattr(plugin._player, "_output_device_index", new_device_index)
+						if actual_device_index != new_device_index:
+							config.conf["freeradio"]["audio_device"] = actual_device_index
+							config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual_device_index)
+							new_device_index = actual_device_index
+							new_device_name = config.conf["freeradio"].get("audio_device_name", "")
 						wx.CallAfter(plugin._sync_dialog_device, new_device_index)
+						if plugin._dialog and hasattr(plugin._dialog, "refresh_audio_devices"):
+							wx.CallAfter(plugin._dialog.refresh_audio_devices, True)
 					# Apply FX immediately
 					try:
 						plugin._player.set_fx(config.conf["freeradio"].get("audio_fx", "none"))

@@ -779,6 +779,7 @@ class RadioPlayer:
         self._vbs_path = None
 
         self._disable_bass = disable_bass
+        self._audio_device_refresh_mode = "reliable"
 
         if not disable_bass:
             dll_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1014,6 +1015,13 @@ class RadioPlayer:
         if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
             return self._bass_engine.get_icy_title()
         return self._icy_title
+
+    def set_audio_device_refresh_mode(self, mode):
+        """Ustaw tryb odświeżania listy urządzeń BASS."""
+        self._audio_device_refresh_mode = "fast" if mode == "fast" else "reliable"
+
+    def use_fresh_audio_device_probe(self):
+        return getattr(self, "_audio_device_refresh_mode", "reliable") != "fast"
 
 
     def update_paths(self, vlc_path=None, wmp_path=None, potplayer_path=None):
@@ -1966,15 +1974,67 @@ class RadioPlayer:
                 except Exception:
                     pass
 
-    def get_audio_devices(self):
-        """Return list of (index, name) for all available BASS output devices.
-        Uses the primary bass engine's host process. Returns [] if unavailable.
+    def get_audio_devices(self, fresh=None):
+        """Zwróć listę (indeks, nazwa) dostępnych urządzeń wyjściowych BASS.
+
+        Gdy fresh=True, lista jest pobierana z krótkotrwałego procesu hosta
+        BASS. To wymusza aktualne indeksy urządzeń po podłączeniu lub
+        odłączeniu wyjścia audio bez restartu NVDA.
         """
         if self._disable_bass:
             return []
+        if fresh is None:
+            fresh = self.use_fresh_audio_device_probe()
+        if fresh:
+            dll_dir = os.path.dirname(os.path.abspath(__file__))
+            probe_engine = _BassEngine(dll_dir, output_device=_BASS_DEVICE_DEFAULT)
+            try:
+                if probe_engine.load() and probe_engine.ready():
+                    devices = probe_engine.list_devices()
+                    if devices:
+                        return devices
+            except Exception:
+                pass
+            finally:
+                try:
+                    probe_engine.unload()
+                except Exception:
+                    pass
         if self._bass_engine and self._bass_engine.ready():
             return self._bass_engine.list_devices()
         return []
+
+    @staticmethod
+    def _normalize_audio_device_name(name):
+        return " ".join(str(name or "").split()).casefold()
+
+    def resolve_audio_device(self, devices, saved_index=-1, saved_name=""):
+        """Dopasuj zapisane urządzenie do aktualnej listy BASS.
+
+        Zwraca (indeks, nazwa, sposób), gdzie sposób to: "default",
+        "name", "index" albo "missing".
+        """
+        try:
+            saved_index = int(saved_index)
+        except Exception:
+            saved_index = -1
+        if saved_index == -1 and not saved_name:
+            return -1, "", "default"
+
+        wanted_name = self._normalize_audio_device_name(saved_name)
+        if wanted_name:
+            for idx, name in devices:
+                if self._normalize_audio_device_name(name) == wanted_name:
+                    return idx, name, "name"
+
+        for idx, name in devices:
+            try:
+                if int(idx) == saved_index:
+                    return idx, name, "index"
+            except Exception:
+                pass
+
+        return saved_index, saved_name or "", "missing"
 
     def start_mirror(self, device_index):
         """Start mirroring the current stream to an additional output device.
@@ -2020,23 +2080,37 @@ class RadioPlayer:
         return getattr(self, "_mirror_device_index", None)
 
     def switch_output_device(self, device_index):
-        """Instantly switch audio output device.
+        """Przełącz wyjście BASS i zachowaj bieżące odtwarzanie.
 
-        The current playback status is preserved: if the radio is playing, it is on the new device.
-        restarts with the same URL.  If it doesn't work, only engine
-        reloads; The new device is used on the next playback.
+        BASS przypina strumień do urządzenia użytego przez proces hosta, więc
+        aktywny strumień jest uruchamiany ponownie na świeżo załadowanym hoście
+        dla nowego urządzenia. Nazwa stacji, jej dane i głośność zostają
+        zachowane.
 
-        device_index: BASS device index; -1 = system default.
+        device_index: indeks urządzenia BASS; -1 = domyślne systemowe.
+        Zwraca indeks urządzenia, które faktycznie zostało wybrane.
         """
         if self._disable_bass:
-            return
-            
-        with self._play_lock:
-            was_playing  = self._is_playing
-            current_url  = self._current_url_resolved or self._current_url
-            current_vol  = self._volume
+            return self._output_device_index
 
-            # Stop and shut down the current engine
+        requested_device_index = device_index
+        with self._play_lock:
+            was_playing = self._is_playing
+            current_url = self._current_url
+            current_url_resolved = self._current_url_resolved
+            current_name = self._current_name
+            current_station = dict(self._current_station or {})
+
+            self._abort_crossfade()
+            self._stop_icy_thread()
+
+            if self._timeshift_active:
+                self._timeshift_active = False
+                try:
+                    self._timeshift_buffer.exit_playback()
+                except Exception:
+                    pass
+
             if self._bass_engine:
                 try:
                     self._bass_engine.stop()
@@ -2044,51 +2118,53 @@ class RadioPlayer:
                 except Exception:
                     pass
 
-            # Create engine on new device
             dll_dir = os.path.dirname(os.path.abspath(__file__))
             self._bass_engine = _BassEngine(dll_dir, output_device=device_index)
             self._bass_engine.load()
 
-            # Revert to system default if device is not powered on (BASS failed to initialize)
             if not self._bass_engine.ready() and device_index != -1:
                 log.warning(
                     "FreeRadio: Device %d unavailable, falling back to system default.",
                     device_index,
                 )
-                self._bass_engine.unload()
+                try:
+                    self._bass_engine.unload()
+                except Exception:
+                    pass
                 device_index = -1
-                self._bass_engine = _BassEngine(dll_dir, output_device=-1)
+                self._bass_engine = _BassEngine(dll_dir, output_device=device_index)
                 self._bass_engine.load()
-                # Trigger callback from here instead of background thread
-                _notify_lost = True
+                notify_lost = True
             else:
-                _notify_lost = False
+                notify_lost = False
 
             if self._bass_engine.ready():
-                self._bass_engine.on_meta       = self._on_bass_meta
+                self._bass_engine.on_meta        = self._on_bass_meta
                 self._bass_engine.on_connecting  = self._on_bass_connecting
                 self._bass_engine.on_stall       = self._on_bass_stall
 
-            self._backend      = self.BACKEND_NONE
-            self._is_playing   = False
-            self._intentional_stop = False
-            self._play_gen    += 1
+            self._output_device_index = device_index
+            self._backend             = self.BACKEND_NONE
+            self._is_playing          = False
+            self._intentional_stop    = False
+            self._play_gen           += 1
 
-        # Update selected device index (-1 if reverted)
-        self._output_device_index = device_index
-
-        # Device was not on — trigger on_device_lost callback outside
-        if _notify_lost:
+        if notify_lost:
             cb = self.on_device_lost
             if cb:
                 try:
-                    cb(device_index)
+                    cb(requested_device_index)
                 except Exception:
                     pass
 
-        # If it was playing, restart (outside lock — no risk of deadlock)
         if was_playing and current_url:
-            self.play(self._current_url, current_vol)
+            self.play(
+                current_url,
+                current_name,
+                url_resolved=current_url_resolved,
+                station=current_station,
+            )
+        return device_index
 
     def _device_monitor_loop(self):
         """Periodically checks for the presence of the selected audio device.

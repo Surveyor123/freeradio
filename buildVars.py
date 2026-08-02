@@ -19,34 +19,15 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.21.0",
+	addon_version="2026.21.1",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-**Fixed**
-- **ICY "Now Playing" titles containing an apostrophe were truncated.** The `StreamTitle` regex in `radioPlayer.py` stopped at the first `'` it found, so any title with an apostrophe (e.g. *"Don't Stop Believin'"*) was cut short. The parser now matches up to the closing `';` delimiter that ICY metadata actually uses, so apostrophes inside the title no longer break the match.
-- Added: **Liked song context menu (Liked Songs Tab)**
-- Right-click a station (or press the Applications key / Shift+F10) to bring up a new context menu with quick actions
-- Fixed: rewind/fast-forward stopped working after pausing and resuming
-  playback. Pausing and resuming advanced the internal playback generation
-  counter twice without re-syncing the time-shift buffer's own counter,
-  so the buffer was permanently (and incorrectly) treated as stale for
-  the rest of the session.
-- Fixed: on HLS (.m3u8) stations, rewinding or fast-forwarding could land
-  at the wrong point in time, and the "N seconds behind live" readout
-  could show inconsistent or even negative values. The buffered-duration
-  estimate was based on wall-clock time since capture started, which
-  drifts from the actual amount of audio captured on HLS stations
-  (manifest polling delays, segment-fetch latency, and bursty catch-up
-  downloads all throw it off). Buffered duration for HLS is now computed
-  from each segment's own declared duration, matching what is actually
-  in the buffer.
-
-- Improved: trimming the old end of an HLS time-shift buffer now always
-  drops whole segments instead of an estimated byte count, avoiding a
-  rare risk of cutting a segment in half and producing a corrupt tail.
-- **Time-shift (rewind) buffer could silently stop engaging, even after re-enabling it.** `rewind_timeshift()` gates on two internal generation counters staying in sync; a few code paths (station launch, resume-from-pause, a successful stall reconnect) correctly re-synced them, but `set_timeshift_enabled()` did not. If playback generation advanced elsewhere (e.g. a brief stream stall/reconnect) without a matching sync, rewind would permanently report "not enough buffered audio," regardless of wait time, and toggling time-shift off/on for the same station could not fix it — only switching stations (which goes through the syncing path) sometimes did. `set_timeshift_enabled()` now re-syncs the buffer generation after (re)starting capture, closing that gap.
+- Add braille messages and improve BASS device handling 
+**TimeShift fixes**
+- **Time-shift buffer could get stuck reporting "not enough buffered audio" indefinitely.** Restarting the buffer's capture session (on station switch, on a BASS stall reconnect, and when toggling the rewind feature on) happened without any coordination between those three code paths. If two of them landed close together — most commonly a fast station switch overlapping with the buffer still starting up for the previous station — they could race, and the buffer could end up capturing one station while its internal generation counter pointed at another. Rewind would then refuse with "not enough buffered audio" no matter how long you waited, since nothing made the two ever match again on its own; switching stations or toggling the rewind setting off and back on happened to reset the counters and mask the problem. A shared lock now serializes these restart sequences and re-validates the current station right before acting, so a stale restart can no longer overwrite a newer one.
+- **Rewinding, then pausing for a while, then resuming broke further navigation.** On resume after a pause longer than ~10 seconds, playback always reconnected to the live stream, but the internal "time-shifted" flag was never cleared to match. The app kept behaving as if playback was still reading from the local buffer file, so subsequent rewind/fast-forward presses tried to seek inside a stream that could no longer be seeked, and silently did nothing — matching the reported behavior where navigation stopped working until the buffer was toggled off/on. The long-pause reconnect path now resets that state the same way a genuine station relaunch already did.
 """),
 	
 	# Author(s)

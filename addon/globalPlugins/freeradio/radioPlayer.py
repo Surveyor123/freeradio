@@ -823,6 +823,19 @@ class RadioPlayer:
         # "not buffered yet". None until the first station has ever fully
         # swapped the buffer over.
         self._timeshift_buffer_gen = None
+        # Serializes every "stop old capture / start new capture / assign
+        # _timeshift_buffer_gen" sequence across the different code paths
+        # that can trigger one (_bg_launch on station switch, the BASS
+        # stall reconnect, and set_timeshift_enabled's _bg_start_capture).
+        # Without this, two such sequences racing (e.g. a fast station
+        # switch landing while set_timeshift_enabled's background thread is
+        # still resolving the previous station's URL) could interleave
+        # their stop()/start() calls and finish with the buffer capturing
+        # one station while _timeshift_buffer_gen claims it belongs to a
+        # different one - rewind_timeshift() would then refuse forever with
+        # "no_buffer_yet" until something (station switch, feature toggle)
+        # happened to reset it back into sync.
+        self._timeshift_launch_lock = threading.Lock()
 
         if not disable_bass:
             self._device_monitor_thread = threading.Thread(target=self._device_monitor_loop, daemon=True)
@@ -898,7 +911,9 @@ class RadioPlayer:
                         # doesn't mistake this still-good buffer for a stale
                         # one and refuse to rewind (see its gen check).
                         if self._backend == self.BACKEND_BASS:
-                            self._timeshift_buffer_gen = captured_gen
+                            with self._timeshift_launch_lock:
+                                if self._play_gen == captured_gen:
+                                    self._timeshift_buffer_gen = captured_gen
                         return
                 except Exception as e:
                     pass
@@ -1515,36 +1530,45 @@ class RadioPlayer:
             # keep capturing in the background and could get played back
             # by rewind, even though a different station is now selected.
             if self._backend == self.BACKEND_BASS:
-                self._timeshift_buffer.CAPACITY_SECONDS = (
-                    600 if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
-                )
-                try:
-                    self._timeshift_buffer.stop()
-                except Exception:
-                    pass
-                try:
-                    if stream_url.lower().split("?")[0].endswith(".m3u8"):
-                        # HLS master playlists are not simple "one line = one
-                        # audio URL" playlists - resolving them the way
-                        # _resolve_playlist_url() resolves .pls/.m3u files
-                        # could pick the wrong sub-stream. TimeShiftBuffer
-                        # does its own HLS master/media playlist resolution
-                        # internally (see timeshift.py's _run_hls), so the
-                        # raw .m3u8 URL is passed through unresolved here.
-                        log.info("FreeRadio TimeShift: starting HLS capture for %s", stream_url)
-                        self._timeshift_buffer.start(stream_url)
-                    else:
-                        resolved_for_capture = _resolve_playlist_url(stream_url)
-                        log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
-                                  resolved_for_capture, stream_url)
-                        self._timeshift_buffer.start(resolved_for_capture)
-                except Exception as e:
-                    log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
-                # Whether or not the new session actually started, the old
-                # station's buffer is gone by now (stop() above is
-                # unconditional) - so from here on, this buffer instance
-                # genuinely belongs to *this* launch's station.
-                self._timeshift_buffer_gen = gen
+                with self._timeshift_launch_lock:
+                    # Re-check under the lock, not just before it: another
+                    # thread (e.g. set_timeshift_enabled's own capture-start,
+                    # or a stall reconnect) may have been holding the lock
+                    # for a newer generation while we were waiting for it.
+                    # If so, our station has already been superseded - bail
+                    # out without touching the buffer so we can't clobber
+                    # the newer, correct capture session.
+                    if self._play_gen == gen:
+                        self._timeshift_buffer.CAPACITY_SECONDS = (
+                            600 if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
+                        )
+                        try:
+                            self._timeshift_buffer.stop()
+                        except Exception:
+                            pass
+                        try:
+                            if stream_url.lower().split("?")[0].endswith(".m3u8"):
+                                # HLS master playlists are not simple "one line = one
+                                # audio URL" playlists - resolving them the way
+                                # _resolve_playlist_url() resolves .pls/.m3u files
+                                # could pick the wrong sub-stream. TimeShiftBuffer
+                                # does its own HLS master/media playlist resolution
+                                # internally (see timeshift.py's _run_hls), so the
+                                # raw .m3u8 URL is passed through unresolved here.
+                                log.info("FreeRadio TimeShift: starting HLS capture for %s", stream_url)
+                                self._timeshift_buffer.start(stream_url)
+                            else:
+                                resolved_for_capture = _resolve_playlist_url(stream_url)
+                                log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
+                                          resolved_for_capture, stream_url)
+                                self._timeshift_buffer.start(resolved_for_capture)
+                        except Exception as e:
+                            log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+                        # Whether or not the new session actually started, the old
+                        # station's buffer is gone by now (stop() above is
+                        # unconditional) - so from here on, this buffer instance
+                        # genuinely belongs to *this* launch's station.
+                        self._timeshift_buffer_gen = gen
 
             # The mirror (re)connect was already started concurrently above;
             # just make sure it has finished before this launch is done.
@@ -1608,7 +1632,26 @@ class RadioPlayer:
                     # left over from a station switch and refuse to rewind.
                     self._timeshift_buffer_gen = my_gen
                     return
-                # Long pause — restart BASS
+                # Long pause — restart BASS. This always reconnects to the
+                # *live* URL below (see _bg_resume), never back into
+                # time-shifted playback, so any active time-shift session
+                # must be torn down here - the same reset _bg_launch does
+                # on every fresh launch. Skipping this (as before) left
+                # _timeshift_active stuck True while BASS was actually
+                # playing the live stream again: rewind/forward would then
+                # call timeshift_seek() against a plain live stream that
+                # was never opened via play_timeshift_file(), which does
+                # nothing, making navigation silently stop working until
+                # the buffer was toggled off/on or the station changed. It
+                # also left _suspend_trim permanently incremented (its
+                # matching exit_playback() was never called), which quietly
+                # let the capture file grow past its capacity forever.
+                if self._timeshift_active:
+                    self._timeshift_active = False
+                    try:
+                        self._timeshift_buffer.exit_playback()
+                    except Exception:
+                        pass
                 self._bass_engine.stop()
                 self._backend = self.BACKEND_NONE
 
@@ -1836,25 +1879,38 @@ class RadioPlayer:
             captured_gen = self._play_gen
             if stream_url:
                 def _bg_start_capture(url=stream_url, gen=captured_gen):
-                    try:
-                        resolved_for_capture = _resolve_playlist_url(url)
-                        log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
-                                  resolved_for_capture, url)
-                        self._timeshift_buffer.start(resolved_for_capture)
-                    except Exception as e:
-                        log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
-                    # Whether or not the new session actually started, sync the
-                    # buffer generation the same way _bg_launch's own start()
-                    # does - otherwise a prior play_gen bump elsewhere (e.g. a
-                    # BASS stall reconnect) that never got mirrored into
-                    # _timeshift_buffer_gen would keep rewind_timeshift()
-                    # permanently refusing with "no_buffer_yet", and toggling
-                    # this setting off/on would never be able to fix it since
-                    # this was the one start-capture path that skipped the
-                    # sync. Only skip it if a newer play() has since
-                    # superseded this station.
-                    if self._play_gen == gen:
-                        self._timeshift_buffer_gen = gen
+                    # Share _timeshift_launch_lock with _bg_launch's own
+                    # stop/start/gen-assign sequence. Without this, a fast
+                    # station switch landing while this thread is still
+                    # resolving the *previous* station's URL could finish
+                    # its stop()/start() call after _bg_launch's, silently
+                    # overwriting the new (correct) capture session with a
+                    # stale one - after which the gen check below would
+                    # still (wrongly) look consistent from this thread's
+                    # point of view, leaving the buffer captured for the
+                    # wrong station indefinitely.
+                    with self._timeshift_launch_lock:
+                        if self._play_gen != gen:
+                            return
+                        try:
+                            resolved_for_capture = _resolve_playlist_url(url)
+                            log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
+                                      resolved_for_capture, url)
+                            self._timeshift_buffer.start(resolved_for_capture)
+                        except Exception as e:
+                            log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+                        # Whether or not the new session actually started, sync the
+                        # buffer generation the same way _bg_launch's own start()
+                        # does - otherwise a prior play_gen bump elsewhere (e.g. a
+                        # BASS stall reconnect) that never got mirrored into
+                        # _timeshift_buffer_gen would keep rewind_timeshift()
+                        # permanently refusing with "no_buffer_yet", and toggling
+                        # this setting off/on would never be able to fix it since
+                        # this was the one start-capture path that skipped the
+                        # sync. Only skip it if a newer play() has since
+                        # superseded this station.
+                        if self._play_gen == gen:
+                            self._timeshift_buffer_gen = gen
                 threading.Thread(
                     target=_bg_start_capture, daemon=True,
                     name="FreeRadio-TimeShiftResolve",

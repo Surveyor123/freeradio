@@ -12,6 +12,7 @@ import datetime
 import os
 import sys
 import threading
+import time
 import ui
 import wx
 import winsound
@@ -210,9 +211,11 @@ class RadioDialog(wx.Dialog):
 		device_row.Add(self._device_choice, 1, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
 		main_sizer.Add(device_row, 0, wx.EXPAND | wx.TOP, 4)
 		self._dialog_audio_devices = []   # (index, name)
+		self._audio_devices_loading = False
+		self._audio_devices_last_refresh = 0.0
 		
 		if not disable_bass:
-			threading.Thread(target=self._load_audio_devices, daemon=True).start()
+			self.refresh_audio_devices(force=True)
 		else:
 			self._dev_label.Hide()
 			self._device_choice.Hide()
@@ -339,6 +342,7 @@ class RadioDialog(wx.Dialog):
 		self._fx_choice.Bind(wx.EVT_CHECKLISTBOX, self._on_fx_changed)
 		self._fx_choice.Bind(wx.EVT_LISTBOX,      self._on_fx_focus)
 		self._device_choice.Bind(wx.EVT_CHOICE,   self._on_device_changed)
+		self._device_choice.Bind(wx.EVT_SET_FOCUS, self._on_device_choice_focus)
 
 		# Apply saved EQ gains to player on startup and update row visibility
 		wx.CallAfter(self._init_eq_gains)
@@ -890,9 +894,23 @@ class RadioDialog(wx.Dialog):
 		event.Skip()
 
 
+	def refresh_audio_devices(self, force=False):
+		"""Odśwież listę urządzeń audio w głównym oknie dodatku."""
+		if config.conf["freeradio"].get("disable_bass", False):
+			return
+		if getattr(self, "_audio_devices_loading", False):
+			return
+		now = time.monotonic()
+		if not force and now - getattr(self, "_audio_devices_last_refresh", 0.0) < 1.0:
+			return
+		self._audio_devices_last_refresh = now
+		self._audio_devices_loading = True
+		threading.Thread(target=self._load_audio_devices, daemon=True).start()
+
 	def _load_audio_devices(self):
 		"""Get the device list from BASS in the background, transfer it to the Choice control."""
 		if config.conf["freeradio"].get("disable_bass", False):
+			self._audio_devices_loading = False
 			return
 		devices = []
 		try:
@@ -901,21 +919,62 @@ class RadioDialog(wx.Dialog):
 			pass
 		wx.CallAfter(self._populate_audio_devices, devices)
 
+	def _audio_device_name_for_index(self, device_index):
+		for idx, name in self._dialog_audio_devices:
+			if idx == device_index:
+				return "" if idx == -1 else name
+		return ""
+
 	def _populate_audio_devices(self, devices):
 		"""Fill the Choice control with the device list and select the saved one."""
+		self._audio_devices_loading = False
 		if not self or not self._device_choice:
 			return
-		self._dialog_audio_devices = [(-1, _("System default"))] + list(devices)
-		self._device_choice.Clear()
-		for _idx, name in self._dialog_audio_devices:
-			self._device_choice.Append(name)
+		new_devices = [(-1, _("System default"))] + list(devices)
 		saved = config.conf["freeradio"].get("audio_device", -1)
+		saved_name = config.conf["freeradio"].get("audio_device_name", "")
+		resolved = saved
+		match = "missing"
+		try:
+			resolved, resolved_name, match = self._player.resolve_audio_device(
+				devices,
+				saved,
+				saved_name,
+			)
+		except Exception:
+			resolved_name = saved_name
+		if match == "name" and resolved != saved:
+			config.conf["freeradio"]["audio_device"] = resolved
+			config.conf["freeradio"]["audio_device_name"] = resolved_name
+			try:
+				actual = self._player.switch_output_device(resolved)
+			except Exception:
+				actual = getattr(self._player, "_output_device_index", resolved)
+			if actual != resolved:
+				config.conf["freeradio"]["audio_device"] = actual
+				config.conf["freeradio"]["audio_device_name"] = ""
+				for idx, name in new_devices:
+					if idx == actual:
+						config.conf["freeradio"]["audio_device_name"] = "" if idx == -1 else name
+						break
+				resolved = actual
+		elif match == "index" and not saved_name and resolved != -1:
+			config.conf["freeradio"]["audio_device_name"] = resolved_name
 		sel = 0
-		for i, (idx, _name) in enumerate(self._dialog_audio_devices):
-			if idx == saved:
+		for i, (idx, _name) in enumerate(new_devices):
+			if idx == resolved:
 				sel = i
 				break
+		if new_devices != self._dialog_audio_devices:
+			self._dialog_audio_devices = new_devices
+			self._device_choice.Clear()
+			for _idx, name in self._dialog_audio_devices:
+				self._device_choice.Append(name)
 		self._device_choice.SetSelection(sel)
+
+	def _on_device_choice_focus(self, event):
+		self.refresh_audio_devices()
+		event.Skip()
 
 	def _on_device_changed(self, event):
 		"""When the user changes the device selection, apply it instantly and save it in the config."""
@@ -924,17 +983,21 @@ class RadioDialog(wx.Dialog):
 			return
 		sel = self._device_choice.GetSelection()
 		if 0 <= sel < len(self._dialog_audio_devices):
-			new_index = self._dialog_audio_devices[sel][0]
+			new_index, new_name = self._dialog_audio_devices[sel]
+			if new_index == -1:
+				new_name = ""
 		else:
 			new_index = -1
+			new_name = ""
 		config.conf["freeradio"]["audio_device"] = new_index
+		config.conf["freeradio"]["audio_device_name"] = new_name
 		try:
-			self._player.switch_output_device(new_index)
+			actual = self._player.switch_output_device(new_index)
 		except Exception:
-			pass
-		actual = getattr(self._player, "_output_device_index", new_index)
+			actual = getattr(self._player, "_output_device_index", new_index)
 		if actual != new_index:
 			config.conf["freeradio"]["audio_device"] = actual
+			config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual)
 			for i, (idx, _name) in enumerate(self._dialog_audio_devices):
 				if idx == actual:
 					self._device_choice.SetSelection(i)
@@ -3043,11 +3106,55 @@ class RadioDialog(wx.Dialog):
 		else:
 			event.Skip()
 
+	def _get_list_page_size(self, listbox):
+		try:
+			rows_per_page = listbox.GetCountPerPage()
+			if rows_per_page > 1:
+				return rows_per_page - 1
+		except Exception:
+			pass
+		try:
+			row_height = max(1, listbox.GetCharHeight())
+			height = max(listbox.GetClientSize().height, listbox.GetSize().height)
+			visible_rows = height // row_height
+		except Exception:
+			visible_rows = 10
+		if visible_rows <= 1:
+			visible_rows = 10
+		return max(1, visible_rows - 1)
+
+	def _move_list_page(self, listbox, direction):
+		count = listbox.GetCount()
+		if count <= 0:
+			return False
+		current = listbox.GetSelection()
+		if current == wx.NOT_FOUND:
+			target = 0 if direction > 0 else count - 1
+		else:
+			target = current + (self._get_list_page_size(listbox) * direction)
+			target = max(0, min(count - 1, target))
+		listbox.SetSelection(target)
+		try:
+			listbox.EnsureVisible(target)
+		except Exception:
+			pass
+		wx.PostEvent(
+			listbox,
+			wx.CommandEvent(wx.EVT_LISTBOX.typeId, listbox.GetId()),
+		)
+		self._update_fav_button()
+		self._update_save_audio_btn()
+		return True
+
 	def _on_list_key(self, event):
 		key = event.GetKeyCode()
 		if key == wx.WXK_UP and self._active_list().GetSelection() == 0:
 			if self._notebook.GetSelection() == 0:  # All Stations
 				self._search.SetFocus()
+		elif key in (wx.WXK_PAGEUP, wx.WXK_PAGEDOWN):
+			direction = -1 if key == wx.WXK_PAGEUP else 1
+			if not self._move_list_page(self._all_list, direction):
+				event.Skip()
 		elif key == wx.WXK_SPACE:
 			if self._player.is_playing():
 				self._player.pause()
@@ -3098,7 +3205,11 @@ class RadioDialog(wx.Dialog):
 		"""Favourites list — Space to play/pause, Left/Right to navigate and play."""
 		key = event.GetKeyCode()
 
-		if key == wx.WXK_SPACE:
+		if key in (wx.WXK_PAGEUP, wx.WXK_PAGEDOWN):
+			direction = -1 if key == wx.WXK_PAGEUP else 1
+			if not self._move_list_page(self._fav_list, direction):
+				event.Skip()
+		elif key == wx.WXK_SPACE:
 			if self._player.is_playing():
 				self._player.pause()
 				_notify(_("Radio paused"))

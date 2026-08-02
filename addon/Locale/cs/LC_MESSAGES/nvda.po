@@ -876,6 +876,18 @@ msgstr "Zvukové výstupní zařízení (BASS backend):"
 msgid "Loading devices..."
 msgstr "Načítání zařízení..."
 
+#: addon/globalPlugins/freeradio/__init__.py:2730
+msgid "Audio device refresh mode (BASS backend):"
+msgstr "Režim obnovování zvukových zařízení (backend BASS):"
+
+#: addon/globalPlugins/freeradio/__init__.py:2737
+msgid "Reliable, refresh device numbers live"
+msgstr "Spolehlivý, aktualizovat čísla zařízení průběžně"
+
+#: addon/globalPlugins/freeradio/__init__.py:2738
+msgid "Fast, use current BASS device list"
+msgstr "Rychlý, použít aktuální seznam zařízení BASS"
+
 #: addon/globalPlugins/freeradio/__init__.py:2650
 msgid "Volume (0-100):"
 msgstr "Hlasitost (0–100):"
@@ -968,6 +980,10 @@ msgstr "Výchozí"
 #: addon/globalPlugins/freeradio/__init__.py:2799
 msgid "&Mute notifications (station changes, playback, recording)"
 msgstr "&Vypnout oznámení (změna stanice, přehrávání, nahrávání)"
+
+#: addon/globalPlugins/freeradio/__init__.py:2810
+msgid "&Show FreeRadio messages on the braille display"
+msgstr "&Zobrazovat zprávy FreeRadio na braillském řádku"
 
 #: addon/globalPlugins/freeradio/__init__.py:2815
 msgid "When Ctrl+Win+P is pressed with no active playback:"

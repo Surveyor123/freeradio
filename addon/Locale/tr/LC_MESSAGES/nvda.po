@@ -866,6 +866,18 @@ msgstr "Ses çıkış cihazı (BASS arka ucu):"
 msgid "Loading devices..."
 msgstr "Cihazlar yükleniyor..."
 
+#: addon/globalPlugins/freeradio/__init__.py:2730
+msgid "Audio device refresh mode (BASS backend):"
+msgstr "Ses aygıtı yenileme modu (BASS arka ucu):"
+
+#: addon/globalPlugins/freeradio/__init__.py:2737
+msgid "Reliable, refresh device numbers live"
+msgstr "Güvenilir, aygıt numaralarını canlı yenile"
+
+#: addon/globalPlugins/freeradio/__init__.py:2738
+msgid "Fast, use current BASS device list"
+msgstr "Hızlı, geçerli BASS aygıt listesini kullan"
+
 #: addon/globalPlugins/freeradio/__init__.py:2650
 msgid "Volume (0-100):"
 msgstr "Ses düzeyi (0-100):"
@@ -958,6 +970,10 @@ msgstr "Varsayılan (sistem)"
 #: addon/globalPlugins/freeradio/__init__.py:2799
 msgid "&Mute notifications (station changes, playback, recording)"
 msgstr "Bildiri&mleri sessize al (istasyon değişiklikleri, oynatma, kayıt)"
+
+#: addon/globalPlugins/freeradio/__init__.py:2810
+msgid "&Show FreeRadio messages on the braille display"
+msgstr "&FreeRadio iletilerini braille ekranında göster"
 
 #: addon/globalPlugins/freeradio/__init__.py:2815
 msgid "When Ctrl+Win+P is pressed with no active playback:"

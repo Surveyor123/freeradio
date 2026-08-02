@@ -873,6 +873,18 @@ msgstr "ឧបករណ៍បញ្ចេញសំឡេង (BASS backend):"
 msgid "Loading devices..."
 msgstr "កំពុងដំណើរការឧបករណ៍..."
 
+#: addon/globalPlugins/freeradio/__init__.py:2730
+msgid "Audio device refresh mode (BASS backend):"
+msgstr "របៀបធ្វើឱ្យឧបករណ៍អូឌីយ៉ូស្រស់ (BASS backend):"
+
+#: addon/globalPlugins/freeradio/__init__.py:2737
+msgid "Reliable, refresh device numbers live"
+msgstr "គួរឱ្យទុកចិត្ត ធ្វើឱ្យលេខឧបករណ៍ស្រស់ភ្លាមៗ"
+
+#: addon/globalPlugins/freeradio/__init__.py:2738
+msgid "Fast, use current BASS device list"
+msgstr "លឿន ប្រើបញ្ជីឧបករណ៍ BASS បច្ចុប្បន្ន"
+
 #: addon/globalPlugins/freeradio/__init__.py:2650
 msgid "Volume (0-100):"
 msgstr "កម្រិតសំឡេង (0-100):"
@@ -965,6 +977,10 @@ msgstr "លំនាំដើម (system)"
 #: addon/globalPlugins/freeradio/__init__.py:2799
 msgid "&Mute notifications (station changes, playback, recording)"
 msgstr "បិទការជូនដំណឹង (station changes, playback, recording) &M"
+
+#: addon/globalPlugins/freeradio/__init__.py:2810
+msgid "&Show FreeRadio messages on the braille display"
+msgstr "បង្ហាញសារ FreeRadio នៅលើឧបករណ៍បង្ហាញអក្សរប្រៃយ៍ &S"
 
 #: addon/globalPlugins/freeradio/__init__.py:2815
 msgid "When Ctrl+Win+P is pressed with no active playback:"

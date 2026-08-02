@@ -866,6 +866,18 @@ msgstr "Urządzenie odtwarzania (BASS):"
 msgid "Loading devices..."
 msgstr "Ładowanie urządzeń..."
 
+#: addon/globalPlugins/freeradio/__init__.py:2730
+msgid "Audio device refresh mode (BASS backend):"
+msgstr "Tryb odświeżania urządzeń audio (backend BASS):"
+
+#: addon/globalPlugins/freeradio/__init__.py:2737
+msgid "Reliable, refresh device numbers live"
+msgstr "Niezawodny, odświeżaj numery urządzeń na żywo"
+
+#: addon/globalPlugins/freeradio/__init__.py:2738
+msgid "Fast, use current BASS device list"
+msgstr "Szybki, używaj bieżącej listy urządzeń BASS"
+
 #: addon/globalPlugins/freeradio/__init__.py:2650
 msgid "Volume (0-100):"
 msgstr "Głośność (0-100):"
@@ -958,6 +970,10 @@ msgstr "Domyślny (systemowy)"
 #: addon/globalPlugins/freeradio/__init__.py:2799
 msgid "&Mute notifications (station changes, playback, recording)"
 msgstr "&Wycisz powiadomienia (zmiany stacji, odtwarzanie, nagrywanie)"
+
+#: addon/globalPlugins/freeradio/__init__.py:2810
+msgid "&Show FreeRadio messages on the braille display"
+msgstr "&Pokazuj komunikaty FreeRadio na linijce brajlowskiej"
 
 #: addon/globalPlugins/freeradio/__init__.py:2815
 msgid "When Ctrl+Win+P is pressed with no active playback:"

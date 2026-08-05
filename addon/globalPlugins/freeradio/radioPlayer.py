@@ -49,6 +49,13 @@ _BASS_DEVICE_DEFAULT  = -1   # system default output
 # instead so the existing rewind window is unaffected.
 _LIGHT_BUFFER_SECONDS = 45
 
+# Station tuning transition effect — plays a short local sound effect
+# (tuner.mp3, bundled alongside this file) while connecting to a new
+# station, instead of a numeric crossfade. BASS backend only; see
+# RadioPlayer.set_tuning_effect_enabled().
+_TUNER_MP3_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "tuner.mp3")
+_TUNER_POLL_INTERVAL = 0.25  # seconds between end-of-clip checks while looping
+
 _BASS_ERROR_SSL      = 41
 _BASS_ERROR_FILEFORM = 40
 _BASS_ERROR_TIMEOUT  = 38
@@ -803,6 +810,12 @@ class RadioPlayer:
         self._crossfade_duration = 0.0   # seconds; 0.0 = disabled
         self._crossfade_engine   = None  # old _BassEngine being faded out
 
+        # Station tuning transition effect (alternative to numeric crossfade,
+        # mutually exclusive with it — see set_tuning_effect_enabled()).
+        self._tuning_effect_enabled = False
+        self._tuning_engine = None  # old _BassEngine currently playing tuner.mp3
+        self._tuning_stop   = None  # threading.Event signalling the loop-watcher to stop
+
         self._watchdog_stop = threading.Event()
         self._watchdog_thread = threading.Thread(target=self._watchdog_loop, daemon=True)
         self._watchdog_thread.start()
@@ -1330,6 +1343,58 @@ class RadioPlayer:
             except Exception:
                 pass
 
+    def set_tuning_effect_enabled(self, enabled):
+        """Enable/disable the 'station tuning' transition effect.
+
+        When enabled, switching stations plays tuner.mp3 (looped for as long
+        as needed) while the new station connects in the background; as soon
+        as the new stream is confirmed playing, the effect is cut over
+        instantly. Only effective with the BASS backend. Mutually exclusive
+        with a numeric crossfade — callers should set that duration to 0.0
+        when enabling this.
+        """
+        self._tuning_effect_enabled = bool(enabled)
+
+    def get_tuning_effect_enabled(self):
+        return self._tuning_effect_enabled
+
+    def _abort_tuning_transition(self):
+        """Immediately stop any in-progress tuning-effect engine and its
+        loop-watcher thread. Must be called from a context where it is safe
+        to unload a _BassEngine."""
+        stop_evt = self._tuning_stop
+        self._tuning_stop = None
+        if stop_evt:
+            stop_evt.set()
+        engine = self._tuning_engine
+        self._tuning_engine = None
+        if engine:
+            try:
+                engine.stop()
+                engine.unload()
+            except Exception:
+                pass
+
+    def _tuning_loop_watcher(self, engine, stop_evt, gen):
+        """While a tuning transition is in progress, replay tuner.mp3 from
+        the start whenever it reaches its end, so the effect keeps playing
+        for as long as the new station takes to connect."""
+        while not stop_evt.is_set() and self._play_gen == gen:
+            time.sleep(_TUNER_POLL_INTERVAL)
+            if stop_evt.is_set() or self._play_gen != gen:
+                return
+            try:
+                pos, length = engine.timeshift_status()
+            except Exception:
+                return
+            if length > 0 and pos >= length - 0.15:
+                if stop_evt.is_set() or self._play_gen != gen:
+                    return
+                try:
+                    engine.play_timeshift_file(_TUNER_MP3_PATH, self._volume / 100.0)
+                except Exception:
+                    return
+
     def play(self, url, name="", url_resolved=None, station=None):
         with self._play_lock:
             # Bump generation — any in-flight _bg_launch with an older gen will
@@ -1344,9 +1409,20 @@ class RadioPlayer:
             # continue playing until the new stream is confirmed started, then it
             # is gradually faded to silence in a background thread.
             xfade_engine = None
+            tuner_engine = None
             do_crossfade = (
                 not self._disable_bass
                 and self._crossfade_duration > 0.0
+                and not self._tuning_effect_enabled
+                and self._backend == self.BACKEND_BASS
+                and self._bass_engine is not None
+                and self._bass_engine.ready()
+                and self._is_playing
+            )
+            do_tuning = (
+                not do_crossfade
+                and not self._disable_bass
+                and self._tuning_effect_enabled
                 and self._backend == self.BACKEND_BASS
                 and self._bass_engine is not None
                 and self._bass_engine.ready()
@@ -1354,8 +1430,9 @@ class RadioPlayer:
             )
 
             if do_crossfade:
-                # Abort any previous (still running) fade-out first.
+                # Abort any previous (still running) fade-out/tuning first.
                 self._abort_crossfade()
+                self._abort_tuning_transition()
 
                 # Save old engine — it keeps playing untouched.
                 xfade_engine = self._bass_engine
@@ -1366,9 +1443,37 @@ class RadioPlayer:
                 self._bass_engine = _BassEngine(dll_dir, output_device=self._output_device_index)
                 # backend is NONE until _launch_bass() succeeds below.
                 self._backend = self.BACKEND_NONE
+            elif do_tuning:
+                # Abort any previous (still running) fade-out/tuning first.
+                self._abort_crossfade()
+                self._abort_tuning_transition()
+
+                # Old engine switches over to the tuning sound effect right
+                # away, instead of continuing to play the old station.
+                tuner_engine = self._bass_engine
+                try:
+                    tuner_engine.play_timeshift_file(_TUNER_MP3_PATH, self._volume / 100.0)
+                except Exception:
+                    pass
+
+                stop_evt = threading.Event()
+                self._tuning_stop   = stop_evt
+                self._tuning_engine = tuner_engine
+                threading.Thread(
+                    target=self._tuning_loop_watcher,
+                    args=(tuner_engine, stop_evt, my_gen),
+                    daemon=True, name="FreeRadio-tuning-loop"
+                ).start()
+
+                # Create a fresh engine for the new station — it connects in
+                # the background while the tuning effect is heard.
+                dll_dir = os.path.dirname(os.path.abspath(__file__))
+                self._bass_engine = _BassEngine(dll_dir, output_device=self._output_device_index)
+                self._backend = self.BACKEND_NONE
             else:
                 # Normal path: stop whatever is currently playing.
                 self._abort_crossfade()
+                self._abort_tuning_transition()
                 self._stop_current()
 
             self._stop_icy_thread()
@@ -1383,7 +1488,7 @@ class RadioPlayer:
             vol        = self._volume
             stream_url = url_resolved or url
 
-        def _bg_launch(gen=my_gen, xfade=xfade_engine):
+        def _bg_launch(gen=my_gen, xfade=xfade_engine, tuner=tuner_engine):
             # Each blocking step is guarded: if a newer play() arrived while we
             # were busy, our generation is stale — bail out immediately.
             if self._play_gen != gen:
@@ -1393,6 +1498,8 @@ class RadioPlayer:
                         xfade.unload()
                     except Exception:
                         pass
+                if tuner:
+                    self._abort_tuning_transition()
                 return
 
             # A fresh launch (new station, reconnect, or crossfade) always
@@ -1408,19 +1515,30 @@ class RadioPlayer:
                 except Exception:
                     pass
 
-            # If crossfade mode: load the brand-new engine now (blocking).
-            if xfade is not None:
+            # If crossfade or tuning mode: load the brand-new engine now (blocking).
+            if xfade is not None or tuner is not None:
                 loaded = self._bass_engine.load()
                 if not loaded or not self._bass_engine.ready():
                     # New engine failed to initialise — restore old engine and
-                    # fall back to a regular (non-crossfade) launch.
-                    log.warning("FreeRadio: crossfade engine failed to load, falling back.")
+                    # fall back to a regular (non-crossfade/non-tuning) launch.
+                    log.warning("FreeRadio: crossfade/tuning engine failed to load, falling back.")
                     try:
                         self._bass_engine.unload()
                     except Exception:
                         pass
-                    self._bass_engine = xfade
+                    self._bass_engine = xfade if xfade is not None else tuner
                     xfade = None
+                    if tuner is not None:
+                        # Reusing the tuner engine as the live engine now —
+                        # just stop its loop-watcher and clear tracking,
+                        # without stopping/unloading the engine itself (that
+                        # happens via self._bass_engine.stop() just below).
+                        stop_evt = self._tuning_stop
+                        self._tuning_stop = None
+                        if stop_evt:
+                            stop_evt.set()
+                        self._tuning_engine = None
+                        tuner = None
                     try:
                         self._bass_engine.stop()
                     except Exception:
@@ -1437,6 +1555,8 @@ class RadioPlayer:
                             xfade.unload()
                         except Exception:
                             pass
+                    if tuner:
+                        self._abort_tuning_transition()
                     return
 
             # If a mirror output is active, kick off its (re)connect on a
@@ -1476,6 +1596,8 @@ class RadioPlayer:
                         xfade.unload()
                     except Exception:
                         pass
+                if tuner:
+                    self._abort_tuning_transition()
                 return
 
             if self._play_gen != gen:
@@ -1487,7 +1609,14 @@ class RadioPlayer:
                         xfade.unload()
                     except Exception:
                         pass
+                if tuner:
+                    self._abort_tuning_transition()
                 return
+
+            # New stream is confirmed playing — for the tuning effect this is
+            # an instant hard cut (not a fade): stop the tuner sound right away.
+            if tuner:
+                self._abort_tuning_transition()
 
             # New stream is confirmed playing — begin fade-out of the old engine.
             if xfade:
@@ -1722,6 +1851,7 @@ class RadioPlayer:
             self._intentional_stop = True
             self._stop_icy_thread()
             self._abort_crossfade()
+            self._abort_tuning_transition()
 
             if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
                 self._bass_engine.stop()
@@ -2158,6 +2288,7 @@ class RadioPlayer:
             current_station = dict(self._current_station or {})
 
             self._abort_crossfade()
+            self._abort_tuning_transition()
             self._stop_icy_thread()
 
             if self._timeshift_active:
@@ -2281,6 +2412,7 @@ class RadioPlayer:
         self._watchdog_stop.set()
         self.stop_mirror()
         self._abort_crossfade()
+        self._abort_tuning_transition()
         self.stop()
         if not self._disable_bass and self._bass_engine:
             self._bass_engine.unload()

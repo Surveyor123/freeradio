@@ -254,7 +254,7 @@ def _init_config():
 		"recordings_dir":         "string(default='')",
 		"auto_check_updates":     "boolean(default=True)",
 		"disable_internet_check": "boolean(default=False)",
-		"crossfade":              "string(default='off')",
+		"crossfade":              "string(default='off')",  # off | short | normal | tuning
 		"result_limit":           "integer(default=1000, min=100, max=10000)",
 		"timeshift_enabled":      "boolean(default=False)",
 	}
@@ -326,9 +326,10 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			_saved_fx = config.conf["freeradio"].get("audio_fx", "none")
 			if _saved_fx and _saved_fx != "none":
 				self._player.set_fx(_saved_fx)
-			# Apply saved crossfade setting
-			_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0}
+			# Apply saved crossfade / station-tuning transition setting
+			_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
 			_saved_cf = config.conf["freeradio"].get("crossfade", "off")
+			self._player.set_tuning_effect_enabled(_saved_cf == "tuning")
 			self._player.set_crossfade_duration(_cf_map.get(_saved_cf, 0.0))
 		# Notify and reset settings when audio device is lost
 		self._player.on_device_lost = self._on_audio_device_lost
@@ -1833,13 +1834,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# No gesture assigned by default; bind one via NVDA's Input Gestures dialog.
 	)
 	def script_toggleStationTransition(self, gesture):
-		_cf_order = ["off", "short", "normal"]
+		_cf_order = ["off", "short", "normal", "tuning"]
 		_cf_labels = {
 			"off":    _("Instant cut (no crossfade)"),
 			"short":  _("Short crossfade (1 second)"),
 			"normal": _("Normal crossfade (2 seconds)"),
+			"tuning": _("Station tuning sound effect"),
 		}
-		_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0}
+		_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
 
 		current = config.conf["freeradio"].get("crossfade", "off")
 		try:
@@ -1851,6 +1853,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		config.conf["freeradio"]["crossfade"] = new_value
 		if self._player is not None:
 			try:
+				self._player.set_tuning_effect_enabled(new_value == "tuning")
 				self._player.set_crossfade_duration(_cf_map.get(new_value, 0.0))
 			except Exception:
 				pass
@@ -2807,8 +2810,9 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			_("Instant cut (no crossfade)"),
 			_("Short crossfade (1 second)"),
 			_("Normal crossfade (2 seconds)"),
+			_("Station tuning sound effect"),
 		]
-		self._cf_keys = ["off", "short", "normal"]
+		self._cf_keys = ["off", "short", "normal", "tuning"]
 		self._crossfade_choice = sHelper.addLabeledControl(
 			_cf_label,
 			wx.Choice,
@@ -3480,12 +3484,12 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 						plugin._player.set_fx(config.conf["freeradio"].get("audio_fx", "none"))
 					except Exception:
 						pass
-					# Apply crossfade immediately
-					_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0}
+					# Apply crossfade / station-tuning transition immediately
+					_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
+					_new_cf = config.conf["freeradio"].get("crossfade", "off")
 					try:
-						plugin._player.set_crossfade_duration(
-							_cf_map.get(config.conf["freeradio"].get("crossfade", "off"), 0.0)
-						)
+						plugin._player.set_tuning_effect_enabled(_new_cf == "tuning")
+						plugin._player.set_crossfade_duration(_cf_map.get(_new_cf, 0.0))
 					except Exception:
 						pass
 				

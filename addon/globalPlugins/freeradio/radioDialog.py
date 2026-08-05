@@ -2798,7 +2798,7 @@ class RadioDialog(wx.Dialog):
 		key     = event.GetKeyCode()
 		focused = wx.Window.FindFocus()
 
-		if key == wx.WXK_ESCAPE:
+		if key == wx.WXK_ESCAPE or (key == wx.WXK_F4 and event.AltDown()):
 			self.Hide()
 			gui.mainFrame.postPopup()
 			return

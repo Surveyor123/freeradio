@@ -1,6 +1,6 @@
 # FreeRadio - doplněk NVDA
 
-FreeRadio je doplněk internetového rádia pro čtečku obrazovky NVDA. Jeho hlavním cílem je poskytnout uživatelům snadný přístup k tisícům internetových rozhlasových stanic. Celé rozhraní a všechny funkce byly navrženy s ohledem na plnou přístupnost pro NVDA.
+FreeRadio je doplněk internetového rádia pro čtečku obrazovky NVDA. Jeho hlavním cílem je poskytnout uživatelům snadný přístup k tisícům internetových rozhlasových stanic a podcastů. Celé rozhraní a všechny funkce byly navrženy s ohledem na plnou přístupnost pro NVDA.
 
 ## prohlížeč rádií
 
@@ -44,8 +44,8 @@ Všechny klávesové zkratky lze znovu přiřadit v nabídce NVDA → Předvolby
 | `Ctrl+Win+S` | Stop | Úplně zastaví aktuální stanici a resetuje přehrávač. |
 | `Ctrl+Win+→` | Další oblíbená stanice | Přesune na další stanici v seznamu oblíbených. Na konci seznamu se vrátí na začátek. |
 | `Ctrl+Win+←` | Předchozí oblíbená stanice | Přesune na předchozí stanici v seznamu oblíbených. Přeskočí na konec, když je na začátku. |
-| `Ctrl+Win+↑` | Zvýšení hlasitosti | Zvýší hlasitost o 10; maximálně o 100. |
-| `Ctrl+Win+↓` | Snížení hlasitosti | Sníží hlasitost o 10; minimálně 0. |
+| `Ctrl+Win+↑` | Zvýšení hlasitosti | Zvýší hlasitost o 5; maximálně 200. |
+| `Ctrl+Win+↓` | Snížení hlasitosti | Sníží hlasitost o 5; minimálně 0. |
 | `Ctrl+Win+V` | Přidat k oblíbeným | Přidá aktuálně přehrávanou stanici do seznamu oblíbených. Oznámí, pokud je stanice již v seznamu. |
 | `Ctrl+Win+I` | Informace o stanici | Oznámí název aktuálně přehrávané stanice. Dvojím stisknutím zobrazíte v dialogovém okně podrobnosti, jako je země, žánr a datový tok. Třikrát stiskněte pro zkopírování informací o aktuální skladbě (metadata ICY) do schránky, pokud jsou k dispozici; pokud metadata nejsou k dispozici, spustí se místo toho rozpoznávání hudby Shazam. Čtyřnásobným stisknutím vynutíte rozpoznání hudby v případě nesprávných metadat ICY. |
 | `Ctrl+Win+M` | Zrcadlení zvuku | Zrcadlí aktuální datový tok na další výstupní zvukové zařízení současně. Dalším stisknutím zrcadlení zastavíte. |
@@ -63,7 +63,7 @@ Další / předchozí zkratky navigují pouze v seznamu oblíbených stanic; nef
 
 Aplikace FreeRadio přidává do nabídky NVDA menu nástroje také podnabídku **FreeRadio**. Z ní můžete přímo otevřít Průzkumníka stanic a Nastavení FreeRadia.
 
-Okno otevřené pomocí `Ctrl+Win+R` obsahuje pět záložek: Všechny stanice, Oblíbené, Nahrávání, Časovač a Oblíbené skladby. Mezi kartami můžete přecházet pomocí `Ctrl+Tab`.
+Okno otevřené pomocí `Ctrl+Win+R` obsahuje šest záložek: Všechny stanice, Oblíbené, Nahrávání, Časovač, Oblíbené skladby a Podcasty. Mezi kartami můžete přecházet pomocí `Ctrl+Tab` nebo pomocí kláves `Alt+1` až `Alt+6`.
 
 Po otevření karty Všechny stanice se automaticky načte 1 000 nejčastěji volených stanic z Prohlížeče rádií. Výběrem země z rozbalovacího seznamu se seznam aktualizuje a zobrazí se stanice dané země. Zadáním do vyhledávacího pole se okamžitě provede kompletní vyhledávání v celé databázi aplikace Radio Browser současně podle názvu, země a žánru.
 
@@ -101,10 +101,12 @@ Následující klávesy fungují pouze při aktivním okně Průzkumník stanic.
 |---|---|---|
 | `F1` | Průvodce nápovědou | Otevře soubor nápovědy doplňku ve výchozím prohlížeči. Nejprve se vyhledá průvodce pro aktivní jazyk NVDA; pokud není nalezen, otevře se výchozí průvodce. |
 | `F2` | co se přehrává | Oznámí aktuálně přehrávanou stanici a název skladby. Dvojím stisknutím zobrazíte v dialogovém okně podrobnosti, jako je země, žánr a datový tok. Třikrát stiskněte pro zkopírování informací o aktuální skladbě (metadata ICY) do schránky, pokud jsou k dispozici; pokud metadata nejsou k dispozici, spustí se místo toho rozpoznávání hudby Shazam. Čtyřnásobným stisknutím vynutíte rozpoznání hudby v případě nesprávných metadat ICY. |
-| `F3` | Předchozí stanice | Přesune na předchozí stanici na kartě Všechny stanice nebo Oblíbené a okamžitě zahájí přehrávání. Přeskočí na konec, pokud se nachází na začátku seznamu. |
-| `F4` | Další stanice | Přesune se na další stanici na kartě Všechny stanice nebo Oblíbené a okamžitě začne přehrávat. Přeskočí na začátek na konci seznamu. |
-| `F5` | Snížení hlasitosti | Sníží hlasitost o 10 (minimálně 0). |
-| `F6` | Zvýšení hlasitosti | Zvýší hlasitost o 10 (maximálně 200). |
+| `F3` | Předchozí položka | Na kartě Všechny stanice nebo Oblíbené: přesune na předchozí stanici a okamžitě zahájí přehrávání. Na kartě Podcasty: přesune na předchozí epizodu v seznamu epizod a přehraje ji. |
+| `F4` | Další položka | Na kartě Všechny stanice nebo Oblíbené: přesune na další stanici a okamžitě zahájí přehrávání. Na kartě Podcasty: přesune na další epizodu a přehraje ji. |
+| `Shift+F3` | Předchozí kanál | Pouze na kartě Podcasty: přejde o jeden kanál výše v seznamu odběrů. |
+| `Shift+F4` | Další kanál | Pouze na kartě Podcasty: přejde o jeden kanál níže v seznamu odběrů. |
+| `F5` | Snížení hlasitosti | Sníží hlasitost o 5 (minimálně 0). |
+| `F6` | Zvýšení hlasitosti | Zvýší hlasitost o 5 (maximálně 200). |
 | `F7` | Pozastavení / obnovení | Pozastaví přehrávání stanice; obnoví přehrávání, pokud je pozastaveno a je načteno médium. |
 | `F8` | Stop | Úplně zastaví aktuální stanici a resetuje přehrávač. |
 | `F9` | Přejmenovat | Otevře dialogové okno pro přejmenování zaměřené stanice na kartě oblíbené. |
@@ -113,11 +115,13 @@ Následující klávesy fungují pouze při aktivním okně Průzkumník stanic.
 
 | Zkratka | Funkce | Popis |
 |---|---|---|
-| `→` | Další stanice | Když je zaměřen seznam Všechny stanice nebo Oblíbené, přejde na další stanici a okamžitě ji přehraje. Na konci seznamu se nabalí na začátek. |
-| `←` | Předchozí stanice | Když je zaměřen seznam Všechny stanice nebo Oblíbené, přejde na předchozí stanici a okamžitě ji přehraje. Přeskočí na konec, když je na začátku. |
-| ``Enter`` | Přehrát | Když je zaměřen seznam Všechny stanice nebo Oblíbené, začne okamžitě přehrávat vybranou stanici. Přepne na vybranou stanici, i když se již přehrává jiná stanice. |
-| `Mezerník` | Přehrát / Pozastavit | Pozastaví přehrávání, pokud se přehrává nějaká stanice; v opačném případě spustí přehrávání vybrané stanice. |
-| `Ctrl+Tab` | Další karta | Přepne na další kartu (Všechny stanice → Oblíbené → Nahrávání → Časovač → Oblíbené skladby). |
+| `→` | Další položka | Když je zaměřen seznam stanic (Všechny stanice / Oblíbené), přejde na další stanici a okamžitě ji přehraje. Když je zaměřen seznam epizod (Podcasty), přejde na další epizodu a přehraje ji. Na konci seznamu se nabalí na začátek. |
+| `←` | Předchozí položka | Když je zaměřen seznam stanic, přejde na předchozí stanici a přehraje ji. Když je zaměřen seznam epizod, přejde na předchozí epizodu a přehraje ji. Přeskočí na konec, když je na začátku. |
+| `Ctrl+→` | Další epizoda | Když je aktivní karta Podcasty, přejde na další epizodu a přehraje ji (stejné jako `→` při zaměření na seznam epizod). |
+| `Ctrl+←` | Předchozí epizoda | Když je aktivní karta Podcasty, přejde na předchozí epizodu a přehraje ji (stejné jako `←` při zaměření na seznam epizod). |
+| ``Enter`` | Přehrát | Když je zaměřen seznam stanic nebo epizod, začne okamžitě přehrávat vybranou položku. Přepne na vybranou stanici, i když se již přehrává jiná stanice. |
+| `Mezerník` | Přehrát / Pozastavit | Pozastaví přehrávání, pokud se přehrává nějaká stanice; v opačném případě spustí přehrávání vybrané položky. |
+| `Ctrl+Tab` | Další karta | Přepne na další kartu (Všechny stanice → Oblíbené → Nahrávání → Časovač → Oblíbené skladby → Podcasty). |
 | `Ctrl+Shift+Tab` | Předchozí karta | Přepne na předchozí kartu. |
 | `Escape` | Skrýt | Skryje okno; doplněk pokračuje v přehrávání na pozadí. |
 
@@ -125,8 +129,8 @@ Následující klávesy fungují pouze při aktivním okně Průzkumník stanic.
 
 | Zkratka | Funkce | Popis |
 |---|---|---|
-| `Ctrl+↑` | Zvýšení hlasitosti | Zvýší hlasitost o 10. Funguje pouze při otevřeném okně prohlížeče. |
-| `Ctrl+↓` | Snížení hlasitosti | Sníží hlasitost o 10. Funguje pouze při otevřeném okně prohlížeče. |
+| `Ctrl+↑` | Zvýšení hlasitosti | Zvýší hlasitost o 5. Funguje pouze při otevřeném okně prohlížeče. |
+| `Ctrl+↓` | Snížení hlasitosti | Sníží hlasitost o 5. Funguje pouze při otevřeném okně prohlížeče. |
 
 ### Klávesové zkratky pro efekty
 
@@ -156,6 +160,7 @@ Každá zkratka odpovídá zaškrtnutí nebo odškrtnutí příslušné položky
 | `Alt+3` | Nahrávání | Přepne na kartu Nahrávání. |
 | `Alt+4` | Časovač | Přepne na kartu Časovač. |
 | `Alt+5` | Oblíbené skladby | Přepne na kartu Oblíbené skladby. |
+| `Alt+6` | Podcasty | Přepne na kartu Podcasty. |
 | `Alt+K` | Zavřít | Zavře okno; doplněk pokračuje v přehrávání na pozadí. |
 
 ## Oblíbené
@@ -267,6 +272,46 @@ NVDA oznámí, kdy nahrávání začne a kdy skončí. Pokud je NVDA restartová
 
 Stejně jako u rozpoznávání hudby, i okamžité nahrávání a nahrávání skladby znovu použijí stávající připojení FreeRadia k datovému toku na pozadí, pokud je k dispozici, místo otevření nového — nahrávka tak zachytí to, co skutečně hraje, i u stanic, které by jinak novému připojení nabídly čerstvou reklamu. Toto se nevztahuje na plánovaná nahrávání v režimu **Pouze nahrávání**, protože v okamžiku jejich spuštění ještě žádná stanice nehraje.
 
+## Časový posun (přetočení živého rádia)
+
+Časový posun umožňuje přetočit aktuálně poslouchanou stanici jako DVR nebo kazetový přehrávač — zastavte okamžik, vraťte se o několik minut zpět a dožeňte živé vysílání, kdy chcete. Přehrávání se přitom nemusí zastavit: přetočení zpět i dopředu probíhá okamžitě na stejném zvukovém streamu.
+
+Tato funkce je **ve výchozím nastavení vypnutá**. Zapněte ji v NVDA Menu → Předvolby → Nastavení → FreeRadio → **Zapnout vyrovnávací paměť časového posunu (přetočení živého rádia, ~10 minut)**, nebo ji kdykoli okamžitě přepněte pomocí `Ctrl+Win+T`.
+
+> **Poznámka:** FreeRadio nyní neustále udržuje malé zachytávání aktuálně přehrávané stanice na pozadí — nejen když je toto nastavení zapnuté — protože Rozpoznávání hudby i Nahrávání se na něj spoléhají kvůli chování vyhýbajícímu se reklamám popsanému v těchto částech. Když je toto nastavení **vypnuté**, toto zachytávání na pozadí se drží na přibližně posledních 45 sekundách a `Ctrl+Win+J`/`Ctrl+Win+K` zůstávají nedostupné — mění se pouze velikost vyrovnávací paměti, ne to, zda běží. Zapnutím tohoto nastavení se stejné zachytávání zvětší na plnou ~10minutovou vyrovnávací paměť pro přetáčení popsanou níže.
+
+### Jak to funguje
+
+Po zapnutí FreeRadio nepřetržitě zachytává aktuálně přehrávanou stanici do místní průběžné vyrovnávací paměti na pozadí. Ta pojme zhruba **posledních 10 minut** zvuku; starší audio je automaticky odstraňováno z čela fronty s příchodem nového, takže vyrovnávací paměť vždy představuje „nedávnou minulost" vzhledem k živé hraně.
+
+- **`Ctrl+Win+J`** — Přetočit o 15 sekund zpět. První stisk přepne z živého přehrávání do přehrávání s časovým posunem, přičemž začíná 15 sekund za živou hranou. Každý další stisk posune o dalších 15 sekund zpět, až do limitu vyrovnávací paměti.
+- **`Ctrl+Win+K`** — Přetočit o 15 sekund dopředu v režimu časového posunu. Po dosažení živé hrany se přehrávání automaticky přepne zpět na živý stream a NVDA oznámí „Zpět na živé vysílání".
+- **`Ctrl+Win+T`** — Celou funkci zapne nebo vypne. Vypnutí v režimu časového posunu okamžitě vrátí na živé vysílání a zastaví zachytávání na pozadí pro aktuální stanici.
+
+Zachytávání na pozadí běží celou dobu, kdy je aktivní časový posun, takže živá hrana pokračuje dopředu, i když posloucháte něco z několik minut staré záznamu — přesně jako skutečný DVR.
+
+### Zapnutí a zahřátí vyrovnávací paměti
+
+Vyrovnávací paměť se začne plnit, jakmile stanice začne hrát (pokud je funkce zapnuta), nebo v okamžiku, kdy funkci zapnete za poslechu stanice. Proto je přetočení možné teprve po skutečném zachycení několika sekund zvuku — pokud stisknete `Ctrl+Win+J` ihned po přepnutí stanic, NVDA vás upozorní, že ve vyrovnávací paměti zatím není dostatek zvuku. Stačí chvíli počkat a zkusit znovu.
+
+Přepnutí na jinou stanici vždy restartuje vyrovnávací paměť pro novou stanici; zvuk předchozí stanice je zahozen.
+
+### Podporované streamy
+
+Časový posun funguje se stejným rozsahem streamů, které FreeRadio již podporuje:
+
+- Obyčejné HTTP/HTTPS streamy (MP3, AAC, OGG atd.), včetně serverů ve stylu Shoutcast/Icecast.
+- **HLS (`.m3u8`) streamy** — FreeRadio přeloží hlavní playlist stanice, sleduje mediální playlist a stahuje segmenty na pozadí, aby udržela vyrovnávací paměť plnou.
+
+V ojedinělém případě, kdy playlist stanice vůbec nelze přečíst (například poškozený nebo nedostupný manifest `.m3u8`), NVDA sdělí, že přetočení pro danou stanici není k dispozici.
+
+### Požadavky a omezení
+
+- **Vyžaduje backend BASS.** Časový posun není k dispozici, když je BASS vypnutý a přehrávání se přepne na VLC, PotPlayer nebo Windows Media Player. Samotné zachytávání na pozadí (a s ním spojené vyhýbání se reklamám pro Rozpoznávání hudby a Nahrávání) je v takovém případě také nedostupné, protože závisí na stejném připojení založeném na BASS.
+- Vyrovnávací paměť pojme přibližně 10 minut; dále zpět přetočit nelze.
+- Vyrovnávací paměť je na každou stanici zvlášť: přepnutí stanic, zastavení přehrávání nebo restart NVDA ji vynuluje.
+- Přehrávání s časovým posunem používá vlastní místní soubor vyrovnávací paměti a nevytváří uloženou nahrávku — pokud chcete zvuk trvale uchovat, použijte zároveň Okamžité nahrávání (`Ctrl+Win+E`).
+
 ## Časovač
 
 Otevřete kartu Časovač v prohlížeči stanice (`Alt+4`). Lze přidat dva typy časovače:
@@ -276,6 +321,133 @@ Otevřete kartu Časovač v prohlížeči stanice (`Alt+4`). Lze přidat dva typ
 **Sleep - zastavení rádia:** Zastaví přehrávání v zadaný čas. Po spuštění časovače se hlasitost postupně snižuje po dobu 60 sekund, než se přehrávání zastaví. Není třeba vybírat žádnou stanici, stačí zadat čas.
 
 Platí pro oba typy, pokud zadaný čas již uplynul, je akce naplánována na následující den. Pokud již existuje časovač ve stejnou dobu (bez ohledu na typ), přidání nového časovače je zablokováno; uživatel je informován o konfliktu a vyzván k odebrání stávající položky. Na kartě jsou uvedeny čekající časovače; vyberte jeden z nich a stisknutím tlačítka Odebrat vybraný časovač jej zrušte.
+
+## Podcasty
+
+FreeRadio obsahuje plnohodnotný přehrávač podcastů. Můžete se přihlásit k odběru libovolného RSS nebo Atom kanálu podcastu, procházet epizody, přehrávat je, stahovat je a pokračovat v přehrávání tam, kde jste skončili — to vše plně přístupně.
+
+### Přístup na kartu Podcasty
+
+Otevřete Průzkumníka stanic pomocí `Ctrl+Win+R` a přepněte na kartu **Podcasty** pomocí `Ctrl+Tab` nebo `Alt+6`. Karta je rozdělena do tří hlavních oblastí:
+
+1. **Hledat a přidat** — horní část pro objevování nových podcastů, včetně seznamu náhledu, který zobrazuje epizody právě vybraného výsledku hledání.
+2. **Odběry** — seznam kanálů, které odebíráte.
+3. **Epizody** — seznam epizod vybraného kanálu s ovládacími prvky přehrávání.
+
+### Přidání kanálu podcastu
+
+Kanál podcastu můžete přidat dvěma způsoby:
+
+**Podle adresy URL:**
+- Do pole **„Nebo zadejte adresu URL podcastu"** vložte úplnou adresu URL kanálu RSS nebo Atom (např. `https://example.com/feed.xml`).
+- Stiskněte Enter nebo klikněte na tlačítko **Přidat kanál**.
+- FreeRadio kanál načte, ověří a přidá jej do vašich odběrů. Pokud je kanál platný, uslyšíte potvrzení s názvem kanálu. Pokud se to nezdaří, chybová zpráva vysvětlí důvod.
+
+**Vyhledáváním:**
+- Do pole **Hledat** zadejte klíčové slovo (název podcastu, téma nebo jméno moderátora) a stiskněte Enter.
+- FreeRadio prohledá adresář podcastů iTunes a zobrazí odpovídající podcasty v seznamu **Výsledky hledání**.
+- Výběrem výsledku se daný kanál na pozadí načte a jeho epizody se zobrazí v seznamu **Epizody vybraného výsledku** hned pod ním, takže si můžete prohlédnout, co pořad skutečně obsahuje, než se rozhodnete pro odběr — viz níže část Náhled epizod před přihlášením k odběru.
+- Jakmile jste s tím, co vidíte, spokojeni, vyberte výsledek a buď stiskněte `Enter`, nebo otevřete jeho kontextovou nabídku (klávesa Nabídka / `Shift+F10`, případně kliknutí pravým tlačítkem) a zvolte **Přihlásit k odběru**, čímž jej přidáte do svých odběrů. Kanál se přidá okamžitě a zobrazí se v seznamu odběrů. Neexistuje samostatné tlačítko „Přidat vybrané z hledání" — jediným způsobem přihlášení k odběru z výsledků hledání je `Enter` nebo kontextová nabídka, což udržuje rozhraní jednoduché a přístupné.
+
+> **Tip:** Do pole hledání můžete zadat i přímo adresu URL kanálu — pokud vypadá jako platná adresa URL, doplněk se ji pokusí přidat jako kanál bez hledání.
+
+**Kontextová nabídka pro výsledky hledání:** Klepnutím pravým tlačítkem na výsledek hledání, případně jeho vybráním a stiskem klávesy Nabídka / `Shift+F10`, otevřete nabídku s jedinou akcí **Přihlásit k odběru**, totožnou se stisknutím `Enter` na daném výsledku.
+
+### Náhled epizod před přihlášením k odběru
+
+Před přihlášením k odběru si můžete poslechnout epizody podcastu přímo z výsledků hledání. Kdykoli vyberete podcast v seznamu **Výsledky hledání**, FreeRadio daný kanál načte a jeho epizody — název a datum vydání — zobrazí v seznamu **Epizody vybraného výsledku** níže.
+
+- Vyberte epizodu v tomto náhledovém seznamu a stiskněte `Enter`, nebo otevřete její kontextovou nabídku (klávesa Nabídka / `Shift+F10`, případně kliknutí pravým tlačítkem) a zvolte **Náhled**, čímž ji začnete přehrávat pomocí běžného přehrávače. Všechny obvyklé ovládací prvky přehrávání (pozastavení, hlasitost, časový posun atd.) na ní fungují stejně jako na jakékoli jiné stanici nebo epizodě.
+- Během náhledu epizody se ve stejné kontextové nabídce místo **Náhled** zobrazí **Zastavit náhled** — zvolte jej, nebo znovu stiskněte `Enter` na dané epizodě, čímž náhled zastavíte.
+- Náhled vás k ničemu nepřihlašuje; slouží čistě k poslechu před rozhodnutím. Samotný seznam náhledu je dočasný — nahradí se, jakmile vyberete jiný výsledek hledání, a neukládá se nikam trvale tak jako vaše skutečné odběry.
+
+### Správa odběrů
+
+Jakmile přidáte několik kanálů, zobrazí se v seznamu **Odběry**. Každá položka zobrazuje název kanálu a počet dostupných epizod.
+
+- **Vyberte kanál**, chcete-li zobrazit jeho epizody ve spodním seznamu. Textové pole pouze pro čtení **Podrobnosti o kanálu** pod seznamem odběrů zobrazuje název kanálu, autora, popis, počet epizod a adresu URL.
+- **Obnovte kanál** — vyberte jej a stiskněte tlačítko **Obnovit kanál** (dostupné také přes kontextovou nabídku, viz níže), abyste načetli nejnovější epizody. Všechny kanály se také automaticky obnovují na pozadí při otevření karty Podcasty, takže obvykle vidíte nejnovější epizody bez ručního zásahu.
+- **Odeberte kanál** — vyberte jej a stiskněte `Delete`, nebo jej odeberte ze svých odběrů pomocí kontextové nabídky. Před odebráním budete požádáni o potvrzení.
+
+**Kontextová nabídka pro kanály:** Klepnutím pravým tlačítkem na kanál, případně jeho vybráním a stiskem klávesy Nabídka / `Shift+F10`, otevřete nabídku s těmito položkami:
+- **Obnovit kanál** — nyní načte nové epizody.
+- **Odebrat kanál** — smaže odběr.
+- **Kopírovat adresu URL kanálu** — zkopíruje adresu URL kanálu do schránky.
+
+### Procházení a přehrávání epizod
+
+Vyberte kanál v seznamu odběrů; jeho epizody se zobrazí v seznamu **Epizody** níže. Každá epizoda zobrazuje:
+- Své číslo epizody (1 = nejstarší epizoda v kanálu, číslováno vzestupně k nejnovější).
+- Datum vydání (je-li k dispozici).
+- Svůj název.
+- Předponu **„Přehráno"**, pokud byla epizoda přehrána celá.
+- Příponu s délkou: buď celkovou délku (pokud ještě nebyla přehrána), nebo uplynulý/celkový průběh (pokud byla přehrána částečně).
+
+**Přehrávání:**
+- Vyberte epizodu a stiskněte `Enter` nebo `Mezerník` pro zahájení přehrávání. Pokud byla epizoda dříve přehrána částečně, pokračuje tam, kde jste skončili.
+- Řádek se během přehrávání epizody *neaktualizuje* — to je záměrné, aby NVDA opakovaně neohlašoval řádek, zatímco na něm setrváváte. Jeho příznak „Přehráno" a délka se aktualizují okamžitě ve chvíli, kdy epizodu pozastavíte nebo skončí přehrávání, takže zobrazení je vždy přesné právě ve chvíli, kdy na tom záleží; jen se neaktualizuje vteřinu po vteřině během přehrávání.
+- Použijte `F3` / `F4` na kartě Podcasty pro přechod na předchozí / další epizodu a její okamžité přehrání. Můžete také použít `←` / `→`, když je zaměřen seznam epizod, nebo `Ctrl+←` / `Ctrl+→` kdekoli na kartě Podcasty — obojí funguje stejně.
+- Použijte `Shift+F3` / `Shift+F4` pro přechod mezi kanály bez přehrávání epizod.
+- Stiskněte `Mezerník` během přehrávání epizody pro pozastavení nebo obnovení přehrávání.
+
+**Pokračování v přehrávání:** FreeRadio automaticky ukládá vaši pozici v každé epizodě podcastu — okamžitě při pozastavení nebo dokončení epizody a dále každých 15 sekund na pozadí, dokud posloucháte, takže pád nebo neočekávané restartování nezpůsobí velkou ztrátu postupu. Pokud přehrávání zastavíte nebo pozastavíte a vrátíte se později, epizoda pokračuje od uložené pozice. Pokud epizodu přehrajete až do samého konce (v posledních 3 sekundách), označí se jako **„Přehráno"** a nebude pokračovat — příště začne od začátku a v seznamu se zobrazí předpona „Přehráno".
+
+**Kontextová nabídka pro epizody:** Klepnutím pravým tlačítkem na epizodu, případně jejím vybráním a stiskem klávesy Nabídka / `Shift+F10`, otevřete nabídku s těmito položkami:
+- **Přehrát epizodu** — zahájí přehrávání.
+- **Stáhnout epizodu** — stáhne soubor epizody do vaší složky nahrávek.
+- **Kopírovat adresu URL epizody** — zkopíruje přímou adresu URL zvuku do schránky.
+
+### Stahování epizod
+
+Vyberte epizodu a klikněte na tlačítko **Stáhnout epizodu** (nebo použijte kontextovou nabídku). Epizoda se stáhne do vaší složky nahrávek (ve výchozím nastavení `Dokumenty\FreeRadio Recordings\`). Název souboru vychází z názvu epizody a zjištěné přípony souboru (`.mp3`, `.m4a`, `.ogg` atd.). NVDA oznámí zahájení a dokončení stahování. Pokud soubor již existuje, budete informováni a stahování se přeskočí.
+
+### Filtrování epizod
+
+Nad seznamem epizod je pole **Filtr**. Během psaní se seznam epizod okamžitě filtruje tak, aby zobrazoval epizody, jejichž název obsahuje zadaný text, nebo jejichž číslo epizody se s ním přesně shoduje — takže zadání `47` vás okamžitě přesune na epizodu 47, i když se „47" v jejím názvu nikde neobjevuje. NVDA po každé změně oznámí počet odpovídajících epizod. Stisknutím šipky dolů v poli filtru přesunete fokus přímo do filtrovaného seznamu.
+
+### Podrobnosti o přehrávání podcastů
+
+Epizody podcastů se přehrávají pomocí **backendu BASS** (stejný engine, který se používá pro rozhlasové streamy). Protože se epizody stahují postupně a lze v nich posouvat, můžete při přehrávání podcastu použít klávesové zkratky časového posunu vzad/vpřed (`Ctrl+Win+J`/`Ctrl+Win+K`) pro skok vzad nebo vpřed o **5 sekund** najednou (namísto 15sekundového posunu použitého u živého rádia). Pozice se automaticky ukládá, takže můžete později pokračovat.
+
+Pokud je backend BASS deaktivován (nebo selže), přehrávání podcastu se přepne na stejný řetězec externích přehrávačů (VLC → PotPlayer → WMP) používaný pro rádio, ale v takovém případě **funkce posouvání a pokračování nebude fungovat** — epizoda se pokaždé přehraje od začátku. Pro plnohodnotný zážitek z podcastů ponechte backend BASS aktivní.
+
+### Ukládání dat podcastů
+
+Vaše odběry se ukládají do souboru `freeradio_podcasts.json` ve složce uživatelské konfigurace NVDA. Pozice epizod se ukládají samostatně do souboru `podcast_positions.json` na stejném místě. Oba soubory jsou ve formátu prostého JSON a lze je zálohovat nebo přenést do jiného počítače.
+
+## Oblíbené skladby
+
+Pokud je povolena možnost **Uložit oblíbené skladby do textového souboru**, informace o skladbě zkopírované do schránky trojím stisknutím kláves `Ctrl+Win+I` se také přidají po řádcích do souboru `Dokumenty\Nahrávky FreeRadia\OblíbenéSkladby.txt`.
+
+U stanic, které vysílají metadata ICY, se název skladby a interpret uloží přímo. Na stanicích bez metadat ICY se do stejného souboru uloží výsledek rozpoznání Shazam - oba zdroje sdílejí stejný seznam. Soubor se vytvoří automaticky, pokud neexistuje; každý záznam se připojí na konec souboru a předchozí záznamy se nikdy nemažou.
+
+## Karta Oblíbené skladby
+
+Karta **Oblíbené skladby** v prohlížeči stanic zobrazuje všechny stopy uložené v `likedSongs.txt`. Seznam se automaticky znovu načte ze souboru pokaždé, když se karta otevře.
+
+Pole **Filtr** nad seznamem umožňuje v reálném čase zúžit zobrazené stopy. Zadejte libovolnou část názvu skladby nebo jména interpreta a seznam se okamžitě aktualizuje po každém stisknutí klávesy. NVDA po každé změně oznamuje počet nalezených výsledků. Stisknutím šipky `dolů` v poli filtru přesunete fokus přímo do seznamu.
+
+Po výběru stopy ze seznamu jsou k dispozici následující akce:
+
+- **Přehrát na Spotify:** Pokusí se přímo otevřít desktopovou aplikaci Spotify. Pokud aplikace není nainstalována, přejde na web Spotify a automaticky přehraje první výsledek.
+- **Přehrát na YouTube (`Alt+O`):** Vyhledá vybranou stopu na YouTube a otevře výsledky ve výchozím prohlížeči.
+- **Zobrazit text písně:** Načte a zobrazí text vybrané skladby. Text písně je načítán z [lrclib.net](https://lrclib.net) (zdarma, bez nutnosti účtu). Během probíhajícího vyhledávání na pozadí je oznámena krátká zpráva „Načítání textu písně…". Pokud je text nalezen, otevře se v dialogu pouze pro čtení, kde jej můžete číst pomocí NVDA a zkopírovat do schránky. Pokud text není nalezen, NVDA to oznámí. Tlačítko je po dobu probíhající akce dočasně deaktivováno, aby se zabránilo duplicitním požadavkům.
+- **Odebrat (`Alt+M`):** Odstraní vybranou stopu z `likedSongs.txt` a aktualizuje seznam. Klávesa `Delete` toto tlačítko také spustí, je-li fokus na seznamu.
+- **Obnovit (`Alt+E`):** Znovu načte seznam ze souboru.
+
+Tlačítka Spotify, YouTube, Zobrazit text písně a Odebrat jsou aktivní pouze tehdy, když je v seznamu vybrána skutečná skladba.
+
+### Služba textů písní
+
+FreeRadio používá [lrclib.net](https://lrclib.net) k načítání textů písní — bezplatná, otevřená databáze nevyžadující klíč API ani účet. Proces vyhledávání analyzuje řetězec stopy uložený v `likedSongs.txt` a postupně zkouší volnější dotazy, dokud nenajde text písně:
+
+1. Přesná shoda s celým jménem interpreta a vyčištěným názvem (rušivé přípony jako „Remastered", „Live" nebo roční tagy se před vyhledáváním odstraní).
+2. Přesná shoda s celým jménem interpreta a původním názvem (pokud čištění název změnilo).
+3. Přesná shoda pouze s prvním jménem interpreta a vyčištěným názvem (pro řetězce s více interprety, např. „Interpret A & Interpret B").
+4. Fuzzy vyhledávání s prvním jménem interpreta a vyčištěným názvem.
+5. Fuzzy vyhledávání se surým řetězcem stopy jako poslední možnost.
+
+Jsou-li dostupné textové verze textu, zobrazí se tak, jak jsou. Jsou-li dostupné pouze časově synchronizované LRC texty, odstraní se časová razítka a zobrazí se prostý text. O instrumentálních skladbách se hlásí, že text nebyl nalezen.
 
 ## Nastavení
 
@@ -325,49 +497,16 @@ Při přepnutí na novou stanici se informace o první skladbě oznámí ihned p
 
 Tato funkce je ve výchozím nastavení vypnutá a lze ji přepnout v nabídce NVDA → Předvolby → Nastavení → FreeRadio.
 
-## Oblíbené skladby
-
-Pokud je povolena možnost **Uložit oblíbené skladby do textového souboru**, informace o skladbě zkopírované do schránky trojím stisknutím kláves `Ctrl+Win+I` se také přidají po řádcích do souboru `Dokumenty\Nahrávky FreeRadia\OblíbenéSkladby.txt`.
-
-U stanic, které vysílají metadata ICY, se název skladby a interpret uloží přímo. Na stanicích bez metadat ICY se do stejného souboru uloží výsledek rozpoznání Shazam - oba zdroje sdílejí stejný seznam. Soubor se vytvoří automaticky, pokud neexistuje; každý záznam se připojí na konec souboru a předchozí záznamy se nikdy nemažou.
-
-## Karta Oblíbené skladby
-
-Karta **Oblíbené skladby** v prohlížeči stanic zobrazuje všechny stopy uložené v `likedSongs.txt`. Seznam se automaticky znovu načte ze souboru pokaždé, když se karta otevře.
-
-Pole **Filtr** nad seznamem umožňuje v reálném čase zúžit zobrazené stopy. Zadejte libovolnou část názvu skladby nebo jména interpreta a seznam se okamžitě aktualizuje po každém stisknutí klávesy. NVDA po každé změně oznamuje počet nalezených výsledků. Stisknutím šipky `dolů` v poli filtru přesunete fokus přímo do seznamu.
-
-Po výběru stopy ze seznamu jsou k dispozici následující akce:
-
-- **Přehrát na Spotify:** Pokusí se přímo otevřít desktopovou aplikaci Spotify. Pokud aplikace není nainstalována, přejde na web Spotify a automaticky přehraje první výsledek.
-- **Přehrát na YouTube (`Alt+O`):** Vyhledá vybranou stopu na YouTube a otevře výsledky ve výchozím prohlížeči.
-- **Zobrazit text písně:** Načte a zobrazí text vybrané skladby. Text písně je načítán z [lrclib.net](https://lrclib.net) (zdarma, bez nutnosti účtu). Během probíhajícího vyhledávání na pozadí je oznámena krátká zpráva „Načítání textu písně…". Pokud je text nalezen, otevře se v dialogu pouze pro čtení, kde jej můžete číst pomocí NVDA a zkopírovat do schránky. Pokud text není nalezen, NVDA to oznámí. Tlačítko je po dobu probíhající akce dočasně deaktivováno, aby se zabránilo duplicitním požadavkům.
-- **Odebrat (`Alt+M`):** Odstraní vybranou stopu z `likedSongs.txt` a aktualizuje seznam. Klávesa `Delete` toto tlačítko také spustí, je-li fokus na seznamu.
-- **Obnovit (`Alt+E`):** Znovu načte seznam ze souboru.
-
-Tlačítka Spotify, YouTube, Zobrazit text písně a Odebrat jsou aktivní pouze tehdy, když je v seznamu vybrána skutečná skladba.
-
-### Služba textů písní
-
-FreeRadio používá [lrclib.net](https://lrclib.net) k načítání textů písní — bezplatná, otevřená databáze nevyžadující klíč API ani účet. Proces vyhledávání analyzuje řetězec stopy uložený v `likedSongs.txt` a postupně zkouší volnější dotazy, dokud nenajde text písně:
-
-1. Přesná shoda s celým jménem interpreta a vyčištěným názvem (rušivé přípony jako „Remastered", „Live" nebo roční tagy se před vyhledáváním odstraní).
-2. Přesná shoda s celým jménem interpreta a původním názvem (pokud čištění název změnilo).
-3. Přesná shoda pouze s prvním jménem interpreta a vyčištěným názvem (pro řetězce s více interprety, např. „Interpret A & Interpret B").
-4. Fuzzy vyhledávání s prvním jménem interpreta a vyčištěným názvem.
-5. Fuzzy vyhledávání se surým řetězcem stopy jako poslední možnost.
-
-Jsou-li dostupné textové verze textu, zobrazí se tak, jak jsou. Jsou-li dostupné pouze časově synchronizované LRC texty, odstraní se časová razítka a zobrazí se prostý text. O instrumentálních skladbách se hlásí, že text nebyl nalezen.
-
-
 ## Přehrávání
 
 Doplněk vybírá backend pro přehrávání podle následujícího pořadí priorit:
 
-1. **BASS** - výchozí a primární backend. Není nutná samostatná instalace, je dodáván spolu s doplňkem. BASS odesílá zvuk přímo do zvukového zásobníku systému Windows a zobrazuje se ve směšovači hlasitosti systému Windows jako nezávislý zdroj zvuku s názvem "pythonw.exe", odděleně od NVDA. To znamená, že zvuk FreeRadia proudí na zcela odděleném kanálu od řeči NVDA: rádio se během řeči NVDA nevypíná, nemísí se s ním ani není ovlivněno vlastním nastavením zvuku NVDA. Uživatel může nastavit hlasitost rádia nezávisle na NVDA ve směšovači hlasitosti systému Windows. Podporuje protokoly HTTP, HTTPS a většinu formátů vložených streamů. Zrcadlení zvuku je k dispozici pouze s tímto backendem.
+1. **BASS** - výchozí a primární backend. Není nutná samostatná instalace, je dodáván spolu s doplňkem. BASS odesílá zvuk přímo do zvukového zásobníku systému Windows a zobrazuje se ve směšovači hlasitosti systému Windows jako nezávislý zdroj zvuku s názvem "pythonw.exe", odděleně od NVDA. To znamená, že zvuk FreeRadia proudí na zcela odděleném kanálu od řeči NVDA: rádio se během řeči NVDA nevypíná, nemísí se s ním ani není ovlivněno vlastním nastavením zvuku NVDA. Uživatel může nastavit hlasitost rádia nezávisle na NVDA ve směšovači hlasitosti systému Windows. Podporuje protokoly HTTP, HTTPS a většinu formátů vložených streamů. Zrcadlení zvuku a posouvání/pokračování v podcastech jsou k dispozici pouze s tímto backendem.
 2. **VLC** - přebírá funkci v případě selhání BASS. Automaticky vyhledává v běžných instalačních umístěních, složkách uživatelského profilu a systémové PATH.
 3. **PotPlayer** - vyzkouší se, pokud není nalezen VLC. Automaticky prohledáván v běžných instalačních umístěních.
 4. **Windows Media Player** - použit jako poslední možnost; vyžaduje, aby byla v systému nainstalována komponenta WMP.
+
+Epizody podcastů se vždy přehrávají přes BASS, je-li k dispozici, protože BASS dokáže otevřít stream jako soubor, ve kterém lze posouvat (i během stahování), a umožňuje přesné sledování pozice a pokračování v přehrávání. Pokud je BASS deaktivován, podcasty se přepnou na řetězec externích přehrávačů, ale posouvání a pokračování nebudou fungovat.
 
 ## Kontrola aktualizací
 
@@ -375,44 +514,16 @@ FreeRadio automaticky kontroluje nové verze prostřednictvím služby GitHub.
 
 **Automatická kontrola:** Probíhá tiše na pozadí 15 sekund po spuštění NVDA. Pokud je nalezena nová verze, jste o tom informováni; pokud není nalezena žádná, nezobrazí se žádná zpráva.
 
-**Ruční kontrola:
+**Ruční kontrola:** Lze spustit na vyžádání z NVDA Nástroje → FreeRadio → **Zkontrolovat aktualizace...**. Při spuštění tímto způsobem se výsledek oznámí i v případě, že je verze aktuální.
 
-## Časový posun (přetočení živého rádia)
+**Když je nalezena aktualizace:** Otevře se dialogové okno zobrazující číslo verze a vaši nainstalovanou verzi.
 
-Časový posun umožňuje přetočit aktuálně poslouchanou stanici jako DVR nebo kazetový přehrávač — zastavte okamžik, vraťte se o několik minut zpět a dožeňte živé vysílání, kdy chcete. Přehrávání se přitom nemusí zastavit: přetočení zpět i dopředu probíhá okamžitě na stejném zvukovém streamu.
+- Pokud je na GitHub release k dispozici přímo stažitelný soubor `.nvda-addon`, zobrazí se tlačítko **Stáhnout a nainstalovat**. Po potvrzení se soubor stáhne na pozadí, NVDA oznámí zahájení stahování a automaticky se otevře vlastní instalační obrazovka NVDA.
+- Pokud není k dispozici přímý odkaz ke stažení, zobrazí se tlačítko **Otevřít stránku** a v výchozím prohlížeči se otevře stránka release na GitHubu.
 
-Tato funkce je **ve výchozím nastavení vypnutá**. Zapněte ji v NVDA Menu → Předvolby → Nastavení → FreeRadio → **Zapnout vyrovnávací paměť časového posunu (přetočení živého rádia, ~10 minut)**, nebo ji kdykoli okamžitě přepněte pomocí `Ctrl+Win+T`.
+**Vypnutí automatických kontrol:** Vypněte možnost **Automaticky kontrolovat aktualizace** v NVDA Menu → Předvolby → Nastavení → FreeRadio.
 
-> **Poznámka:** FreeRadio nyní neustále udržuje malé zachytávání aktuálně přehrávané stanice na pozadí — nejen když je toto nastavení zapnuté — protože Rozpoznávání hudby i Nahrávání se na něj spoléhají kvůli chování vyhýbajícímu se reklamám popsanému v těchto částech. Když je toto nastavení **vypnuté**, toto zachytávání na pozadí se drží na přibližně posledních 45 sekundách a `Ctrl+Win+J`/`Ctrl+Win+K` zůstávají nedostupné — mění se pouze velikost vyrovnávací paměti, ne to, zda běží. Zapnutím tohoto nastavení se stejné zachytávání zvětší na plnou ~10minutovou vyrovnávací paměť pro přetáčení popsanou níže.
+## Licence
 
-### Jak to funguje
+GPL v2
 
-Po zapnutí FreeRadio nepřetržitě zachytává aktuálně přehrávanou stanici do místní průběžné vyrovnávací paměti na pozadí. Ta pojme zhruba **posledních 10 minut** zvuku; starší audio je automaticky odstraňováno z čela fronty s příchodem nového, takže vyrovnávací paměť vždy představuje „nedávnou minulost" vzhledem k živé hraně.
-
-- **`Ctrl+Win+J`** — Přetočit o 15 sekund zpět. První stisk přepne z živého přehrávání do přehrávání s časovým posunem, přičemž začíná 15 sekund za živou hranou. Každý další stisk posune o dalších 15 sekund zpět, až do limitu vyrovnávací paměti.
-- **`Ctrl+Win+K`** — Přetočit o 15 sekund dopředu v režimu časového posunu. Po dosažení živé hrany se přehrávání automaticky přepne zpět na živý stream a NVDA oznámí „Zpět na živé vysílání".
-- **`Ctrl+Win+T`** — Celou funkci zapne nebo vypne. Vypnutí v režimu časového posunu okamžitě vrátí na živé vysílání a zastaví zachytávání na pozadí pro aktuální stanici.
-
-Zachytávání na pozadí běží celou dobu, kdy je aktivní časový posun, takže živá hrana pokračuje dopředu, i když posloucháte něco z několik minut staré záznamu — přesně jako skutečný DVR.
-
-### Zapnutí a zahřátí vyrovnávací paměti
-
-Vyrovnávací paměť se začne plnit, jakmile stanice začne hrát (pokud je funkce zapnuta), nebo v okamžiku, kdy funkci zapnete za poslechu stanice. Proto je přetočení možné teprve po skutečném zachycení několika sekund zvuku — pokud stisknete `Ctrl+Win+J` ihned po přepnutí stanic, NVDA vás upozorní, že ve vyrovnávací paměti zatím není dostatek zvuku. Stačí chvíli počkat a zkusit znovu.
-
-Přepnutí na jinou stanici vždy restartuje vyrovnávací paměť pro novou stanici; zvuk předchozí stanice je zahozen.
-
-### Podporované streamy
-
-Časový posun funguje se stejným rozsahem streamů, které FreeRadio již podporuje:
-
-- Obyčejné HTTP/HTTPS streamy (MP3, AAC, OGG atd.), včetně serverů ve stylu Shoutcast/Icecast.
-- **HLS (`.m3u8`) streamy** — FreeRadio přeloží hlavní playlist stanice, sleduje mediální playlist a stahuje segmenty na pozadí, aby udržela vyrovnávací paměť plnou.
-
-V ojedinělém případě, kdy playlist stanice vůbec nelze přečíst (například poškozený nebo nedostupný manifest `.m3u8`), NVDA sdělí, že přetočení pro danou stanici není k dispozici.
-
-### Požadavky a omezení
-
-- **Vyžaduje backend BASS.** Časový posun není k dispozici, když je BASS vypnutý a přehrávání se přepne na VLC, PotPlayer nebo Windows Media Player. Samotné zachytávání na pozadí (a s ním spojené vyhýbání se reklamám pro Rozpoznávání hudby a Nahrávání) je v takovém případě také nedostupné, protože závisí na stejném připojení založeném na BASS.
-- Vyrovnávací paměť pojme přibližně 10 minut; dále zpět přetočit nelze.
-- Vyrovnávací paměť je na každou stanici zvlášť: přepnutí stanic, zastavení přehrávání nebo restart NVDA ji vynuluje.
-- Přehrávání s časovým posunem používá vlastní místní soubor vyrovnávací paměti a nevytváří uloženou nahrávku — pokud chcete zvuk trvale uchovat, použijte zároveň Okamžité nahrávání (`Ctrl+Win+E`).

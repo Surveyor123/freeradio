@@ -1,6 +1,6 @@
 # FreeRadio — NVDA Eklentisi
 
-FreeRadio, ekran okuyucu NVDA için geliştirilmiş bir internet radyo eklentisidir. Temel amacı, kullanıcıların binlerce internet radyo istasyonuna kolayca erişebilmesini sağlamaktır. Tüm arayüz ve işlevler NVDA ile tam erişilebilirlik gözetilerek tasarlanmıştır.
+FreeRadio, ekran okuyucu NVDA için geliştirilmiş bir internet radyo eklentisidir. Temel amacı, kullanıcıların binlerce internet radyo istasyonuna ve podcast'e kolayca erişebilmesini sağlamaktır. Tüm arayüz ve işlevler NVDA ile tam erişilebilirlik gözetilerek tasarlanmıştır.
 
 ## Radio Browser Dizini
 
@@ -63,7 +63,7 @@ Sonraki / önceki kısayollar yalnızca favoriler listesinde dolaşır; tüm ist
 
 FreeRadio ayrıca NVDA Araçlar menüsüne **FreeRadio** adlı bir alt menü ekler. Bu alt menüden İstasyon Tarayıcısı'nı ve FreeRadio Ayarları'nı doğrudan açabilirsiniz.
 
-`Ctrl+Win+R` ile açılan pencerede beş sekme bulunur: Tüm İstasyonlar, Favoriler, Kayıt, Zamanlayıcı ve Beğenilen Şarkılar. Sekmeler arasında `Ctrl+Tab` ile dolaşılabilir.
+`Ctrl+Win+R` ile açılan pencerede altı sekme bulunur: Tüm İstasyonlar, Favoriler, Kayıt, Zamanlayıcı, Beğenilen Şarkılar ve Podcastler. Sekmeler arasında `Ctrl+Tab` ile veya `Alt+1` ile `Alt+6` arasındaki tuşlarla dolaşılabilir.
 
 Tüm İstasyonlar sekmesi açıldığında Radio Browser'dan en çok oylanan 1000 istasyon otomatik olarak yüklenir. Ülke açılır listesinden bir ülke seçildiğinde liste o ülkenin istasyonlarıyla güncellenir. Arama alanına harf girilmesi anlık olarak   Radio Browser'ın tamamında ad, ülke ve tür üzerinden eş zamanlı arama yapar.
 
@@ -101,8 +101,10 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 |---|---|---|
 | `F1` | Yardım kılavuzu | Eklentinin yardım dosyasını varsayılan tarayıcıda açar. Önce etkin NVDA diline ait kılavuz aranır; yoksa varsayılan kılavuz açılır. |
 | `F2` | ne çalıyor | Çalan istasyonu seslendirir. İki kez basıldığında ülke, tür, bit hızı gibi ayrıntıları bir iletişim kutusunda gösterir. Üç kez basıldığında çalan parça bilgisi (ICY metadata) varsa panoya kopyalar; yoksa Shazam ile müzik tanıma başlatır. Dört kez basıldığında çalan parça bilgisi (ICY metadata) yanlışsa müzik tanıma servisini başlatmaya zorlar. |
-| `F3` | Önceki istasyon | Tüm İstasyonlar veya Favoriler sekmesinde bir önceki istasyona geçer ve hemen çalmaya başlar. Listenin başındayken sona atlar. |
-| `F4` | Sonraki istasyon | Tüm İstasyonlar veya Favoriler sekmesinde bir sonraki istasyona geçer ve hemen çalmaya başlar. Liste sonuna gelindiğinde başa döner. |
+| `F3` | Önceki öğe | Tüm İstasyonlar veya Favoriler sekmesinde bir önceki istasyona geçer ve hemen çalmaya başlar. Podcastler sekmesinde ise bölüm listesindeki bir önceki bölüme geçer ve çalar. |
+| `F4` | Sonraki öğe | Tüm İstasyonlar veya Favoriler sekmesinde bir sonraki istasyona geçer ve hemen çalmaya başlar. Podcastler sekmesinde ise bir sonraki bölüme geçer ve çalar. |
+| `Shift+F3` | Önceki akış | Yalnızca Podcastler sekmesinde: abonelikler listesinde bir üst akışa geçer. |
+| `Shift+F4` | Sonraki akış | Yalnızca Podcastler sekmesinde: abonelikler listesinde bir alt akışa geçer. |
 | `F5` | Ses azalt | Ses seviyesini 5 birim düşürür (asgari 0). |
 | `F6` | Ses artır | Ses seviyesini 5 birim artırır (azami 200). |
 | `F7` | Duraklat / devam et | Çalan istasyon varsa duraklatır; duraklatılmışsa ve medya yüklüyse oynatmayı sürdürür. |
@@ -113,11 +115,13 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 
 | Kısayol | İşlev | Açıklama |
 |---|---|---|
-| `→` | Sonraki istasyon | Tüm İstasyonlar veya Favoriler listesi odaklanmışken bir sonraki istasyona geçer ve hemen çalar. Liste sonunda başa döner. |
-| `←` | Önceki istasyon | Tüm İstasyonlar veya Favoriler listesi odaklanmışken bir önceki istasyona geçer ve hemen çalar. Listenin başındayken sona atlar. |
-| `Enter` | Çal | Tüm İstasyonlar veya Favoriler listesi odaklanmışken seçili istasyonu doğrudan çalmaya başlar. Başka bir istasyon çalıyor olsa bile çalmayı keserek seçili istasyona geçer. |
-| `Boşluk` | Çal / Duraklat | Çalan istasyon varsa duraklatır; yoksa listede seçili istasyonu çalmaya başlar. |
-| `Ctrl+Tab` | Sonraki sekme | Bir sonraki sekmeye geçer (Tüm İstasyonlar → Favoriler → Kayıt → Zamanlayıcı → Beğenilen Şarkılar). |
+| `→` | Sonraki öğe | Bir istasyon listesi (Tüm İstasyonlar / Favoriler) odaklanmışken bir sonraki istasyona geçer ve hemen çalar. Bölüm listesi (Podcastler) odaklanmışken bir sonraki bölüme geçer ve çalar. Liste sonunda başa döner. |
+| `←` | Önceki öğe | Bir istasyon listesi odaklanmışken bir önceki istasyona geçer ve çalar. Bölüm listesi odaklanmışken bir önceki bölüme geçer ve çalar. Listenin başındayken sona atlar. |
+| `Ctrl+→` | Sonraki bölüm | Podcastler sekmesi etkinken bir sonraki bölüme geçer ve çalar (bölüm listesi odaklanmışken `→` ile aynıdır). |
+| `Ctrl+←` | Önceki bölüm | Podcastler sekmesi etkinken bir önceki bölüme geçer ve çalar (bölüm listesi odaklanmışken `←` ile aynıdır). |
+| `Enter` | Çal | Bir istasyon veya bölüm listesi odaklanmışken seçili öğeyi doğrudan çalmaya başlar. Başka bir istasyon çalıyor olsa bile çalmayı keserek seçili istasyona geçer. |
+| `Boşluk` | Çal / Duraklat | Çalan istasyon varsa duraklatır; yoksa listede seçili öğeyi çalmaya başlar. |
+| `Ctrl+Tab` | Sonraki sekme | Bir sonraki sekmeye geçer (Tüm İstasyonlar → Favoriler → Kayıt → Zamanlayıcı → Beğenilen Şarkılar → Podcastler). |
 | `Ctrl+Shift+Tab` | Önceki sekme | Bir önceki sekmeye döner. |
 | `Escape` | Gizle | Pencereyi gizler; eklenti arka planda çalmaya devam eder. |
 
@@ -156,6 +160,7 @@ Her kısayol, **Efektler** listesindeki ilgili öğeyi işaretlemek veya işaret
 | `Alt+3` | Kayıt | Kayıt sekmesine geçer. |
 | `Alt+4` | Zamanlayıcı | Zamanlayıcı sekmesine geçer. |
 | `Alt+5` | Beğenilen Şarkılar | Beğenilen Şarkılar sekmesine geçer. |
+| `Alt+6` | Podcastler | Podcastler sekmesine geçer. |
 | `Alt+K` | Kapat | Pencereyi kapatır; eklenti arka planda çalmaya devam eder. |
 
 ## Favoriler
@@ -317,6 +322,133 @@ Bir istasyonun çalma listesi hiç okunamazsa (örneğin bozuk veya erişilemeye
 
 Her iki tür için de girilen saat geçmişse işlem ertesi güne planlanır. Aynı saatte zaten bir zamanlayıcı varsa (türü ne olursa olsun) yeni zamanlayıcı eklenmez; çakışma hakkında bilgi verilir ve mevcut girişin önce kaldırılması istenir. Bekleyen zamanlayıcılar sekmede listelenir; listeden seçip Seçili Zamanlayıcıyı Kaldır düğmesine basılarak iptal edilebilir.
 
+## Podcastler
+
+FreeRadio, tam donanımlı bir podcast oynatıcısı içerir. Herhangi bir RSS veya Atom podcast akışına abone olabilir, bölümlere göz atabilir, onları çalabilir, indirebilir ve kaldığınız yerden oynatmaya devam edebilirsiniz — tümü tam erişilebilir şekilde.
+
+### Podcastler Sekmesine Erişim
+
+`Ctrl+Win+R` ile istasyon tarayıcısını açın ve `Ctrl+Tab` veya `Alt+6` kullanarak **Podcastler** sekmesine geçin. Sekme üç ana bölümden oluşur:
+
+1. **Arama ve ekleme** — yeni podcastler keşfetmek için üst bölüm; o an seçili arama sonucunun bölümlerini gösteren bir önizleme listesi de burada yer alır.
+2. **Abonelikler** — abone olduğunuz akışların listesi.
+3. **Bölümler** — seçili akışın bölüm listesi, oynatma denetimleriyle birlikte.
+
+### Podcast Akışı Ekleme
+
+Bir podcast akışını iki şekilde ekleyebilirsiniz:
+
+**URL ile:**
+- **"Ya da podcast URL'si girin"** alanına tam RSS veya Atom Akış URL'sini yapıştırın (örn. `https://example.com/feed.xml`).
+- Enter'a basın veya **Akış Ekle** düğmesine tıklayın.
+- FreeRadio akışı getirir, doğrular ve aboneliklerinize ekler. Geçerliyse akış başlığıyla bir onay duyulur. Başarısız olursa bir hata mesajı nedenini açıklar.
+
+**Arayarak:**
+- **Arama** alanına bir anahtar kelime (podcast adı, konu veya sunucu adı) yazın ve Enter'a basın.
+- FreeRadio, iTunes podcast dizininde arama yapar ve eşleşen podcastleri **Arama sonuçları** listesinde gösterir.
+- Bir sonucu seçmek o akışı arka planda getirir ve bölümlerini hemen altındaki **Seçili sonuçtaki bölümler** listesinde gösterir; böylece abone olmaya karar vermeden önce programın gerçekte neler içerdiğini önizleyebilirsiniz — bkz. aşağıdaki [Abone Olmadan Önce Bölümleri Önizleme](#abone-olmadan-önce-bölümleri-önizleme).
+- Gördüğünüzden/duyduğunuzdan memnun kaldığınızda sonucu seçip `Enter`'a basın ya da bağlam menüsünü açıp (Uygulamalar tuşu / `Shift+F10` veya sağ tık) **Abone Ol**'u seçerek aboneliklerinize ekleyin. Akış hemen eklenir ve abonelikler listenizde görünür. Ayrı bir "Seçileni Aramadan Ekle" düğmesi yoktur — arama sonuçlarından abone olmanın tek yolu `Enter` veya bağlam menüsüdür; bu, arayüzü sade ve erişilebilir tutar.
+
+> **İpucu:** Arama alanına doğrudan bir akış URL'si de yazabilirsiniz — geçerli bir URL'ye benziyorsa eklenti onu arama yapmadan akış olarak eklemeyi dener.
+
+**Arama sonuçları için bağlam menüsü:** Bir arama sonucuna sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak, sonuç üzerinde `Enter`'a basmakla aynı işlevi gören tek bir **Abone Ol** eylemi içeren bir menü açabilirsiniz.
+
+### Abone Olmadan Önce Bölümleri Önizleme
+
+Bir aboneliğe karar vermeden önce, bir podcastin bölümlerini doğrudan arama sonuçlarından dinleyebilirsiniz. **Arama sonuçları** listesinde bir podcast seçtiğinizde FreeRadio o akışı getirir ve bölümlerini — başlık ve yayın tarihiyle — altındaki **Seçili sonuçtaki bölümler** listesinde gösterir.
+
+- Bu önizleme listesinde bir bölüm seçip `Enter`'a basın ya da bağlam menüsünü açıp (Uygulamalar tuşu / `Shift+F10` veya sağ tık) **Önizle**'yi seçerek normal oynatıcı üzerinden çalmaya başlayabilirsiniz. Olağan tüm oynatma denetimleri (duraklat, ses seviyesi, zaman kaydırma vb.) diğer herhangi bir istasyon veya bölümde olduğu gibi burada da çalışır.
+- Bir bölüm önizlenirken aynı bağlam menüsünde **Önizle** yerine **Önizlemeyi Durdur** görünür — bunu seçin ya da aynı bölümde tekrar `Enter`'a basın, durdurmak için.
+- Önizleme sizi herhangi bir şeye abone etmez; yalnızca karar vermeden önce dinlemek içindir. Önizleme listesinin kendisi geçicidir — farklı bir arama sonucu seçtiğinizde hemen değişir ve gerçek aboneliklerinizin aksine hiçbir yerde kalıcı olarak saklanmaz.
+
+### Abonelikleri Yönetme
+
+Birkaç akış eklediğinizde bunlar **Abonelikler** listesinde görünür. Her girdi, akış başlığını ve mevcut bölüm sayısını gösterir.
+
+- **Bir akış seçin**, bölümlerini alttaki listede görmek için. Abonelikler listesinin altındaki salt okunur **Akış ayrıntıları** metin kutusu; akış başlığını, yazarını, açıklamasını, bölüm sayısını ve URL'sini gösterir.
+- **Bir akışı yenileyin** — seçip **akışı Yenile** komutunu kullanın (bağlam menüsünden erişilebilir, aşağıya bakın) basarak en yeni bölümleri getirin. Podcastler sekmesini her açtığınızda tüm akışlar arka planda otomatik olarak yenilenir; böylece genellikle elle müdahale etmeden en yeni bölümleri görürsünüz.
+- **Bir akışı kaldırın** — seçip `Delete` tuşuna basın ya da bağlam menüsünü kullanarak aboneliklerinizden kaldırın. Kaldırmadan önce onay istenir.
+
+**akışlar için bağlam menüsü:** Bir akışa sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açabilirsiniz:
+- **Akışı Yenile** — yeni bölümleri şimdi getirir.
+- **Akışı Kaldır** — aboneliği siler.
+- **Akış URL'sini Kopyala** — akış URL'sini panoya kopyalar.
+
+### Bölümlere Göz Atma ve Çalma
+
+Abonelikler listesinde bir akış seçin; bölümleri aşağıdaki **Bölümler** listesinde görünür. Her bölüm şunları gösterir:
+- Bölüm numarası (1 = akıştaki en eski bölüm, en yeniye doğru sayılır).
+- Yayın tarihi (varsa).
+- Başlığı.
+- Bölüm tamamen dinlendiyse bir **"Dinlendi"** ön eki.
+- Bir süre son eki: hiç çalınmadıysa toplam süre, kısmen çalındıysa geçen süre/toplam süre.
+
+**Çalma:**
+- Bir bölüm seçip çalmaya başlamak için `Enter` veya `Boşluk`'a basın. Bölüm daha önce kısmen çalındıysa kaldığınız yerden devam eder.
+- Bölüm çalarken satır güncellenmez — bu kasıtlıdır, böylece NVDA satırın üzerinde otururken onu tekrar tekrar okumaz. "Dinlendi" işareti ve süre, bölümü duraklattığınız veya bittiği anda hemen yenilenir; böylece görüntü önemli olduğu anda her zaman doğrudur, yalnızca çalma sırasında saniye saniye ilerlemez.
+- Podcastler sekmesinde bir önceki / sonraki bölüme geçip hemen çalmak için `F3` / `F4` kullanın. Bölüm listesi odaklanmışken `←` / `→` da, ya da Podcastler sekmesinde herhangi bir yerde `Ctrl+←` / `Ctrl+→` de kullanılabilir — ikisi de aynı şekilde çalışır.
+- Bölümleri çalmadan akışlar arasında geçmek için `Shift+F3` / `Shift+F4` kullanın.
+- Bir bölüm çalarken `Boşluk`'a basarak oynatmayı duraklatabilir veya sürdürebilirsiniz.
+
+**Oynatmaya devam etme:** FreeRadio, her podcast bölümündeki konumunuzu otomatik olarak kaydeder — duraklattığınızda veya bölüm bittiğinde anında, dinlemeye devam ederken de arka planda her 15 saniyede bir; böylece bir çökme veya beklenmedik yeniden başlatma fazla ilerleme kaybettirmez. Oynatmayı durdurup daha sonra geri dönerseniz bölüm, kaydedilen konumdan devam eder. Bölümü sonuna kadar (son 3 saniye içinde) çalarsanız **"Dinlendi"** olarak işaretlenir ve devam etmez — bir dahaki sefere baştan başlar ve listede "Dinlendi" ön eki görünür.
+
+**Bölümler için bağlam menüsü:** Bir bölüme sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açabilirsiniz:
+- **Bölümü Çal** — çalmaya başlar.
+- **Bölümü İndir** — bölüm dosyasını kayıt klasörünüze indirir.
+- **Bölüm URL'sini Kopyala** — doğrudan ses URL'sini panoya kopyalar.
+
+### Bölümleri İndirme
+
+Bir bölüm seçip **Bölümü İndir** düğmesine tıklayın (ya da bağlam menüsünü kullanın). Bölüm, kayıt klasörünüze indirilir (varsayılan olarak `Belgeler\FreeRadio Recordings\`). Dosya adı, bölüm başlığına ve algılanan dosya uzantısına (`.mp3`, `.m4a`, `.ogg` vb.) dayanır. İndirme başladığında ve bittiğinde NVDA bunu bildirir. Dosya zaten mevcutsa bilgilendirilirsiniz ve indirme atlanır.
+
+### Bölümleri Filtreleme
+
+Bölüm listesinin üzerinde bir **Filtre** alanı bulunur. Yazdıkça bölüm listesi gerçek zamanlı olarak filtrelenir; başlığında yazılan metni içeren veya bölüm numarası tam olarak eşleşen bölümler gösterilir — böylece `47` yazmak, başlığında "47" hiç geçmese bile doğrudan 47. bölüme atlar. NVDA her değişiklikten sonra eşleşen bölüm sayısını bildirir. Filtre alanından `Aşağı` ok tuşuna basarak odağı doğrudan filtrelenmiş listeye taşıyabilirsiniz.
+
+### Podcast Oynatma Ayrıntıları
+
+Podcast bölümleri, **BASS arka ucu** kullanılarak çalınır (radyo akışları için kullanılan aynı motor). Bölümler kademeli olarak indirildiği ve konum atlanabilir olduğu için, bir podcast çalarken zaman kaydırma geri/ileri sarma kısayollarını (`Ctrl+Win+J`/`Ctrl+Win+K`) kullanarak her seferinde **5 saniye** geri veya ileri atlayabilirsiniz (canlı radyoda kullanılan 15 saniyelik geri sarma yerine). Konum otomatik olarak kaydedilir, böylece daha sonra devam edebilirsiniz.
+
+BASS arka ucu devre dışıysa (veya başarısız olursa) podcast çalma, radyo için kullanılan aynı harici oynatıcı zincirine (VLC → PotPlayer → WMP) düşer, ancak bu durumda **atlama ve devam etme işlevi çalışmaz** — bölüm her seferinde baştan çalar. Tam podcast deneyimi için BASS arka ucunu etkin tutun.
+
+### Podcast Veri Depolama
+
+Abonelikleriniz, NVDA kullanıcı yapılandırma klasöründeki `freeradio_podcasts.json` dosyasında saklanır. Bölüm konumları ayrı olarak aynı konumdaki `podcast_positions.json` dosyasında saklanır. Her iki dosya da düz JSON'dur ve yedeklenebilir veya başka bir bilgisayara aktarılabilir.
+
+## Beğenilen Şarkılar
+
+Ayarlar'dan **Beğenilen şarkıları metin dosyasına kaydet** seçeneği açıldığında `Ctrl+Win+İ` kısayoluna üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da satır satır eklenir (varsayılan: `Belgeler\FreeRadio Recordings\likedSongs.txt`).
+
+ICY metadata mevcut olan istasyonlarda parça adı ve sanatçı bilgisi, metadata bulunmayan istasyonlarda ise Shazam tanıma sonucu kaydedilir; her iki durumda da aynı dosya kullanılır. Dosya yoksa otomatik oluşturulur; her kayıt dosyanın sonuna eklenir, önceki girişler silinmez.
+
+## Beğenilen Şarkılar Sekmesi
+
+İstasyon tarayıcısındaki **Beğenilen Şarkılar** sekmesi, `likedSongs.txt` dosyasına kaydedilmiş tüm parçaları listeler. Sekme her açıldığında liste dosyadan otomatik olarak yeniden yüklenir.
+
+Listenin üzerindeki **Filtre** alanı, görüntülenen parçaları gerçek zamanlı olarak daraltmanızı sağlar. Şarkı adının veya sanatçı adının herhangi bir bölümünü yazın; liste her karakter girişinde anında güncellenir. NVDA her değişiklikten sonra eşleşen sonuç sayısını seslendirir. Filtre alanından `Aşağı` ok tuşuna basarak odağı doğrudan listeye taşıyabilirsiniz.
+
+Listeden bir parça seçildiğinde şu işlemler yapılabilir:
+
+- **Spotify'da Çal:** Önce Spotify masaüstü uygulamasını açmayı dener. Uygulama kurulu değilse Spotify web sitesinde aramayı başlatır ve ilk sonucu otomatik oynatır.
+- **YouTube'da Çal (`Alt+O`):** Seçili parçayla YouTube'da arama yapar ve sonuçları varsayılan tarayıcıda açar.
+- **Şarkı Sözlerini Göster:** Seçili parçanın şarkı sözlerini getirir ve görüntüler. Şarkı sözleri [lrclib.net](https://lrclib.net) adresinden alınır (ücretsiz, hesap gerekmez). Arama arka planda çalışırken kısa bir "Şarkı sözleri getiriliyor…" mesajı seslendirilir. Şarkı sözleri bulunursa, NVDA ile okuyabileceğiniz ve panoya kopyalayabileceğiniz salt okunur bir iletişim kutusunda açılır. Şarkı sözleri bulunamazsa NVDA bunu bildirir. Yinelenen istekleri önlemek için bir getirme işlemi devam ederken düğme geçici olarak devre dışı bırakılır.
+- **Sil (`Alt+M`):** Seçili parçayı `likedSongs.txt` dosyasından kaldırır ve listeyi günceller. Liste odaklanmışken `Delete` tuşu da aynı işlevi görür.
+- **Yenile (`Alt+E`):** Listeyi dosyadan yeniden yükler.
+
+Spotify, YouTube, Şarkı Sözlerini Göster ve Sil düğmeleri yalnızca listeden gerçek bir parça seçiliyken etkin olur.
+
+### Şarkı Sözleri Servisi
+
+FreeRadio, şarkı sözlerini almak için [lrclib.net](https://lrclib.net) kullanır — API anahtarı veya hesap gerektirmeyen ücretsiz, açık bir veritabanı. Arama süreci, `likedSongs.txt` dosyasında saklanan parça dizesini ayrıştırır ve şarkı sözleri bulunana kadar giderek daha geniş sorgular dener:
+
+1. Tam sanatçı adı ve temizlenmiş başlıkla kesin eşleşme (arama öncesinde "Remastered", "Live" veya yıl etiketleri gibi gürültü son ekleri ayıklanır).
+2. Tam sanatçı adı ve orijinal başlıkla kesin eşleşme (temizleme başlığı değiştirdiyse).
+3. Yalnızca ilk sanatçı adı ve temizlenmiş başlıkla kesin eşleşme ("Sanatçı A & Sanatçı B" gibi çoklu sanatçı dizelerinde).
+4. İlk sanatçı adı ve temizlenmiş başlıkla bulanık arama.
+5. Son çare olarak ham parça dizesiyle bulanık arama.
+
+Düz şarkı sözleri mevcutsa olduğu gibi gösterilir. Yalnızca zaman damgalı LRC şarkı sözleri mevcutsa zaman damgaları ayıklanır ve düz metin gösterilir. Enstrümantal parçalar için şarkı sözü bulunamadığı rapor edilir.
+
 ## Ayarlar
 
 NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki seçenekler yapılandırılabilir:
@@ -365,48 +497,16 @@ Ayarlar'dan **Parça değişimlerini otomatik seslendir** seçeneği açıldığ
 
 Bu özellik varsayılan olarak kapalıdır; NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden açılıp kapatılabilir.
 
-## Beğenilen Şarkılar
-
-Ayarlar'dan **Beğenilen şarkıları metin dosyasına kaydet** seçeneği açıldığında `Ctrl+Win+İ` kısayoluna üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da satır satır eklenir (varsayılan: `Belgeler\FreeRadio Recordings\likedSongs.txt`).
-
-ICY metadata mevcut olan istasyonlarda parça adı ve sanatçı bilgisi, metadata bulunmayan istasyonlarda ise Shazam tanıma sonucu kaydedilir; her iki durumda da aynı dosya kullanılır. Dosya yoksa otomatik oluşturulur; her kayıt dosyanın sonuna eklenir, önceki girişler silinmez.
-
-## Beğenilen Şarkılar Sekmesi
-
-İstasyon tarayıcısındaki **Beğenilen Şarkılar** sekmesi, `likedSongs.txt` dosyasına kaydedilmiş tüm parçaları listeler. Sekme her açıldığında liste dosyadan otomatik olarak yeniden yüklenir.
-
-Listenin üzerindeki **Filtre** alanı, görüntülenen parçaları gerçek zamanlı olarak daraltmanızı sağlar. Şarkı adının veya sanatçı adının herhangi bir bölümünü yazın; liste her karakter girişinde anında güncellenir. NVDA her değişiklikten sonra eşleşen sonuç sayısını seslendirir. Filtre alanından `Aşağı` ok tuşuna basarak odağı doğrudan listeye taşıyabilirsiniz.
-
-Listeden bir parça seçildiğinde şu işlemler yapılabilir:
-
-- **Spotify'da Çal:** Önce Spotify masaüstü uygulamasını açmayı dener. Uygulama kurulu değilse Spotify web sitesinde aramayı başlatır ve ilk sonucu otomatik oynatır.
-- **YouTube'da Çal (`Alt+O`):** Seçili parçayla YouTube'da arama yapar ve sonuçları varsayılan tarayıcıda açar.
-- **Şarkı Sözlerini Göster:** Seçili parçanın şarkı sözlerini getirir ve görüntüler. Şarkı sözleri [lrclib.net](https://lrclib.net) adresinden alınır (ücretsiz, hesap gerekmez). Arama arka planda çalışırken kısa bir "Şarkı sözleri getiriliyor…" mesajı seslendirilir. Şarkı sözleri bulunursa, NVDA ile okuyabileceğiniz ve panoya kopyalayabileceğiniz salt okunur bir iletişim kutusunda açılır. Şarkı sözleri bulunamazsa NVDA bunu bildirir. Yinelenen istekleri önlemek için bir getirme işlemi devam ederken düğme geçici olarak devre dışı bırakılır.
-- **Sil (`Alt+M`):** Seçili parçayı `likedSongs.txt` dosyasından kaldırır ve listeyi günceller. Liste odaklanmışken `Delete` tuşu da aynı işlevi görür.
-- **Yenile (`Alt+E`):** Listeyi dosyadan yeniden yükler.
-
-Spotify, YouTube, Şarkı Sözlerini Göster ve Sil düğmeleri yalnızca listeden gerçek bir parça seçiliyken etkin olur.
-
-### Şarkı Sözleri Servisi
-
-FreeRadio, şarkı sözlerini almak için [lrclib.net](https://lrclib.net) kullanır — API anahtarı veya hesap gerektirmeyen ücretsiz, açık bir veritabanı. Arama süreci, `likedSongs.txt` dosyasında saklanan parça dizesini ayrıştırır ve şarkı sözleri bulunana kadar giderek daha geniş sorgular dener:
-
-1. Tam sanatçı adı ve temizlenmiş başlıkla kesin eşleşme (arama öncesinde "Remastered", "Live" veya yıl etiketleri gibi gürültü son ekleri ayıklanır).
-2. Tam sanatçı adı ve orijinal başlıkla kesin eşleşme (temizleme başlığı değiştirdiyse).
-3. Yalnızca ilk sanatçı adı ve temizlenmiş başlıkla kesin eşleşme ("Sanatçı A & Sanatçı B" gibi çoklu sanatçı dizelerinde).
-4. İlk sanatçı adı ve temizlenmiş başlıkla bulanık arama.
-5. Son çare olarak ham parça dizesiyle bulanık arama.
-
-Düz şarkı sözleri mevcutsa olduğu gibi gösterilir. Yalnızca zaman damgalı LRC şarkı sözleri mevcutsa zaman damgaları ayıklanır ve düz metin gösterilir. Enstrümantal parçalar için şarkı sözü bulunamadığı rapor edilir.
-
 ## Oynatma
 
 Eklenti ses çıkışı için şu öncelik sırasıyla bir arka uç seçer:
 
-1. **BASS** — varsayılan ve birincil arka uç. Ayrı bir kurulum gerektirmez; eklentiyle birlikte gelir. BASS, sesi doğrudan Windows ses yığınına gönderir ve Windows ses mikseri üzerinde **pythonw.exe** adıyla bağımsız bir kaynak olarak görünür. Bu, FreeRadio sesinin NVDA konuşmasından tamamen ayrı bir kanal üzerinde aktığı anlamına gelir: NVDA bir şeyler okurken radyo sesi kesilmez, karışmaz ve NVDA'nın kendi ses ayarlarından etkilenmez. Kullanıcı Windows Ses Mikseri'nden radyo ses düzeyini NVDA'dan bağımsız olarak ayarlayabilir. HTTP, HTTPS ve gömülü çoğu akış biçimini destekler. Ses yansıtma yalnızca bu arka uçla kullanılabilir.
+1. **BASS** — varsayılan ve birincil arka uç. Ayrı bir kurulum gerektirmez; eklentiyle birlikte gelir. BASS, sesi doğrudan Windows ses yığınına gönderir ve Windows ses mikseri üzerinde **pythonw.exe** adıyla bağımsız bir kaynak olarak görünür. Bu, FreeRadio sesinin NVDA konuşmasından tamamen ayrı bir kanal üzerinde aktığı anlamına gelir: NVDA bir şeyler okurken radyo sesi kesilmez, karışmaz ve NVDA'nın kendi ses ayarlarından etkilenmez. Kullanıcı Windows Ses Mikseri'nden radyo ses düzeyini NVDA'dan bağımsız olarak ayarlayabilir. HTTP, HTTPS ve gömülü çoğu akış biçimini destekler. Ses yansıtma ve podcast atlama/devam etme yalnızca bu arka uçla kullanılabilir.
 2. **VLC** — BASS başarısız olursa devreye girer. Yaygın kurulum konumlarında, kullanıcı profili klasörlerinde ve sistem PATH'inde otomatik aranır.
 3. **PotPlayer** — VLC bulunamazsa denenir. Yaygın kurulum konumlarında otomatik aranır.
 4. **Windows Media Player** — son seçenek olarak kullanılır; sistem üzerinde WMP bileşeni kurulu olmasını gerektirir.
+
+Podcast bölümleri, mevcutsa her zaman BASS üzerinden çalınır; çünkü BASS akışı, indirme sürerken bile atlanabilir bir dosya olarak açabilir ve hassas konum takibi ile devam etmeyi mümkün kılar. BASS devre dışıysa podcastler harici oynatıcı zincirine düşer, ancak atlama ve devam etme çalışmaz.
 
 ## Güncelleme Kontrolü
 

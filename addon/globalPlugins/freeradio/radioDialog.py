@@ -10,6 +10,7 @@ ngettext = globals().get("ngettext", lambda s, p, n: s if n == 1 else p)
 import config
 import datetime
 import os
+import re
 import sys
 import threading
 import time
@@ -17,7 +18,11 @@ import ui
 import wx
 import winsound
 import gui
+from . import podcast
+import urllib.parse
+import urllib.request
 from gui import nvdaControls
+from html import unescape
 
 _ = _tr
 del _tr
@@ -160,6 +165,7 @@ class RadioDialog(wx.Dialog):
 		self._recorder      = recorder
 		self._timer_manager = timer_manager
 		self._plugin        = plugin
+		self._podcast_manager = podcast.PodcastManager()
 		self._all_stations    = []
 		self._extra_stations  = []   # additional stations from country selection
 		self._search_stations = []   # Stations from API text search
@@ -178,6 +184,14 @@ class RadioDialog(wx.Dialog):
 		threading.Thread(target=self._fetch_all,       daemon=True).start()
 		threading.Thread(target=self._fetch_countries, daemon=True).start()
 
+		# NOTE: previously had a wx.Timer here that live-updated the playing
+		# episode's row (elapsed/total duration) once a second. Removed:
+		# on MSW, SetString() on the focused row still got spoken by NVDA
+		# every time it changed, so it made the episode list unusable while
+		# a podcast was playing and that row had focus. The row's duration
+		# now only reflects the last saved position (updated when the list
+		# is rebuilt), not a live-ticking value.
+
 
 	def _build_ui(self):
 		main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -189,6 +203,7 @@ class RadioDialog(wx.Dialog):
 		self._rec_panel    = wx.Panel(self._notebook)
 		self._timer_panel  = wx.Panel(self._notebook)
 		self._liked_panel  = wx.Panel(self._notebook)
+		self._podcast_panel = wx.Panel(self._notebook)
 		# Tab labels no longer carry letter accelerators; numeric shortcuts
 		# Alt+1..5 are handled in _on_char_hook via an accelerator table.
 		self._notebook.AddPage(self._all_panel,   _("All Stations"))
@@ -196,6 +211,7 @@ class RadioDialog(wx.Dialog):
 		self._notebook.AddPage(self._rec_panel,   _("Recording"))
 		self._notebook.AddPage(self._timer_panel, _("Timer"))
 		self._notebook.AddPage(self._liked_panel, _("Liked Songs"))
+		self._notebook.AddPage(self._podcast_panel, _("Podcasts"))
 		self._notebook.SetSelection(0)  # Start on the All Stations tab
 		main_sizer.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -328,6 +344,7 @@ class RadioDialog(wx.Dialog):
 		self._build_rec_tab()
 		self._build_timer_tab()
 		self._build_liked_tab()
+		self._build_podcast_tab()
 
 		self._play_btn.Bind(wx.EVT_BUTTON,    self._on_play_clicked)
 		self._del_btn.Bind(wx.EVT_BUTTON,     self._on_delete_station)
@@ -778,6 +795,8 @@ class RadioDialog(wx.Dialog):
 		sel = self._notebook.GetSelection()
 		if sel == 1:
 			return self._fav_list
+		if sel == 5:  # Podcasts
+			return self._episode_list
 		return self._all_list
 
 	def _resolve_station_from_combo(self, combo, station_list):
@@ -839,7 +858,7 @@ class RadioDialog(wx.Dialog):
 		population runs.  Without this deferral the Clear()+Append() calls block
 		the wx paint cycle and the tab switch feels sluggish.
 		"""
-		on_rec_or_timer = (sel in (2, 3, 4))
+		on_rec_or_timer = (sel in (2, 3, 4, 5))
 		self._play_btn.Show(not on_rec_or_timer)
 		self._fav_btn.Show(not on_rec_or_timer)
 		self._del_btn.Show(not on_rec_or_timer)
@@ -859,6 +878,8 @@ class RadioDialog(wx.Dialog):
 			wx.CallLater(0, self._refresh_timer_list)
 		elif sel == 4:
 			wx.CallLater(0, self._refresh_liked_list)
+		elif sel == 5:
+			wx.CallLater(0, self._refresh_all_podcast_feeds)
 		if sel != 1 and hasattr(self, "_save_audio_btn"):
 			self._save_audio_btn.Enable(False)
 
@@ -2180,6 +2201,11 @@ class RadioDialog(wx.Dialog):
 			if idx >= len(favs):
 				return None, -1
 			return favs[idx], idx
+		elif self._notebook.GetSelection() == 5:  # Podcasts
+			episodes = getattr(self, "_episode_filtered", None) or []
+			if idx >= len(episodes):
+				return None, -1
+			return episodes[idx].to_dict(), idx
 		else:
 			if idx >= len(self._stations):
 				return None, -1
@@ -2466,6 +2492,23 @@ class RadioDialog(wx.Dialog):
 		station, idx = self._get_selected_station()
 		if not station:
 			return
+		# If we're merely paused on this same item, resume it in place instead
+		# of reconnecting from scratch. This matters most for podcasts: a
+		# fresh play() only seeks back to the last *saved* position, not the
+		# exact point playback was paused at, so it can appear to restart the
+		# episode from the beginning.
+		# Compared by URL only (not stationuuid): podcast episodes from the
+		# same show can share a common feed/show id, so a stationuuid match
+		# would wrongly treat two different episodes as "the same paused
+		# item" and just resume the old one instead of loading the newly
+		# selected episode from its own saved position.
+		if self._player.has_media():
+			current = self._player.get_current_station() or {}
+			same_item = bool(station.get("url")) and station.get("url") == current.get("url")
+			if same_item:
+				self._player.resume()
+				self._update_fav_button()
+				return
 		if self._notebook.GetSelection() == 1:  # Favourites
 			# Always pass the full (unfiltered) favourites list and find the
 			# station's real index in it, so next/prev navigation in the plugin
@@ -2479,6 +2522,8 @@ class RadioDialog(wx.Dialog):
 			except StopIteration:
 				real_idx = idx
 			self._play_callback(station, all_favs, real_idx)
+		elif self._notebook.GetSelection() == 5:  # Podcasts
+			self._play_callback(station, [station], 0)
 		else:
 			self._play_callback(station, self._stations, idx)
 		self._update_fav_button()
@@ -2809,16 +2854,16 @@ class RadioDialog(wx.Dialog):
 
 		if key in (wx.WXK_F3, wx.WXK_F4):
 			tab = self._notebook.GetSelection()
-			if tab == 0:  # All Stations
-				stations = self._stations
-				lst = self._all_list
-			elif tab == 1:  # Favourites — navigate the visible (filtered) list
-				stations = getattr(self, "_fav_filtered", None) or self._manager.get_favorites()
-				lst = self._fav_list
-			else:
-				stations = None
-				lst = None
-			if stations is not None:
+			# Only All Stations / Favourites are handled here — other tabs
+			# (e.g. Podcasts) define their own F3/F4 behaviour further below,
+			# so we must NOT return early for them.
+			if tab in (0, 1):
+				if tab == 0:  # All Stations
+					stations = self._stations
+					lst = self._all_list
+				else:  # Favourites — navigate the visible (filtered) list
+					stations = getattr(self, "_fav_filtered", None) or self._manager.get_favorites()
+					lst = self._fav_list
 				count = len(stations)
 				if count > 0:
 					cur = lst.GetSelection()
@@ -2840,7 +2885,8 @@ class RadioDialog(wx.Dialog):
 						self._play_callback(s, stations, next_idx, announce=True)
 					self._update_fav_button()
 					self._update_save_audio_btn()
-			return
+				return
+			# Fall through for other tabs (e.g. Podcasts, handled below).
 
 		if key == wx.WXK_F5:
 			vol = max(0, self._player.get_volume() - 5)
@@ -2907,6 +2953,18 @@ class RadioDialog(wx.Dialog):
 		if is_context_key and focused in (self._all_list, self._fav_list):
 			self._show_station_context_menu()
 			return
+		if is_context_key and focused == self._podcast_list:
+			self._show_feed_context_menu()
+			return
+		if is_context_key and focused == self._episode_list:
+			self._show_episode_context_menu()
+			return
+		if is_context_key and focused == self._podcast_results:
+			self._show_podcast_result_context_menu()
+			return
+		if is_context_key and focused == self._podcast_preview_list:
+			self._show_podcast_preview_context_menu()
+			return
 
 		if key == wx.WXK_TAB and event.ControlDown() and not event.AltDown():
 			count = self._notebook.GetPageCount()
@@ -2946,6 +3004,26 @@ class RadioDialog(wx.Dialog):
 				return
 			if focused == self._play_btn:
 				self._on_play_clicked(event)
+				return
+			# Podcast tab: call the field's submit action directly instead of
+			# relying on Skip() to reach the control's own EVT_KEY_DOWN handler —
+			# Enter on a TextCtrl inside a dialog can be swallowed by native
+			# default-button navigation before it ever gets there, which is why
+			# Skip()-ing it here was not reliably triggering the search/add.
+			if focused == self._podcast_search:
+				self._on_podcast_search(event)
+				return
+			if focused == self._podcast_url:
+				self._on_podcast_add(event)
+				return
+			if focused == self._episode_list:
+				self._on_episode_play(None)
+				return
+			if focused == self._podcast_results:
+				self._on_podcast_subscribe_from_results(None)
+				return
+			if focused == self._podcast_preview_list:
+				self._on_podcast_preview_toggle(None)
 				return
 			# For any other widget (country combo, search box, fav filter,
 			# timer/sched/liked lists, SpinCtrl, RadioButton, etc.) Enter must
@@ -2997,9 +3075,9 @@ class RadioDialog(wx.Dialog):
 				gui.mainFrame.postPopup()
 				return
 			# Numeric tab shortcuts: Alt+1..5 switch to the corresponding tab.
-			# Tab order: 1=All Stations, 2=Favourites, 3=Recording, 4=Timer, 5=Liked Songs
-			if ord("1") <= key <= ord("5"):
-				tab_index = key - ord("1")  # convert '1'->0, '2'->1, ..., '5'->4
+			# Tab order: 1=All Stations, 2=Favourites, 3=Recording, 4=Timer, 5=Liked Songs, 6=Podcasts
+			if ord("1") <= key <= ord("6"):
+				tab_index = key - ord("1")   # 1->0, 2->1, ..., 6->5
 				self._notebook.SetSelection(tab_index)
 				self._on_tab_changed_index(tab_index)
 				return
@@ -3024,6 +3102,37 @@ class RadioDialog(wx.Dialog):
 			if ch and ch.isprintable():
 				self._do_list_typeahead(focused, ch)
 				return
+
+		# --- Unique shortcuts to the Podcast tab ---
+		# These work anywhere on the tab — the user does not need to be
+		# focused on one of the listboxes for them to apply.
+		if self._notebook.GetSelection() == 5:  # Podcast tab
+			focused = wx.Window.FindFocus()
+
+			# Feed selection: Shift+F3 / Shift+F4 (checked before the plain
+			# F3/F4 case below, since Shift+F3/F4 also match key in (F3, F4)).
+			if key == wx.WXK_F3 and event.ShiftDown():
+				self._select_prev_feed()
+				return
+			if key == wx.WXK_F4 and event.ShiftDown():
+				self._select_next_feed()
+				return
+
+			# Episode switching: F3 / F4 (and Ctrl+Left / Ctrl+Right while
+			# focused on one of the podcast lists).
+			if key == wx.WXK_F3:
+				self._play_prev_episode()
+				return
+			if key == wx.WXK_F4:
+				self._play_next_episode()
+				return
+			if focused in (self._episode_list, self._podcast_list, self._podcast_results):
+				if key == wx.WXK_LEFT and event.ControlDown():
+					self._play_prev_episode()
+					return
+				if key == wx.WXK_RIGHT and event.ControlDown():
+					self._play_next_episode()
+					return
 
 		event.Skip()
 
@@ -3781,6 +3890,859 @@ class RadioDialog(wx.Dialog):
 		dlg.ShowModal()
 		dlg.Destroy()
 
+
+	# ------------------------------------------------------------------ #
+	# Podcast Tab
+	# ------------------------------------------------------------------ #
+
+	def _build_podcast_tab(self):
+		"""Podcast subscriptions and episodes tab."""
+		panel = self._podcast_panel
+		sizer = wx.BoxSizer(wx.VERTICAL)
+
+		# --- Search row ---
+		search_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		search_sizer.Add(wx.StaticText(panel, label=_("Search:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+		self._podcast_search = wx.TextCtrl(panel)
+		self._podcast_search.SetName(_("Search podcasts. Press enter to search"))
+		search_sizer.Add(self._podcast_search, 1, wx.EXPAND)
+		sizer.Add(search_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Search results list ---
+		# Hidden until a search is actually performed - see
+		# _on_podcast_search() and _set_podcast_results_visible(). Keeping
+		# it out of the way when there's nothing to search for avoids an
+		# empty "Search results" list/label sitting in the tab from the
+		# moment it's opened.
+		self._podcast_results_label = wx.StaticText(panel, label=_("Search results:"))
+		sizer.Add(self._podcast_results_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._podcast_results = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._podcast_results.SetName(_("Podcast search results"))
+		self._podcast_results.SetMinSize((-1, 80))
+		sizer.Add(self._podcast_results, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Preview episodes for the selected search result ---
+		# Lets the user browse a feed's episodes before deciding to subscribe.
+		# Subscribing itself is done via the search results' context menu
+		# (Applications key / Shift+F10), not a button. Hidden alongside the
+		# search results list until a search has been performed.
+		self._podcast_preview_label = wx.StaticText(panel, label=_("Episodes in selected result:"))
+		sizer.Add(self._podcast_preview_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._podcast_preview_list = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._podcast_preview_list.SetName(_("Episode preview for selected search result"))
+		self._podcast_preview_list.SetMinSize((-1, 80))
+		sizer.Add(self._podcast_preview_list, 0, wx.EXPAND | wx.ALL, 8)
+		self._podcast_search_sizer = sizer
+		self._set_podcast_results_visible(False)
+
+		# --- Separator ---
+		sizer.Add(wx.StaticLine(panel), 0, wx.EXPAND | wx.ALL, 4)
+
+		# --- Add feed row (manual) ---
+		add_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		add_sizer.Add(wx.StaticText(panel, label=_("Or enter podcast URL:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+		self._podcast_url = wx.TextCtrl(panel)
+		self._podcast_url.SetName(_("Podcast URL"))
+		add_sizer.Add(self._podcast_url, 1, wx.EXPAND | wx.RIGHT, 4)
+		self._podcast_add_btn = wx.Button(panel, label=_("&Add Feed"))
+		add_sizer.Add(self._podcast_add_btn, 0)
+		sizer.Add(add_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Subscriptions list ---
+		sizer.Add(wx.StaticText(panel, label=_("Subscriptions:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._podcast_list = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._podcast_list.SetName(_("Podcast subscriptions"))
+		self._podcast_list.SetMinSize((-1, 80))
+		sizer.Add(self._podcast_list, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Selected feed details (read-only, reachable by Tab right
+		# after the subscriptions list) ---
+		self._feed_details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+		self._feed_details.SetName(_("Feed details"))
+		self._feed_details.SetMinSize((-1, 60))
+		sizer.Add(self._feed_details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+		# --- Episode filter ---
+		ep_filter_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		ep_filter_sizer.Add(wx.StaticText(panel, label=_("Filter:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+		self._episode_filter = wx.TextCtrl(panel)
+		self._episode_filter.SetName(_("Filter episodes by title or number"))
+		ep_filter_sizer.Add(self._episode_filter, 1, wx.EXPAND)
+		sizer.Add(ep_filter_sizer, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
+		# --- Episodes list ---
+		sizer.Add(wx.StaticText(panel, label=_("Episodes:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._episode_list = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._episode_list.SetName(_("Podcast episodes"))
+		self._episode_list.SetMinSize((-1, 120))
+		sizer.Add(self._episode_list, 1, wx.EXPAND | wx.ALL, 8)
+
+		# --- Selected episode details (read-only, reachable by Tab right
+		# after the episode list) ---
+		self._episode_details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+		self._episode_details.SetName(_("Episode details"))
+		self._episode_details.SetMinSize((-1, 60))
+		sizer.Add(self._episode_details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+		# Episode buttons — playing an episode is available via Enter/Space
+		# on the list and via the context menu, so there's no separate
+		# "Play Episode" button here.
+		ep_btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		self._episode_download_btn = wx.Button(panel, label=_("&Download Episode"))
+		self._episode_download_btn.Enable(False)
+		ep_btn_sizer.Add(self._episode_download_btn, 0)
+		sizer.Add(ep_btn_sizer, 0, wx.LEFT | wx.BOTTOM, 8)
+
+		panel.SetSizer(sizer)
+
+		# --- Bind events ---
+		self._podcast_search.Bind(wx.EVT_KEY_DOWN, self._on_podcast_search_key)
+		self._podcast_results.Bind(wx.EVT_LISTBOX, self._on_podcast_result_selected)
+		self._podcast_add_btn.Bind(wx.EVT_BUTTON, self._on_podcast_add)
+		self._podcast_list.Bind(wx.EVT_LISTBOX, self._on_podcast_selected)
+		self._podcast_list.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._podcast_list.Bind(wx.EVT_KEY_DOWN, self._on_podcast_list_key)
+		self._episode_filter.Bind(wx.EVT_TEXT,     self._on_episode_filter_changed)
+		self._episode_filter.Bind(wx.EVT_KEY_DOWN, self._on_episode_filter_key)
+		self._episode_list.Bind(wx.EVT_LISTBOX, self._on_episode_selected)
+		self._episode_list.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._episode_list.Bind(wx.EVT_KEY_DOWN, self._on_episode_key)
+		self._episode_download_btn.Bind(wx.EVT_BUTTON, self._on_episode_download)
+
+		self._podcast_url.Bind(wx.EVT_KEY_DOWN, self._on_podcast_url_key)
+
+		self._refresh_podcast_list()
+
+	def _refresh_podcast_list(self):
+		"""Populate the podcast subscription listbox.
+
+		Preserves whichever feed/episode is selected *at the moment this runs*
+		(not a snapshot from earlier), since wx.ListBox.Clear() resets the
+		selection to NOT_FOUND. This matters most for the background bulk
+		refresh: if the user switches to a different feed or episode while the
+		refresh is still in flight, this must keep following that new choice
+		rather than snapping back to whatever was selected when the refresh
+		started. If the previously-selected feed/episode is gone (e.g. removed
+		meanwhile) it falls back to index 0.
+		"""
+		current_feed_url = None
+		idx = self._podcast_list.GetSelection()
+		feeds_before = self._podcast_manager.get_feeds()
+		if idx != wx.NOT_FOUND and idx < len(feeds_before):
+			current_feed_url = feeds_before[idx].url
+
+		current_episode_url = None
+		if current_feed_url is not None:
+			ep_idx = self._episode_list.GetSelection()
+			filtered = getattr(self, "_episode_filtered", [])
+			if ep_idx != wx.NOT_FOUND and ep_idx < len(filtered):
+				current_episode_url = filtered[ep_idx].url
+
+		self._podcast_list.Clear()
+		feeds = self._podcast_manager.get_feeds()
+		for feed in feeds:
+			count = len(feed.episodes)
+			label = f"{feed.title} ({count} ep.)" if count > 0 else feed.title
+			self._podcast_list.Append(label)
+
+		restore_idx = wx.NOT_FOUND
+		if current_feed_url:
+			for i, feed in enumerate(feeds):
+				if feed.url == current_feed_url:
+					restore_idx = i
+					break
+
+		if restore_idx != wx.NOT_FOUND:
+			self._podcast_list.SetSelection(restore_idx)
+			self._refresh_episode_list(restore_episode_url=current_episode_url)
+		elif self._podcast_list.GetCount() > 0:
+			self._podcast_list.SetSelection(0)
+			self._on_podcast_selected(None)
+
+	def _refresh_all_podcast_feeds(self):
+		"""Re-fetch every subscribed feed in the background, then repopulate the UI.
+
+		Called whenever the Podcasts tab is opened so new episodes show up
+		without the user having to refresh each feed by hand. _refresh_podcast_list
+		preserves whatever feed/episode is selected when it runs (i.e. at
+		completion time, not when the refresh started), so switching selection
+		while the refresh is still running just works.
+		"""
+		feeds = self._podcast_manager.get_feeds()
+		if not feeds:
+			self._refresh_podcast_list()
+			return
+		if getattr(self, "_podcast_bulk_refreshing", False):
+			return
+		self._podcast_bulk_refreshing = True
+		ui.message(_("Updating podcast feeds..."))
+
+		def _do_refresh_all():
+			for feed in feeds:
+				try:
+					self._podcast_manager.refresh_feed(feed.url)
+				except Exception:
+					pass
+			wx.CallAfter(self._on_all_podcast_feeds_refreshed)
+
+		threading.Thread(target=_do_refresh_all, daemon=True).start()
+
+	def _on_all_podcast_feeds_refreshed(self):
+		self._podcast_bulk_refreshing = False
+		if not self:
+			return
+		self._refresh_podcast_list()
+		ui.message(_("Podcast feeds updated."))
+
+	def _on_podcast_url_key(self, event):
+		if event.GetKeyCode() == wx.WXK_RETURN:
+			self._on_podcast_add(event)
+		else:
+			event.Skip()
+
+	def _on_podcast_add(self, event):
+		url = self._podcast_url.GetValue().strip()
+		if not url:
+			ui.message(_("Please enter a podcast URL."))
+			return
+		if not url.startswith(("http://", "https://")):
+			ui.message(_("URL must start with http:// or https://"))
+			return
+
+		self._podcast_add_btn.Disable()
+		self._podcast_url.Disable()
+		ui.message(_("Fetching podcast feed..."))
+
+		def _do_add():
+			feed, error = self._podcast_manager.add_feed(url)
+			wx.CallAfter(self._on_podcast_add_done, feed, error)
+
+		threading.Thread(target=_do_add, daemon=True).start()
+
+	def _on_podcast_add_done(self, feed, error):
+		self._podcast_add_btn.Enable()
+		self._podcast_url.Enable()
+		if error:
+			ui.message(_("Could not add feed: %s") % error)
+			return
+		self._podcast_url.SetValue("")
+		ui.message(_("Feed added: %s") % feed.title)
+		self._refresh_podcast_list()
+
+	def _on_podcast_selected(self, event):
+		idx = self._podcast_list.GetSelection()
+		feeds = self._podcast_manager.get_feeds()
+		feed = feeds[idx] if idx != wx.NOT_FOUND and idx < len(feeds) else None
+		self._feed_details.ChangeValue(self._format_feed_details(feed))
+		# Switching feeds starts with an empty filter and the fresh episode list.
+		self._episode_filter.ChangeValue("")
+		self._refresh_episode_list()
+
+	def _format_feed_details(self, feed):
+		"""Build the text shown in the read-only feed-details field for the
+		given PodcastFeed (or "" if none is selected).
+		"""
+		if feed is None:
+			return ""
+		lines = [feed.title]
+		if feed.author:
+			lines.append(_("By: %s") % feed.author)
+		count = len(feed.episodes)
+		lines.append(ngettext("%d episode", "%d episodes", count) % count)
+		if feed.description:
+			description = self._html_to_text(feed.description)
+			if description:
+				lines.append("")
+				lines.append(description)
+		lines.append("")
+		lines.append(feed.url)
+		return "\n".join(lines)
+
+	def _refresh_episode_list(self, restore_episode_url=None):
+		"""Populate the episode listbox for the currently selected feed,
+		preserving the user's current selection and focus if active."""
+		# Remember selection index before clearing
+		prev_idx = self._episode_list.GetSelection()
+
+		self._episode_list.Clear()
+		self._episode_filtered = []
+		self._episode_download_btn.Enable(False)
+		self._episode_details.ChangeValue("")
+
+		idx = self._podcast_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		feeds = self._podcast_manager.get_feeds()
+		if idx >= len(feeds):
+			return
+		feed = feeds[idx]
+
+		query = self._episode_filter.GetValue().strip().lower()
+		if query:
+			episodes = [
+				ep for ep in feed.episodes
+				if query in ep.title.lower() or (ep.number is not None and str(ep.number) == query)
+			]
+		else:
+			episodes = list(feed.episodes)
+		self._episode_filtered = episodes
+
+		for ep in episodes:
+			self._episode_list.Append(ep.display_label(player=self._player))
+
+		count = self._episode_list.GetCount()
+		if count == 0:
+			return
+
+		select_idx = 0
+		if restore_episode_url:
+			for i, ep in enumerate(episodes):
+				if ep.url == restore_episode_url:
+					select_idx = i
+					break
+		elif prev_idx != wx.NOT_FOUND and prev_idx < count:
+			select_idx = prev_idx
+
+		self._episode_list.SetSelection(select_idx)
+		self._on_episode_selected(None)
+
+	def _on_episode_filter_changed(self, event):
+		"""Rebuild the episode list whenever the filter field changes."""
+		self._refresh_episode_list()
+		count = self._episode_list.GetCount()
+		if count == 0:
+			ui.message(_("No episodes found"))
+		else:
+			ui.message(ngettext("%d episode", "%d episodes", count) % count)
+		event.Skip()
+
+	def _on_episode_filter_key(self, event):
+		"""Down arrow moves focus from the filter field into the episode list."""
+		if event.GetKeyCode() == wx.WXK_DOWN:
+			self._episode_list.SetFocus()
+			if self._episode_list.GetCount() > 0 and self._episode_list.GetSelection() == wx.NOT_FOUND:
+				self._episode_list.SetSelection(0)
+		else:
+			event.Skip()
+
+	def _on_podcast_list_key(self, event):
+		"""Podcast subscriptions list — Delete key removes the focused feed."""
+		if event.GetKeyCode() == wx.WXK_DELETE:
+			self._on_podcast_remove(event)
+			return
+		event.Skip()
+
+	def _on_podcast_refresh(self, event):
+		idx = self._podcast_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		feeds = self._podcast_manager.get_feeds()
+		if idx >= len(feeds):
+			return
+		feed = feeds[idx]
+
+		ui.message(_("Refreshing feed: %s") % feed.title)
+
+		def _do_refresh():
+			updated_feed, error = self._podcast_manager.refresh_feed(feed.url)
+			wx.CallAfter(self._on_podcast_refresh_done, updated_feed, error)
+
+		threading.Thread(target=_do_refresh, daemon=True).start()
+
+	def _on_podcast_refresh_done(self, feed, error):
+		if error:
+			ui.message(_("Refresh failed: %s") % error)
+			return
+		ui.message(_("Feed refreshed: %s") % feed.title)
+		self._refresh_podcast_list()
+
+	def _on_podcast_remove(self, event):
+		idx = self._podcast_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		feeds = self._podcast_manager.get_feeds()
+		if idx >= len(feeds):
+			return
+		feed = feeds[idx]
+
+		dlg = wx.MessageDialog(
+			self,
+			_("Do you want to remove the feed \"%s\"?") % feed.title,
+			_("Remove Feed"),
+			wx.YES_NO | wx.NO_DEFAULT | wx.ICON_QUESTION,
+		)
+		result = dlg.ShowModal()
+		dlg.Destroy()
+		if result != wx.ID_YES:
+			return
+
+		self._podcast_manager.remove_feed(feed.url)
+		ui.message(_("Feed removed: %s") % feed.title)
+		self._refresh_podcast_list()
+
+	def _on_episode_selected(self, event):
+		idx = self._episode_list.GetSelection()
+		has_ep = idx != wx.NOT_FOUND
+		self._episode_download_btn.Enable(has_ep)
+		episodes = getattr(self, "_episode_filtered", None) or []
+		ep = episodes[idx] if has_ep and idx < len(episodes) else None
+		self._episode_details.ChangeValue(self._format_episode_details(ep))
+
+	def _format_episode_details(self, ep):
+		"""Build the text shown in the read-only episode-details field for
+		the given PodcastEpisode (or "" if none is selected).
+
+		published is a datetime (or None) on PodcastEpisode - interpolated
+		the same way display_label() already does elsewhere in this file,
+		rather than assuming a particular strftime format.
+		"""
+		if ep is None:
+			return ""
+		lines = [ep.title]
+		if ep.published:
+			lines.append(_("Published: %s") % ep.published)
+		if ep.duration:
+			lines.append(_("Duration: %s") % ep.duration)
+		if ep.description:
+			description = self._html_to_text(ep.description)
+			if description:
+				lines.append("")
+				lines.append(description)
+		lines.append("")
+		lines.append(ep.url)
+		return "\n".join(lines)
+
+	def _html_to_text(self, text):
+		"""Strip HTML tags and decode entities from an RSS/Atom description.
+
+		podcast.py stores <description>/<atom:summary> as-is, which is
+		commonly raw HTML ("<p>...</p>", "&amp;", etc.) - not something a
+		screen reader should read literally. Deliberately simple (no
+		external HTML parser dependency): drop tags, decode entities,
+		collapse the blank lines that tends to leave behind.
+		"""
+		if not text:
+			return text
+		text = re.sub(r"<[^>]+>", " ", text)
+		text = unescape(text)
+		text = re.sub(r"[ \t]+", " ", text)
+		text = re.sub(r"\n\s*\n+", "\n\n", text)
+		return text.strip()
+
+	def refresh_episode_progress(self, url):
+		"""Refresh a single episode row's [Listened]/duration display right
+		after its position was saved due to a pause or the episode
+		finishing (not the periodic autosave). Deliberately event-driven
+		instead of a continuously-ticking timer - a per-second live update
+		used to make NVDA re-announce the focused row every second while a
+		podcast was playing, so that was removed. This only fires on real
+		state changes (pause / finish), so it's safe to update even while
+		the row has focus.
+
+		Uses SetString() rather than _refresh_episode_list(): that does a
+		Clear()+Append() which would drop the current selection, and
+		SetSelection() afterwards would make NVDA re-announce the item.
+		"""
+		if not url:
+			return
+		episodes = getattr(self, "_episode_filtered", None) or []
+		for i, ep in enumerate(episodes):
+			if ep.url == url:
+				try:
+					new_label = ep.display_label(self._player)
+					if self._episode_list.GetString(i) != new_label:
+						self._episode_list.SetString(i, new_label)
+				except Exception:
+					pass
+				break
+
+	def _on_episode_key(self, event):
+		key = event.GetKeyCode()
+		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+			self._on_episode_play(event)
+			return
+		if key == wx.WXK_SPACE:
+			# Space: pause whatever is currently playing; otherwise start
+			# playback of the focused episode (regardless of whether the
+			# player merely has stale/paused media loaded from before).
+			if self._player.is_playing():
+				self._player.pause()
+				_notify(_("Paused"))
+			else:
+				self._on_episode_play(None)
+			return
+		if key == wx.WXK_RIGHT:
+			count = self._episode_list.GetCount()
+			if count == 0:
+				event.Skip()
+				return
+			idx = self._episode_list.GetSelection()
+			next_idx = (idx + 1) % count if idx != wx.NOT_FOUND else 0
+			self._episode_list.SetSelection(next_idx)
+			self._on_episode_play(None, idx=next_idx, announce=False)
+			return
+		if key == wx.WXK_LEFT:
+			count = self._episode_list.GetCount()
+			if count == 0:
+				event.Skip()
+				return
+			idx = self._episode_list.GetSelection()
+			prev_idx = (idx - 1) % count if idx != wx.NOT_FOUND else 0
+			self._episode_list.SetSelection(prev_idx)
+			self._on_episode_play(None, idx=prev_idx, announce=False)
+			return
+		event.Skip()
+
+	def _on_episode_play(self, event, idx=None, announce=True):
+		if idx is None:
+			idx = self._episode_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		episodes = getattr(self, "_episode_filtered", None) or []
+		if idx >= len(episodes):
+			return
+		episode = episodes[idx]
+
+		station_dict = episode.to_dict()
+		self._play_callback(station_dict, [station_dict], 0, announce=announce)
+
+	def _on_episode_download(self, event):
+		idx = self._episode_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		episodes = getattr(self, "_episode_filtered", None) or []
+		if idx >= len(episodes):
+			return
+		episode = episodes[idx]
+
+		out_path, filename = podcast.episode_download_target(episode.title, episode.url)
+
+		if os.path.exists(out_path):
+			ui.message(_("File already exists: %s") % filename)
+			return
+
+		ui.message(_("Downloading: %s") % episode.title)
+		self._episode_download_btn.Disable()
+
+		def _do_download():
+			try:
+				podcast.download_episode_file(episode.url, out_path)
+				wx.CallAfter(ui.message, _("Download complete: %s") % filename)
+			except Exception as e:
+				wx.CallAfter(ui.message, _("Download failed: %s") % str(e))
+			finally:
+				wx.CallAfter(self._episode_download_btn.Enable, True)
+
+		threading.Thread(target=_do_download, daemon=True).start()
+
+	def _set_podcast_results_visible(self, visible):
+		"""Show or hide the search-results list and the episode-preview
+		list (with their labels) in the Podcast tab. Hidden until a search
+		is actually performed, so an empty "Search results" list/label
+		doesn't sit in the tab from the moment it's opened."""
+		sizer = getattr(self, "_podcast_search_sizer", None)
+		widgets = (
+			self._podcast_results_label, self._podcast_results,
+			self._podcast_preview_label, self._podcast_preview_list,
+		)
+		for widget in widgets:
+			if sizer:
+				sizer.Show(widget, visible)
+			else:
+				widget.Show(visible)
+		try:
+			if sizer:
+				sizer.Layout()
+			else:
+				self._podcast_panel.Layout()
+		except Exception:
+			pass
+
+	def _on_podcast_search_key(self, event):
+		if event.GetKeyCode() == wx.WXK_RETURN:
+			self._on_podcast_search(event)
+		else:
+			event.Skip()
+
+	def _on_podcast_search(self, event):
+		query = self._podcast_search.GetValue().strip()
+		if not query:
+			ui.message(_("Please enter a search term."))
+			return
+
+		self._set_podcast_results_visible(True)
+		self._podcast_search.Disable()
+		ui.message(_("Searching for podcasts..."))
+
+		def _do_search():
+			results = podcast.search_podcasts(query)
+			wx.CallAfter(self._on_podcast_search_done, results)
+
+		threading.Thread(target=_do_search, daemon=True).start()
+
+	def _on_podcast_search_done(self, results):
+		self._podcast_search.Enable()
+		self._podcast_results.Clear()
+		self._podcast_search_results = results
+		if not results:
+			ui.message(_("No podcasts found."))
+			return
+		for item in results:
+			label = f"{item['title']} — {item['artist']}"
+			self._podcast_results.Append(label)
+		ui.message(_("%d podcasts found.") % len(results))
+		if results:
+			self._podcast_results.SetSelection(0)
+			self._on_podcast_result_selected(None)
+
+	def _on_podcast_result_selected(self, event):
+		"""When a search result is selected, fetch that feed's episodes in
+		the background and show them in the preview list so the user can
+		get a sense of the show before subscribing."""
+		idx = self._podcast_results.GetSelection()
+		self._podcast_preview_list.Clear()
+		self._podcast_preview_episodes = []
+		if idx == wx.NOT_FOUND:
+			return
+		results = getattr(self, "_podcast_search_results", [])
+		if idx >= len(results):
+			return
+		item = results[idx]
+		feed_url = item.get('feedUrl')
+		if not feed_url:
+			self._podcast_preview_list.Append(_("This podcast has no feed URL."))
+			return
+
+		self._podcast_preview_fetch_id = getattr(self, "_podcast_preview_fetch_id", 0) + 1
+		fetch_id = self._podcast_preview_fetch_id
+		self._podcast_preview_list.Append(_("Loading episodes..."))
+
+		def _do_fetch():
+			feed, error = self._podcast_manager.fetch_preview(feed_url)
+			wx.CallAfter(self._on_podcast_preview_done, feed, error, fetch_id)
+
+		threading.Thread(target=_do_fetch, daemon=True).start()
+
+	def _on_podcast_preview_done(self, feed, error, fetch_id):
+		if not self or fetch_id != getattr(self, "_podcast_preview_fetch_id", None):
+			# Superseded by a newer selection - discard this result.
+			return
+		self._podcast_preview_list.Clear()
+		if error or not feed or not feed.episodes:
+			self._podcast_preview_episodes = []
+			self._podcast_preview_list.Append(_("No episodes found."))
+			return
+		self._podcast_preview_episodes = feed.episodes
+		for ep in feed.episodes:
+			self._podcast_preview_list.Append(ep.display_label())
+
+	def _is_previewing(self, episode):
+		"""Whether *episode* (from the preview list) is the item currently
+		loaded in the player, regardless of whether it's playing or paused."""
+		if not episode.url or not self._player.has_media():
+			return False
+		current = self._player.get_current_station() or {}
+		return current.get("url") == episode.url
+
+	def _on_podcast_preview_toggle(self, event):
+		"""Preview (play) the selected episode from the search-result preview
+		list, or stop it if it's already the one being previewed."""
+		idx = self._podcast_preview_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		episodes = getattr(self, "_podcast_preview_episodes", None) or []
+		if idx >= len(episodes):
+			return
+		episode = episodes[idx]
+
+		if self._is_previewing(episode):
+			if self._plugin:
+				wx.CallAfter(self._plugin._stop_from_dialog)
+			return
+
+		station_dict = episode.to_dict()
+		self._play_callback(station_dict, [station_dict], 0, announce=True)
+
+	def _show_podcast_preview_context_menu(self):
+		"""Context menu for the selected item in the episode preview list."""
+		idx = self._podcast_preview_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		episodes = getattr(self, "_podcast_preview_episodes", None) or []
+		if idx >= len(episodes):
+			return
+		episode = episodes[idx]
+
+		menu = wx.Menu()
+		label = _("&Stop Preview") if self._is_previewing(episode) else _("&Preview")
+		item_preview = menu.Append(wx.ID_ANY, label)
+		self.Bind(wx.EVT_MENU, self._on_podcast_preview_toggle, item_preview)
+
+		self.PopupMenu(menu, self._podcast_preview_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _on_podcast_subscribe_from_results(self, event):
+		"""Subscribe to the feed currently selected in the search results
+		list. Reached via the search results' context menu or Enter."""
+		idx = self._podcast_results.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		results = getattr(self, "_podcast_search_results", [])
+		if idx >= len(results):
+			return
+		item = results[idx]
+		feed_url = item.get('feedUrl')
+		if not feed_url:
+			ui.message(_("This podcast has no feed URL."))
+			return
+
+		ui.message(_("Adding feed..."))
+
+		def _do_add():
+			feed, error = self._podcast_manager.add_feed(feed_url)
+			wx.CallAfter(self._on_podcast_subscribe_from_results_done, feed, error)
+
+		threading.Thread(target=_do_add, daemon=True).start()
+
+	def _on_podcast_subscribe_from_results_done(self, feed, error):
+		if error:
+			ui.message(_("Could not add feed: %s") % error)
+			return
+		ui.message(_("Feed added: %s") % feed.title)
+		self._refresh_podcast_list()
+
+	def _play_prev_episode(self):
+		"""Play the previous episode (select the previous item in the episode list and play)."""
+		idx = self._episode_list.GetSelection()
+		if idx <= 0:
+			ui.message(_("Already at first episode"))
+			return
+		self._episode_list.SetSelection(idx - 1)
+		self._on_episode_play(None)
+
+	def _play_next_episode(self):
+		"""Play the next episode."""
+		idx = self._episode_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			if self._episode_list.GetCount() > 0:
+				self._episode_list.SetSelection(0)
+				self._on_episode_play(None)
+			return
+		if idx >= self._episode_list.GetCount() - 1:
+			ui.message(_("Already at last episode"))
+			return
+		self._episode_list.SetSelection(idx + 1)
+		self._on_episode_play(None)
+
+	def _select_prev_feed(self):
+		"""Select the previous podcast channel (previous in the subscription list)."""
+		idx = self._podcast_list.GetSelection()
+		if idx <= 0:
+			ui.message(_("Already at first feed"))
+			return
+		new_idx = idx - 1
+		self._podcast_list.SetSelection(new_idx)
+		self._on_podcast_selected(None)
+		if wx.Window.FindFocus() != self._podcast_list:
+			ui.message(self._podcast_list.GetString(new_idx))
+
+	def _select_next_feed(self):
+		"""Select the next podcast channel."""
+		idx = self._podcast_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			if self._podcast_list.GetCount() > 0:
+				self._podcast_list.SetSelection(0)
+				self._on_podcast_selected(None)
+				if wx.Window.FindFocus() != self._podcast_list:
+					ui.message(self._podcast_list.GetString(0))
+			return
+		if idx >= self._podcast_list.GetCount() - 1:
+			ui.message(_("Already at last feed"))
+			return
+		new_idx = idx + 1
+		self._podcast_list.SetSelection(new_idx)
+		self._on_podcast_selected(None)
+		if wx.Window.FindFocus() != self._podcast_list:
+			ui.message(self._podcast_list.GetString(new_idx))
+
+	def _show_podcast_result_context_menu(self):
+		"""Context menu for the selected item in the podcast search results list."""
+		idx = self._podcast_results.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		results = getattr(self, "_podcast_search_results", [])
+		if idx >= len(results):
+			return
+
+		menu = wx.Menu()
+
+		item_subscribe = menu.Append(wx.ID_ANY, _("&Subscribe"))
+		self.Bind(wx.EVT_MENU, self._on_podcast_subscribe_from_results, item_subscribe)
+
+		self.PopupMenu(menu, self._podcast_results.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _show_feed_context_menu(self):
+		"""Context menu for the selected feed in the podcast subscriptions list."""
+		idx = self._podcast_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		feeds = self._podcast_manager.get_feeds()
+		if idx >= len(feeds):
+			return
+		feed = feeds[idx]
+
+		menu = wx.Menu()
+
+		item_refresh = menu.Append(wx.ID_ANY, _("&Refresh Feed"))
+		self.Bind(wx.EVT_MENU, self._on_podcast_refresh, item_refresh)
+
+		item_remove = menu.Append(wx.ID_ANY, _("Re&move Feed"))
+		self.Bind(wx.EVT_MENU, self._on_podcast_remove, item_remove)
+
+		menu.AppendSeparator()
+
+		item_copy_url = menu.Append(wx.ID_ANY, _("&Copy Feed URL"))
+		self.Bind(wx.EVT_MENU, lambda e: self._copy_to_clipboard(feed.url), item_copy_url)
+
+		self.PopupMenu(menu, self._podcast_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _show_episode_context_menu(self):
+		"""Context menu for the selected episode in the episode list."""
+		idx = self._episode_list.GetSelection()
+		if idx == wx.NOT_FOUND:
+			return
+		episodes = getattr(self, "_episode_filtered", None) or []
+		if idx >= len(episodes):
+			return
+		episode = episodes[idx]
+
+		menu = wx.Menu()
+
+		item_play = menu.Append(wx.ID_ANY, _("&Play Episode"))
+		self.Bind(wx.EVT_MENU, self._on_episode_play, item_play)
+
+		item_download = menu.Append(wx.ID_ANY, _("&Download Episode"))
+		self.Bind(wx.EVT_MENU, self._on_episode_download, item_download)
+
+		menu.AppendSeparator()
+
+		item_copy_url = menu.Append(wx.ID_ANY, _("&Copy Episode URL"))
+		self.Bind(wx.EVT_MENU, lambda e: self._copy_to_clipboard(episode.url), item_copy_url)
+
+		self.PopupMenu(menu, self._episode_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _copy_to_clipboard(self, text):
+		if not text:
+			return
+		if wx.TheClipboard.Open():
+			try:
+				wx.TheClipboard.SetData(wx.TextDataObject(text))
+			finally:
+				wx.TheClipboard.Close()
+			ui.message(_("Copied to clipboard"))
 
 class LyricsDialog(wx.Dialog):
 	"""Read-only lyrics viewer."""

@@ -1,6 +1,6 @@
 # FreeRadio — NVDA Add-on
 
-FreeRadio is an internet radio add-on for the NVDA screen reader. Its primary goal is to give users easy access to thousands of internet radio stations. The entire interface and all features have been designed with full accessibility for NVDA in mind.
+FreeRadio is an internet radio add-on for the NVDA screen reader. Its primary goal is to give users easy access to thousands of internet radio stations and podcasts. The entire interface and all features have been designed with full accessibility for NVDA in mind.
 
 ## Radio Browser Directory
 
@@ -63,9 +63,9 @@ Next / previous shortcuts only navigate the favourites list; they do not work wi
 
 FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
 
-The window opened with `Ctrl+Win+R` contains five tabs: All Stations, Favourites, Recording, Timer, and Liked Songs. You can navigate between tabs with `Ctrl+Tab`.
+The window opened with `Ctrl+Win+R` contains six tabs: All Stations, Favourites, Recording, Timer, Liked Songs, and Podcasts. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+6`.
 
-When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly  performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
+When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
 The **Output Device** dropdown at the bottom of the browser window — outside the tabs — lists all BASS-recognised audio output devices. Selecting a device immediately redirects audio output to it and saves the choice permanently; the same device is used automatically in the next session. If the selected device is not connected, the add-on falls back to the system default automatically. This control is only functional when the BASS backend is active.
 
@@ -95,40 +95,44 @@ Only the items relevant to the current tab and selection are shown as available.
 
 The following keys work only while the Station Browser window is active.
 
-### F Keys
+#### F Keys
 
 | Shortcut | Function | Description |
 |---|---|---|
 | `F1` | Help guide | Opens the add-on's help file in the default browser. The guide for the active NVDA language is searched first; if not found, the default guide is opened. |
-| `F2` | what's playing | Announces the currently playing station and track name. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
-| `F3` | Previous station | Moves to the previous station in the All Stations or Favourites tab and starts playing immediately. Jumps to the end when at the beginning of the list. |
-| `F4` | Next station | Moves to the next station in the All Stations or Favourites tab and starts playing immediately. Wraps to the beginning at the end of the list. |
+| `F2` | What's playing | Announces the currently playing station and track name. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
+| `F3` | Previous item | On All Stations or Favourites tabs: moves to the previous station and starts playing immediately. On Podcasts tab: moves to the previous episode in the episode list and plays it. |
+| `F4` | Next item | On All Stations or Favourites tabs: moves to the next station and starts playing immediately. On Podcasts tab: moves to the next episode and plays it. |
+| `Shift+F3` | Previous feed | On Podcasts tab only: moves up one feed in the subscriptions list. |
+| `Shift+F4` | Next feed | On Podcasts tab only: moves down one feed in the subscriptions list. |
 | `F5` | Volume down | Decreases volume by 5 (minimum 0). |
 | `F6` | Volume up | Increases volume by 5 (maximum 200). |
 | `F7` | Pause / resume | Pauses if a station is playing; resumes if paused and media is loaded. |
 | `F8` | Stop | Fully stops the current station and resets the player. |
-| `F9` | Rename | Opens rename dialog for focused station in favorits tab. |
+| `F9` | Rename | Opens rename dialog for the focused station in the Favourites tab. |
 
-### List and Navigation Shortcuts
+#### List and Navigation Shortcuts
 
 | Shortcut | Function | Description |
 |---|---|---|
-| `→` | Next station | When the All Stations or Favourites list is focused, moves to the next station and plays it immediately. Wraps to the beginning at the end of the list. |
-| `←` | Previous station | When the All Stations or Favourites list is focused, moves to the previous station and plays it immediately. Jumps to the end when at the beginning. |
-| `Enter` | Play | When the All Stations or Favourites list is focused, starts playing the selected station immediately. Switches to the selected station even if another station is already playing. |
-| `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected station. |
-| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs). |
+| `→` | Next item | When a station list is focused (All Stations / Favourites), moves to the next station and plays it immediately. When the episode list is focused (Podcasts), moves to the next episode and plays it. Wraps to the beginning at the end of the list. |
+| `←` | Previous item | When a station list is focused, moves to the previous station and plays it. When the episode list is focused, moves to the previous episode and plays it. Jumps to the end when at the beginning. |
+| `Ctrl+→` | Next episode | When the Podcasts tab is active, moves to the next episode and plays it (same as `→` while episode list is focused). |
+| `Ctrl+←` | Previous episode | When the Podcasts tab is active, moves to the previous episode and plays it (same as `←` while episode list is focused). |
+| `Enter` | Play | When a station or episode list is focused, starts playing the selected item immediately. Switches to the selected station even if another station is already playing. |
+| `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected item. |
+| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts). |
 | `Ctrl+Shift+Tab` | Previous tab | Switches to the previous tab. |
 | `Escape` | Hide | Hides the window; the add-on continues playing in the background. |
 
-### Volume Shortcuts
+#### Volume Shortcuts
 
 | Shortcut | Function | Description |
 |---|---|---|
 | `Ctrl+↑` | Volume up | Increases volume by 5. Only works while the browser window is open. |
 | `Ctrl+↓` | Volume down | Decreases volume by 5. Only works while the browser window is open. |
 
-### Effect Shortcuts
+#### Effect Shortcuts
 
 | Shortcut | Function | Description |
 |---|---|---|
@@ -145,7 +149,7 @@ The following keys work only while the Station Browser window is active.
 
 Each shortcut mirrors checking or unchecking the corresponding entry in the **Effects** list: NVDA announces whether the effect was enabled or disabled, the change is saved automatically, and the EQ gain control for that band (if applicable) appears or disappears accordingly. Only available when the BASS backend is active.
 
-### Alt Key Shortcuts
+#### Alt Key Shortcuts
 
 | Shortcut | Function | Description |
 |---|---|---|
@@ -156,6 +160,7 @@ Each shortcut mirrors checking or unchecking the corresponding entry in the **Ef
 | `Alt+3` | Recording | Switches to the Recording tab. |
 | `Alt+4` | Timer | Switches to the Timer tab. |
 | `Alt+5` | Liked Songs | Switches to the Liked Songs tab. |
+| `Alt+6` | Podcasts | Switches to the Podcasts tab. |
 | `Alt+K` | Close | Closes the window; the add-on continues playing in the background. |
 
 ## Favourites
@@ -317,6 +322,133 @@ Open the Timer tab in the station browser (`Alt+4`). Two types of timer can be a
 
 For both types, if the entered time has already passed the action is scheduled for the following day. Adding a timer is blocked if another timer — of any type — already exists at the same time; a message informs you of the conflict and prompts you to remove the existing entry first. Pending timers are listed in the tab; select one and press the Remove Selected Timer button to cancel it.
 
+## Podcasts
+
+FreeRadio includes a full-featured podcast player. You can subscribe to any RSS or Atom podcast feed, browse episodes, play them, download them, and resume playback from where you left off — all fully accessible.
+
+### Accessing the Podcasts Tab
+
+Open the station browser with `Ctrl+Win+R` and switch to the **Podcasts** tab using `Ctrl+Tab` or `Alt+6`. The tab is organised into three main areas:
+
+1. **Search and add** — top section for discovering new podcasts, including a preview list that shows the episodes of whichever search result is currently selected.
+2. **Subscriptions** — list of your subscribed feeds.
+3. **Episodes** — list of episodes for the selected feed, with playback controls.
+
+### Adding a Podcast Feed
+
+You can add a podcast feed in two ways:
+
+**By URL:**
+- In the **"Or enter podcast URL"** field, paste the full RSS or Atom feed URL (e.g. `https://example.com/feed.xml`).
+- Press Enter or click the **Add Feed** button.
+- FreeRadio fetches the feed, validates it, and adds it to your subscriptions. If the feed is valid, you will hear a confirmation with the feed title. If it fails, an error message explains why.
+
+**By searching:**
+- In the **Search** field, type a keyword (podcast title, topic, or host name) and press Enter.
+- FreeRadio searches the iTunes podcast directory and displays matching podcasts in the **Search results** list.
+- Selecting a result fetches that feed in the background and lists its episodes in the **Episodes in selected result** list right below, so you can preview what the show actually contains before deciding to subscribe — see [Previewing Episodes Before Subscribing](#previewing-episodes-before-subscribing) below.
+- Once you're happy with what you see, select the result and either press `Enter`, or open its context menu (Applications key / `Shift+F10`, or right‑click) and choose **Subscribe**, to add it to your subscriptions. The feed is added immediately and appears in your subscriptions list. There is no separate "Add Selected from Search" button — `Enter` or the context menu is the only way to subscribe from search results, keeping the interface clean and accessible.
+
+> **Tip:** You can also type a feed URL directly into the search field — if it looks like a valid URL, the add‑on will attempt to add it as a feed without searching.
+
+**Context menu for search results:** Right‑click a search result, or select it and press the Applications key / `Shift+F10`, to open a menu with a single **Subscribe** action, identical to pressing `Enter` on the result.
+
+### Previewing Episodes Before Subscribing
+
+Before committing to a subscription, you can listen to a podcast's episodes straight from the search results. Whenever you select a podcast in the **Search results** list, FreeRadio fetches that feed and shows its episodes — title and publish date — in the **Episodes in selected result** list underneath.
+
+- Select an episode in that preview list and press `Enter`, or open its context menu (Applications key / `Shift+F10`, or right‑click) and choose **Preview**, to start playing it through the normal player. All the usual playback controls (pause, volume, time‑shift, etc.) work on it exactly as they would on any other station or episode.
+- While an episode is being previewed, the same context menu shows **Stop Preview** in place of **Preview** — choose it, or press `Enter` again on that episode, to stop.
+- Previewing does not subscribe you to anything; it's purely for listening before you decide. The preview list itself is temporary — it's replaced as soon as you select a different search result, and it does not persist anywhere the way your actual subscriptions do.
+
+### Managing Subscriptions
+
+Once you have added some feeds, they appear in the **Subscriptions** list. Each entry shows the feed title and the number of episodes available.
+
+- **Select a feed** to see its episodes in the lower list. The **Feed details** read‑only text box below the subscriptions list shows the feed title, author, description, episode count, and URL.
+- **Refresh a feed** — select it and press the **Refresh Feed** button (available via context menu, see below) to fetch the latest episodes. All feeds are also refreshed automatically in the background when you open the Podcasts tab, so you usually see the most recent episodes without manual intervention.
+- **Remove a feed** — select it and press `Delete` or use the context menu to remove it from your subscriptions. You will be asked for confirmation before removal.
+
+**Context menu for feeds:** Right‑click a feed, or select it and press the Applications key / `Shift+F10`, to open a menu with:
+- **Refresh Feed** — fetch new episodes now.
+- **Remove Feed** — delete the subscription.
+- **Copy Feed URL** — copy the feed URL to the clipboard.
+
+### Browsing and Playing Episodes
+
+Select a feed in the subscriptions list; its episodes appear in the **Episodes** list below. Each episode shows:
+- Its episode number (1 = the oldest episode in the feed, counting up to the newest).
+- Its publication date (if available).
+- Its title.
+- A **"Listened"** prefix if the episode has been fully played.
+- A duration suffix, either total duration (if never played) or elapsed/total progress (if partially played).
+
+**Playback:**
+- Select an episode and press `Enter` or `Space` to start playing it. If an episode was partially played before, it resumes from where you left off.
+- The row does *not* update while the episode is playing — this is intentional, so NVDA doesn't repeatedly re-announce the row while you're sitting on it. Its "Listened" flag and duration are refreshed immediately the moment you pause the episode or it finishes playing, so the display is always accurate right when it matters; it simply doesn't tick up second by second during playback.
+- Use `F3` / `F4` on the Podcasts tab to move to the previous / next episode and play it immediately. You can also use `←` / `→` while the episode list is focused, or `Ctrl+←` / `Ctrl+→` anywhere on the Podcasts tab — both work identically.
+- Use `Shift+F3` / `Shift+F4` to move between feeds without playing episodes.
+- Press `Space` while an episode is playing to pause or resume playback.
+
+**Resuming playback:** FreeRadio saves your position in each podcast episode automatically — immediately whenever you pause or the episode finishes, and every 15 seconds in the background while you keep listening, so a crash or unexpected restart won't lose much progress. If you stop or pause playback and come back later, the episode resumes from the saved position. If you play the episode to the very end (within the last 3 seconds), it is marked as "Listened" and will not resume — it starts from the beginning next time, and the "Listened" prefix appears in the list.
+
+**Context menu for episodes:** Right‑click an episode, or select it and press the Applications key / `Shift+F10`, to open a menu with:
+- **Play Episode** — start playback.
+- **Download Episode** — download the episode file to your recordings folder.
+- **Copy Episode URL** — copy the direct audio URL to the clipboard.
+
+### Downloading Episodes
+
+Select an episode and click the **Download Episode** button (or use the context menu). The episode is downloaded to your recordings folder (`Documents\FreeRadio Recordings\` by default). The filename is based on the episode title and the detected file extension (`.mp3`, `.m4a`, `.ogg`, etc.). NVDA announces when the download starts and finishes. If the file already exists, you are informed and the download is skipped.
+
+### Filtering Episodes
+
+Above the episode list is a **Filter** field. As you type, the episode list is filtered in real time to show episodes whose title contains the typed text, or whose episode number matches it exactly — so typing `47` jumps straight to episode 47 even if "47" doesn't appear anywhere in its title. NVDA announces the number of matching episodes after each change. Press the `Down` arrow from the filter field to move focus directly into the filtered list.
+
+### Podcast Playback Details
+
+Podcast episodes are played using the **BASS backend** (the same engine used for radio streams). Because episodes are downloaded progressively and are seekable, you can use the time-shift rewind/forward shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`) while playing a podcast to jump back or forward **5 seconds** at a time (instead of the 15‑second rewind used for live radio). The position is saved automatically so you can resume later.
+
+If the BASS backend is disabled (or fails), podcast playback falls back to the same chain of external players (VLC → PotPlayer → WMP) used for radio, but **seek and resume functionality will not work** in that case — the episode will play from the beginning each time. For the full podcast experience, keep the BASS backend enabled.
+
+### Podcast Data Storage
+
+Your subscriptions are stored in `freeradio_podcasts.json` in the NVDA user configuration folder. Episode positions are stored separately in `podcast_positions.json` in the same location. Both files are plain JSON and can be backed up or transferred to another computer.
+
+## Liked Songs
+
+When the **Save liked songs to a text file** option is enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended line by line to `Documents\FreeRadio Recordings\likedSongs.txt`.
+
+On stations that broadcast ICY metadata, the track title and artist are saved directly. On stations without ICY metadata, the Shazam recognition result is saved to the same file — both sources share the same list. The file is created automatically if it does not exist; each entry is appended to the end of the file and previous entries are never deleted.
+
+## Liked Songs Tab
+
+The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened.
+
+A **Filter** field above the list lets you narrow the displayed tracks in real time. Type any part of a song title or artist name and the list updates instantly on every keystroke. NVDA announces the number of matching results after each change. Press the `Down` arrow from the filter field to move focus directly into the list.
+
+Selecting a track from the list enables the following actions:
+
+- **Play on Spotify:** Tries to open the Spotify desktop app directly. If the app is not installed, falls back to the Spotify website and automatically starts playing the first result.
+- **Play on YouTube (`Alt+O`):** Searches YouTube for the selected track and opens the results in the default browser.
+- **Show Lyrics:** Fetches and displays the lyrics for the selected track. Lyrics are retrieved from [lrclib.net](https://lrclib.net) (free, no account required). A short "Fetching lyrics…" message is announced while the search runs in the background. If lyrics are found, they open in a read-only dialog where you can read them with NVDA and copy them to the clipboard. If no lyrics are found, NVDA announces this. The button is temporarily disabled while a fetch is in progress to prevent duplicate requests.
+- **Remove (`Alt+M`):** Deletes the selected track from `likedSongs.txt` and updates the list. The `Delete` key also triggers this button when the list is focused.
+- **Refresh (`Alt+E`):** Reloads the list from the file.
+
+The Spotify, YouTube, Show Lyrics, and Remove buttons are only enabled when a real track is selected in the list.
+
+### Lyrics Service
+
+FreeRadio uses [lrclib.net](https://lrclib.net) to fetch lyrics — a free, open database that requires no API key or account. The lookup process parses the track string stored in `likedSongs.txt` and tries progressively looser queries until lyrics are found:
+
+1. Exact match using the full artist name and cleaned title (noise suffixes such as "Remastered", "Live", or year tags are stripped before searching).
+2. Exact match using the full artist name and the original title (if cleaning changed it).
+3. Exact match using only the first artist name and the cleaned title (for multi-artist strings such as "Artist A & Artist B").
+4. Fuzzy search using the first artist name and the cleaned title.
+5. Fuzzy search using the raw track string as a last resort.
+
+When plain lyrics are available they are shown as-is. When only time-synced LRC lyrics are available, the timestamps are stripped and the plain text is shown. Instrumental tracks are reported as not found.
+
 ## Settings
 
 The following options can be configured from NVDA Menu → Preferences → Settings → FreeRadio:
@@ -367,48 +499,16 @@ When switching to a new station, the first track info is announced as soon as th
 
 This feature is disabled by default and can be toggled from NVDA Menu → Preferences → Settings → FreeRadio.
 
-## Liked Songs
-
-When the **Save liked songs to a text file** option is enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended line by line to `Documents\FreeRadio Recordings\likedSongs.txt`.
-
-On stations that broadcast ICY metadata, the track title and artist are saved directly. On stations without ICY metadata, the Shazam recognition result is saved to the same file — both sources share the same list. The file is created automatically if it does not exist; each entry is appended to the end of the file and previous entries are never deleted.
-
-## Liked Songs Tab
-
-The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened.
-
-A **Filter** field above the list lets you narrow the displayed tracks in real time. Type any part of a song title or artist name and the list updates instantly on every keystroke. NVDA announces the number of matching results after each change. Press the `Down` arrow from the filter field to move focus directly into the list.
-
-Selecting a track from the list enables the following actions:
-
-- **Play on Spotify:** Tries to open the Spotify desktop app directly. If the app is not installed, falls back to the Spotify website and automatically starts playing the first result.
-- **Play on YouTube (`Alt+O`):** Searches YouTube for the selected track and opens the results in the default browser.
-- **Show Lyrics:** Fetches and displays the lyrics for the selected track. Lyrics are retrieved from [lrclib.net](https://lrclib.net) (free, no account required). A short "Fetching lyrics…" message is announced while the search runs in the background. If lyrics are found, they open in a read-only dialog where you can read them with NVDA and copy them to the clipboard. If no lyrics are found, NVDA announces this. The button is temporarily disabled while a fetch is in progress to prevent duplicate requests.
-- **Remove (`Alt+M`):** Deletes the selected track from `likedSongs.txt` and updates the list. The `Delete` key also triggers this button when the list is focused.
-- **Refresh (`Alt+E`):** Reloads the list from the file.
-
-The Spotify, YouTube, Show Lyrics, and Remove buttons are only enabled when a real track is selected in the list.
-
-### Lyrics Service
-
-FreeRadio uses [lrclib.net](https://lrclib.net) to fetch lyrics — a free, open database that requires no API key or account. The lookup process parses the track string stored in `likedSongs.txt` and tries progressively looser queries until lyrics are found:
-
-1. Exact match using the full artist name and cleaned title (noise suffixes such as "Remastered", "Live", or year tags are stripped before searching).
-2. Exact match using the full artist name and the original title (if cleaning changed it).
-3. Exact match using only the first artist name and the cleaned title (for multi-artist strings such as "Artist A & Artist B").
-4. Fuzzy search using the first artist name and the cleaned title.
-5. Fuzzy search using the raw track string as a last resort.
-
-When plain lyrics are available they are shown as-is. When only time-synced LRC lyrics are available, the timestamps are stripped and the plain text is shown. Instrumental tracks are reported as not found.
-
 ## Playback
 
 The add-on selects a playback backend using the following priority order:
 
-1. **BASS** — the default and primary backend. No separate installation is required; it is bundled with the add-on. BASS sends audio directly to the Windows audio stack and appears in the Windows volume mixer as an independent audio source named "pythonw.exe", separate from NVDA. This means FreeRadio audio flows on a completely separate channel from NVDA speech: the radio does not cut out, mix with, or get affected by NVDA's own audio settings while NVDA is speaking. The user can adjust the radio volume independently from NVDA in the Windows Volume Mixer. Supports HTTP, HTTPS and most embedded stream formats. Audio mirroring is only available with this backend.
+1. **BASS** — the default and primary backend. No separate installation is required; it is bundled with the add-on. BASS sends audio directly to the Windows audio stack and appears in the Windows volume mixer as an independent audio source named "pythonw.exe", separate from NVDA. This means FreeRadio audio flows on a completely separate channel from NVDA speech: the radio does not cut out, mix with, or get affected by NVDA's own audio settings while NVDA is speaking. The user can adjust the radio volume independently from NVDA in the Windows Volume Mixer. Supports HTTP, HTTPS and most embedded stream formats. Audio mirroring and podcast seek/resume are only available with this backend.
 2. **VLC** — takes over if BASS fails. Searched automatically in common installation locations, user profile folders and the system PATH.
 3. **PotPlayer** — tried if VLC is not found. Searched automatically in common installation locations.
 4. **Windows Media Player** — used as a last resort; requires the WMP component to be installed on the system.
+
+Podcast episodes are always played through BASS if available, because BASS can open the stream as a seekable file (even while downloading) and allows precise position tracking and resuming. If BASS is disabled, podcasts fall back to the external player chain, but seek and resume will not work.
 
 ## Update Check
 

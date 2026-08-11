@@ -16,6 +16,9 @@ from scriptHandler import script, getLastScriptRepeatCount
 import speech
 
 
+import addonHandler
+addonHandler.initTranslation()
+
 log = logging.getLogger(__name__)
 
 
@@ -48,9 +51,6 @@ def _speak_on_demand(msg):
 		# Fallback: plain ui.message (works on older NVDA without on-demand mode).
 		ui.message(msg)
 	_braille_message(msg)
-
-import addonHandler
-addonHandler.initTranslation()
 
 
 def _notifications_muted():
@@ -87,6 +87,16 @@ def _notify_on_demand(msg):
 	"""Announce msg via _speak_on_demand unless notifications are muted."""
 	if not _notifications_muted():
 		_speak_on_demand(msg)
+
+
+def _format_duration(seconds):
+	"""Format a duration in seconds as H:MM:SS, or M:SS under an hour."""
+	seconds = max(0, int(round(seconds)))
+	hours, rem = divmod(seconds, 3600)
+	minutes, secs = divmod(rem, 60)
+	if hours:
+		return "%d:%02d:%02d" % (hours, minutes, secs)
+	return "%d:%02d" % (minutes, secs)
 
 
 def _sapi5_speak(msg):
@@ -231,6 +241,7 @@ def _init_config():
 		"last_station_url": "string(default='')",
 		"last_station_name":"string(default='')",
 		"last_station_uuid":"string(default='')",
+		"last_station_tags":"string(default='')",
 		"resume_on_start":  "boolean(default=False)",
 		"hotkey_p_action":  "string(default='resume')",
 		"hotkey_p_double":  "string(default='none')",
@@ -333,6 +344,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._player.set_crossfade_duration(_cf_map.get(_saved_cf, 0.0))
 		# Notify and reset settings when audio device is lost
 		self._player.on_device_lost = self._on_audio_device_lost
+		# Refresh the podcast episode list's row when a position is saved
+		# due to a pause or the episode finishing (not the periodic autosave).
+		self._player.on_podcast_progress_saved = self._on_podcast_progress_saved
 		self._manager = stationManager.StationManager()
 		# Initialize Recorder with dll_dir, player_paths, volume and main player reference
 		dll_dir = os.path.dirname(os.path.abspath(__file__))
@@ -614,7 +628,6 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			self._dialog = None
 
 		super().terminate()
-
 
 	@script(
 		description=_("Mirror audio to an additional output device"),
@@ -917,8 +930,18 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gesture="kb:control+windows+j",
 	)
 	def script_timeshiftRewind(self, gesture):
+		# Podcast oynatılıyorsa dosya içinde geri sar
+		station = self._player.get_current_station()
+		if station and "podcast" in station.get("tags", ""):
+			ok, pos = self._player.seek_relative(-5)
+			if ok:
+				_notify(_("Rewound 5 seconds"))
+			else:
+				_notify(_("Could not seek"))
+			return
+
 		if not config.conf["freeradio"].get("timeshift_enabled", False):
-			ui.message(_("Time-shift buffer is disabled. Enable it in FreeRadio settings."))
+			_notify(_("Time-shift buffer is disabled. Enable it in FreeRadio settings."))
 			return
 		if not self._player.has_media():
 			gesture.send()
@@ -935,9 +958,9 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"no_buffer_file":  _("Time-shift buffer file is not ready yet."),
 				"engine_error":    _("Could not switch to time-shifted playback."),
 			}
-			ui.message(_TIMESHIFT_REASON_MESSAGES.get(reason, _("Could not rewind")))
+			_notify(_TIMESHIFT_REASON_MESSAGES.get(reason, _("Could not rewind")))
 			return
-		ui.message(_("Rewound to %.0f seconds behind live") % (buffered - position))
+		_notify(_("Rewound to %.0f seconds behind live") % (buffered - position))
 
 	@script(
 		description=_("Time-shift: fast-forward 15 seconds, or return to live if already caught up"),
@@ -945,22 +968,32 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		gesture="kb:control+windows+k",
 	)
 	def script_timeshiftForward(self, gesture):
+		# Podcast oynatılıyorsa dosya içinde ileri sar
+		station = self._player.get_current_station()
+		if station and "podcast" in station.get("tags", ""):
+			ok, pos = self._player.seek_relative(5)
+			if ok:
+				_notify(_("Forwarded 5 seconds"))
+			else:
+				_notify(_("Could not seek"))
+			return
+
 		if not config.conf["freeradio"].get("timeshift_enabled", False):
-			ui.message(_("Time-shift buffer is disabled. Enable it in FreeRadio settings."))
+			_notify(_("Time-shift buffer is disabled. Enable it in FreeRadio settings."))
 			return
 		if not self._player.is_timeshifted():
-			ui.message(_("Already listening live"))
+			_notify(_("Already listening live"))
 			return
 
 		ok, position, at_live_edge = self._player.forward_timeshift(15)
 		if not ok:
-			ui.message(_("Could not fast-forward"))
+			_notify(_("Could not fast-forward"))
 			return
 		if at_live_edge:
-			ui.message(_("Back to live"))
+			_notify(_("Back to live"))
 		else:
 			buffered = self._player.get_timeshift_buffered_seconds()
-			ui.message(_("Fast-forwarded, still %.0f seconds behind live") %
+			_notify(_("Fast-forwarded, still %.0f seconds behind live") %
 				(buffered - position))
 
 	@script(
@@ -991,7 +1024,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		ui.message(_("Time-shift buffer %s") % (_("enabled") if new_value else _("disabled")))
 
 	@script(
-		description=_("Add currently playing station to favourites"),
+		description=_("Add currently playing station to favourites, or download the episode if a podcast is playing"),
 		category=_("FreeRadio"),
 		gesture="kb:control+windows+v",
 	)
@@ -1000,12 +1033,43 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		if not station:
 			ui.message(_("No station is playing"))
 			return
+		if "podcast" in station.get("tags", ""):
+			self._download_current_podcast_episode(station)
+			return
 		if self._manager.is_favorite(station):
 			ui.message(_("Already in favourites: %s") % station.get("name", "").strip())
 			return
 		self._manager.add_favorite(station)
 		ui.message(_("Added to favourites: %s") % station.get("name", "").strip())
 		self._rebuild_station_scripts()
+
+	def _download_current_podcast_episode(self, station):
+		"""Download the currently playing podcast episode, used by
+		Ctrl+Win+V in place of "add to favourites" when a podcast episode
+		(rather than a radio station) is playing. Works regardless of
+		whether the browser dialog is open."""
+		title = station.get("name", "").strip() or _("Episode")
+		url = station.get("url") or station.get("url_resolved")
+		if not url:
+			ui.message(_("This episode has no downloadable URL."))
+			return
+
+		from . import podcast
+		out_path, filename = podcast.episode_download_target(title, url)
+		if os.path.exists(out_path):
+			ui.message(_("File already exists: %s") % filename)
+			return
+
+		ui.message(_("Downloading: %s") % title)
+
+		def _do_download():
+			try:
+				podcast.download_episode_file(url, out_path)
+				wx.CallAfter(ui.message, _("Download complete: %s") % filename)
+			except Exception as e:
+				wx.CallAfter(ui.message, _("Download failed: %s") % str(e))
+
+		threading.Thread(target=_do_download, daemon=True).start()
 
 	@script(
 		description=_("Announce currently playing station. Press twice for full details, three times to copy track info, four times to force music recognition."),
@@ -1057,6 +1121,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						}
 					else:
 						msg = _("Playing: %s") % name
+					# Podcast: append elapsed/remaining time.
+					station = self._player.get_current_station()
+					if station and "podcast" in station.get("tags", ""):
+						ok, pos, length = self._player.get_playback_position()
+						if ok and length > 0:
+							msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
+								"elapsed": _format_duration(pos),
+								"remaining": _format_duration(max(0.0, length - pos)),
+							}
 					# Announce instant recording if active
 					if self._recorder.is_recording():
 						rec_name = self._recorder.get_station_name()
@@ -1072,6 +1145,25 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				threading.Thread(target=_announce, daemon=True).start()
 			else:
 				msg = _("Paused: %s") % name
+				# Podcast: append elapsed/remaining time even when paused
+				station = self._player.get_current_station()
+				if station and "podcast" in station.get("tags", ""):
+					ok, pos, length = self._player.get_playback_position()
+					if not ok or pos <= 0.0:
+						# Fallback to saved position if live player handle is closed
+						url = station.get("url")
+						pos = self._player.get_podcast_position(url)
+						length = getattr(station, "duration_seconds", 0) or 0
+						ok = pos > 0.0
+					if ok and pos > 0.0:
+						if length > 0:
+							msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
+								"elapsed": _format_duration(pos),
+								"remaining": _format_duration(max(0.0, length - pos)),
+							}
+						else:
+							msg += ". " + _("%(elapsed)s elapsed") % {"elapsed": _format_duration(pos)}
+
 				# Announce instant recording even while paused
 				if self._recorder.is_recording():
 					rec_name = self._recorder.get_station_name()
@@ -1386,6 +1478,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 						}
 					else:
 						msg = _("Playing: %s") % name
+					station = self._player.get_current_station()
+					if station and "podcast" in station.get("tags", ""):
+						ok, pos, length = self._player.get_playback_position()
+						if ok and length > 0:
+							msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
+								"elapsed": _format_duration(pos),
+								"remaining": _format_duration(max(0.0, length - pos)),
+							}
 					if self._recorder.is_recording():
 						msg += ". " + _("Recording: %s") % self._recorder.get_station_name()
 					for sched_rec in self._recorder.get_active_scheduled():
@@ -1394,6 +1494,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				threading.Thread(target=_announce, daemon=True).start()
 			else:
 				msg = _("Paused: %s") % name
+				station = self._player.get_current_station()
+				if station and "podcast" in station.get("tags", ""):
+					ok, pos, length = self._player.get_playback_position()
+					if not ok or pos <= 0.0:
+						url = station.get("url")
+						pos = self._player.get_podcast_position(url)
+						length = getattr(station, "duration_seconds", 0) or 0
+						ok = pos > 0.0
+					if ok and pos > 0.0:
+						if length > 0:
+							msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
+								"elapsed": _format_duration(pos),
+								"remaining": _format_duration(max(0.0, length - pos)),
+							}
+						else:
+							msg += ". " + _("%(elapsed)s elapsed") % {"elapsed": _format_duration(pos)}
+
 				if self._recorder.is_recording():
 					msg += ". " + _("Recording: %s") % self._recorder.get_station_name()
 				for sched_rec in active_sched:
@@ -1542,6 +1659,14 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					}
 				else:
 					msg = _("Playing: %s") % name
+				station = self._player.get_current_station()
+				if station and "podcast" in station.get("tags", ""):
+					ok, pos, length = self._player.get_playback_position()
+					if ok and length > 0:
+						msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
+							"elapsed": _format_duration(pos),
+							"remaining": _format_duration(max(0.0, length - pos)),
+						}
 				wx.CallAfter(ui.message, msg)
 			threading.Thread(target=_read_and_announce, daemon=True).start()
 		else:
@@ -1572,6 +1697,23 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		except Exception:
 			pass
 		ui.message(_("Audio device disconnected. Switched to system default."))
+
+	def _on_podcast_progress_saved(self, url):
+		"""Called (possibly from a background thread - e.g. from
+		radioPlayer's stall/finish detection) right after a podcast's
+		position is saved due to a pause or the episode finishing, NOT the
+		periodic autosave. Marshals onto the UI thread and asks the dialog,
+		if open, to refresh just that one episode row - deliberately not a
+		continuously-ticking update, which used to make NVDA re-announce
+		the focused row every second while a podcast was playing."""
+		wx.CallAfter(self._on_podcast_progress_saved_ui, url)
+
+	def _on_podcast_progress_saved_ui(self, url):
+		if self._dialog and self._dialog.IsShown():
+			try:
+				self._dialog.refresh_episode_progress(url)
+			except Exception:
+				pass
 
 	@script(
 		description=_("Start or stop instant recording"),
@@ -2254,6 +2396,13 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		url  = config.conf["freeradio"].get("last_station_url", "").strip()
 		name = config.conf["freeradio"].get("last_station_name", "").strip()
 		uuid = config.conf["freeradio"].get("last_station_uuid", "").strip()
+		tags = config.conf["freeradio"].get("last_station_tags", "").strip()
+		# Safety net for a config saved before "last_station_tags" existed
+		# (or any other reason it came back empty): a URL that has a
+		# recorded podcast resume position is, by construction, a podcast
+		# episode, even without the tag.
+		if "podcast" not in tags and self._player.has_podcast_position_entry(url):
+			tags = "podcast"
 		
 		if not url:
 			return
@@ -2273,7 +2422,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 					station = s
 					break
 		
-		# If still not found, create a minimal station object
+		# If still not found, create a minimal station object. Podcast
+		# episodes never end up in favourites, so this is always the path
+		# they take - carry over the saved "tags" (e.g. "podcast") so
+		# _play_station()/RadioPlayer.play() still recognise it as a
+		# podcast and seek to the saved position instead of restarting
+		# from 0:00.
 		if station is None:
 			station = {
 				"name": name, 
@@ -2281,7 +2435,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"url_resolved": url,
 				"stationuuid": uuid, 
 				"countrycode": "", 
-				"tags": "", 
+				"tags": tags, 
 				"votes": 0
 			}
 		
@@ -2620,6 +2774,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			config.conf["freeradio"]["last_station_url"]  = url_resolved or url
 			config.conf["freeradio"]["last_station_name"] = name
 			config.conf["freeradio"]["last_station_uuid"] = station_uuid
+			# Needed so a podcast episode resumed on the next NVDA startup is
+			# still recognised as a podcast (see _resume_last_station) -
+			# without this, the reconstructed station dict has no "tags",
+			# the seek-to-saved-position logic never triggers, and the
+			# episode silently restarts from 0:00 instead of resuming.
+			config.conf["freeradio"]["last_station_tags"] = station.get("tags", "")
 		except Exception:
 			pass
 
@@ -3445,6 +3605,7 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 					plugin._player.set_volume(vol)
 					plugin._player.set_timeshift_enabled(new_timeshift_enabled)
 					plugin._player.on_device_lost = plugin._on_audio_device_lost
+					plugin._player.on_podcast_progress_saved = plugin._on_podcast_progress_saved
 					if not new_disable_bass:
 						try:
 							actual_device_index = plugin._player.switch_output_device(new_device_index)

@@ -11,7 +11,10 @@ Protocol: newline-delimited JSON on stdin/stdout.
                                   {"event": "meta", "title": "..."}
 
 Supported commands:
-  play       {"cmd":"play",       "url":"...", "volume":0.0-1.0}
+  play       {"cmd":"play",       "url":"...", "volume":0.0-1.0, "seekable":false}
+             "seekable":true opens the URL without BASS_STREAM_BLOCK so the
+             stream supports BASS_ChannelSetPosition (e.g. podcast episodes).
+             Live radio should leave this false (default) for robustness.
   stop       {"cmd":"stop"}
   pause      {"cmd":"pause"}
   resume     {"cmd":"resume"}
@@ -30,10 +33,26 @@ import ctypes
 import json
 import os
 import sys
+import tempfile
 import threading
 import time
 import re
 import urllib.request
+import socket
+import atexit
+
+# Standalone process, no access to NVDA's `log` — appends to the same shared
+# debug file timeshift.py and radioPlayer.py use, so one time-shift failure
+# can be traced across all three in chronological order.
+_DEBUG_LOG_PATH = os.path.join(tempfile.gettempdir(), "freeradio_timeshift_debug.log")
+
+
+def _debug_log(msg):
+    try:
+        with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
+            f.write("%s [bass_host.py] %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), msg))
+    except Exception:
+        pass
 
 # Constants (mirrors radioPlayer.py)
 _BASS_ATTRIB_VOL          = 2
@@ -57,6 +76,10 @@ _BASS_ACTIVE_PAUSED       = 3
 _BASS_DATA_AVAILABLE      = 0   # flag for BASS_ChannelGetData — returns buffered bytes
 _BASS_POS_BYTE            = 0   # mode for BASS_ChannelGetPosition — byte position
 _BASS_UNICODE             = 0x80000000  # flag for BASS_StreamCreateFile — file path is a wide string
+
+# Keep timeshift_seek() forward seeks this many seconds short of the
+# time-shift buffer file's growing tail (see timeshift_seek() below).
+_TIMESHIFT_TAIL_SAFETY_SECONDS = 2.0
 
 # basshls.dll config constants
 _BASS_CONFIG_HLS_BANDWIDTH = 0x10400  # master playlist'te bitrate selection
@@ -448,167 +471,67 @@ class BassHost:
                 evt.set()
                 self._pending_response = None
 
-    def play(self, url, volume_0_1=1.0, seq=None):
-        # Cancel any existing play operation first
-        self._cancel_pending_play()
-
-        if not self._dll:
-            return False, "BASS not loaded"
-
-        # Store seq for this play attempt
-        with self._lock:
-            self._current_play_seq = seq
-
-        time.sleep(0.05)  # Small delay to ensure previous stream is freed
-
-        # Try directly the previously successfully resolved URL (TTL: 5 min)
-        _cache_entry = self._resolve_cache.get(url)
-        cached_url = None
-        if _cache_entry:
-            _cached_url_val, _cached_ts = _cache_entry
-            if time.time() - _cached_ts < self._CACHE_TTL:
-                cached_url = _cached_url_val
-            else:
-                self._resolve_cache.pop(url, None)
-        if cached_url and cached_url != url:
-            stream = self._try_create_url(cached_url)
-            if stream:
-                with self._lock:
-                    if self._current_play_seq != seq:
-                        try:
-                            self._dll.BASS_StreamFree(stream)
-                        except Exception:
-                            pass
-                        return False, "play cancelled"
-                    self._handle = stream
-                try:
-                    self._gain = max(0.0, min(2.0, volume_0_1))
-                    bass_vol = min(1.0, self._gain)
-                    self._dll.BASS_ChannelSetAttribute(
-                        stream, _BASS_ATTRIB_VOL, ctypes.c_float(bass_vol))
-                    self._apply_gain_dsp(stream)
-                    self._apply_fx(stream)
-                except Exception:
-                    pass
-                if not self._dll.BASS_ChannelPlay(stream, 0):
-                    # Cache hit but ChannelPlay failed — invalidate cache and fall
-                    # through to the full resolve chain below.
-                    err = self._dll.BASS_ErrorGetCode()
-                    try:
-                        self._dll.BASS_StreamFree(stream)
-                    except Exception:
-                        pass
-                    with self._lock:
-                        self._handle = 0
-                    self._resolve_cache.pop(url, None)
-                    # fall through to resolve chain
-                else:
-                    # Cache hit and playback started successfully.
-                    # CRITICAL: must return here — without this the code falls
-                    # through to the resolve loop and opens a second stream,
-                    # causing simultaneous double-playback.
-                    with self._lock:
-                        if self._current_play_seq == seq:
-                            self._current_play_seq = None
-                        self._handle = stream
-                    self._restart_meta_thread()
-                    return True, "ok"
-
-        # Resolve chain: True with playlist resolve if URL fails
-        # Try to access the stream URL. Stations like TRT 2 levels
-        # Uses HLS playlist chain: master.m3u8 → master_128.m3u8 → .aac
-        # That's why we make a maximum of 3 levels of resolve.
-        _MAX_RESOLVE_DEPTH = 3
-        current_url = url
-        visited = {url}
-        stream = 0  # reset — cache branch may have left a stale value
-
-        for depth in range(_MAX_RESOLVE_DEPTH + 1):
-            stream = self._try_create_url(current_url)
-            if stream:
-                break
-            if depth == _MAX_RESOLVE_DEPTH:
-                break
-            resolved = _resolve_playlist_url(current_url)
-            if not resolved or resolved == current_url or resolved in visited:
-                break
-            visited.add(resolved)
-            current_url = resolved
-        if not stream:
-            err = self._dll.BASS_ErrorGetCode()
-            with self._lock:
-                if self._current_play_seq == seq:
-                    self._current_play_seq = None
-            return False, f"StreamCreateURL failed (err={err})"
-
-        # Check if this play was cancelled while creating stream
-        with self._lock:
-            if self._current_play_seq != seq:
-                # Play was cancelled, clean up stream
-                try:
-                    self._dll.BASS_StreamFree(stream)
-                except Exception:
-                    pass
-                return False, "play cancelled"
-            self._handle = stream
+    def _try_download_and_play(self, url):
+        """Download URL to a temp file and play it via BASS_StreamCreateFile.
+        Returns stream handle or 0 on failure. Does NOT cache the file.
+        """
+        import tempfile
+        import urllib.request
 
         try:
-            self._gain = max(0.0, min(2.0, volume_0_1))
-            bass_vol = min(1.0, self._gain)
-            self._dll.BASS_ChannelSetAttribute(
-                stream, _BASS_ATTRIB_VOL, ctypes.c_float(bass_vol))
-            self._apply_gain_dsp(stream)
-            self._apply_fx(stream)
+            fd, path = tempfile.mkstemp(prefix="freeradio_podcast_", suffix=".mp3")
+            os.close(fd)
         except Exception as e:
-            try:
-                self._dll.BASS_StreamFree(stream)
-            except Exception:
-                pass
-            with self._lock:
-                if self._current_play_seq == seq:
-                    self._current_play_seq = None
-                self._handle = 0
-            return False, f"set volume failed: {e}"
+            _debug_log("download temp file creation failed: %s" % e)
+            return 0
 
-        # Check again if cancelled
-        with self._lock:
-            if self._current_play_seq != seq:
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "FreeRadio-NVDA/1.0"})
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                with open(path, "wb") as f:
+                    while True:
+                        chunk = resp.read(65536)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+        except Exception as e:
+            _debug_log("download failed: %s" % e)
+            try:
+                os.remove(path)
+            except OSError:
+                pass
+            return 0
+
+        try:
+            stream = self._dll.BASS_StreamCreateFile(
+                ctypes.c_int32(0),
+                ctypes.c_wchar_p(path),
+                ctypes.c_uint64(0),
+                ctypes.c_uint64(0),
+                ctypes.c_uint32(_BASS_UNICODE),
+            )
+            if stream:
+                # Store the path for cleanup, but don't cache it
+                self._downloaded_file_path = path
+                _debug_log("download OK, playing from %s" % path)
+                return stream
+            else:
+                err = self._dll.BASS_ErrorGetCode()
+                _debug_log("BASS_StreamCreateFile failed, err=%d" % err)
                 try:
-                    self._dll.BASS_StreamFree(stream)
-                except Exception:
+                    os.remove(path)
+                except OSError:
                     pass
-                self._handle = 0
-                return False, "play cancelled"
-
-        if not self._dll.BASS_ChannelPlay(stream, 0):
-            err = self._dll.BASS_ErrorGetCode()
+                return 0
+        except Exception as e:
+            _debug_log("BASS_StreamCreateFile exception: %s" % e)
             try:
-                self._dll.BASS_StreamFree(stream)
-            except Exception:
+                os.remove(path)
+            except OSError:
                 pass
-            with self._lock:
-                if self._current_play_seq == seq:
-                    self._current_play_seq = None
-                self._handle = 0
-            return False, f"ChannelPlay failed (err={err})"
+            return 0
 
-        with self._lock:
-            if self._current_play_seq == seq:
-                self._current_play_seq = None
-            self._handle = stream
-
-# Cache the successful resolve chain — excluding segment URLs.
-        # Segment URLs (TRT: master_128_primary_XXXXXX.aac) are ephemeral;
-        # Caching these will cause a silencing issue after a few minutes.
-        if current_url != url:
-            import re as _re
-            _is_segment = bool(_re.search(r'_\d{6,}\.', current_url))
-            if not _is_segment:
-                self._resolve_cache[url] = (current_url, time.time())
-        self._restart_meta_thread()
-        return True, "ok"
-
-    def _try_create_url(self, url):
+    def _try_create_url(self, url, seekable=False):
         url_lower = url.split("?")[0].lower()
         is_hls = url_lower.endswith(".m3u8")
         is_aac_ext = url_lower.endswith(".aac")
@@ -630,7 +553,7 @@ class BassHost:
             if any(h in url_lower for h in _akamai_hosts):
                 stream = self._dll.BASS_StreamCreateURL(
                     url.encode("utf-8"),
-                    ctypes.c_uint32(_BASS_STREAM_BLOCK), ctypes.c_uint32(0),
+                    ctypes.c_uint32(0), ctypes.c_uint32(_BASS_STREAM_BLOCK),
                     ctypes.c_void_p(0), ctypes.c_void_p(0),
                 )
                 if stream:
@@ -642,30 +565,10 @@ class BassHost:
         is_http  = url_lower.startswith("http://")
 
         # HTTPS Icecast workaround — bypass BASS's SSL layer entirely.
-        #
-        # Some Icecast servers (e.g. icecast.walmradio.com) send ICY response
-        # headers immediately after the TLS handshake, before any HTTP/1.x
-        # status line.  BASS's SSL stack cannot parse this and returns
-        # BASS_ERROR_FILEFORM (err=40) without ever timing out cleanly, which
-        # means every normal BASS_StreamCreateURL attempt below would burn the
-        # full NET_TIMEOUT budget (~12 s) before failing.
-        #
-        # The fix: open the HTTPS connection with urllib (which tolerates ICY
-        # quirks), pipe the raw audio bytes through a local loopback socket, and
-        # point BASS at http://127.0.0.1:<port> instead.  BASS sees plain HTTP
-        # audio from localhost and has no trouble with it.
-        #
-        # The proxy thread is started before BASS_StreamCreateURL so that BASS
-        # finds an already-listening socket and connects without delay.
-        if is_https:
-            t_proxy_start = time.time()
-            stream = self._try_https_local_proxy(url)
+        if is_https and not seekable:
+            stream = self._try_https_local_proxy(url, seekable=seekable)
             if stream:
                 return stream
-            # Proxy failed (connection error, non-audio content-type, etc.);
-            # fall through to the standard BASS attempts below — they will almost
-            # certainly fail too for the same reason, but this preserves the
-            # original behaviour for servers that do work with BASS over HTTPS.
 
         # For HTTP, disable SSL completely and also try with custom headers via a small hack
         # Some Shoutcast servers require "Icy-MetaData: 1" header.
@@ -679,43 +582,53 @@ class BassHost:
                 pass
 
         try:
-            # Try with BLOCK flag first
-            stream = self._dll.BASS_StreamCreateURL(
-                url.encode("utf-8"),
-                ctypes.c_uint32(_BASS_STREAM_BLOCK), ctypes.c_uint32(0),
-                ctypes.c_void_p(0), ctypes.c_void_p(0),
-            )
-            if stream:
-                return stream
+            if seekable:
+                # Try without BLOCK first
+                stream = self._dll.BASS_StreamCreateURL(
+                    url.encode("utf-8"),
+                    ctypes.c_uint32(0),
+                    ctypes.c_uint32(0),
+                    ctypes.c_void_p(0),
+                    ctypes.c_void_p(0),
+                )
+                if stream:
+                    # Do NOT check length; just return and hope it's seekable.
+                    # If it's not seekable, timeshift_seek will fail.
+                    _debug_log("seekable stream opened without length check: %s" % url)
+                    return stream
+                else:
+                    # If opening fails, fall back to download
+                    _debug_log("seekable stream failed, trying download: %s" % url)
+                    return self._try_download_and_play(url)
+            else:
+                # Live radio: try BLOCK first, then 0 as fallback
+                for _flags in (_BASS_STREAM_BLOCK, 0):
+                    stream = self._dll.BASS_StreamCreateURL(
+                        url.encode("utf-8"),
+                        ctypes.c_uint32(0), ctypes.c_uint32(_flags),
+                        ctypes.c_void_p(0), ctypes.c_void_p(0),
+                    )
+                    if stream:
+                        return stream
 
-            # Try without BLOCK
-            stream = self._dll.BASS_StreamCreateURL(
-                url.encode("utf-8"),
-                ctypes.c_uint32(0), ctypes.c_uint32(0),
-                ctypes.c_void_p(0), ctypes.c_void_p(0),
-            )
-            if stream:
-                return stream
-
-            # Last resort: use urllib to get the real stream URL (might be redirected)
-            if is_http:
-                try:
-                    import urllib.request
-                    req = urllib.request.Request(url, headers={"User-Agent": "Winamp/5.8", "Icy-MetaData": "1"})
-                    with urllib.request.urlopen(req, timeout=10) as resp:
-                        final_url = resp.geturl()
-                        if final_url != url:
-                            # Try again with final URL
-                            stream = self._dll.BASS_StreamCreateURL(
-                                final_url.encode("utf-8"),
-                                ctypes.c_uint32(_BASS_STREAM_BLOCK), ctypes.c_uint32(0),
-                                ctypes.c_void_p(0), ctypes.c_void_p(0),
-                            )
-                            if stream:
-                                return stream
-                except:
-                    pass
-            return 0
+                # Last resort: use urllib to get the real stream URL (might be redirected)
+                if is_http:
+                    try:
+                        import urllib.request
+                        req = urllib.request.Request(url, headers={"User-Agent": "Winamp/5.8", "Icy-MetaData": "1"})
+                        with urllib.request.urlopen(req, timeout=10) as resp:
+                            final_url = resp.geturl()
+                            if final_url != url:
+                                stream = self._dll.BASS_StreamCreateURL(
+                                    final_url.encode("utf-8"),
+                                    ctypes.c_uint32(0), ctypes.c_uint32(0 if seekable else _BASS_STREAM_BLOCK),
+                                    ctypes.c_void_p(0), ctypes.c_void_p(0),
+                                )
+                                if stream:
+                                    return stream
+                    except:
+                        pass
+                return 0
         finally:
             if ssl_saved is not None:
                 try:
@@ -782,7 +695,7 @@ class BassHost:
 
         raise last_exc or OSError(f"could not connect to any IPv4 address for {host}")
 
-    def _try_https_local_proxy(self, url):
+    def _try_https_local_proxy(self, url, seekable=False):
         """Proxy an HTTPS Icecast stream through a local TCP socket for BASS.
 
         BASS fails with BASS_ERROR_FILEFORM (err=40) on HTTPS Icecast streams
@@ -873,9 +786,20 @@ class BassHost:
         # Collect ICY/audio headers to pass through to BASS.
         # icy-metaint must be forwarded accurately — sending 0 or omitting it
         # causes BASS to misparse the byte stream (garbled audio / glitches).
+        #
+        # content-length is forwarded too when the remote sent one. Live
+        # Icecast radio streams normally don't send it (indefinite stream),
+        # so this is a no-op for those - existing radio behaviour is
+        # unchanged. Finite files (podcast episodes) usually DO send it,
+        # and without it BASS has no way to know the stream's total length,
+        # so BASS_ChannelGetLength()/BASS_ChannelSetPosition() can't work
+        # even though the stream was opened without BASS_STREAM_BLOCK -
+        # this is why podcast episodes served over https (and therefore
+        # routed through this local proxy) previously played fine but
+        # could never seek or resume from a saved position.
         passthrough_headers = []
-        for hdr in ("content-type", "icy-name", "icy-genre", "icy-br",
-                    "icy-sr", "icy-metaint", "icy-pub", "icy-url"):
+        for hdr in ("content-type", "content-length", "icy-name", "icy-genre",
+                    "icy-br", "icy-sr", "icy-metaint", "icy-pub", "icy-url"):
             val = remote_resp.headers.get(hdr)
             if val:
                 passthrough_headers.append(f"{hdr}: {val}".encode())
@@ -984,22 +908,31 @@ class BassHost:
 
         # --- Step 4: point BASS at the local proxy ---
         local_url = f"http://127.0.0.1:{port}/"
-        stream = self._dll.BASS_StreamCreateURL(
-            local_url.encode("utf-8"),
-            ctypes.c_uint32(_BASS_STREAM_BLOCK), ctypes.c_uint32(0),
-            ctypes.c_void_p(0), ctypes.c_void_p(0),
-        )
-        if stream:
-            return stream
-
-        # BASS still failed — try without BLOCK flag
-        stream = self._dll.BASS_StreamCreateURL(
-            local_url.encode("utf-8"),
-            ctypes.c_uint32(0), ctypes.c_uint32(0),
-            ctypes.c_void_p(0), ctypes.c_void_p(0),
-        )
-        if stream:
-            return stream
+        # For seekable (podcast) we try without BLOCK first, then fallback to BLOCK
+        # only if that fails. However, if we used the proxy for a podcast and it
+        # falls back to BLOCK, seeking will fail. But the proxy is only used for
+        # HTTPS streams that fail with BASS directly; if seekable is True, we might
+        # still want to try BLOCK as last resort. But for podcasts, we want seeking
+        # to work, so we avoid BLOCK entirely. So we should not use BLOCK for seekable.
+        if seekable:
+            stream = self._dll.BASS_StreamCreateURL(
+                local_url.encode("utf-8"),
+                ctypes.c_uint32(0), ctypes.c_uint32(0),
+                ctypes.c_void_p(0), ctypes.c_void_p(0),
+            )
+            if stream:
+                return stream
+            else:
+                return self._try_download_and_play(url)
+        else:
+            for _flags in (_BASS_STREAM_BLOCK, 0):
+                stream = self._dll.BASS_StreamCreateURL(
+                    local_url.encode("utf-8"),
+                    ctypes.c_uint32(0), ctypes.c_uint32(_flags),
+                    ctypes.c_void_p(0), ctypes.c_void_p(0),
+                )
+                if stream:
+                    return stream
 
         # Both attempts failed; close the server socket so the proxy thread exits
         try:
@@ -1011,6 +944,166 @@ class BassHost:
         except Exception:
             pass
         return 0
+
+    def play(self, url, volume_0_1=1.0, seq=None, seekable=False):
+        # Cancel any existing play operation first
+        self._cancel_pending_play()
+
+        if not self._dll:
+            return False, "BASS not loaded"
+
+        # Store seq for this play attempt
+        with self._lock:
+            self._current_play_seq = seq
+
+        time.sleep(0.05)  # Small delay to ensure previous stream is freed
+
+        # Try directly the previously successfully resolved URL (TTL: 5 min)
+        _cache_entry = self._resolve_cache.get(url)
+        cached_url = None
+        if _cache_entry:
+            _cached_url_val, _cached_ts = _cache_entry
+            if time.time() - _cached_ts < self._CACHE_TTL:
+                cached_url = _cached_url_val
+            else:
+                self._resolve_cache.pop(url, None)
+        if cached_url and cached_url != url:
+            stream = self._try_create_url(cached_url, seekable=seekable)
+            if stream:
+                with self._lock:
+                    if self._current_play_seq != seq:
+                        try:
+                            self._dll.BASS_StreamFree(stream)
+                        except Exception:
+                            pass
+                        return False, "play cancelled"
+                    self._handle = stream
+                try:
+                    self._gain = max(0.0, min(2.0, volume_0_1))
+                    bass_vol = min(1.0, self._gain)
+                    self._dll.BASS_ChannelSetAttribute(
+                        stream, _BASS_ATTRIB_VOL, ctypes.c_float(bass_vol))
+                    self._apply_gain_dsp(stream)
+                    self._apply_fx(stream)
+                except Exception:
+                    pass
+                if not self._dll.BASS_ChannelPlay(stream, 0):
+                    # Cache hit but ChannelPlay failed — invalidate cache and fall
+                    # through to the full resolve chain below.
+                    err = self._dll.BASS_ErrorGetCode()
+                    try:
+                        self._dll.BASS_StreamFree(stream)
+                    except Exception:
+                        pass
+                    with self._lock:
+                        self._handle = 0
+                    self._resolve_cache.pop(url, None)
+                    # fall through to resolve chain
+                else:
+                    # Cache hit and playback started successfully.
+                    # CRITICAL: must return here — without this the code falls
+                    # through to the resolve loop and opens a second stream,
+                    # causing simultaneous double-playback.
+                    with self._lock:
+                        if self._current_play_seq == seq:
+                            self._current_play_seq = None
+                        self._handle = stream
+                    self._restart_meta_thread()
+                    return True, "ok"
+
+        # Resolve chain: True with playlist resolve if URL fails
+        # Try to access the stream URL. Stations like TRT 2 levels
+        # Uses HLS playlist chain: master.m3u8 → master_128.m3u8 → .aac
+        # That's why we make a maximum of 3 levels of resolve.
+        _MAX_RESOLVE_DEPTH = 3
+        current_url = url
+        visited = {url}
+        stream = 0  # reset — cache branch may have left a stale value
+
+        for depth in range(_MAX_RESOLVE_DEPTH + 1):
+            stream = self._try_create_url(current_url, seekable=seekable)
+            if stream:
+                break
+            if depth == _MAX_RESOLVE_DEPTH:
+                break
+            resolved = _resolve_playlist_url(current_url)
+            if not resolved or resolved == current_url or resolved in visited:
+                break
+            visited.add(resolved)
+            current_url = resolved
+        if not stream:
+            err = self._dll.BASS_ErrorGetCode()
+            with self._lock:
+                if self._current_play_seq == seq:
+                    self._current_play_seq = None
+            return False, f"StreamCreateURL failed (err={err})"
+
+        # Check if this play was cancelled while creating stream
+        with self._lock:
+            if self._current_play_seq != seq:
+                # Play was cancelled, clean up stream
+                try:
+                    self._dll.BASS_StreamFree(stream)
+                except Exception:
+                    pass
+                return False, "play cancelled"
+            self._handle = stream
+
+        try:
+            self._gain = max(0.0, min(2.0, volume_0_1))
+            bass_vol = min(1.0, self._gain)
+            self._dll.BASS_ChannelSetAttribute(
+                stream, _BASS_ATTRIB_VOL, ctypes.c_float(bass_vol))
+            self._apply_gain_dsp(stream)
+            self._apply_fx(stream)
+        except Exception as e:
+            try:
+                self._dll.BASS_StreamFree(stream)
+            except Exception:
+                pass
+            with self._lock:
+                if self._current_play_seq == seq:
+                    self._current_play_seq = None
+                self._handle = 0
+            return False, f"set volume failed: {e}"
+
+        # Check again if cancelled
+        with self._lock:
+            if self._current_play_seq != seq:
+                try:
+                    self._dll.BASS_StreamFree(stream)
+                except Exception:
+                    pass
+                self._handle = 0
+                return False, "play cancelled"
+
+        if not self._dll.BASS_ChannelPlay(stream, 0):
+            err = self._dll.BASS_ErrorGetCode()
+            try:
+                self._dll.BASS_StreamFree(stream)
+            except Exception:
+                pass
+            with self._lock:
+                if self._current_play_seq == seq:
+                    self._current_play_seq = None
+                self._handle = 0
+            return False, f"ChannelPlay failed (err={err})"
+
+        with self._lock:
+            if self._current_play_seq == seq:
+                self._current_play_seq = None
+            self._handle = stream
+
+        # Cache the successful resolve chain — excluding segment URLs.
+        # Segment URLs (TRT: master_128_primary_XXXXXX.aac) are ephemeral;
+        # Caching these will cause a silencing issue after a few minutes.
+        if current_url != url:
+            import re as _re
+            _is_segment = bool(_re.search(r'_\d{6,}\.', current_url))
+            if not _is_segment:
+                self._resolve_cache[url] = (current_url, time.time())
+        self._restart_meta_thread()
+        return True, "ok"
 
     def stop(self):
         # Cancel any pending play when stopping
@@ -1027,6 +1120,13 @@ class BassHost:
                 # FX handles belong to the freed stream — must be cleared so
                 # _apply_fx() re-registers them on the next stream.
                 self._fx_handles = {}
+            # Clean up any downloaded temp file (if any)
+            if hasattr(self, '_downloaded_file_path') and self._downloaded_file_path:
+                try:
+                    os.remove(self._downloaded_file_path)
+                except OSError:
+                    pass
+                self._downloaded_file_path = None
 
     def pause(self):
         with self._lock:
@@ -1058,9 +1158,17 @@ class BassHost:
         Any currently playing stream (live or time-shift) is stopped first.
         Returns (ok, message).
         """
+        try:
+            size = os.path.getsize(path)
+        except Exception as e:
+            size = -1
+        _debug_log("play_timeshift_file: path=%r size=%d volume=%.2f start_seconds=%.2f"
+                   % (path, size, volume_0_1, start_seconds))
+
         self._cancel_pending_play()
         self._stop_meta_thread()
         if not self._dll:
+            _debug_log("play_timeshift_file: FAILED - BASS not loaded")
             return False, "BASS not loaded"
 
         with self._lock:
@@ -1082,12 +1190,16 @@ class BassHost:
                 ctypes.c_uint32(_BASS_UNICODE),
             )
         except Exception as e:
+            _debug_log("play_timeshift_file: FAILED - BASS_StreamCreateFile exception: %s" % e)
             return False, f"BASS_StreamCreateFile exception: {e}"
 
         if not stream:
             err = self._dll.BASS_ErrorGetCode()
+            _debug_log("play_timeshift_file: FAILED - BASS_StreamCreateFile err=%d "
+                       "(41=FILEFORM/unrecognized format, 2=FILEOPEN, 32=timeout)" % err)
             return False, f"BASS_StreamCreateFile failed (err={err})"
 
+        _debug_log("play_timeshift_file: BASS_StreamCreateFile OK, handle=%d" % stream)
         with self._lock:
             self._handle = stream
 
@@ -1117,13 +1229,23 @@ class BassHost:
                 pass
             with self._lock:
                 self._handle = 0
+            _debug_log("play_timeshift_file: FAILED - BASS_ChannelPlay err=%d" % err)
             return False, f"ChannelPlay failed (err={err})"
 
+        _debug_log("play_timeshift_file: OK, playing handle=%d" % stream)
         return True, "ok"
 
     def timeshift_seek(self, delta_seconds):
         """Seek by a relative number of seconds within the currently open
         time-shift file stream, clamped to [0, stream length].
+
+        Forward seeks (delta_seconds > 0) are additionally kept
+        _TIMESHIFT_TAIL_SAFETY_SECONDS short of the file's current tail:
+        the buffer file is being written to live while this reads from
+        it, so BASS_ChannelGetLength can still lag a moment behind what
+        has actually been flushed to disk. Targeting a position right at
+        (or past) that reported length makes BASS_ChannelSetPosition
+        fail intermittently near the live edge.
 
         Returns (ok, position_seconds, length_seconds).
         """
@@ -1132,16 +1254,32 @@ class BassHost:
         if not handle or not dll:
             return False, 0.0, 0.0
         try:
-            length_bytes = dll.BASS_ChannelGetLength(handle, _BASS_POS_BYTE)
-            length_secs  = dll.BASS_ChannelBytes2Seconds(handle, length_bytes)
-            pos_bytes    = dll.BASS_ChannelGetPosition(handle, _BASS_POS_BYTE)
-            pos_secs     = dll.BASS_ChannelBytes2Seconds(handle, pos_bytes)
-
-            new_pos       = max(0.0, min(length_secs, pos_secs + delta_seconds))
+            # Get current position
+            pos_bytes = dll.BASS_ChannelGetPosition(handle, _BASS_POS_BYTE)
+            pos_secs = dll.BASS_ChannelBytes2Seconds(handle, pos_bytes)
+            new_pos = max(0.0, pos_secs + delta_seconds)
+            if delta_seconds > 0:
+                try:
+                    tail_length_bytes = dll.BASS_ChannelGetLength(handle, _BASS_POS_BYTE)
+                    tail_length_secs  = dll.BASS_ChannelBytes2Seconds(handle, tail_length_bytes)
+                except Exception:
+                    tail_length_secs = 0.0
+                if tail_length_secs > 0:
+                    new_pos = min(new_pos, max(0.0, tail_length_secs - _TIMESHIFT_TAIL_SAFETY_SECONDS))
             new_pos_bytes = dll.BASS_ChannelSeconds2Bytes(handle, ctypes.c_double(new_pos))
-            dll.BASS_ChannelSetPosition(handle, new_pos_bytes, _BASS_POS_BYTE)
-            return True, new_pos, length_secs
-        except Exception:
+            if dll.BASS_ChannelSetPosition(handle, new_pos_bytes, _BASS_POS_BYTE):
+                # Try to get length for caller's info (optional)
+                try:
+                    length_bytes = dll.BASS_ChannelGetLength(handle, _BASS_POS_BYTE)
+                    length_secs = dll.BASS_ChannelBytes2Seconds(handle, length_bytes)
+                except:
+                    length_secs = 0.0
+                return True, new_pos, length_secs
+            else:
+                _debug_log("timeshift_seek: BASS_ChannelSetPosition failed")
+                return False, pos_secs, 0.0
+        except Exception as e:
+            _debug_log("timeshift_seek exception: %s" % e)
             return False, 0.0, 0.0
 
     def timeshift_status(self):
@@ -1655,12 +1793,13 @@ def main():
             url = cmd_obj.get("url", "")
             vol = float(cmd_obj.get("volume", 1.0))
             seq = cmd_obj.get("seq", None)
+            seekable = bool(cmd_obj.get("seekable", False))
             host._cancel_pending_play()
             prev = host._current_play_thread
             if prev and prev.is_alive():
                 prev.join(timeout=1.0)
-            def _do_play(u=url, v=vol, s=seq):
-                ok, reason = host.play(u, v, seq=s)
+            def _do_play(u=url, v=vol, s=seq, sk=seekable):
+                ok, reason = host.play(u, v, seq=s, seekable=sk)
                 _send({"ok": ok, "error": reason if not ok else None, "seq": s})
             t = threading.Thread(target=_do_play, daemon=True, name="bass-play")
             host._current_play_thread = t

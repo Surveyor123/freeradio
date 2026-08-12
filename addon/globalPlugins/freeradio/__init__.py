@@ -263,6 +263,8 @@ def _init_config():
 		"braille_messages_outside_dialog": "boolean(default=False)",
 		"save_liked_songs":       "boolean(default=False)",
 		"recordings_dir":         "string(default='')",
+		"recording_format":       "string(default='original')",
+		"recording_mp3_bitrate":  "integer(default=128, min=64, max=320)",
 		"auto_check_updates":     "boolean(default=True)",
 		"disable_internet_check": "boolean(default=False)",
 		"crossfade":              "string(default='off')",  # off | short | normal | tuning
@@ -360,12 +362,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			player_paths=player_paths,
 			volume=config.conf["freeradio"]["volume"],
 			main_player=self._player,   # pass main player to avoid interruption
+			recording_format=config.conf["freeradio"].get("recording_format", "original"),
+			mp3_bitrate=config.conf["freeradio"].get("recording_mp3_bitrate", 128),
+			ffmpeg_path=config.conf["freeradio"].get("ffmpeg_path", ""),
 		)
 		self._recorder._notify_start  = lambda rec: wx.CallAfter(
 			_notify, _("Recording started: %s") % rec.station.get("name", "")
 		)
 		self._recorder._notify_finish = lambda rec: wx.CallAfter(
 			_notify, _("Recording finished: %s") % os.path.basename(rec.output_path or "")
+		)
+		self._recorder._notify_conversion_error = lambda path, error: wx.CallAfter(
+			_notify,
+			_("Recording conversion failed. The original file was kept: %s")
+			% os.path.basename(path or ""),
 		)
 		self._stations      = []
 		self._current_index = -1
@@ -1738,11 +1748,20 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 			if self._recorder.is_song_capture():
 				# Song-capture is active: user manually ends the recording early.
-				path = self._recorder.stop_song_capture()
-				if path:
-					_notify(_("Song recording stopped: %s") % os.path.basename(path))
-				else:
-					_notify(_("Song recording stopped"))
+				def _stop_song_capture():
+					path = self._recorder.stop_song_capture()
+					if path:
+						wx.CallAfter(
+							_notify,
+							_("Song recording stopped: %s") % os.path.basename(path),
+						)
+					else:
+						wx.CallAfter(_notify, _("Song recording stopped"))
+				threading.Thread(
+					target=_stop_song_capture,
+					daemon=True,
+					name="FreeRadio-SongRecordingFinalize",
+				).start()
 				return
 
 			if not self._player.has_media():
@@ -1802,11 +1821,17 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				return
 
 			if self._recorder.is_recording():
-				path = self._recorder.stop(self._player)
-				if path:
-					wx.CallAfter(_notify, _("Recording stopped: %s") % os.path.basename(path))
-				else:
-					wx.CallAfter(_notify, _("Recording stopped"))
+				def _stop_recording():
+					path = self._recorder.stop(self._player)
+					if path:
+						wx.CallAfter(_notify, _("Recording stopped: %s") % os.path.basename(path))
+					else:
+						wx.CallAfter(_notify, _("Recording stopped"))
+				threading.Thread(
+					target=_stop_recording,
+					daemon=True,
+					name="FreeRadio-RecordingFinalize",
+				).start()
 				return
 
 			if not self._player.has_media():
@@ -3210,6 +3235,37 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		sHelper.addItem(_default_hint)
 		rec_dir_browse.Bind(wx.EVT_BUTTON, self._on_browse_recordings_dir)
 
+		# --- Recording output format ---
+		recording_format_label = _("Recording output format:")
+		self._recording_format_keys = ["original", "audio_only", "mp3"]
+		self._recording_format = sHelper.addLabeledControl(
+			recording_format_label,
+			wx.Choice,
+			choices=[
+				_("Original stream format (no conversion)"),
+				_("Audio only, original codec (no quality loss)"),
+				_("MP3 (convert audio)"),
+			],
+		)
+		_saved_recording_format = config.conf["freeradio"].get("recording_format", "original")
+		self._recording_format.SetSelection(
+			self._recording_format_keys.index(_saved_recording_format)
+			if _saved_recording_format in self._recording_format_keys else 0
+		)
+
+		mp3_bitrate_label = _("MP3 recording bitrate:")
+		self._mp3_bitrate_values = [96, 128, 160, 192, 256, 320]
+		self._recording_mp3_bitrate = sHelper.addLabeledControl(
+			mp3_bitrate_label,
+			wx.Choice,
+			choices=["%d kb/s" % value for value in self._mp3_bitrate_values],
+		)
+		_saved_bitrate = config.conf["freeradio"].get("recording_mp3_bitrate", 128)
+		self._recording_mp3_bitrate.SetSelection(
+			self._mp3_bitrate_values.index(_saved_bitrate)
+			if _saved_bitrate in self._mp3_bitrate_values else 1
+		)
+
 		# --- Internet check ---
 		self._disable_internet_check = wx.CheckBox(
 			self,
@@ -3572,6 +3628,18 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			config.conf["freeradio"]["audio_fx"] = "none"
 		
 		config.conf["freeradio"]["recordings_dir"] = self._recordings_dir.GetValue().strip()
+		_format_sel = self._recording_format.GetSelection()
+		_recording_format = (
+			self._recording_format_keys[_format_sel]
+			if 0 <= _format_sel < len(self._recording_format_keys) else "original"
+		)
+		config.conf["freeradio"]["recording_format"] = _recording_format
+		_bitrate_sel = self._recording_mp3_bitrate.GetSelection()
+		_recording_bitrate = (
+			self._mp3_bitrate_values[_bitrate_sel]
+			if 0 <= _bitrate_sel < len(self._mp3_bitrate_values) else 128
+		)
+		config.conf["freeradio"]["recording_mp3_bitrate"] = _recording_bitrate
 		config.conf["freeradio"]["auto_check_updates"] = self._auto_check_updates.GetValue()
 		config.conf["freeradio"]["disable_internet_check"] = self._disable_internet_check.GetValue()
 
@@ -3586,6 +3654,11 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 
 		for plugin in globalPluginHandler.runningPlugins:
 			if isinstance(plugin, GlobalPlugin):
+				plugin._recorder.set_output_format(
+					_recording_format,
+					_recording_bitrate,
+					config.conf["freeradio"].get("ffmpeg_path", ""),
+				)
 				plugin._player.set_audio_device_refresh_mode(new_audio_device_refresh_mode)
 				plugin._player.set_volume(vol)
 				plugin._player.set_timeshift_enabled(new_timeshift_enabled)

@@ -250,7 +250,12 @@ On first press, a selection dialog listing the available output devices appears.
 
 ## Recording
 
-Recordings are saved to `Documents\FreeRadio Recordings\` by default. The filename includes the station name (or song title, in song recording mode) and the recording start time. The recordings folder can be changed at any time from NVDA Menu → Preferences → Settings → FreeRadio → **Recordings folder**. Because the recording engine connects directly to the stream, the audio is written to disk as received — no processing or re-encoding is applied; recording quality is identical to the broadcast quality.
+Recordings are saved to `Documents\FreeRadio Recordings\` by default. The filename includes the station name (or song title, in song recording mode) and the recording start time. The recordings folder can be changed at any time from NVDA Menu → Preferences → Settings → FreeRadio → **Recordings folder**.
+
+The **Recording output format** setting controls how completed recordings are saved:
+- **Original stream format** writes the stream exactly as received. An HLS broadcast may therefore produce a `.ts` file.
+- **Audio only, original codec** removes the video/container layer without re-encoding the audio. For example, AAC audio from an HLS `.ts` recording is normally saved as `.m4a`, preserving broadcast quality.
+- **MP3** converts the audio after recording using the selected bitrate. Conversion uses the `ffmpeg.exe` bundled with FreeRadio and runs in the background so NVDA stays responsive. If conversion fails, the original recording is retained.
 
 **Instant recording:** While a station is playing, press `Ctrl+Win+E` once. Press again to stop. Playback continues uninterrupted throughout.
 
@@ -476,6 +481,8 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | wmplayer.exe path | Enter the path to Windows Media Player here if needed. |
 | PotPlayer path | If PotPlayer is in a non-standard location, its path can be entered here. |
 | Recordings folder | Sets the folder where recorded files are saved. If left blank, the default location `Documents\FreeRadio Recordings\` is used. A Browse button lets you select the folder interactively. Changes take effect immediately after saving. |
+| Recording output format | Keeps the original stream, extracts audio without changing its codec, or converts completed recordings to MP3. The default is the original stream format. |
+| MP3 recording bitrate | Sets the bitrate used when the recording output format is MP3. The default is 128 kb/s. |
 | Disable internet connectivity check before playing | Recommended for users who experience a delay before a station starts playing. Also useful when DNS is blocked. |
 
 ## Mute Notifications

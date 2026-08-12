@@ -2943,6 +2943,13 @@ class RadioDialog(wx.Dialog):
 				self._on_rename_station()
 			return
 
+		if key == wx.WXK_F11:
+			# Open the main-output picker only on demand.  The plugin decides
+			# whether multiple physical devices are available before showing it.
+			if self._plugin:
+				self._plugin._request_output_device_selection()
+			return
+
 		if key == wx.WXK_F1:
 			self._open_help()
 			return

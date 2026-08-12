@@ -54,6 +54,7 @@ Wszystkie skróty można zmienić w menu NVDA -> Preferencje -> Zdarzenia wejśc
 | `Ctrl+Win+J` | Cofnięcie (time-shift) | Cofa live radio o 15 sekund. Pierwsze naciśnięcie wchodzi w tryb time-shift; każde kolejne cofa o kolejne 15 sekund, do limitu bufora (~10 minut). Wymaga włączonego bufora time-shift w Ustawieniach. |
 | `Ctrl+Win+K` | Przewijanie do przodu (time-shift) | Przewija o 15 sekund do przodu w trybie time-shift. Po osiągnięciu krawędzi na żywo odtwarzanie automatycznie wraca do live i polecenie nie działa, dopóki ponownie nie cofniesz. |
 | `Ctrl+Win+T` | Przełącz bufor time-shift | Włącza lub wyłącza bufor time-shift na bieżąco, odzwierciedlając pole wyboru w Ustawieniach. Wyłączenie natychmiast wraca do live (jeśli w trybie time-shift) i zatrzymuje przechwytywanie w tle. |
+| *(nieprzypisane)* | Wybierz urządzenie wyjściowe | Otwiera na żądanie listę dostępnych głównych urządzeń wyjściowych. Lista pojawia się tylko wtedy, gdy BASS wykryje więcej niż jedno fizyczne urządzenie wyjściowe. Skrót można przypisać w menu NVDA -> Preferencje -> Zdarzenia wejścia -> FreeRadio. |
 | *(nieprzypisane)* | Przełącz wyciszenie powiadomień | Przełącza ustawienie Wycisz powiadomienia w locie. Przypisz skrót w menu NVDA -> Preferencje -> Zdarzenia wejścia -> FreeRadio. |
 | *(nieprzypisane)* | Odtwórz ulubioną stację bezpośrednio | Każda stacja z listy ulubionych pojawia się jako osobna pozycja w menu NVDA -> Preferencje -> Zdarzenia wejścia -> **FreeRadio Stations**. Przypisz skrót klawiszowy dowolnej stacji i uruchamiaj ją natychmiast z dowolnego miejsca, bez otwierania przeglądarki. |
 
@@ -67,7 +68,7 @@ Okno otwierane skrótem `Ctrl+Win+R` zawiera pięć kart: Wszystkie stacje, Ulub
 
 Po otwarciu karty Wszystkie stacje automatycznie ładowanych jest 1000 najczęściej głosowanych stacji z Radio Browser. Wybranie kraju z listy rozwijanej aktualizuje listę i pokazuje stacje z tego kraju. Pisanie w polu wyszukiwania natychmiast uruchamia pełne wyszukiwanie w całej bazie Radio Browser, jednocześnie po nazwie, kraju i gatunku.
 
-Lista **Urządzenie wyjściowe** na dole okna przeglądarki, poza kartami, zawiera wszystkie urządzenia audio rozpoznane przez BASS. Wybranie urządzenia natychmiast przekierowuje na nie dźwięk i zapisuje wybór na stałe; to samo urządzenie będzie użyte automatycznie w następnej sesji. Jeśli wybrane urządzenie nie jest podłączone, dodatek sam wraca do domyślnego urządzenia systemowego. Ta kontrolka działa tylko wtedy, gdy aktywny jest backend BASS.
+Lista **Urządzenie wyjściowe** na dole okna przeglądarki, poza kartami, zawiera wszystkie urządzenia audio rozpoznane przez BASS. Wybranie urządzenia natychmiast przekierowuje na nie dźwięk i zapisuje wybór na stałe; to samo urządzenie będzie użyte automatycznie w następnej sesji. Jeśli wybrane urządzenie nie jest podłączone, dodatek sam wraca do domyślnego urządzenia systemowego. Naciśnij `F11`, aby z dowolnego miejsca w Przeglądarce stacji otworzyć prostsze okno wyboru urządzenia. Nie pojawia się ono automatycznie i jest otwierane tylko wtedy, gdy BASS wykryje więcej niż jedno fizyczne urządzenie wyjściowe. Gdy dostępne jest tylko jedno urządzenie, wybór nie jest potrzebny, a FreeRadio korzysta z domyślnego urządzenia systemowego. Funkcja działa tylko wtedy, gdy aktywny jest backend BASS.
 
 Kontrolki **Głośność** (0-200) i **Efekty** w tym samym obszarze można zmieniać w dowolnej chwili, gdy okno jest otwarte. Z listy efektów można jednocześnie włączyć Chorus, Kompresor, Przesterowanie, Echo, Flanger, Gargle, Pogłos, EQ: wzmocnienie basu, EQ: wzmocnienie sopranów i EQ: wzmocnienie wokalu; zmiany są natychmiast stosowane do aktywnego strumienia. Każdy efekt można też natychmiast przełączyć skrótami od `Ctrl+1` do `Ctrl+0`, bez odrywania rąk od klawiatury — patrz Skróty efektów poniżej. Te kontrolki działają w pełni tylko przy aktywnym backendzie BASS.
 
@@ -108,6 +109,7 @@ Poniższe klawisze działają tylko wtedy, gdy aktywne jest okno Przeglądarka s
 | `F7` | Wstrzymaj / wznów | Wstrzymuje, jeśli stacja gra; wznawia, jeśli odtwarzanie jest wstrzymane i media są załadowane. |
 | `F8` | Stop | Całkowicie zatrzymuje aktualną stację i resetuje odtwarzacz. |
 | `F9` | Zmień nazwę | Otwiera dialog zmiany nazwy dla stacji z fokusem na karcie Ulubione. |
+| `F11` | Wybierz urządzenie wyjściowe | Otwiera okno wyboru głównego urządzenia wyjściowego, gdy BASS wykryje więcej niż jedno fizyczne urządzenie. Bieżące urządzenie jest wstępnie zaznaczone; Enter stosuje i zapisuje wybór. |
 
 ### Skróty listy i nawigacji
 

@@ -630,6 +630,137 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		super().terminate()
 
 	@script(
+		description=_("Select the main FreeRadio output device"),
+		category=_("FreeRadio"),
+		# No gesture assigned by default; bind one via NVDA's Input Gestures dialog.
+	)
+	def script_selectOutputDevice(self, gesture):
+		self._request_output_device_selection()
+
+	def _request_output_device_selection(self):
+		"""Open the main-output picker on demand when multiple devices exist."""
+		if config.conf["freeradio"].get("disable_bass", False):
+			ui.message(
+				_("Audio device selection requires BASS backend. Enable it in FreeRadio settings.")
+			)
+			return
+		if getattr(self, "_output_device_dialog_open", False):
+			return
+		self._output_device_dialog_open = True
+
+		def _fetch_devices():
+			try:
+				devices = self._player.get_audio_devices()
+			except Exception:
+				devices = []
+			wx.CallAfter(self._handle_output_device_list, devices)
+
+		threading.Thread(target=_fetch_devices, daemon=True).start()
+
+	def _handle_output_device_list(self, devices):
+		"""Show the picker only when choosing between devices is useful."""
+		if not devices:
+			self._output_device_dialog_open = False
+			ui.message(_("No audio output devices found"))
+			return
+		if len(devices) == 1:
+			self._output_device_dialog_open = False
+			ui.message(
+				_("Only one physical audio output device is available. FreeRadio uses the system default output.")
+			)
+			return
+		self._show_output_device_dialog(devices)
+
+	def _show_output_device_dialog(self, devices):
+		"""Show an accessible, preselected list of the available BASS outputs."""
+		choices = [(-1, _("System default"))] + list(devices)
+		saved_index = config.conf["freeradio"].get("audio_device", -1)
+		saved_name = config.conf["freeradio"].get("audio_device_name", "")
+		try:
+			resolved_index, _resolved_name, match = self._player.resolve_audio_device(
+				devices,
+				saved_index,
+				saved_name,
+			)
+		except Exception:
+			resolved_index, match = saved_index, "missing"
+		if match == "missing":
+			resolved_index = getattr(self._player, "_output_device_index", -1)
+
+		selection = 0
+		for i, (device_index, _device_name) in enumerate(choices):
+			if device_index == resolved_index:
+				selection = i
+				break
+
+		try:
+			gui.mainFrame.prePopup()
+			dlg = wx.SingleChoiceDialog(
+				gui.mainFrame,
+				_("Select the main output device:"),
+				_("FreeRadio Output Device"),
+				[name for (_index, name) in choices],
+			)
+			dlg.SetSelection(selection)
+			result = dlg.ShowModal()
+			if result == wx.ID_OK:
+				selected_index, selected_name = choices[dlg.GetSelection()]
+				if selected_index == resolved_index:
+					self._finish_output_device_selection(selected_index, selected_name, devices)
+				else:
+					self._apply_output_device_selection(selected_index, selected_name, devices)
+			dlg.Destroy()
+		finally:
+			gui.mainFrame.postPopup()
+			self._output_device_dialog_open = False
+
+	def _apply_output_device_selection(self, requested_index, requested_name, devices):
+		"""Switch output without blocking NVDA, then save and synchronize the UI."""
+		def _switch():
+			try:
+				actual_index = self._player.switch_output_device(requested_index)
+			except Exception:
+				wx.CallAfter(
+					ui.message,
+					_("Could not switch to output device: %s") % requested_name,
+				)
+				return
+
+			actual_name = ""
+			if actual_index != -1:
+				for device_index, device_name in devices:
+					if device_index == actual_index:
+						actual_name = device_name
+						break
+			wx.CallAfter(
+				self._finish_output_device_selection,
+				actual_index,
+				actual_name,
+				devices,
+			)
+
+		threading.Thread(target=_switch, daemon=True).start()
+
+	def _finish_output_device_selection(self, device_index, device_name, devices):
+		"""Persist the selected output and update any open FreeRadio controls."""
+		config.conf["freeradio"]["audio_device"] = device_index
+		config.conf["freeradio"]["audio_device_name"] = "" if device_index == -1 else device_name
+		self._sync_dialog_device(device_index)
+		if self._dialog and self._dialog.IsShown() and hasattr(self._dialog, "refresh_audio_devices"):
+			self._dialog.refresh_audio_devices(force=True)
+		try:
+			for win in wx.GetTopLevelWindows():
+				if isinstance(win, gui.NVDASettingsDialog):
+					panel = win.FindWindowByName("FreeRadio")
+					if panel and hasattr(panel, "_populate_devices"):
+						panel._populate_devices(devices)
+					break
+		except Exception:
+			pass
+		display_name = _("System default") if device_index == -1 else device_name
+		ui.message(_("Output device: %s") % display_name)
+
+	@script(
 		description=_("Mirror audio to an additional output device"),
 		category=_("FreeRadio"),
 		gesture="kb:control+windows+m",

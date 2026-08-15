@@ -51,6 +51,7 @@ Všechny klávesové zkratky lze znovu přiřadit v nabídce NVDA → Předvolby
 | `Ctrl+Win+M` | Zrcadlení zvuku | Zrcadlí aktuální datový tok na další výstupní zvukové zařízení současně. Dalším stisknutím zrcadlení zastavíte. |
 | `Ctrl+Win+E` | Okamžité nahrávání | Jedním stisknutím spustíte nahrávání aktuální stanice; dalším stisknutím nahrávání zastavíte. Stisknutím **dvakrát** spustíte **nahrávání skladby** - soubor je pojmenován podle aktuální skladby a nahrávání se automaticky zastaví při změně skladby. Dalším dvojím stisknutím v době, kdy je nahrávání skladby aktivní, jej předčasně zastavíte. Přehrávání pokračuje bez přerušení ve všech režimech nahrávání. K dispozici pouze pro stanice, které vysílají metadata ICY. |
 | `Ctrl+Win+W` | Otevřít složku s nahrávkami | Otevře složku s nahranými soubory v Průzkumníku souborů. |
+| *(nepřiřazeno)* | Vybrat výstupní zařízení | Otevře na vyžádání seznam dostupných hlavních výstupních zařízení. Seznam se zobrazí pouze v případě, že BASS rozpozná více než jedno fyzické výstupní zařízení. Přiřazení kombinace kláves pomocí NVDA Menu → Předvolby → Vstupní gesta → FreeRadio. |
 | *(nepřiřazeno)* | Přepnout oznámení o ztlumení | Přepíná nastavení oznámení o ztlumení za chodu. Přiřazení kombinace kláves pomocí NVDA Menu → Předvolby → Vstupní gesta → FreeRadio. |
 | *(nepřiřazeno)* | Přehrát oblíbenou stanici přímo | Každá stanice v seznamu oblíbených se zobrazuje jako samostatná položka v nabídce NVDA → Předvolby → Vstupní gesta → **FreeRadio Stations**. Přiřaďte klávesovou zkratku libovolné stanici a spusťte ji okamžitě odkudkoli bez nutnosti otevírat prohlížeč. |
 | `Ctrl+Win+J` | Přetočení zpět (time-shift) | Přetočí živé rádio o 15 sekund zpět. První stisknutí vstoupí do režimu time-shift; každé další stisknutí posune o dalších 15 sekund zpět, až do limitu vyrovnávací paměti (~10 minut). Vyžaduje povolení vyrovnávací paměti time-shift v Nastavení. |
@@ -67,7 +68,7 @@ Okno otevřené pomocí `Ctrl+Win+R` obsahuje šest záložek: Všechny stanice,
 
 Po otevření karty Všechny stanice se automaticky načte 1 000 nejčastěji volených stanic z Prohlížeče rádií. Výběrem země z rozbalovacího seznamu se seznam aktualizuje a zobrazí se stanice dané země. Zadáním do vyhledávacího pole se okamžitě provede kompletní vyhledávání v celé databázi aplikace Radio Browser současně podle názvu, země a žánru.
 
-V rozbalovacím seznamu **Výstupní zařízení** v dolní části okna prohlížeče - mimo karty - jsou uvedena všechna výstupní zvuková zařízení rozpoznaná rozhraním BASS. Výběrem zařízení se na něj okamžitě přesměruje zvukový výstup a volba se trvale uloží; stejné zařízení se automaticky použije při příští relaci. Pokud vybrané zařízení není připojeno, doplněk se automaticky vrátí k výchozímu nastavení systému. Tento ovládací prvek je funkční pouze v případě, že je aktivní backend BASS.
+V rozbalovacím seznamu **Výstupní zařízení** v dolní části okna prohlížeče - mimo karty - jsou uvedena všechna výstupní zvuková zařízení rozpoznaná rozhraním BASS. Výběrem zařízení se na něj okamžitě přesměruje zvukový výstup a volba se trvale uloží; stejné zařízení se automaticky použije při příští relaci. Pokud vybrané zařízení není připojeno, doplněk se automaticky vrátí k výchozímu nastavení systému. Stisknutím `F11` kdekoli v Prohlížeči stanic otevřete jednodušší výběr zařízení na vyžádání. Tento výběr se nezobrazuje automaticky a otevře se pouze v případě, že BASS rozpozná více než jedno fyzické výstupní zařízení. Pokud je k dispozici pouze jedno zařízení, výběr není potřeba a FreeRadio použije výchozí systémový výstup. Tato funkce je funkční pouze v případě, že je aktivní backend BASS.
 
 Ovládací prvky **Hlasitosti** (0-200) a **Efekty** ve stejné oblasti lze nastavit kdykoli, když je okno otevřené. V seznamu efektů lze současně aktivovat funkce Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost a EQ: Vocal Boost; změny se okamžitě aplikují na aktivní proud. Každý efekt lze také okamžitě přepnout klávesovými zkratkami `Ctrl+1` až `Ctrl+0`, aniž byste museli opustit klávesnici – viz Klávesové zkratky pro efekty níže. Tyto ovládací prvky jsou plně funkční pouze v případě, že je aktivní backend BASS.
 
@@ -110,6 +111,7 @@ Následující klávesy fungují pouze při aktivním okně Průzkumník stanic.
 | `F7` | Pozastavení / obnovení | Pozastaví přehrávání stanice; obnoví přehrávání, pokud je pozastaveno a je načteno médium. |
 | `F8` | Stop | Úplně zastaví aktuální stanici a resetuje přehrávač. |
 | `F9` | Přejmenovat | Otevře dialogové okno pro přejmenování zaměřené stanice na kartě oblíbené. |
+| `F11` | Vybrat výstupní zařízení | Otevře výběr hlavního výstupního zařízení, pokud BASS rozpozná více než jedno fyzické výstupní zařízení. Aktuální zařízení je předem vybráno; Enter volbu použije a uloží. |
 
 ### Seznam a navigační zkratky
 
@@ -250,7 +252,12 @@ Při prvním stisknutí se zobrazí dialogové okno výběru se seznamem dostupn
 
 ## Nahrávání
 
-Nahrávky se ve výchozím nastavení ukládají do složky `Dokumenty\VolnéRadioNahrávky\`. Název souboru obsahuje název stanice (nebo název skladby v režimu nahrávání skladeb) a čas zahájení nahrávání. Složku nahrávek lze kdykoli změnit v nabídce NVDA → Předvolby → Nastavení → FreeRadio → **Složka nahrávek**. Protože se nahrávací engine připojuje přímo ke streamu, zvuk se na disk zapisuje tak, jak byl přijat - nedochází k žádnému zpracování ani překódování; kvalita záznamu je totožná s kvalitou vysílání.
+Nahrávky se ve výchozím nastavení ukládají do složky `Dokumenty\VolnéRadioNahrávky\`. Název souboru obsahuje název stanice (nebo název skladby v režimu nahrávání skladeb) a čas zahájení nahrávání. Složku nahrávek lze kdykoli změnit v nabídce NVDA → Předvolby → Nastavení → FreeRadio → **Složka nahrávek**.
+
+Nastavení **Výstupní formát nahrávky** určuje, jak se dokončené nahrávky ukládají:
+- **Původní formát streamu** zapíše stream přesně tak, jak byl přijat. Vysílání HLS tak může vytvořit soubor `.ts`.
+- **Pouze zvuk, původní kodek** odstraní vrstvu videa/kontejneru, aniž by přeekódoval zvuk. Například zvuk AAC z nahrávky HLS `.ts` se obvykle uloží jako `.m4a` při zachování kvality vysílání.
+- **MP3** převede zvuk po nahrání pomocí zvoleného datového toku. Převod používá `ffmpeg.exe` dodávaný s FreeRadiem a probíhá na pozadí, aby NVDA zůstalo responzivní. Pokud převod selže, zachová se původní nahrávka.
 
 **Následné nahrávání:** Během přehrávání stanice stiskněte jednou klávesy `Ctrl+Win+E`. Dalším stisknutím nahrávání zastavíte. Přehrávání pokračuje po celou dobu bez přerušení.
 
@@ -474,6 +481,8 @@ Následující možnosti lze konfigurovat v nabídce NVDA → Předvolby → Nas
 | wmplayer.exe path | V případě potřeby zde zadejte cestu k přehrávači Windows Media Player. |
 | Cesta k přehrávači PotPlayer | Pokud je přehrávač PotPlayer v nestandardním umístění, lze zde zadat jeho cestu. |
 | Složka nahrávek | Nastaví složku, do které se ukládají nahrané soubory. Pokud zůstane prázdná, použije se výchozí umístění `Documents\FreeRadio Recordings\`. Tlačítko Procházet umožňuje interaktivní výběr složky. Změny se projeví okamžitě po uložení. |
+| Výstupní formát nahrávky | Zachová původní stream, extrahuje zvuk beze změny kodeku nebo převede dokončené nahrávky na MP3. Výchozí hodnotou je původní formát streamu. |
+| Datový tok nahrávání MP3 | Nastaví datový tok použitý, když je výstupní formát nahrávky MP3. Výchozí hodnota je 128 kb/s. |
 | Zakázat kontrolu připojení k internetu před přehráváním | Doporučeno pro uživatele, u kterých dochází ke zpoždění před zahájením přehrávání stanice. Užitečné také v případě blokování DNS. |
 
 ## Ztlumit oznámení

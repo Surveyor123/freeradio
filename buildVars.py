@@ -19,22 +19,17 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.22.0",
+	addon_version="2026.22.1",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-## Podcasts (New)
-FreeRadio now includes a full-featured, fully accessible podcast player.
-- **Subscribe to any podcast** — by pasting a direct RSS/Atom feed URL, or by searching the iTunes podcast directory by title, topic, or host name.
-- **Preview before subscribing** — selecting a search result loads its episode list (titles and publish dates) so you can hear what the show is about before committing; preview episodes play through the normal player and can be stopped from the same context menu.
-- **Manage subscriptions** — refresh a feed for new episodes, remove a subscription, or copy its feed URL, all from a context menu (Applications key / `Shift+F10`, or right-click). Feeds also refresh automatically in the background when you open the tab.
-- **Browse and play episodes** — each episode shows its publish date, title, a "Listened" marker once fully played, and its duration (or elapsed/total progress if partially played). Play, pause, and resume with `Enter`/`Space`; jump between episodes with `F3`/`F4`, or between feeds with `Shift+F3`/`Shift+F4`.
-- **Resume where you left off** — playback position is saved automatically, immediately on pause or when an episode finishes, and periodically in the background while listening, so you never lose much progress even after a crash or restart.
-- **Filter episodes** — type in the filter field to narrow a feed's episode list in real time; NVDA announces the match count.
-- **Download episodes** — save any episode to your recordings folder for offline listening.
-- **Podcast-aware time-shift** — rewind/fast-forward 5 seconds at a time within an episode using the existing time-shift shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`).
-- Runs on the BASS backend for seekable, resumable playback; falls back to the existing external-player chain (VLC → PotPlayer → WMP) if BASS is unavailable, though seek/resume won't work in that case.
+**Added**
+- Search results now include **TuneIn** and **iHeartRadio** stations alongside Radio Browser — both sources are queried in the background and merged into the existing result list; the source is shown next to the station name ("... - TuneIn" / "... - iHeart").
+- **Selectable recording output format**: keep the original stream format, extract audio losslessly, or convert to MP3 at a chosen bitrate (96–320 kb/s, default 128). Conversion runs in the background; if it fails, the original recording is kept. (#21, contributed by @michalkasperczak)
+- **On-demand, accessible output device picker**: opened with `F11` (unbound by default, customizable via NVDA's input gestures settings), pre-selects the currently active device, applies the choice on Enter. Only appears when more than one physical output device is detected — stays out of the way with a single device. (#22, contributed by @michalkasperczak)
+**Notes**
+- iHeartRadio integration may not work on some networks/regions (e.g. where the provider restricts access at the ISP level); it fails silently in that case without affecting other sources.
 """),
 	
 	# Author(s)

@@ -54,6 +54,7 @@ All shortcuts can be reassigned from NVDA Menu → Preferences → Input Gesture
 | `Ctrl+Win+J` | Time-shift rewind | Rewinds live radio by 15 seconds. The first press enters time-shift mode; each further press moves 15 seconds further back, up to the buffer limit (~10 minutes). Requires the time-shift buffer to be enabled in Settings. |
 | `Ctrl+Win+K` | Time-shift fast-forward | Moves forward 15 seconds while time-shifted. Once the live edge is reached, playback automatically returns to live and this becomes a no-op until you rewind again. |
 | `Ctrl+Win+T` | Toggle time-shift buffer | Enables or disables the time-shift buffer on the fly, mirroring the Settings checkbox. Disabling immediately returns to live playback if time-shifted and stops the background capture. |
+| *(unassigned)* | Select output device | Opens an on-demand list of the available main output devices. The list is shown only when BASS detects more than one physical output device. Assign a key combination via NVDA Menu → Preferences → Input Gestures → FreeRadio. |
 | *(unassigned)* | Toggle mute notifications | Toggles the Mute Notifications setting on the fly. Assign a key combination via NVDA Menu → Preferences → Input Gestures → FreeRadio. |
 | *(unassigned)* | Play favourite station directly | Each station in your favourites list appears as a separate entry in NVDA Menu → Preferences → Input Gestures → **FreeRadio Stations**. Assign any keyboard shortcut to a station to start playing it instantly from anywhere, without opening the browser. |
 
@@ -67,7 +68,7 @@ The window opened with `Ctrl+Win+R` contains six tabs: All Stations, Favourites,
 
 When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
-The **Output Device** dropdown at the bottom of the browser window — outside the tabs — lists all BASS-recognised audio output devices. Selecting a device immediately redirects audio output to it and saves the choice permanently; the same device is used automatically in the next session. If the selected device is not connected, the add-on falls back to the system default automatically. This control is only functional when the BASS backend is active.
+The **Output Device** dropdown at the bottom of the browser window — outside the tabs — lists all BASS-recognised audio output devices. Selecting a device immediately redirects audio output to it and saves the choice permanently; the same device is used automatically in the next session. If the selected device is not connected, the add-on falls back to the system default automatically. Press `F11` to open a simpler on-demand device picker from anywhere in the Station Browser. The picker is not shown automatically and opens only when BASS detects more than one physical output device. When just one is available, no selection is needed and FreeRadio uses the system default output. This feature is only functional when the BASS backend is active.
 
 The **Volume** (0–200) and **Effects** controls in the same area can be adjusted at any time while the window is open. From the Effects list, Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost and EQ: Vocal Boost can be enabled simultaneously; changes are applied to the active stream instantly. Each effect can also be toggled instantly with `Ctrl+1` through `Ctrl+0` without leaving the keyboard — see [Effect Shortcuts](#effect-shortcuts). These controls are fully functional only when the BASS backend is active.
 
@@ -110,6 +111,7 @@ The following keys work only while the Station Browser window is active.
 | `F7` | Pause / resume | Pauses if a station is playing; resumes if paused and media is loaded. |
 | `F8` | Stop | Fully stops the current station and resets the player. |
 | `F9` | Rename | Opens rename dialog for the focused station in the Favourites tab. |
+| `F11` | Select output device | Opens the main output-device picker when BASS detects more than one physical output device. The current device is preselected; Enter applies and saves the choice. |
 
 #### List and Navigation Shortcuts
 
@@ -250,7 +252,12 @@ On first press, a selection dialog listing the available output devices appears.
 
 ## Recording
 
-Recordings are saved to `Documents\FreeRadio Recordings\` by default. The filename includes the station name (or song title, in song recording mode) and the recording start time. The recordings folder can be changed at any time from NVDA Menu → Preferences → Settings → FreeRadio → **Recordings folder**. Because the recording engine connects directly to the stream, the audio is written to disk as received — no processing or re-encoding is applied; recording quality is identical to the broadcast quality.
+Recordings are saved to `Documents\FreeRadio Recordings\` by default. The filename includes the station name (or song title, in song recording mode) and the recording start time. The recordings folder can be changed at any time from NVDA Menu → Preferences → Settings → FreeRadio → **Recordings folder**.
+
+The **Recording output format** setting controls how completed recordings are saved:
+- **Original stream format** writes the stream exactly as received. An HLS broadcast may therefore produce a `.ts` file.
+- **Audio only, original codec** removes the video/container layer without re-encoding the audio. For example, AAC audio from an HLS `.ts` recording is normally saved as `.m4a`, preserving broadcast quality.
+- **MP3** converts the audio after recording using the selected bitrate. Conversion uses the `ffmpeg.exe` bundled with FreeRadio and runs in the background so NVDA stays responsive. If conversion fails, the original recording is retained.
 
 **Instant recording:** While a station is playing, press `Ctrl+Win+E` once. Press again to stop. Playback continues uninterrupted throughout.
 
@@ -476,6 +483,8 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | wmplayer.exe path | Enter the path to Windows Media Player here if needed. |
 | PotPlayer path | If PotPlayer is in a non-standard location, its path can be entered here. |
 | Recordings folder | Sets the folder where recorded files are saved. If left blank, the default location `Documents\FreeRadio Recordings\` is used. A Browse button lets you select the folder interactively. Changes take effect immediately after saving. |
+| Recording output format | Keeps the original stream, extracts audio without changing its codec, or converts completed recordings to MP3. The default is the original stream format. |
+| MP3 recording bitrate | Sets the bitrate used when the recording output format is MP3. The default is 128 kb/s. |
 | Disable internet connectivity check before playing | Recommended for users who experience a delay before a station starts playing. Also useful when DNS is blocked. |
 
 ## Mute Notifications

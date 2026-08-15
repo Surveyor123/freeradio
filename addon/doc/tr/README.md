@@ -54,6 +54,7 @@ NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden ye
 | `Ctrl+Win+J` | Zaman kaydırma geri sarma | Canlı radyoyu 15 saniye geri sarar. İlk basış zaman kaydırma moduna girer; her ek basış tamponu sınırına (~10 dakika) kadar 15 saniye daha geri gider. Zaman kaydırma tamponunun Ayarlar'dan etkinleştirilmesi gerekir. |
 | `Ctrl+Win+K` | Zaman kaydırma ileri sarma | Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve yeniden geri sarılana kadar bu komut işlevsiz kalır. |
 | `Ctrl+Win+T` | Zaman kaydırma tamponunu aç/kapat | Zaman kaydırma tamponunu anında etkinleştirir veya devre dışı bırakır; Ayarlar'daki onay kutusunu yansıtır. Devre dışı bırakıldığında zaman kaydırma modundaysa hemen canlıya döner ve arka plan yakalamayı durdurur. |
+| *(atanmamış)* | Çıkış aygıtı seç | Kullanılabilir ana çıkış aygıtlarının bir listesini isteğe bağlı olarak açar. Liste yalnızca BASS birden fazla fiziksel çıkış aygıtı algıladığında gösterilir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
 | *(atanmamış)* | Bildirimleri sessize al / aç | Bildirim sessize alma ayarını anlık olarak değiştirir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
 | *(atanmamış)* | Favori istasyonu doğrudan çal | Favoriler listenizdeki her istasyon, NVDA Menüsü → Tercihler → Girdi Hareketleri → **FreeRadio İstasyonları** kategorisinde ayrı bir girdi olarak görünür. Bir istasyona klavye kısayolu atayarak tarayıcıyı açmadan her yerden doğrudan çalmaya başlayabilirsiniz. |
 
@@ -67,7 +68,7 @@ FreeRadio ayrıca NVDA Araçlar menüsüne **FreeRadio** adlı bir alt menü ekl
 
 Tüm İstasyonlar sekmesi açıldığında Radio Browser'dan en çok oylanan 1000 istasyon otomatik olarak yüklenir. Ülke açılır listesinden bir ülke seçildiğinde liste o ülkenin istasyonlarıyla güncellenir. Arama alanına harf girilmesi anlık olarak   Radio Browser'ın tamamında ad, ülke ve tür üzerinden eş zamanlı arama yapar.
 
-Tarayıcı penceresinin alt kısmında sekmelerin dışında yer alan **Çıkış Cihazı** açılır listesi, o an BASS tarafından tanınan ses çıkış aygıtlarını listeler. Listeden bir aygıt seçildiğinde ses çıkışı anında o aygıta yönlendirilir ve seçim kalıcı olarak kaydedilir; bir sonraki oturumda aynı aygıt otomatik olarak kullanılır. Seçili aygıt sisteme bağlı değilse otomatik olarak sistem varsayılanına dönülür. Bu denetim yalnızca BASS arka ucu aktifken işlev görür.
+Tarayıcı penceresinin alt kısmında sekmelerin dışında yer alan **Çıkış Cihazı** açılır listesi, o an BASS tarafından tanınan ses çıkış aygıtlarını listeler. Listeden bir aygıt seçildiğinde ses çıkışı anında o aygıta yönlendirilir ve seçim kalıcı olarak kaydedilir; bir sonraki oturumda aynı aygıt otomatik olarak kullanılır. Seçili aygıt sisteme bağlı değilse otomatik olarak sistem varsayılanına dönülür. İstasyon Tarayıcısı içindeyken herhangi bir yerden `F11` tuşuna basarak daha basit, isteğe bağlı bir aygıt seçicisi açabilirsiniz. Bu seçici otomatik olarak gösterilmez; yalnızca BASS birden fazla fiziksel çıkış aygıtı algıladığında açılır. Yalnızca bir aygıt varsa seçim yapmaya gerek yoktur ve FreeRadio sistem varsayılan çıkışını kullanır. Bu özellik yalnızca BASS arka ucu aktifken işlev görür.
 
 Aynı bölümde yer alan **Ses Seviyesi** (0–200) ve **Efektler** denetim çubuğu, pencere açıkken anlık olarak ayarlanabilir. Efektler listesinden Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ile EQ: Bass Boost, EQ: Treble Boost ve EQ: Vocal Boost seçenekleri aynı anda birden fazla seçilerek etkinleştirilebilir; değişiklikler çalan akışa anında uygulanır. Her efekt, klavyeden elinizi kaldırmadan `Ctrl+1` ile `Ctrl+0` arasındaki kısayollarla da anında açılıp kapatılabilir — aşağıdaki Efekt Kısayolları bölümüne bakın. Bu denetimler yalnızca BASS arka ucu aktifken tam işlev görür.
 
@@ -110,6 +111,7 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 | `F7` | Duraklat / devam et | Çalan istasyon varsa duraklatır; duraklatılmışsa ve medya yüklüyse oynatmayı sürdürür. |
 | `F8` | Durdur | Çalan istasyonu tamamen durdurur ve oynatıcıyı sıfırlar. |
 | `F9` | Yeniden adlandır | Favoriler sekmesinde odaklanan istasyonun yeniden adlandırılabilmesi için bir iletişim kutusu açar. |
+| `F11` | Çıkış aygıtı seç | BASS birden fazla fiziksel çıkış aygıtı algıladığında ana çıkış aygıtı seçicisini açar. Geçerli aygıt önceden seçili gelir; Enter tuşu seçimi uygular ve kaydeder. |
 
 ### Liste ve Gezinme Kısayolları
 
@@ -250,7 +252,12 @@ Tanıma şu şekilde çalışır: ffmpeg kullanılarak akıştan kısa bir ses �
 
 ## Kayıt
 
-Kayıtlar varsayılan olarak `Belgeler\FreeRadio Recordings\` klasörüne kaydedilir. Dosya adı istasyon adını (veya şarkı kaydı modunda parça adını) ve kayıt başlangıç saatini içerir. Kayıt klasörü NVDA Menüsü → Tercihler → Ayarlar → FreeRadio → **Kayıt klasörü** seçeneğinden istediğiniz zaman değiştirilebilir. Kayıt motoru doğrudan akışa bağlandığından ses, alındığı hâliyle diske yazılır; herhangi bir işleme veya yeniden kodlama uygulanmaz; kayıt kalitesi yayın kalitesiyle özdeştir.
+Kayıtlar varsayılan olarak `Belgeler\FreeRadio Recordings\` klasörüne kaydedilir. Dosya adı istasyon adını (veya şarkı kaydı modunda parça adını) ve kayıt başlangıç saatini içerir. Kayıt klasörü NVDA Menüsü → Tercihler → Ayarlar → FreeRadio → **Kayıt klasörü** seçeneğinden istediğiniz zaman değiştirilebilir.
+
+**Kayıt çıkış formatı** ayarı, tamamlanan kayıtların nasıl kaydedileceğini belirler:
+- **Orijinal akış formatı**, akışı alındığı hâliyle yazar. Bu nedenle bir HLS yayını `.ts` dosyası olarak kaydedilebilir.
+- **Yalnızca ses, orijinal codec**, video/kapsayıcı katmanını sesi yeniden kodlamadan kaldırır. Örneğin bir HLS `.ts` kaydındaki AAC sesi, yayın kalitesini koruyarak genellikle `.m4a` olarak kaydedilir.
+- **MP3**, kayıttan sonra sesi seçilen bit hızını kullanarak dönüştürür. Dönüştürme, FreeRadio ile birlikte gelen `ffmpeg.exe` ile yapılır ve NVDA'nın tepkisiz kalmaması için arka planda çalışır. Dönüştürme başarısız olursa orijinal kayıt saklanır.
 
 **Anlık kayıt:** Bir istasyon çalarken `Ctrl+Win+E` tuşuna bir kez basın. Durdurmak için tekrar basın. Oynatma süresince kesintisiz devam eder.
 
@@ -473,6 +480,8 @@ NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki
 | wmplayer.exe yolu | Windows Media Player'ın yolu gerekiyorsa buraya girilebilir. |
 | PotPlayer yolu | PotPlayer standart dışı bir konumdaysa yolu buraya girilebilir. |
 | Kayıt klasörü | Kayıt dosyalarının yazılacağı klasörü belirler. Boş bırakılırsa varsayılan konum olan `Belgeler\FreeRadio Recordings\` kullanılır. Gözat düğmesiyle klasör seçilebilir. Değişiklikler kaydedildikten hemen sonra geçerli olur. |
+| Kayıt çıkış formatı | Orijinal akışı korur, sesi codec'ini değiştirmeden ayıklar veya tamamlanan kayıtları MP3'e dönüştürür. Varsayılan, orijinal akış formatıdır. |
+| MP3 kayıt bit hızı | Kayıt çıkış formatı MP3 olarak seçildiğinde kullanılacak bit hızını belirler. Varsayılan 128 kb/sn'dir. |
 | Güncellemeleri otomatik denetle | Açıksa NVDA her başlatıldığında arka planda güncelleme kontrolü yapılır; yeni sürüm bulunursa bildirim verilir. Kapatıldığında otomatik kontrol devre dışı kalır, elle kontrol hâlâ kullanılabilir. |
 | İstasyon çalmadan önce internet bağlantısı kontrolünü devre dışı bırak | İstasyon çalmaya başlamadan önce gecikme yaşayan kullanıcılar için önerilir. DNS'in engellendiği durumlarda da faydalıdır. |
 

@@ -15,6 +15,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import globalVars
 
+from . import externalSources
+
 log = logging.getLogger(__name__)
 
 
@@ -505,6 +507,50 @@ class StationManager:
 		merged = sorted(filtered, key=lambda s: s.get("votes", 0), reverse=True)
 		total_found = len(merged)
 		return merged[:limit], total_found
+
+	def search_tunein(self, query, limit=50):
+		"""Search TuneIn for *query*. Best-effort — returns [] on any error,
+		never raises. Thin wrapper so callers only ever talk to the manager,
+		not to externalSources directly."""
+		return externalSources.search_tunein((query or "").strip(), limit=limit)
+
+	def search_iheart(self, query, limit=50):
+		"""Search iHeartRadio for *query*. Best-effort — returns [] on any
+		error, never raises. Thin wrapper so callers only ever talk to the
+		manager, not to externalSources directly."""
+		return externalSources.search_iheart((query or "").strip(), limit=limit)
+
+	def search_external(self, query, limit=50):
+		"""Search TuneIn and iHeartRadio (in parallel) for *query* and return
+		a merged list of normalised station dicts.
+
+		Best-effort by design: neither service has a stable public API, so a
+		failure in either source is logged and simply contributes no results
+		— this method never raises. NOTE: this waits for BOTH sources before
+		returning, so a slow/unreachable one delays the other — callers that
+		want each source's results as soon as they're ready (e.g. the search
+		dialog) should call search_tunein()/search_iheart() independently
+		instead. This combined method is kept for callers that just want one
+		merged list and don't care about per-source latency.
+		"""
+		query = (query or "").strip()
+		if not query:
+			return []
+
+		results = []
+		sources = {
+			"TuneIn": lambda: self.search_tunein(query, limit=limit),
+			"iHeart": lambda: self.search_iheart(query, limit=limit),
+		}
+		with ThreadPoolExecutor(max_workers=len(sources)) as pool:
+			futures = {pool.submit(fn): label for label, fn in sources.items()}
+			for future in as_completed(futures):
+				label = futures[future]
+				try:
+					results.extend(future.result())
+				except Exception as exc:
+					log.warning("FreeRadio: external search source %s failed: %s", label, exc)
+		return results
 
 	def get_top_stations(self, limit=1000):
 		"""Return the top-voted stations. Raises RadioBrowserError on failure

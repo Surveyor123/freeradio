@@ -1840,6 +1840,29 @@ class RadioDialog(wx.Dialog):
 			# can use its own consistent "limit reached" message logic.
 			wx.CallAfter(self._on_search_results, stations, None, fetch_id, total_found)
 
+			# TuneIn and iHeartRadio are fetched on their own background
+			# thread EACH (not one combined call) so that a slow or
+			# unreachable source — e.g. iHeart failing outright on networks
+			# where it's blocked — never delays the other source's results
+			# from showing up.
+			def _make_external_fetcher(search_fn):
+				def _fetch():
+					try:
+						extra = search_fn(query, limit=50)
+					except Exception:
+						extra = []
+					if not self or fetch_id != self._search_fetch_id or not extra:
+						return
+					wx.CallAfter(self._on_external_search_results, extra, fetch_id)
+				return _fetch
+
+			threading.Thread(
+				target=_make_external_fetcher(self._manager.search_tunein), daemon=True
+			).start()
+			threading.Thread(
+				target=_make_external_fetcher(self._manager.search_iheart), daemon=True
+			).start()
+
 		self._search_debounce_timer = wx.CallLater(500, _do_search)
 
 	def _on_text_changed(self, event):
@@ -2183,6 +2206,22 @@ class RadioDialog(wx.Dialog):
 		if total_found is not None:
 			self._total_found = total_found
 		self._apply_filters(status_text, announce=True)
+		self._refresh_fav_list()
+
+	def _on_external_search_results(self, extra_stations, fetch_id):
+		"""Merge TuneIn/iHeartRadio results into the currently displayed
+		Radio Browser search results once they arrive. Announced (spoken)
+		like any other result update — this is the last count the user
+		would otherwise hear, since it happens after the initial Radio
+		Browser announcement from _on_search_results."""
+		if not self or fetch_id != self._search_fetch_id or not extra_stations:
+			return
+		existing_uuids = {s.get("stationuuid", "") for s in self._search_stations}
+		new_ones = [s for s in extra_stations if s.get("stationuuid", "") not in existing_uuids]
+		if not new_ones:
+			return
+		self._search_stations = self._search_stations + new_ones
+		self._apply_filters(announce=True)
 		self._refresh_fav_list()
 
 

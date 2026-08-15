@@ -248,7 +248,12 @@ Po pierwszym naciśnięciu pojawia się dialog wyboru z listą dostępnych urzą
 
 ## Nagrywanie
 
-Nagrania są domyślnie zapisywane w `Documents\FreeRadio Recordings\`. Nazwa pliku zawiera nazwę stacji albo tytuł utworu w trybie nagrywania utworu oraz czas rozpoczęcia nagrywania. Folder nagrań można w dowolnej chwili zmienić w menu NVDA -> Preferencje -> Ustawienia -> FreeRadio -> **Folder nagrań**. Ponieważ silnik nagrywania łączy się bezpośrednio ze strumieniem, dźwięk jest zapisywany na dysku tak, jak został odebrany - bez przetwarzania i ponownego kodowania; jakość nagrania jest identyczna z jakością nadawania.
+Nagrania są domyślnie zapisywane w `Documents\FreeRadio Recordings\`. Nazwa pliku zawiera nazwę stacji albo tytuł utworu w trybie nagrywania utworu oraz czas rozpoczęcia nagrywania. Folder nagrań można w dowolnej chwili zmienić w menu NVDA -> Preferencje -> Ustawienia -> FreeRadio -> **Folder nagrań**.
+
+Ustawienie **Format zapisu nagrań** określa sposób zapisywania zakończonych nagrań:
+- **Oryginalny format strumienia** zapisuje transmisję dokładnie tak, jak została odebrana. Dlatego transmisja HLS może utworzyć plik `.ts`.
+- **Tylko dźwięk, oryginalny kodek** usuwa warstwę obrazu lub kontenera bez ponownego kodowania dźwięku. Na przykład dźwięk AAC z nagrania HLS w pliku `.ts` jest zwykle zapisywany jako `.m4a`, z zachowaniem jakości transmisji.
+- **MP3** po zakończeniu nagrania konwertuje dźwięk z wybraną przepływnością. Konwersja korzysta z pliku `ffmpeg.exe` dołączonego do FreeRadio i działa w tle, aby NVDA pozostawał responsywny. Jeśli konwersja się nie powiedzie, zachowany zostanie plik oryginalny.
 
 **Nagrywanie natychmiastowe:** podczas odtwarzania stacji naciśnij `Ctrl+Win+E` raz. Naciśnij ponownie, aby zatrzymać. Odtwarzanie trwa bez przerwy.
 
@@ -347,6 +352,8 @@ Poniższe opcje można skonfigurować w menu NVDA -> Preferencje -> Ustawienia -
 | Ścieżka do wmplayer.exe | Wpisz tutaj ścieżkę do Windows Media Playera, jeśli jest potrzebna. |
 | Ścieżka do PotPlayera | Jeśli PotPlayer znajduje się w nietypowym miejscu, można tutaj wpisać jego ścieżkę. |
 | Folder nagrań | Ustawia folder, w którym zapisywane są nagrania. Jeśli pozostanie pusty, używana jest domyślna lokalizacja `Documents\FreeRadio Recordings\`. Przycisk Przeglądaj pozwala wybrać folder interaktywnie. Zmiany działają natychmiast po zapisaniu. |
+| Format zapisu nagrań | Zachowuje oryginalny strumień, wyodrębnia sam dźwięk bez zmiany kodeka albo konwertuje zakończone nagranie do MP3. Domyślnie zachowywany jest oryginalny format strumienia. |
+| Przepływność nagrań MP3 | Ustawia przepływność używaną, gdy wybrany jest format MP3. Domyślna wartość to 128 kb/s. |
 | Wyłącz sprawdzanie połączenia internetowego przed odtwarzaniem | Zalecane dla użytkowników, u których występuje opóźnienie przed rozpoczęciem odtwarzania stacji. Przydatne również, gdy DNS jest blokowany. |
 
 ## Wyciszanie powiadomień

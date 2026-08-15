@@ -30,6 +30,9 @@ msgstr "Rozpoczęto nagrywanie: %s"
 msgid "Recording finished: %s"
 msgstr "Nagrywanie zakończone: %s"
 
+msgid "Recording conversion failed. The original file was kept: %s"
+msgstr "Konwersja nagrania nie powiodła się. Zachowano plik w oryginalnym formacie: %s"
+
 #: addon/globalPlugins/freeradio/__init__.py:417
 msgid "FreeRadio Stations"
 msgstr "Stacje FreeRadio"
@@ -1132,6 +1135,21 @@ msgstr "(puste = domyślnie: Dokumenty\\FreeRadio Recordings)"
 #: addon/globalPlugins/freeradio/__init__.py:3046
 msgid "Brow&se folder..."
 msgstr "Przeglą&daj folder..."
+
+msgid "Recording output format:"
+msgstr "Format zapisu nagrań:"
+
+msgid "Original stream format (no conversion)"
+msgstr "Oryginalny format strumienia (bez konwersji)"
+
+msgid "Audio only, original codec (no quality loss)"
+msgstr "Tylko dźwięk, oryginalny kodek (bez utraty jakości)"
+
+msgid "MP3 (convert audio)"
+msgstr "MP3 (konwersja dźwięku)"
+
+msgid "MP3 recording bitrate:"
+msgstr "Przepływność nagrań MP3:"
 
 #: addon/globalPlugins/freeradio/__init__.py:3056
 msgid ""

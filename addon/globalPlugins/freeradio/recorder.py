@@ -10,6 +10,7 @@ import datetime
 import logging
 import os
 import ssl
+import subprocess
 import threading
 import urllib.request
 
@@ -76,6 +77,154 @@ def _make_output_path(station_name, ext="mp3"):
 	name  = _safe_filename(station_name)
 	fname = f"{name} - {ts}.{ext}"
 	return os.path.join(_recordings_dir(), fname)
+
+
+_RECORDING_FORMATS = ("original", "audio_only", "mp3")
+
+
+def _normalise_recording_format(value):
+	"""Return a supported recording output mode, defaulting safely to original."""
+	return value if value in _RECORDING_FORMATS else "original"
+
+
+def _normalise_mp3_bitrate(value):
+	"""Clamp the configured MP3 bitrate to a sensible encoder range."""
+	try:
+		value = int(value)
+	except (TypeError, ValueError):
+		value = 128
+	return min(320, max(64, value))
+
+
+def _default_ffmpeg_path(dll_dir=None):
+	"""Return the configured or bundled ffmpeg executable path."""
+	try:
+		import config as _cfg
+		configured = _cfg.conf["freeradio"].get("ffmpeg_path", "").strip()
+		if configured:
+			return configured
+	except Exception:
+		pass
+	if dll_dir:
+		return os.path.join(dll_dir, "ffmpeg.exe")
+	return "ffmpeg.exe"
+
+
+def _run_ffmpeg(args):
+	"""Run ffmpeg without opening a console window and return success."""
+	try:
+		result = subprocess.run(
+			args,
+			stdin=subprocess.DEVNULL,
+			stdout=subprocess.DEVNULL,
+			stderr=subprocess.PIPE,
+			creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+			check=False,
+		)
+		if result.returncode == 0:
+			return True, ""
+		error = result.stderr.decode("utf-8", errors="replace")[-2000:]
+		return False, error
+	except Exception as e:
+		return False, str(e)
+
+
+def _replace_converted_file(source_path, temporary_path, destination_path):
+	"""Publish a completed conversion, removing the source only on success."""
+	if not os.path.isfile(temporary_path) or os.path.getsize(temporary_path) == 0:
+		return False
+	if os.path.abspath(source_path) != os.path.abspath(destination_path):
+		try:
+			os.remove(destination_path)
+		except FileNotFoundError:
+			pass
+		os.replace(temporary_path, destination_path)
+		try:
+			os.remove(source_path)
+		except OSError:
+			pass
+	else:
+		os.replace(temporary_path, destination_path)
+	return True
+
+
+def convert_recording(source_path, mode="original", ffmpeg_path="ffmpeg.exe", mp3_bitrate=128):
+	"""Convert a finished recording according to the selected output mode.
+
+	Returns ``(output_path, error_message)``. The original file is retained
+	whenever conversion fails. ``audio_only`` remuxes video containers without
+	re-encoding; it first tries M4A (ideal for the common HLS AAC case) and falls
+	back to MKA when the source audio codec cannot be stored in MP4.
+	"""
+	mode = _normalise_recording_format(mode)
+	if mode == "original" or not source_path or not os.path.isfile(source_path):
+		return source_path, ""
+
+	base, ext = os.path.splitext(source_path)
+	ext = ext.lower()
+	ffmpeg_path = ffmpeg_path or "ffmpeg.exe"
+
+	if not os.path.isfile(ffmpeg_path) and os.path.dirname(ffmpeg_path):
+		return source_path, "ffmpeg.exe not found: %s" % ffmpeg_path
+
+	if mode == "audio_only":
+		# Ordinary radio recordings are already audio-only and should remain
+		# byte-for-byte original. Only multimedia containers need remuxing.
+		if ext not in (".ts", ".m2ts", ".mts", ".mp4", ".m4v", ".mov", ".mkv", ".webm"):
+			return source_path, ""
+
+		attempts = (
+			(base + ".m4a", ["-c:a", "copy", "-movflags", "+faststart"]),
+			(base + ".mka", ["-c:a", "copy"]),
+		)
+		last_error = ""
+		for destination, codec_args in attempts:
+			temporary = destination + ".converting"
+			try:
+				os.remove(temporary)
+			except FileNotFoundError:
+				pass
+			args = [
+				ffmpeg_path, "-hide_banner", "-loglevel", "error", "-y",
+				"-i", source_path, "-map", "0:a:0", "-vn",
+			] + codec_args + [temporary]
+			# The temporary suffix is intentionally non-standard, so explicitly
+			# select the matching container instead of relying on its extension.
+			args[-1:-1] = ["-f", "mp4" if destination.endswith(".m4a") else "matroska"]
+			ok, last_error = _run_ffmpeg(args)
+			if ok and _replace_converted_file(source_path, temporary, destination):
+				return destination, ""
+			try:
+				os.remove(temporary)
+			except OSError:
+				pass
+		return source_path, last_error or "Could not extract the audio track"
+
+	# MP3 input is already in the requested format; avoid a lossy second encode.
+	if ext == ".mp3":
+		return source_path, ""
+
+	destination = base + ".mp3"
+	temporary = destination + ".converting"
+	try:
+		os.remove(temporary)
+	except FileNotFoundError:
+		pass
+	bitrate = _normalise_mp3_bitrate(mp3_bitrate)
+	args = [
+		ffmpeg_path, "-hide_banner", "-loglevel", "error", "-y",
+		"-i", source_path, "-map", "0:a:0", "-vn",
+		"-c:a", "libmp3lame", "-b:a", "%dk" % bitrate,
+		"-id3v2_version", "3", "-f", "mp3", temporary,
+	]
+	ok, error = _run_ffmpeg(args)
+	if ok and _replace_converted_file(source_path, temporary, destination):
+		return destination, ""
+	try:
+		os.remove(temporary)
+	except OSError:
+		pass
+	return source_path, error or "Could not convert the recording to MP3"
 
 
 def _open_icy(url, timeout=20):
@@ -1059,7 +1208,8 @@ class _TimeshiftTailWriter:
 class Recorder:
 	"""Manages instant and scheduled recordings."""
 
-	def __init__(self, dll_dir=None, player_paths=None, volume=100, main_player=None):
+	def __init__(self, dll_dir=None, player_paths=None, volume=100, main_player=None,
+	             recording_format="original", mp3_bitrate=128, ffmpeg_path=""):
 		"""
 		dll_dir: Path to the directory containing bass_host.py and bass/ subfolder.
 		player_paths: dict with optional keys 'vlc', 'potplayer', 'wmp' for fallback.
@@ -1076,10 +1226,45 @@ class Recorder:
 		self._player_paths    = player_paths or {}
 		self._volume          = volume
 		self._main_player     = main_player  # to avoid interrupting user
+		self._recording_format = _normalise_recording_format(recording_format)
+		self._mp3_bitrate      = _normalise_mp3_bitrate(mp3_bitrate)
+		self._ffmpeg_path      = ffmpeg_path or _default_ffmpeg_path(dll_dir)
 		self._active_scheduled = set()  # currently running scheduled recordings
 		self._active_scheduled_lock = threading.Lock()
 		if self._scheduled:
 			self._ensure_scheduler()
+
+	def set_output_format(self, recording_format, mp3_bitrate=128, ffmpeg_path=""):
+		"""Update output conversion settings for subsequent recordings."""
+		self._recording_format = _normalise_recording_format(recording_format)
+		self._mp3_bitrate = _normalise_mp3_bitrate(mp3_bitrate)
+		self._ffmpeg_path = ffmpeg_path or _default_ffmpeg_path(self._dll_dir)
+
+	def _finalize_writer(self, writer):
+		"""Stop a writer and apply the selected output conversion.
+
+		This method may invoke ffmpeg and must not run on NVDA's UI thread for
+		interactive recordings. Scheduled recordings already call it from their
+		worker thread.
+		"""
+		writer.stop()
+		path = writer.output_path
+		converted_path, error = convert_recording(
+			path,
+			mode=self._recording_format,
+			ffmpeg_path=self._ffmpeg_path,
+			mp3_bitrate=self._mp3_bitrate,
+		)
+		if error:
+			log.error(
+				"FreeRadio Recorder: output conversion failed; original retained: %s",
+				error,
+			)
+			if hasattr(self, "_notify_conversion_error") and self._notify_conversion_error:
+				self._notify_conversion_error(path, error)
+		else:
+			log.info("FreeRadio Recorder: finalized recording → %s", converted_path)
+		return converted_path
 
 	def _persist_schedules(self, extra_active=None):
 		"""Save pending schedules together with whatever is currently
@@ -1187,13 +1372,13 @@ class Recorder:
 		Returns the saved file path, or None if no recording was active.
 		"""
 		path = self._output_path
-		if self._writer:
-			self._writer.stop()
-			path = self._writer.output_path
-			self._writer = None
+		writer = self._writer
+		self._writer = None
 		self._output_path  = None
 		self._station_name = ""
 		self._song_capture = False
+		if writer:
+			path = self._finalize_writer(writer)
 		log.info("FreeRadio Recorder: song-capture recording stopped, file=%s", path)
 		return path
 
@@ -1210,14 +1395,14 @@ class Recorder:
 	def stop(self, player=None):
 		"""Stop instant recording. Returns saved file path."""
 		path = self._output_path
-		if self._writer:
-			self._writer.stop()
-			path = self._writer.output_path
-			self._writer = None
+		writer = self._writer
+		self._writer = None
 		self._output_path  = None
 		self._station_name = ""
 		# Also clear song-capture flag if stop() is called generically.
 		self._song_capture = False
+		if writer:
+			path = self._finalize_writer(writer)
 		log.info("FreeRadio Recorder: instant recording stopped, file=%s", path)
 		return path
 
@@ -1369,8 +1554,7 @@ class Recorder:
 				break
 			time.sleep(min(1.0, deadline - time.time()))
 
-		writer.stop()
-		rec.output_path = writer.output_path   # extension may have been updated
+		rec.output_path = self._finalize_writer(writer)
 		rec._writer = None
 
 		with self._active_scheduled_lock:

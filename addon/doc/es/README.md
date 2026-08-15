@@ -1,6 +1,6 @@
 # FreeRadio — NVDA Add-on
 
-FreeRadio es un complemento de radio por Internet para el lector de pantalla NVDA. Su principal objetivo es proporcionar a los usuarios un fácil acceso a miles de estaciones de radio por Internet. Toda la interfaz y todas las funciones se han diseñado teniendo en cuenta la accesibilidad total para NVDA.
+FreeRadio es un complemento de radio por Internet para el lector de pantalla NVDA. Su principal objetivo es proporcionar a los usuarios un fácil acceso a miles de estaciones de radio por Internet y podcasts. Toda la interfaz y todas las funciones se han diseñado teniendo en cuenta la accesibilidad total para NVDA.
 
 ## El Directorio de Radio Browser
 
@@ -63,7 +63,7 @@ Los atajos siguientes/anteriores sólo recorren la lista de favoritos; No funcio
 
 FreeRadio también añade un subMenú **FreeRadio** en el Menú Herramientas de NVDA. Desde allí puede abrir directamente el Navegador de Estaciones y los Ajustes de FreeRadio.
 
-La ventana abierta con `Ctrl+Win+R` contiene cinco pestañas: Todas las estaciones, Favoritos, Grabación, Temporizador y Canciones favoritas. Puedes navegar entre las pestañas con `Ctrl+Tab`.
+La ventana abierta con `Ctrl+Win+R` contiene seis pestañas: Todas las estaciones, Favoritos, Grabación, Temporizador, Canciones favoritas y Podcasts. Puedes navegar entre las pestañas con `Ctrl+Tab` o usando `Alt+1` hasta `Alt+6`.
 
 Cuando se abre la pestaña Todas las estaciones, las 1000 estaciones más votadas se cargan automáticamente desde Radio Browser. Al seleccionar un país de la lista desplegable, se actualiza la lista para mostrar estaciones de ese país. Al escribir en el cuadro de búsqueda se realiza instantáneamente una búsqueda completa en toda la base de datos de Radio Browser simultáneamente por nombre, país y género.
 
@@ -95,40 +95,44 @@ Sólo los elementos relevantes para la pestaña y selección actual se muestran 
 
 Las siguientes teclas solo funcionan cuando la ventana del Navegador de Estaciones está activa.
 
-### Teclas F
+#### Teclas F
 
 | Atajo | Función | Descripción |
 |---|---|---|
 | `F1` | Guía de ayuda | Abre el archivo de ayuda del complemento en el navegador predeterminado. Primero se busca la guía del idiomas NVDA activo; si no se encuentra, se abre la guía predeterminada. |
-| `F2` | que esta reproduciendo  | Anuncia la estación que se está reproduciendo actualmente y el nombre de la pista. Pulsa dos veces para mostrar los detalles como el país, el género y el bitrate en un diálogo. Pulsa tres veces para copiar la información de la pista actual (metadatos ICY) al portapapeles si está disponible; si no hay metadatos presentes, inicia el reconocimiento de música de Shazam en su lugar. Pulsa cuatro veces para forzar el reconocimiento de música en caso de metadatos ICY incorrectos. |
-| `F3` | Estación anterior | Salta a la estación anterior en la pestaña Todas las estaciones o Favoritos y comienza a reproducir inmediatamente. Salta al final cuando está al principio de la lista. |
-| `F4` | Station suivante | Salta a la siguiente estación en la pestaña Todas las estaciones o Favoritos y comienza a reproducir inmediatamente. Vuelve al principio al final de la lista. |
+| `F2` | Que esta reproduciendo | Anuncia la estación que se está reproduciendo actualmente y el nombre de la pista. Pulsa dos veces para mostrar los detalles como el país, el género y el bitrate en un diálogo. Pulsa tres veces para copiar la información de la pista actual (metadatos ICY) al portapapeles si está disponible; si no hay metadatos presentes, inicia el reconocimiento de música de Shazam en su lugar. Pulsa cuatro veces para forzar el reconocimiento de música en caso de metadatos ICY incorrectos. |
+| `F3` | Elemento anterior | En la pestaña Todas las estaciones o Favoritos: salta a la estación anterior  y comienza a reproducir inmediatamente. En la pestaña Podcasts: salta al episodio anterior en la lista de episodios y lo reproduce. |
+| `F4` | Elemento siguiente | En la pestaña Todas las estaciones o Favoritos: salta a la siguiente estación  y comienza a reproducir inmediatamente. En la pestaña Podcasts: salta al siguiente episodio y lo reproduce. |
+| `Shift+F3` | Feed anterior | Solo en la pestaña Podcasts: mueve hacia arriba un feed en la lista de suscripciones. |
+| `Shift+F4` | Feed siguiente | Solo en la pestaña Podcasts: mueve hacia abajo un feed en la lista de suscripciones. |
 | `F5` | Disminuir el volumen | Disminuye el volumen de 5 (mínimo 0). |
 | `F6` | Aumentar el volumen | Aumenta el volumen de 5 (máximo 200). |
 | `F7` | Pausar/reanudar | Pausa la estación actual si se está reproduciendo; se reanuda cuando está en pausa y el medio está cargado. |
 | `F8` | Detener | Detiene completamente la estación actual y reinicia el reproductor. |
 | `F9` | Renombrar | Abre el cuadro de diálogo para renombrar la estación enfocada en la pestaña Favoritos. |
 
-### Lista y Atajos de Navegación
+#### Lista y Atajos de Navegación
 
 | Atajo | Función | Descripción |
 |---|---|---|
-| `→` | Siguiente estación | Cuando la lista Todas las estaciones o Favoritos esté enfocada, salta a la siguiente estación y la reproduce inmediatamente. Vuelve al principio al final de la lista. |
-| `←` | Estación anterior | Cuando la lista Todas las estaciones o Favoritos está enfocada, salta a la estación anterior y la reproduce inmediatamente. Salta al final cuando está al principio. |
-| `Intro` | Reproducir | Cuando la lista Todas las estaciones o Favoritos está enfocada, inmediatamente comienza a reproducir la estación seleccionada. Cambia a la estación seleccionada incluso si ya se está reproduciendo otra estación. |
-| `Espacio` | Reproducir/Pausar | Se detiene si se está reproduciendo una estación; de lo contrario, comienza a reproducir la estación seleccionada. |
-| `Ctrl+Tab` | Pestaña siguiente | Pasa a la siguiente pestaña (Todas las estaciones → Favoritos → Grabación → Temporizador → Canciones favoritas). |
+| `→` | Elemento siguiente | Cuando una lista de estaciones esté enfocada (Todas las estaciones/Favoritos), salta a la siguiente estación y la reproduce inmediatamente. Cuando la lista de episodios esté enfocada (Podcasts), salta al siguiente episodio y lo reproduce. Vuelve al principio al final de la lista. |
+| `←` | Elemento anterior | Cuando una lista de estaciones esté enfocada, salta a la estación anterior y la reproduce inmediatamente. Cuando la lista de episodios esté enfocada, salta al episodio anterior y lo reproduce. Salta al final cuando está al principio. |
+| `Ctrl+→` | Episodio siguiente | Cuando la pestaña Podcasts está activa, salta al siguiente episodio y lo reproduce (igual que `→` mientras la lista de episodios está enfocada). |
+| `Ctrl+←` | Episodio anterior | Cuando la pestaña Podcasts está activa, salta al episodio anterior y lo reproduce (igual que `←` mientras la lista de episodios está enfocada). |
+| `Intro` | Reproducir | Cuando una lista de estaciones o episodios está enfocada, inmediatamente comienza a reproducir el elemento seleccionado. Cambia a la estación seleccionada incluso si ya se está reproduciendo otra estación. |
+| `Espacio` | Reproducir/Pausar | Se detiene si se está reproduciendo una estación; de lo contrario, comienza a reproducir el elemento seleccionado. |
+| `Ctrl+Tab` | Pestaña siguiente | Pasa a la siguiente pestaña (Todas las estaciones → Favoritos → Grabación → Temporizador → Canciones favoritas → Podcasts). |
 | `Ctrl+Shift+Tab` | Pestaña anterior | Pasa a la pestaña anterior. |
 | `Escape` | Ocultar | Oculta la ventana; el complemento continúa reproduciéndose en segundo plano. |
 
-### Atajos de Volumen
+#### Atajos de Volumen
 
 | Atajo | Función | Descripción |
 |---|---|---|
 | `Ctrl+↑` | Aumentar el volumen | Aumenta el volumen de 5. Funciona sólo cuando la ventana del navegador está abierta. |
 | `Ctrl+↓` | Disminuir el volumen | Disminuye el volumen de 5. Funciona sólo cuando la ventana del navegador está abierta. |
 
-### Atajos del Efecto
+#### Atajos del Efecto
 
 | Atajo | Función | Descripción |
 |---|---|---|
@@ -145,7 +149,7 @@ Las siguientes teclas solo funcionan cuando la ventana del Navegador de Estacion
 
 Cada atajo refleja marcado o desmarcado en la entrada correspondiente en la lista **Efectos**: NVDA anuncia si el efecto fue habilitado o deshabilitado, el cambio se guarda automáticamente y el control de ganancia del EQ para esa banda (si corresponde) aparece o desaparece en consecuencia. Solo disponible cuando el BASS backend está activo.
 
-### Atajos de la Tecla Alt
+#### Atajos de la Tecla Alt
 
 | Atajo | Función | Descripción |
 |---|---|---|
@@ -156,6 +160,7 @@ Cada atajo refleja marcado o desmarcado en la entrada correspondiente en la list
 | `Alt+3` | Grabación | Cambia a la pestaña Grabación. |
 | `Alt+4` | Temporizador | Cambia a la pestaña Temporizador. |
 | `Alt+5` | Canciones favoritas | Cambia a la pestaña Canciones favoritas. |
+| `Alt+6` | Podcasts | Cambia a la pestaña Podcasts. |
 | `Alt+K` | Cerrar | Cierra la ventana; el complemento continúa reproduciéndose en segundo plano. |
 
 ## Favoritos
@@ -317,53 +322,98 @@ Abra la pestaña Temporizador en el navegador de estaciones (`Alt+4`). Se pueden
 
 Para ambos tipos, si la hora ingresada ya pasó, la acción se programa para el día siguiente. Si ya existe un temporizador a la misma hora (independientemente del tipo), no se permite añadir uno nuevo; se informa al usuario del conflicto y se le pide que elimine primero la entrada existente. Los temporizadores pendientes se enumeran en la pestaña; seleccione uno y pulse el botón Eliminar el temporizador seleccionado para cancelarlo.
 
-## Opciones
+## Podcasts
 
-Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencias → Opciones → FreeRadio:
+FreeRadio incluye un reproductor de podcasts con todas las funciones. Puede suscribirse a cualquier fuente de podcast RSS o Atom, explorar episodios, reproducirlos, descargarlos y reanudar la reproducción desde donde la dejó — todo totalmente accesible.
 
-| Opción | Descripción |
-|---|---|
-| Dispositivo de salida de audio (BASS backend) | Establece el dispositivo de salida de audio para la reproducción de la radio. La lista incluye todos los dispositivos del sistema BASS-compatible más una opción "valor predeterminado del sistema". Los cambios se aplican inmediatamente después de guardarlos; Si el dispositivo seleccionado se desconecta, el complemento vuelve automáticamente al valor predeterminado del sistema y anuncia el cambio. Activo solo cuando se utiliza el BASS backend. |
-| Volumen | Establece el volumen cuando se inicia el complemento (0–200). Los cambios realizados durante la reproducción con `Ctrl+Win+↑` / `Ctrl+Win+↓` también se reflejan aquí. |
-| Efecto de audio predeterminado | Establece el efecto de audio aplicado cuando se inicia NVDA o una estación comienza a reproducirse. El efecto seleccionado corresponde a la lista de efectos en el navegador de estaciones. Activo solo cuando se utiliza el BASS backend. |
-| Ganancia de EQ (Bass / Treble / Vocal) | Establece el nivel de ganancia en dB para cada banda de EQ (−15 a +15). Estos valores se aplican cuando el efecto EQ correspondiente está activo y se guardan globalmente. Las reemplazos por estación se pueden almacenar utilizando el botón **Guardar perfil de audio** en la pestaña Favoritos. Activo solo cuando se utiliza el BASS backend. |
-| Transición de cambio de estación(BASS backend) | Controla el comportamiento de transición al conmutar entre las estaciones. **Corte instantáneo** (por defecto) detiene la estación anterior justo antes de que comience la nueva. **Fundido encadenado corto (1 segundo)** y **Fundido encadenado normal (2 segundos)** inicia inmediatamente la nueva estación sin interrupción, luego desaparece gradualmente la estación anterior en segundo plano una vez confirmado el nuevo flujo activo. **Efecto de sonido de sintonización de estación** detiene la estación anterior de inmediato y reproduce un efecto de sonido de sintonización antes de que comience la nueva. No tiene ningún efecto ni impacto en el rendimiento cuando se establece en Corte instantáneo. Solo disponible cuando el BASS backend está en uso. |
-| Reanudar la última estación al iniciar NVDA | Cuando está habilitado, la última estación escuchada se reinicia automáticamente cada vez que se inicia NVDA. |
-| Anunciar automáticamente los cambios de pista (metadatos ICY) | Cuando está habilitado, NVDA lee automáticamente el nombre de la nueva pista cada vez que cambia en una estación que transmite metadatos ICY. La primera canción también se anuncia inmediatamente al cambiar a una nueva estación. Deshabilitado por defecto. |
-| Silenciar notificaciones | Cuando está habilitado, NVDA no anuncia cambios de estación, cambios de estado de reproducción (reproducir, pausar, detener) o eventos de grabación (iniciado, detenido, terminado). Mensajes de error, comentarios sobre favoritos, resultados de reconocimiento de música y notificaciones de las actualizaciones no se ven afectadas. También se puede activar sobre la marcha mediante un gesto de entrada no asignado. Deshabilitado por defecto. |
-| Activar búfer de desplazamiento temporal (rebobinar radio en directo, ~10 minutos) | Activa o desactiva los controles de rebobinado `Ctrl+Win+J`/`Ctrl+Win+K`) y aumenta la captura en segundo plano de ~45 segundos a ~10 minutos. Una pequeña captura en segundo plano de la emisora ​​en reproducción siempre se ejecuta, incluso cuando está deshabilitada — consulta la nota en la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación. También se puede alternar al instante con `Ctrl+Win+T`. Requiere el BASS backend. Deshabilitado por defecto — consulta la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación para obtener más detalles. |
-| Guardar las canciones favoritas en un archivo de texto | Cuando está habilitado, la información de la pista se copia al portapapeles pulsando `Ctrl+Win+I` tres veces y también se añade a `Documentos\FreeRadio Recordings\likedSongs.txt`. Si no hay metadatos ICY disponibles, el resultado del reconocimiento de Shazam se guarda en el mismo archivo. Deshabilitado por defecto. |
-| Cuando Ctrl+Win+P se pulsa sin reproducción activa | Determina qué sucede cuando se pulsa este atajo y no hay nada  en reproducción: iniciar la última estación o abrir la lista de favoritos. |
-| Cuando Ctrl+Win+P se pulsa dos veces | Selecciona lo que sucede cuando se pulsa el atajo dos veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir la pestaña de grabación o abrir la pestaña del temporizador. Cuando "No hacer nada" es seleccionado, la primera pulsación responde instantáneamente sin demora. |
-| Cuando Ctrl+Win+P se pulsa tres veces | Selecciona lo que sucede cuando se pulsa el atajo tres veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir búsqueda de emisoras, abrir la pestaña de grabación o abrir la pestaña del temporizador. |
-| Buscar actualizaciones automáticamente al iniciar | Cuando está habilitado, una verificación de actualización en segundo plano se ejecuta cada vez que se inicia NVDA; se le notificará si se encuentra una nueva versión. Cuando está deshabilitado, los controles automáticos se detienen pero los controles manuales permanecen disponibles. |
-| Ruta ffmpeg.exe | Ruta de acceso al ffmpeg.exe usado para el reconocimiento de música. Si se deja vacío, un ffmpeg.exe en la carpeta del complementos se usa automáticamente. |
-| Ruta VLC | Si VLC no está instalado o se encuentra en una ubicación no estándar, aquí se puede ingresar la ruta completa al ejecutable. |
-| Ruta wmplayer.exe | Ingrese la ruta a Windows Media Player aquí si es necesario. |
-| Ruta PotPlayer | Si PotPlayer se encuentra en una ubicación no estándar, su ruta se puede ingresar aquí. |
-| Carpeta de grabaciones | Establece la carpeta donde se guardan los archivos grabados. Si se deja en blanco, la ubicación predeterminada `Documentos\FreeRadio Recordings\` se utiliza. Un botón Explorar carpeta le permite seleccionar la carpeta de forma interactiva. Los cambios entran en vigor inmediatamente después de guardarlos. |
-| Desactivar la verificación de conectividad a Internet antes de reproducir | Recomendado para usuarios que experimentan un retraso antes de que una estación comience a reproducirse. También es útil cuando el DNS está bloqueado. |
+### Accediendo a la Pestaña Podcasts
 
-## Silenciar Notificaciones
+Abra el navegador de estaciones con `Ctrl+Win+R` y cambia a la pestaña **Podcasts** usando `Ctrl+Tab` o `Alt+6`. La pestaña está organizada en tres áreas principales:
 
-Cuando **Silenciar notificaciones** está habilitado en las Opciones, NVDA silencia los siguientes anuncios automáticos:
+1. **Buscar y añadir** — sección superior para descubrir nuevos podcasts, incluida una lista de vista previa que muestra los episodios de cualquier resultado de búsqueda seleccionado actualmente.
+2. **Suscripciones** — lista de tus feeds suscritos.
+3. **Episodios** — lista de episodios del feed seleccionado, con controles de reproducción.
 
-- Nombre de la estación cuando comienza a reproducirse una nueva estación
-- Cambios de estado de reproducción: reproducir, pausar, detener
-- Eventos de grabación: iniciado, detenido, terminado (grabaciones instantáneas, de canciones y programadas)
-- Anuncios de cambio de pista ICY, incluso cuando **Anunciar automáticamente los cambios de pista**   también está habilitado
+### Añadiendo un Feed de Podcast
 
-Los siguientes anuncios **no** se ven afectados intencionalmente: mensajes de error, comentarios sobre favoritos (añadido / ya en la lista), resultados de reconocimiento de música y notificaciones de actualización.
+Puedes añadir un feed de podcast de dos maneras:
 
-La configuración se puede alternar desde el Menú NVDA → Preferencias → Opciones → FreeRadio, o instantáneamente en cualquier momento mediante un gesto de entrada no asignado (asignar uno desde el Menú NVDA → Preferencias → Gestos de Entrada → FreeRadio). Cuando está habilitado, NVDA anuncia una vez "Notificaciones silenciadas" o "Notificaciones reactivadas" para confirmar el cambio.
+**Por URL:**
+- En el campo **"O ingrese la URL del podcast"**, pegue la URL completa del feed RSS o Atom (por ejemplo `https://example.com/feed.xml`).
+- Pulse Intro o haga clic en el botón **Añadir Feed**.
+- FreeRadio busca el feed, lo valida y lo añade a tus suscripciones. Si el feed es válido, escuchará una confirmación con el título del feed. Si falla, un mensaje de error explica el motivo.
 
-## Anunciar automáticamente los cambios de pista
+**Por búsqueda:**
+- En el campo **Buscar**, escriba una palabra clave (título del podcast, tema o nombre del host) y pulse Intro.
+- FreeRadio busca en el directorio de podcasts de iTunes y muestra los podcasts coincidentes en la lista **Resultados de la búsqueda**.
+- Al seleccionar un resultado, se obtiene ese feed en segundo plano y se enumeran sus episodios en la lista **Episodios en resultado seleccionado** justo debajo, para que pueda obtener una vista previa de lo que realmente contiene el programa antes de decidir suscribirse — consulta la sección [Vista previa de Episodios Antes de Suscribirse](#previewing-episodes-before-subscribing) más abajo.
+- Una vez que esté satisfecho con lo que ve, seleccione el resultado y pulse `Intro`, o abra su menú contextual (tecla Aplicaciones / `Shift+F10`, o haga clic con el botón derecho) y elija **Suscríbete**, para añadirlo a sus suscripciones. El feed se añade  inmediatamente y aparece en su lista de suscripciones. No hay un botón separado para  "Añadir seleccionado desde la búsqueda" — `Intro` o el menú contextual es la única forma de suscribirse desde los resultados de la búsqueda, manteniendo la interfaz limpia y accesible.
 
-Cuando la opción **Anunciar automáticamente los cambios de pista** se activa en las Opciones, FreeRadio comprueba el flujo de metadatos ICY de la estación activa en segundo plano aproximadamente cada 5 segundos. Cuando cambia la pista, NVDA lee automáticamente el nuevo título; no es necesario pulsar ninguna tecla.
+> **Consejo:** También puedes escribir la URL de un feed directamente en el campo de búsqueda — si parece una URL válida, el complemento intentará añadirla como un feed sin buscar.
 
-Al cambiar a una nueva emisora, la información de la primera pista se anuncia tan pronto como se establece la conexión. Si cambia a una estación que no transmite metadatos ICY, el sistema permanece en silencio y la información de la pista de la estación anterior no se repite.
+**Menú contextual para resultados de búsqueda:** Haga clic derecho en un resultado de búsqueda, o selecciónelo y pulse la tecla Aplicaciones / `Shift+F10`, para abrir un menú con una única acción **Suscríbete**, idéntico al de pulsar `Intro` en el resultado.
 
-Esta función está desactivada de forma predeterminada y se puede alternar desde el Menú NVDA → Preferencias → Opciones → FreeRadio.
+### Vista previa de Episodios Antes de Suscribirse
+
+Antes de comprometerte con una suscripción, puedes escuchar los episodios de un podcast directamente desde los resultados de la búsqueda. Siempre que seleccione un podcast en la lista **Resultados de la búsqueda**, FreeRadio recupera ese feed y muestra sus episodios (título y fecha de publicación) en la lista **Episodios en resultado seleccionado** que se encuentra debajo.
+
+- Seleccione un episodio en esa lista de vista previa y pulse `Intro`, o abra su menú contextual (tecla Aplicaciones / `Shift+F10`, o haga clic derecho) y elija **Vista previa**, para comenzar a reproducirlo a través del reproductor normal. Todos los controles de reproducción habituales (pausar, volumen, desplazamiento temporal, etc.) funcionan exactamente como lo harían en cualquier otra estación o episodio.
+- Mientras se obtiene la vista previa de un episodio, el mismo menú contextual muestra **Detener vista previa** en lugar de **Vista previa** — selecciónelo o pulse `Intro` nuevamente en ese episodio para detenerlo.
+- La vista previa no te suscribe a nada; es puramente para escuchar antes de decidir. La lista de vista previa en sí es temporal — se reemplaza tan pronto como selecciona un resultado de búsqueda diferente y no persiste en ningún lugar como lo hacen sus suscripciones reales.
+
+### Administrar Suscripciones
+
+Una vez que haya añadido algunos feeds, aparecerán en la lista **Suscripciones**. Cada entrada muestra el título del feed y la cantidad de episodios disponibles.
+
+- **Seleccione un feed** para ver sus episodios en la lista inferior. El cuadro de texto de solo lectura **Detalles del feed** debajo de la lista de suscripciones muestra el título del feed, el autor, la descripción, el recuento de episodios y la URL.
+- **Actualizar un feed** — selecciónelo y pulse el botón **Actualizar Feed** (disponible a través del menú contextual, ver más abajo) para obtener los últimos episodios. Todos los feeds también se actualizan automáticamente en segundo plano cuando abres la pestaña Podcasts, por lo que normalmente ves los episodios más recientes sin intervención manual.
+- **Eliminar un feed** — selecciónelo y pulse `Suprimir` o use el menú contextual para eliminarlo de sus suscripciones. Se le pedirá confirmación antes de la eliminación.
+
+**Menú contextual para feeds:** Haga clic con el botón derecho en un feed o selecciónelo y pulse la tecla Aplicaciones / `Shift+F10`, para abrir un menú con:
+- **Actualizar Feed** — busca nuevos episodios ahora.
+- **Eliminar Feed** — elimina la suscripción.
+- **Copiar URL del feed** — copia la URL del feed al portapapeles.
+
+### Explorar y Reproducir Episodios
+
+Seleccione un feed en la lista de suscripciones; sus episodios aparecen en la lista **Episodios** debajo. Cada episodio muestra:
+- Su número de episodio (1 = el episodio más antiguo del feed, contando hasta el más nuevo).
+- Su fecha de publicación (si está disponible).
+- Su título.
+- Un prefijo **"Escuchado"** si el episodio se ha reproducido por completo.
+- Un sufijo de duración, ya sea la duración total (si nunca se jugó) o el progreso transcurrido/total (si se jugó parcialmente).
+
+**Reproducción:**
+- Seleccione un episodio y pulse `Intro` o `Espacio` para comenzar a reproducirlo. Si un episodio se reprodujo parcialmente antes, se reanuda desde donde lo dejó.
+- La fila *no* se actualiza mientras se reproduce el episodio —esto es intencional, por lo que NVDA no vuelve a anunciar repetidamente la fila mientras estás sentado en ella. Su indicador "Escuchado" y su duración se actualizan inmediatamente en el momento en que pausas el episodio o termina de reproducirse, por lo que la visualización siempre es precisa justo cuando importa; simplemente no avanza segundo a segundo durante la reproducción.
+- Utilice `F3` / `F4` en la pestaña Podcasts para saltar al episodio anterior/siguiente y reproducirlo inmediatamente. También puedes usar `←` / `→` mientras la lista de episodios está enfocada, o `Ctrl+←` / `Ctrl+→` en cualquier lugar de la pestaña Podcasts — ambos funcionan de manera idéntica.
+- Utilice `Shift+F3` / `Shift+F4` para moverse entre feeds  sin reproducir episodios.
+- Pulse `Espacio` mientras se reproduce un episodio para pausar o reanudar la reproducción.
+
+**Reanudación de la reproducción:** FreeRadio guarda tu posición en cada episodio del podcast automáticamente — inmediatamente cada vez que haces una pausa o finaliza el episodio, y cada 15 segundos en segundo plano mientras sigues escuchando, por lo que un bloqueo o un reinicio inesperado no perderá mucho progreso. Si detiene o pausa la reproducción y regresa más tarde, el episodio se reanuda desde la posición guardada. Si reproduce el episodio hasta el final (dentro de los últimos 3 segundos), se marca como "Escuchado" y no se reanudará — la próxima vez comienza desde el principio y el prefijo "Escuchado" aparece en la lista.
+
+**Menú contextual para episodios:** Haga clic con el botón derecho en un episodio o selecciónelo y pulse la tecla Aplicaciones / `Shift+F10`, para abrir un menú con:
+- **Reproducir episodio** — inicia la reproducción.
+- **Descargar episodio** — descarga el archivo del episodio a tu carpeta de grabaciones.
+- **Copiar URL del episodio** — copia la URL del audio directo al portapapeles.
+
+### Descargando Episodios
+
+Seleccione un episodio y haga clic en el botón **Descargar episodio** (o use el menú contextual). El episodio se descarga a su carpeta de grabaciones (`Documentos\FreeRadio Recordings\` por defecto). El nombre del archivo se basa en el título del episodio y la extensión del archivo detectado (`.mp3`, `.m4a`, `.ogg`, etc.). NVDA anuncia cuándo comienza y finaliza la descarga. Si el archivo ya existe, se le informa y se omite la descarga.
+
+### Filtrado de Episodios
+
+Encima de la lista de episodios hay un campo  **Filtrar**. A medida que escribe, la lista de episodios se filtra en tiempo real para mostrar episodios cuyo título contiene el texto escrito, o cuyo número de episodio coincide exactamente con él — por lo que al escribir  `47` salta directamente al episodio 47 incluso si "47" no aparece en ninguna parte de su título. NVDA anuncia el número de episodios coincidentes después de cada cambio. Pulse la flecha `Abajo` desde el campo Filtrar para mover el foco directamente a la lista filtrada.
+
+### Detalles de Reproducción del Podcast
+
+Los episodios de podcast se reproducen utilizando el **BASS backend** (el mismo motor que se utiliza para los flujos de radio). Debido a que los episodios se descargan progresivamente y se pueden buscar, puedes usar los atajos del desplazamiento temporal: rebobinar/avanzar (`Ctrl+Win+J`/`Ctrl+Win+K`) mientras reproduce un podcast para retroceder o avanzar **5 segundos** a la vez (en lugar  de rebobinar 15 segundos que se usa para la radio en directo). La posición se guarda automáticamente para que puedas retomarla más tarde.
+
+Si el BASS backend está deshabilitado (o falla), La reproducción de podcast vuelve a la misma cadena de reproductores externos (VLC → PotPlayer → WMP) utilizados para la radio, pero **la función de búsqueda y reanudación no funcionará** en ese caso — el episodio se reproducirá desde el principio cada vez. Para disfrutar de una experiencia de podcast completa, mantenga el BASS backend habilitado.
+
+### Almacenamiento de Datos del Podcast
+
+Tus suscripciones se almacenan en `freeradio_podcasts.json` en la carpeta de configuración de usuario de NVDA. Las posiciones de los episodios se almacenan por separado en `podcast_positions.json` en la misma ubicación. Ambos archivos son JSON simples y se puede realizar una copia de seguridad o transferirlos a otra computadora.
 
 ## Canciones favoritas
 
@@ -399,14 +449,66 @@ FreeRadio usa [lrclib.net](https://lrclib.net) para obtener letras — una base 
 
 Cuando hay letras en texto plano disponibles, se muestran tal cual. Cuando solo hay letras LRC sincronizadas por tiempo, se eliminan las marcas de tiempo y se muestra el texto plano. Las pistas instrumentales se reportan como no encontradas.
 
+## Opciones
+
+Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencias → Opciones → FreeRadio:
+
+| Opción | Descripción |
+|---|---|
+| Dispositivo de salida de audio (BASS backend) | Establece el dispositivo de salida de audio para la reproducción de la radio. La lista incluye todos los dispositivos del sistema BASS-compatible más una opción "valor predeterminado del sistema". Los cambios se aplican inmediatamente después de guardarlos; Si el dispositivo seleccionado se desconecta, el complemento vuelve automáticamente al valor predeterminado del sistema y anuncia el cambio. Activo solo cuando se utiliza el BASS backend. |
+| Modo de actualización del dispositivo de audio  (BASS backend) | Controla cómo FreeRadio actualiza los números de dispositivos de salida de BASS. El modo **Confiable** (predeterminado) analiza los dispositivos en vivo y rastrea los cambios de Bluetooth/USB con mayor precisión, pero puede hacer que los cambios del dispositivo sean un poco más lentos. El modo **Rápido** utiliza la lista actual de dispositivos de BASS y es más rápido, pero los números de dispositivos pueden permanecer obsoletos hasta que se reinicie el BASS o NVDA. |
+| Volumen | Establece el volumen cuando se inicia el complemento (0–200). Los cambios realizados durante la reproducción con `Ctrl+Win+↑` / `Ctrl+Win+↓` también se reflejan aquí. |
+| Efecto de audio predeterminado | Establece el efecto de audio aplicado cuando se inicia NVDA o una estación comienza a reproducirse. El efecto seleccionado corresponde a la lista de efectos en el navegador de estaciones. Activo solo cuando se utiliza el BASS backend. |
+| Ganancia de EQ (Bass / Treble / Vocal) | Establece el nivel de ganancia en dB para cada banda de EQ (−15 a +15). Estos valores se aplican cuando el efecto EQ correspondiente está activo y se guardan globalmente. Las reemplazos por estación se pueden almacenar utilizando el botón **Guardar perfil de audio** en la pestaña Favoritos. Activo solo cuando se utiliza el BASS backend. |
+| Transición de cambio de estación(BASS backend) | Controla el comportamiento de transición al conmutar entre las estaciones. **Corte instantáneo** (por defecto) detiene la estación anterior justo antes de que comience la nueva. **Fundido encadenado corto (1 segundo)** y **Fundido encadenado normal (2 segundos)** inicia inmediatamente la nueva estación sin interrupción, luego desaparece gradualmente la estación anterior en segundo plano una vez confirmado el nuevo flujo activo. **Efecto de sonido de sintonización de estación** detiene la estación anterior inmediatamente y reproduce un efecto de sonido de sintonizador de estación antes de que comience la nueva. No tiene ningún efecto ni impacto en el rendimiento cuando se establece en Corte instantáneo. Solo disponible cuando el BASS backend está en uso. |
+| Reanudar la última estación al iniciar NVDA | Cuando está habilitado, la última estación escuchada se reinicia automáticamente cada vez que se inicia NVDA. |
+| Anunciar automáticamente los cambios de pista (metadatos ICY) | Cuando está habilitado, NVDA lee automáticamente el nombre de la nueva pista cada vez que cambia en una estación que transmite metadatos ICY. La primera canción también se anuncia inmediatamente al cambiar a una nueva estación. Deshabilitado por defecto. |
+| Silenciar notificaciones | Cuando está habilitado, NVDA no anuncia cambios de estación, cambios de estado de reproducción (reproducir, pausar, detener) o eventos de grabación (iniciado, detenido, terminado). Mensajes de error, comentarios sobre favoritos, resultados de reconocimiento de música y notificaciones de las actualizaciones no se ven afectadas. También se puede activar sobre la marcha mediante un gesto de entrada no asignado. Deshabilitado por defecto. |
+| Mensajes braille | Cuando está habilitado, FreeRadio también envía sus notificaciones directamente a la pantalla braille. Esto es útil para títulos de pistas, cambios de estación, estado de reproducción y cambios de volumen. Deshabilitado por defecto. |
+| Activar búfer de desplazamiento temporal (rebobinar radio en directo, ~10 minutos) | Activa o desactiva los controles de rebobinado `Ctrl+Win+J`/`Ctrl+Win+K`) y aumenta la captura en segundo plano de ~45 segundos a ~10 minutos. Una pequeña captura en segundo plano de la emisora ​​en reproducción siempre se ejecuta, incluso cuando está deshabilitada — consulta la nota en la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación. También se puede alternar al instante con `Ctrl+Win+T`. Requiere el BASS backend. Deshabilitado por defecto — consulta la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación para obtener más detalles. |
+| Guardar las canciones favoritas en un archivo de texto | Cuando está habilitado, la información de la pista se copia al portapapeles pulsando `Ctrl+Win+I` tres veces y también se añade a `Documentos\FreeRadio Recordings\likedSongs.txt`. Si no hay metadatos ICY disponibles, el resultado del reconocimiento de Shazam se guarda en el mismo archivo. Deshabilitado por defecto. |
+| Cuando Ctrl+Win+P se pulsa sin reproducción activa | Determina qué sucede cuando se pulsa este atajo y no hay nada  en reproducción: iniciar la última estación o abrir la lista de favoritos. |
+| Cuando Ctrl+Win+P se pulsa dos veces | Selecciona lo que sucede cuando se pulsa el atajo dos veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir la pestaña de grabación o abrir la pestaña del temporizador. Cuando "No hacer nada" es seleccionado, la primera pulsación responde instantáneamente sin demora. |
+| Cuando Ctrl+Win+P se pulsa tres veces | Selecciona lo que sucede cuando se pulsa el atajo tres veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir búsqueda de emisoras, abrir la pestaña de grabación o abrir la pestaña del temporizador. |
+| Buscar actualizaciones automáticamente al iniciar | Cuando está habilitado, una verificación de actualización en segundo plano se ejecuta cada vez que se inicia NVDA; se le notificará si se encuentra una nueva versión. Cuando está deshabilitado, los controles automáticos se detienen pero los controles manuales permanecen disponibles. |
+| Ruta ffmpeg.exe | Ruta de acceso al ffmpeg.exe usado para el reconocimiento de música. Si se deja vacío, un ffmpeg.exe en la carpeta del complementos se usa automáticamente. |
+| Ruta VLC | Si VLC no está instalado o se encuentra en una ubicación no estándar, aquí se puede ingresar la ruta completa al ejecutable. |
+| Ruta wmplayer.exe | Ingrese la ruta a Windows Media Player aquí si es necesario. |
+| Ruta PotPlayer | Si PotPlayer se encuentra en una ubicación no estándar, su ruta se puede ingresar aquí. |
+| Carpeta de grabaciones | Establece la carpeta donde se guardan los archivos grabados. Si se deja en blanco, la ubicación predeterminada `Documentos\FreeRadio Recordings\` se utiliza. Un botón Explorar carpeta le permite seleccionar la carpeta de forma interactiva. Los cambios entran en vigor inmediatamente después de guardarlos. |
+| Desactivar la verificación de conectividad a Internet antes de reproducir | Recomendado para usuarios que experimentan un retraso antes de que una estación comience a reproducirse. También es útil cuando el DNS está bloqueado. |
+
+## Silenciar Notificaciones
+
+Cuando **Silenciar notificaciones** está habilitado en las Opciones, NVDA silencia los siguientes anuncios automáticos:
+
+- Nombre de la estación cuando comienza a reproducirse una nueva estación
+- Cambios de estado de reproducción: reproducir, pausar, detener
+- Eventos de grabación: iniciado, detenido, terminado (grabaciones instantáneas, de canciones y programadas)
+- Anuncios de cambio de pista ICY, incluso cuando **Anunciar automáticamente los cambios de pista**   también está habilitado
+
+Los siguientes anuncios **no** se ven afectados intencionalmente: mensajes de error, comentarios sobre favoritos (añadido / ya en la lista), resultados de reconocimiento de música y notificaciones de actualización.
+
+La configuración se puede alternar desde el Menú NVDA → Preferencias → Opciones → FreeRadio, o instantáneamente en cualquier momento mediante un gesto de entrada no asignado (asignar uno desde el Menú NVDA → Preferencias → Gestos de Entrada → FreeRadio). Cuando está habilitado, NVDA anuncia una vez "Notificaciones silenciadas" o "Notificaciones reactivadas" para confirmar el cambio.
+
+## Anunciar automáticamente los cambios de pista
+
+Cuando la opción **Anunciar automáticamente los cambios de pista** se activa en las Opciones, FreeRadio comprueba el flujo de metadatos ICY de la estación activa en segundo plano aproximadamente cada 5 segundos. Cuando cambia la pista, NVDA lee automáticamente el nuevo título; no es necesario pulsar ninguna tecla.
+
+Al cambiar a una nueva emisora, la información de la primera pista se anuncia tan pronto como se establece la conexión. Si cambia a una estación que no transmite metadatos ICY, el sistema permanece en silencio y la información de la pista de la estación anterior no se repite.
+
+Esta función está desactivada de forma predeterminada y se puede alternar desde el Menú NVDA → Preferencias → Opciones → FreeRadio.
+
 ## Reproducción
 
 El complemento selecciona un backend de reproducción usando el siguiente orden de prioridad:
 
-1. **BASS** — el backend predeterminado y principal. No se requiere instalación por separado; viene incluido con el complemento. BASS envía el audio directamente a la pila de audio de Windows y aparece en el mezclador de volumen de Windows como una fuente de audio independiente llamada "pythonw.exe", separada de NVDA. Esto significa que el audio de FreeRadio circula en un canal completamente separado del habla de NVDA: la radio no se corta, no se mezcla ni se ve afectada por la propia configuración de audio de NVDA mientras NVDA está hablando. El usuario puede ajustar el volumen de la radio independientemente de NVDA en el Mezclador de volumen de Windows. Admite HTTP, HTTPS y la mayoría de los formatos de flujo integrados. La puesta en espejo  de audio solo está disponible con este backend.
+1. **BASS** — el backend predeterminado y principal. No se requiere instalación por separado; viene incluido con el complemento. BASS envía el audio directamente a la pila de audio de Windows y aparece en el mezclador de volumen de Windows como una fuente de audio independiente llamada "pythonw.exe", separada de NVDA. Esto significa que el audio de FreeRadio circula en un canal completamente separado del habla de NVDA: la radio no se corta, no se mezcla ni se ve afectada por la propia configuración de audio de NVDA mientras NVDA está hablando. El usuario puede ajustar el volumen de la radio independientemente de NVDA en el Mezclador de volumen de Windows. Admite HTTP, HTTPS y la mayoría de los formatos de flujo integrados. La puesta en espejo  de audio y la búsqueda/reanudación de podcasts solo están disponibles  con este backend.
 2. **VLC** — se hace cargo si el BASS falla. Se busca automáticamente en ubicaciones de instalación comunes, carpetas de perfil de usuario y la RUTA del sistema.
 3. **PotPlayer** — probado si no se encuentra VLC. Se busca automáticamente en ubicaciones de instalación comunes.
 4. **Windows Media Player** — utilizado como último recurso; requiere que el componente WMP esté instalado en el sistema.
+
+Los episodios de podcast siempre se reproducen a través de BASS si están disponibles, porque el BASS puede abrir el flujo  como un archivo buscable (incluso durante la descarga) y permite un seguimiento y reanudación precisos de la posición. Si el BASS está desactivado, los podcasts vuelven a la cadena de reproductores externos, pero la búsqueda y la reanudación no funcionarán.
 
 ## Comprobación de Actualización
 

@@ -64,6 +64,40 @@ msgid "Recognition failed: %s"
 msgstr ""
 
 #: addon/globalPlugins/freeradio/__init__.py:633
+msgid "Select the main FreeRadio output device"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:644
+msgid ""
+"Audio device selection requires BASS backend. Enable it in FreeRadio "
+"settings."
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:669
+msgid ""
+"Only one physical audio output device is available. FreeRadio uses the "
+"system default output."
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:700
+msgid "Select the main output device:"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:701
+msgid "FreeRadio Output Device"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:725
+#, python-format
+msgid "Could not switch to output device: %s"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:761
+#, python-format
+msgid "Output device: %s"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/__init__.py:633
 msgid "Mirror audio to an additional output device"
 msgstr ""
 

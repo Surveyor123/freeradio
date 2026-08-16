@@ -4,6 +4,7 @@
 import collections
 import logging
 import os
+import subprocess
 import tempfile
 import threading
 import time
@@ -102,6 +103,10 @@ class TimeShiftBuffer:
 		# _VIDEO_FALLBACK_CAP_SECONDS) since such a buffer can be far
 		# larger per second of audio than a normal one.
 		self._hls_is_video = False
+		self._ffmpeg_proc = None  # Popen handle when a video-inclusive HLS
+		                          # station's audio is being extracted via
+		                          # ffmpeg (see _run_hls_via_ffmpeg) — kept
+		                          # here so stop() can terminate it promptly.
 
 	# -- Public API ---------------------------------------------------------
 
@@ -131,6 +136,7 @@ class TimeShiftBuffer:
 		self._icy_meta_remaining = 0
 		self._disk_full_notified = False
 		self._hls_is_video = False
+		self._ffmpeg_proc = None
 
 		try:
 			fd, path = tempfile.mkstemp(prefix="freeradio_timeshift_", suffix=".buf", dir=self._tmp_dir)
@@ -151,6 +157,12 @@ class TimeShiftBuffer:
 	def stop(self):
 		"""Stop capturing and remove the buffer file."""
 		self._stop_event.set()
+		proc = self._ffmpeg_proc
+		if proc:
+			try:
+				proc.kill()
+			except Exception:
+				pass
 		thread = self._thread
 		if thread and thread.is_alive():
 			thread.join(timeout=5)
@@ -650,6 +662,126 @@ class TimeShiftBuffer:
 			except Exception:
 				pass
 
+	def _run_hls_ffmpeg_audio_once(self, my_gen, manifest_url):
+		"""Single connection attempt: have ffmpeg demux *manifest_url* and
+		hand back only the audio track (no video decoding involved on
+		either side), and append that to the buffer file exactly like a
+		plain HTTP/Icecast capture does. Used when an HLS master playlist
+		offers no audio-only rendition (see _run_hls) — BASS cannot seek a
+		muxed video+audio file, so this keeps time-shift working for TV
+		simulcasts by never storing the video in the first place.
+		"""
+		ffmpeg_path = _recorder_mod._default_ffmpeg_path(os.path.dirname(os.path.abspath(__file__)))
+		# Any fMP4 init-segment prefix reserved by a prior (now-abandoned)
+		# raw-HLS attempt on this same buffer file doesn't apply to
+		# ffmpeg's plain ADTS output - clear it so trimming doesn't try to
+		# protect bytes that no longer mean anything.
+		with self._file_lock:
+			self._reserved_prefix_len = 0
+		cmd = [
+			ffmpeg_path, "-hide_banner", "-loglevel", "error",
+			"-user_agent", _recorder_mod._USER_AGENT,
+			"-i", manifest_url,
+			"-vn", "-acodec", "copy", "-f", "adts", "-",
+		]
+		try:
+			proc = subprocess.Popen(
+				cmd,
+				stdin=subprocess.DEVNULL,
+				stdout=subprocess.PIPE,
+				stderr=subprocess.DEVNULL,
+				creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+			)
+		except FileNotFoundError:
+			# ffmpeg isn't installed/configured — nothing more we can do for
+			# this station; caller falls back to marking it unsupported.
+			raise
+		except Exception as e:
+			log.info("FreeRadio TimeShift: ffmpeg launch failed: %s", e)
+			raise
+
+		self._ffmpeg_proc = proc
+		_debug_log("ffmpeg audio-extraction capture started for %s" % manifest_url)
+		self._capture_leg_start = time.time()
+
+		last_trim_check = time.time()
+		chunk_count = 0
+		try:
+			while not self._stop_event.is_set() and not self._is_stale(my_gen):
+				try:
+					chunk = proc.stdout.read(_CHUNK)
+				except Exception as e:
+					log.info("FreeRadio TimeShift: ffmpeg read failed after %d chunk(s): %s",
+							 chunk_count, e)
+					raise
+				if not chunk:
+					# ffmpeg exited (stream ended, or a transient error) —
+					# let the reconnect wrapper relaunch it.
+					log.info("FreeRadio TimeShift: ffmpeg audio capture ended "
+							 "after %d chunk(s)", chunk_count)
+					return
+
+				chunk_count += 1
+				self._write_chunk(chunk, my_gen)
+
+				now = time.time()
+				if now - last_trim_check >= self._TRIM_CHECK_INTERVAL:
+					last_trim_check = now
+					if not self._suspend_trim:
+						self._maybe_trim(my_gen)
+		finally:
+			if self._capture_leg_start:
+				self._capture_accum_seconds += time.time() - self._capture_leg_start
+				self._capture_leg_start = None
+			try:
+				proc.kill()
+			except Exception:
+				pass
+			try:
+				proc.stdout.close()
+			except Exception:
+				pass
+			if self._ffmpeg_proc is proc:
+				self._ffmpeg_proc = None
+
+	def _run_hls_via_ffmpeg(self, my_gen, manifest_url):
+		"""Reconnect wrapper around _run_hls_ffmpeg_audio_once(), mirroring
+		_run()'s backoff loop for the plain (non-HLS) capture path. From
+		this point on the buffer behaves exactly like a normal byte-rate
+		stream (see the _is_hls=False flip in _run_hls right before this is
+		called) — trimming, buffered_seconds(), etc. all use the same math
+		as any other station, only the bytes are coming from ffmpeg instead
+		of a socket.
+		"""
+		fail_streak = 0
+		backoff = 2
+		max_backoff = 30
+		try:
+			while not self._stop_event.is_set() and not self._is_stale(my_gen):
+				try:
+					self._run_hls_ffmpeg_audio_once(my_gen, manifest_url)
+					fail_streak = 0
+					backoff = 2
+				except FileNotFoundError:
+					log.info("FreeRadio TimeShift: ffmpeg not found/configured — "
+							 "time-shift not available for this station")
+					self._hls_skipped = True
+					return
+				except Exception as e:
+					_debug_log("ffmpeg capture loop failed for %s: %r" % (manifest_url, e))
+					fail_streak += 1
+
+				if self._stop_event.is_set() or self._is_stale(my_gen):
+					return
+
+				wait = min(backoff, max_backoff)
+				backoff = min(backoff * 2, max_backoff)
+				if self._stop_event.wait(wait) or self._is_stale(my_gen):
+					return
+		finally:
+			if not self._is_stale(my_gen):
+				self._close_file_handle()
+
 	def _run_hls(self, my_gen):
 		"""Capture loop for HLS (.m3u8) stations."""
 		import re as _re
@@ -729,10 +861,31 @@ class TimeShiftBuffer:
 				else:
 					chosen_manifest = None
 				if chosen_manifest and chosen_manifest != manifest_url:
-					self._hls_is_video = is_video_choice
+					if is_video_choice:
+						# No audio-only rendition exists (this is a TV
+						# simulcast or similar) — BASS is an audio-only
+						# library and cannot seek within a muxed video+audio
+						# stream (confirmed in practice: BASS_ChannelSetPosition
+						# fails with BASS_ERROR_NOTAVAIL on these). Try
+						# extracting just the audio via ffmpeg instead of
+						# capturing the video too — if that isn't available,
+						# fall back to skipping time-shift for this station.
+						log.info(
+							"FreeRadio TimeShift: HLS %s has no audio-only rendition "
+							"(video-inclusive only, bw=%d) — extracting audio via "
+							"ffmpeg", manifest_url, best_bw,
+						)
+						# From here on this buffer behaves like a plain
+						# byte-rate stream (ffmpeg's stdout), not a
+						# segmented HLS one — _maybe_trim()/buffered_seconds()
+						# branch on _is_hls, so this must flip before capture
+						# starts or they'd wrongly use the segment-duration
+						# accounting that ffmpeg's output never populates.
+						self._is_hls = False
+						self._run_hls_via_ffmpeg(my_gen, chosen_manifest)
+						return
 					log.info(
-						"FreeRadio TimeShift: HLS -> %s sub-manifest (bw=%d): %s",
-						"audio-only" if not is_video_choice else "highest-bandwidth (includes video)",
+						"FreeRadio TimeShift: HLS -> audio-only sub-manifest (bw=%d): %s",
 						chosen_bw, chosen_manifest,
 					)
 					manifest_url = chosen_manifest
@@ -799,6 +952,33 @@ class TimeShiftBuffer:
 
 					if self._is_stale(my_gen):
 						return
+
+					# Video detection at the master-playlist level (above)
+					# only works when the given URL actually *is* a master
+					# with multiple STREAM-INF variants to choose between.
+					# Some stations (e.g. Halk TV) hand out a URL that's
+					# already a single, specific-quality media playlist —
+					# there's nothing to choose between, so that check never
+					# runs, and a video-inclusive stream would otherwise be
+					# captured as if it were plain audio. Catch that here
+					# instead, from the very first segment's implied
+					# bitrate: no legitimate audio-only stream runs anywhere
+					# near this rate, so seeing it this early is a reliable
+					# sign the segments contain video too.
+					_VIDEO_BITRATE_THRESHOLD_BPS = 60000  # ~480 kbps
+					if not first_segment_written and seg_duration > 0:
+						implied_bps = len(data) / seg_duration
+						if implied_bps > _VIDEO_BITRATE_THRESHOLD_BPS:
+							log.info(
+								"FreeRadio TimeShift: HLS %s segments imply ~%.0f kbps — "
+								"too high to be audio-only, must include video — "
+								"extracting audio via ffmpeg instead", manifest_url,
+								implied_bps * 8 / 1000,
+							)
+							self._is_hls = False
+							self._run_hls_via_ffmpeg(my_gen, manifest_url)
+							return
+
 					self._write_chunk(data, my_gen)
 					first_segment_written = True
 					chunk_count += 1

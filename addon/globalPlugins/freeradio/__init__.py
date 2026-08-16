@@ -1110,7 +1110,7 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 				"bass_disabled":   _("Time-shift requires the BASS audio backend, which is currently disabled."),
 				"feature_disabled": _("Time-shift buffer is disabled. Enable it in FreeRadio settings."),
 				"wrong_backend":   _("Time-shift is not available for the current playback backend."),
-				"hls_unsupported": _("Time-shift could not read this station's stream playlist."),
+				"hls_unsupported": _("Time-shift is not supported for this station's stream (no seekable audio could be extracted)."),
 				"no_buffer_yet":   _("Not enough buffered audio to rewind yet. Wait a few seconds after the station starts playing and try again."),
 				"no_buffer_file":  _("Time-shift buffer file is not ready yet."),
 				"engine_error":    _("Could not switch to time-shifted playback."),

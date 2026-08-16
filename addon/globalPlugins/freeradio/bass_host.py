@@ -1224,9 +1224,12 @@ class BassHost:
             try:
                 pos_bytes = self._dll.BASS_ChannelSeconds2Bytes(
                     stream, ctypes.c_double(start_seconds))
-                self._dll.BASS_ChannelSetPosition(stream, pos_bytes, _BASS_POS_BYTE)
-            except Exception:
-                pass
+                if not self._dll.BASS_ChannelSetPosition(stream, pos_bytes, _BASS_POS_BYTE):
+                    err = self._dll.BASS_ErrorGetCode()
+                    _debug_log("play_timeshift_file: initial BASS_ChannelSetPosition "
+                               "failed, err=%d (started from position 0 instead)" % err)
+            except Exception as e:
+                _debug_log("play_timeshift_file: initial seek exception: %s" % e)
 
         if not self._dll.BASS_ChannelPlay(stream, 0):
             err = self._dll.BASS_ErrorGetCode()
@@ -1283,7 +1286,9 @@ class BassHost:
                     length_secs = 0.0
                 return True, new_pos, length_secs
             else:
-                _debug_log("timeshift_seek: BASS_ChannelSetPosition failed")
+                err = dll.BASS_ErrorGetCode()
+                _debug_log("timeshift_seek: BASS_ChannelSetPosition failed, err=%d "
+                           "(target=%.2fs, was at %.2fs)" % (err, new_pos, pos_secs))
                 return False, pos_secs, 0.0
         except Exception as e:
             _debug_log("timeshift_seek exception: %s" % e)

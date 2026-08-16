@@ -377,6 +377,12 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 			_("Recording conversion failed. The original file was kept: %s")
 			% os.path.basename(path or ""),
 		)
+		self._recorder._notify_folder_fallback = lambda rec, requested, reason: wx.CallAfter(
+			_notify,
+			_("Could not use the selected folder for '%(station)s' (%(reason)s). "
+			  "Saved to the default recordings folder instead.")
+			% {"station": rec.station.get("name", ""), "reason": reason},
+		)
 		self._stations      = []
 		self._current_index = -1
 		self._dialog        = None

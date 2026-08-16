@@ -13,6 +13,7 @@ import ssl
 import subprocess
 import threading
 import urllib.request
+import uuid
 
 log = logging.getLogger(__name__)
 
@@ -72,11 +73,46 @@ def _safe_filename(name):
 	return name.strip()
 
 
-def _make_output_path(station_name, ext="mp3"):
+def _make_output_path(station_name, ext="mp3", folder=None):
 	ts    = datetime.datetime.now().strftime("%Y-%m-%d %H-%M")
 	name  = _safe_filename(station_name)
 	fname = f"{name} - {ts}.{ext}"
-	return os.path.join(_recordings_dir(), fname)
+	return os.path.join(folder or _recordings_dir(), fname)
+
+
+def _resolve_output_folder(custom_folder):
+	"""Resolve the folder a scheduled recording should be written to.
+
+	Returns (folder_path, fallback_reason). fallback_reason is None when
+	*custom_folder* is empty/unset (global default used, as before) or was
+	used successfully as-is. When the requested folder cannot be created or
+	written to, the global default is returned instead and fallback_reason
+	holds a short, user-facing explanation so the caller can notify the
+	user that their chosen folder was not used for this recording.
+	"""
+	custom_folder = (custom_folder or "").strip()
+	if not custom_folder:
+		return _recordings_dir(), None
+	try:
+		os.makedirs(custom_folder, exist_ok=True)
+		# os.makedirs succeeding doesn't guarantee the folder is writable
+		# (e.g. a read-only network share) — verify with an actual write.
+		# The probe name must be unique per call: multiple scheduled
+		# recordings can resolve the same folder at the same moment (e.g.
+		# several entries firing together), and a fixed filename would have
+		# one thread's write collide with another's on Windows.
+		probe = os.path.join(custom_folder, ".freeradio_write_test_%s" % uuid.uuid4().hex)
+		with open(probe, "w") as f:
+			f.write("")
+		os.remove(probe)
+		return custom_folder, None
+	except Exception as e:
+		log.warning(
+			"FreeRadio Recorder: configured folder '%s' is unavailable (%s); "
+			"falling back to the default recordings folder",
+			custom_folder, e,
+		)
+		return _recordings_dir(), str(e)
 
 
 _RECORDING_FORMATS = ("original", "audio_only", "mp3")
@@ -777,7 +813,8 @@ class ScheduledRecording:
 	def __init__(self, station, start_time, duration_minutes,
 	             player_paths=None, record_only=False,
 	             recurrence="once", active_days=None,
-	             max_occurrences=0, occurrences_done=0):
+	             max_occurrences=0, occurrences_done=0,
+	             output_folder=None):
 		self.station           = station
 		self.start_time        = start_time
 		self.duration_minutes  = duration_minutes
@@ -785,6 +822,9 @@ class ScheduledRecording:
 		self.record_only       = record_only
 		self.fired             = False
 		self.output_path       = None
+		# Per-entry destination folder. Empty string/None means "use the
+		# global default recordings folder" (config.conf["freeradio"]["recordings_dir"]).
+		self.output_folder     = (output_folder or "").strip()
 		# Recurrence fields
 		self.recurrence        = recurrence       # "once" | "weekly" | "indefinite"
 		self.active_days       = active_days or []  # [] means all days
@@ -895,6 +935,8 @@ def _save_schedules(schedules):
 				"active_days":       rec.active_days,
 				"max_occurrences":   rec.max_occurrences,
 				"occurrences_done":  rec.occurrences_done,
+				# Absent in legacy files → "" on load, meaning "use default".
+				"output_folder":     rec.output_folder,
 			})
 		except Exception as e:
 			log.warning("FreeRadio Recorder: could not serialize schedule: %s", e)
@@ -989,6 +1031,7 @@ def _load_schedules():
 				active_days      = item.get("active_days", [])
 				max_occurrences  = item.get("max_occurrences", 0)
 				occurrences_done = item.get("occurrences_done", 0)
+				output_folder    = item.get("output_folder", "")
 				is_recurring     = recurrence in ("weekly", "indefinite")
 
 				catchup_minutes = None
@@ -1051,6 +1094,7 @@ def _load_schedules():
 					active_days      = active_days,
 					max_occurrences  = max_occurrences,
 					occurrences_done = occurrences_done,
+					output_folder    = output_folder,
 				)
 				rec.catchup_duration_minutes = catchup_minutes
 				result.append(rec)
@@ -1418,7 +1462,7 @@ class Recorder:
 	def add_schedule(self, station, start_time, duration_minutes,
 	                 player_paths=None, record_only=False,
 	                 recurrence="once", active_days=None,
-	                 max_occurrences=0):
+	                 max_occurrences=0, output_folder=None):
 		"""Schedule a recording.
 
 		player_paths: dict with optional keys 'vlc', 'potplayer', 'wmp'.
@@ -1428,6 +1472,8 @@ class Recorder:
 		recurrence:   "once" | "weekly" | "indefinite"
 		active_days:  list of weekday ints 0–6 (0=Mon). [] means all days.
 		max_occurrences: for "weekly" mode — 0 means no cap.
+		output_folder: optional per-entry destination folder. Empty/None
+		              means use the global default recordings folder.
 		Returns (ScheduledRecording, conflict_names_str_or_None).
 		"""
 		conflict_names = None
@@ -1444,6 +1490,7 @@ class Recorder:
 			recurrence=recurrence,
 			active_days=active_days or [],
 			max_occurrences=max_occurrences,
+			output_folder=output_folder,
 		)
 		self._scheduled.append(rec)
 		self._scheduled.sort(key=lambda r: r.start_time)
@@ -1514,7 +1561,10 @@ class Recorder:
 
 		url  = rec.station.get("url_resolved") or rec.station.get("url", "")
 		name = rec.station.get("name", "Unknown").strip()
-		out  = _make_output_path(name)
+		folder, fallback_reason = _resolve_output_folder(rec.output_folder)
+		if fallback_reason and hasattr(self, "_notify_folder_fallback") and self._notify_folder_fallback:
+			self._notify_folder_fallback(rec, rec.output_folder, fallback_reason)
+		out  = _make_output_path(name, folder=folder)
 
 		writer = _StreamWriter(url, out)
 		writer.start()
@@ -1595,6 +1645,7 @@ class Recorder:
 					active_days      = rec.active_days,
 					max_occurrences  = rec.max_occurrences,
 					occurrences_done = rec.occurrences_done,
+					output_folder    = rec.output_folder,
 				)
 				self._scheduled.append(next_rec)
 				self._scheduled.sort(key=lambda r: r.start_time)

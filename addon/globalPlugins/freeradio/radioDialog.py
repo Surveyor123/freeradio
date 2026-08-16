@@ -59,6 +59,71 @@ def _radio_browser_error():
 	return _RadioBrowserError
 
 
+def _build_folder_picker(parent, sizer, initial_folder=""):
+	"""Build the per-schedule "save recording to" controls: a default/custom
+	radio pair, a path field, and a Browse... button. Shared by the Add
+	Schedule panel and EditScheduleDialog so both stay in sync.
+
+	Returns (default_rb, custom_rb, path_ctrl, browse_btn).
+	"""
+	sizer.Add(
+		wx.StaticText(parent, label=_("Save recording to:")),
+		0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8,
+	)
+	default_rb = wx.RadioButton(
+		parent, label=_("&Default recordings folder"), style=wx.RB_GROUP,
+	)
+	custom_rb = wx.RadioButton(parent, label=_("&Selected folder:"))
+	sizer.Add(default_rb, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+	sizer.Add(custom_rb,  0, wx.LEFT | wx.RIGHT | wx.TOP, 4)
+
+	path_row  = wx.BoxSizer(wx.HORIZONTAL)
+	path_ctrl = wx.TextCtrl(parent, value=initial_folder)
+	path_ctrl.SetName(_("Selected folder:"))
+	browse_btn = wx.Button(parent, label=_("Bro&wse..."))
+	path_row.Add(path_ctrl, 1, wx.RIGHT, 4)
+	path_row.Add(browse_btn, 0)
+	sizer.Add(path_row, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+
+	has_custom = bool(initial_folder.strip())
+	custom_rb.SetValue(has_custom)
+	default_rb.SetValue(not has_custom)
+	path_ctrl.Enable(has_custom)
+	browse_btn.Enable(has_custom)
+
+	def _on_mode_changed(event):
+		enabled = custom_rb.GetValue()
+		path_ctrl.Enable(enabled)
+		browse_btn.Enable(enabled)
+		event.Skip()
+
+	def _on_browse(event):
+		dlg = wx.DirDialog(
+			parent, _("Select recordings folder"),
+			defaultPath=path_ctrl.GetValue().strip(),
+		)
+		try:
+			if dlg.ShowModal() == wx.ID_OK:
+				path_ctrl.SetValue(dlg.GetPath())
+				custom_rb.SetValue(True)
+				path_ctrl.Enable(True)
+				browse_btn.Enable(True)
+		finally:
+			dlg.Destroy()
+
+	default_rb.Bind(wx.EVT_RADIOBUTTON, _on_mode_changed)
+	custom_rb.Bind(wx.EVT_RADIOBUTTON,  _on_mode_changed)
+	browse_btn.Bind(wx.EVT_BUTTON,      _on_browse)
+
+	return default_rb, custom_rb, path_ctrl, browse_btn
+
+
+def _folder_picker_value(custom_rb, path_ctrl):
+	"""Return the output_folder string to persist: "" selects the global
+	default; otherwise the folder the user chose/typed."""
+	return path_ctrl.GetValue().strip() if custom_rb.GetValue() else ""
+
+
 from .utils import (
 	country_name,
 	country_name   as _country_name,
@@ -672,6 +737,13 @@ class RadioDialog(wx.Dialog):
 		self._sched_mode_play.SetValue(True)
 		sizer.Add(self._sched_mode_play, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
 		sizer.Add(self._sched_mode_rec,  0, wx.LEFT | wx.RIGHT | wx.TOP, 4)
+
+		(
+			self._sched_folder_default_rb,
+			self._sched_folder_custom_rb,
+			self._sched_folder_path,
+			self._sched_folder_browse_btn,
+		) = _build_folder_picker(self._rec_panel, sizer)
 
 		self._sched_add_btn = wx.Button(self._rec_panel, label=_("&Add to Schedule"))
 		sizer.Add(self._sched_add_btn, 0, wx.ALL, 8)
@@ -1373,6 +1445,7 @@ class RadioDialog(wx.Dialog):
 			"potplayer": self._player._potplayer_path,
 			"wmp":       self._player._wmp_path,
 		}
+		output_folder = _folder_picker_value(self._sched_folder_custom_rb, self._sched_folder_path)
 
 		now = datetime.datetime.now()
 		base = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
@@ -1397,6 +1470,7 @@ class RadioDialog(wx.Dialog):
 					recurrence="once",
 					active_days=[],
 					max_occurrences=0,
+					output_folder=output_folder,
 				)
 				added_dates.append(candidate.strftime("%d.%m.%Y"))
 				if conflict_names:
@@ -1446,6 +1520,7 @@ class RadioDialog(wx.Dialog):
 				recurrence=recurrence,
 				active_days=active_days,
 				max_occurrences=max_occurrences,
+				output_folder=output_folder,
 			)
 			self._refresh_sched_list()
 			record_only = _rec.record_only
@@ -1504,6 +1579,7 @@ class RadioDialog(wx.Dialog):
 			rec.active_days      = updated["active_days"]
 			rec.max_occurrences  = updated["max_occurrences"]
 			rec.record_only      = updated["record_only"]
+			rec.output_folder    = updated["output_folder"]
 			rec.fired            = False   # reset so scheduler picks it up again
 			# Re-sort and persist
 			self._recorder._scheduled.sort(key=lambda r: r.start_time)
@@ -4986,6 +5062,14 @@ class EditScheduleDialog(wx.Dialog):
 		else:
 			self._mode_play.SetValue(True)
 
+		# --- Output folder ---
+		(
+			self._folder_default_rb,
+			self._folder_custom_rb,
+			self._folder_path,
+			self._folder_browse_btn,
+		) = _build_folder_picker(self, sizer, initial_folder=rec.output_folder or "")
+
 		# --- OK / Cancel ---
 		btn_sizer = wx.StdDialogButtonSizer()
 		ok_btn = wx.Button(self, wx.ID_OK, label=_("&Save"))
@@ -5051,6 +5135,7 @@ class EditScheduleDialog(wx.Dialog):
 			"active_days":      list(self._days_clb.Checked),
 			"max_occurrences":  0,
 			"record_only":      self._mode_rec.GetValue(),
+			"output_folder":    _folder_picker_value(self._folder_custom_rb, self._folder_path),
 		}
 		self.EndModal(wx.ID_OK)
 

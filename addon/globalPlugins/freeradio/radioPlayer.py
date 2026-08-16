@@ -2449,7 +2449,8 @@ class RadioPlayer:
 					with self._timeshift_launch_lock:
 						if self._play_gen != gen:
 							return
-						resolved_for_capture = _resolve_playlist_url(url)
+						is_hls = url.lower().split("?")[0].endswith(".m3u8")
+						resolved_for_capture = url if is_hls else _resolve_playlist_url(url)
 						# The light (45s) buffer is already running continuously
 						# in the background for every playing station (see
 						# _LIGHT_BUFFER_SECONDS above) - turning the rewind

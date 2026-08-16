@@ -54,6 +54,7 @@ Todos los atajos se pueden reasignar desde el Menú NVDA → Preferencias → Ge
 | `Ctrl+Win+J` | Retroceso del desplazamiento temporal | Retrocede la radio en directo 15 segundos. La primera pulsación entra en el modo de desplazamiento temporal; cada pulsación adicional retrocede 15 segundos más, hasta el límite del búfer (~10 minutos). Requiere que el búfer de desplazamiento temporal esté habilitado en Ajustes. |
 | `Ctrl+Win+K` | Avance rápido del desplazamiento temporal | Avanza 15 segundos mientras se está en modo de desplazamiento temporal. Una vez alcanzado el borde del directo, la reproducción vuelve automáticamente al directo y este comando no tiene efecto hasta que se retroceda de nuevo. |
 | `Ctrl+Win+T` | Alternar búfer de desplazamiento temporal | Habilita o deshabilita el búfer de desplazamiento temporal al instante, reflejando la casilla de Ajustes. Al deshabilitarlo, vuelve inmediatamente al directo si estaba en modo de desplazamiento temporal y detiene la captura en segundo plano. |
+| *(no asignado)* | Seleccionar dispositivo de salida | Abre una lista bajo demanda de los principales dispositivos de salida disponibles. La lista se muestra solo cuando el BASS detecta más de un dispositivo de salida físico. Asignar una combinación de teclas a través del Menú NVDA → Preferencias → Gestos de Entrada → FreeRadio. |
 | *((no asignado)* | Alternar notificaciones silenciosas | Alternar la configuración de Silenciar notificaciones sobre la marcha. Asignar una combinación de teclas a través del Menú NVDA → Preferencias → Gestos de Entrada → FreeRadio. |
 | *(no asignado)* | Reproducir estación favorita directamente | Cada estación de la lista de favoritos aparece como una entrada individual en el Menú NVDA → Preferencias → Gestos de Entrada → **Estaciones FreeRadio**. Asigna un atajo de teclado a cualquier estación para iniciarla al instante desde cualquier lugar, sin abrir el navegador. |
 
@@ -67,7 +68,7 @@ La ventana abierta con `Ctrl+Win+R` contiene seis pestañas: Todas las estacione
 
 Cuando se abre la pestaña Todas las estaciones, las 1000 estaciones más votadas se cargan automáticamente desde Radio Browser. Al seleccionar un país de la lista desplegable, se actualiza la lista para mostrar estaciones de ese país. Al escribir en el cuadro de búsqueda se realiza instantáneamente una búsqueda completa en toda la base de datos de Radio Browser simultáneamente por nombre, país y género.
 
-La lista desplegable **Dispositivo de salida** en la parte inferior de la ventana del navegador (fuera de las pestañas) enumera todos los dispositivos de salida de audio reconocidos por BASS. Al seleccionar un dispositivo, se redirige inmediatamente la salida de audio a él y se guarda la elección de forma permanente; el mismo dispositivo se utiliza automáticamente en la siguiente sesión. Si el dispositivo seleccionado no está conectado, el complemento vuelve automáticamente al valor predeterminado del sistema. Este control solo funciona cuando el BASS backend está activo.
+La lista desplegable **Dispositivo de salida** en la parte inferior de la ventana del navegador (fuera de las pestañas) enumera todos los dispositivos de salida de audio reconocidos por BASS. Al seleccionar un dispositivo, se redirige inmediatamente la salida de audio a él y se guarda la elección de forma permanente; el mismo dispositivo se utiliza automáticamente en la siguiente sesión. Si el dispositivo seleccionado no está conectado, el complemento vuelve automáticamente al valor predeterminado del sistema. Pulse `F11` para abrir un selector de dispositivos bajo demanda más simple desde cualquier lugar del Navegador de estaciones. El selector no se muestra automáticamente y se abre solo cuando el BASS detecta más de un dispositivo de salida físico. Cuando solo hay uno disponible, no es necesario realizar ninguna selección y FreeRadio utiliza la salida predeterminada del sistema. Esta característica sólo es funcional cuando el BASS backend está activo.
 
 Los controles de **Volumen** (0–200) y **Efectos** en la misma área se puede ajustar en cualquier momento cuando la ventana está abierta. Desde la lista de Efectos, Coro, Compresión, Distorsión, Eco, Flanger, Gargle, Reverberación, EQ: Bass Boost, EQ: Treble Boost y EQ: Vocal Boost se puede activar simultáneamente; Los cambios se aplican instantáneamente al flujo activo. Cada efecto también se puede alternar instantáneamente con `Ctrl+1` hasta `Ctrl+0` sin salir del teclado — consulta la sección [Atajos del Efecto](#effect-shortcuts). Estos controles solo son completamente funcionales cuando el BASS backend está activo.
 
@@ -110,6 +111,7 @@ Las siguientes teclas solo funcionan cuando la ventana del Navegador de Estacion
 | `F7` | Pausar/reanudar | Pausa la estación actual si se está reproduciendo; se reanuda cuando está en pausa y el medio está cargado. |
 | `F8` | Detener | Detiene completamente la estación actual y reinicia el reproductor. |
 | `F9` | Renombrar | Abre el cuadro de diálogo para renombrar la estación enfocada en la pestaña Favoritos. |
+| `F11` | Seleccionar dispositivo de salida | Abre el selector principal de dispositivos de salida cuando el BASS detecta más de un dispositivo de salida físico. El dispositivo actual está preseleccionado; Intro aplica y guarda la elección. |
 
 #### Lista y Atajos de Navegación
 
@@ -250,7 +252,12 @@ Al pulsar por primera vez, aparece un cuadro de diálogo de selección que enume
 
 ## Grabación
 
-Las grabaciones se guardan de forma predeterminada en `Documentos\FreeRadio Recordings\`. El nombre del archivo incluye el nombre de la estación (o el título de la canción, en modo de grabación de canciones) y la hora de inicio de la grabación. La carpeta de grabaciones se puede cambiar en cualquier momento desde el Menú NVDA → Preferencias → Opciones → FreeRadio → **Carpeta de grabaciones**. Debido a que el motor de grabación se conecta directamente al flujo de transmisión, el audio se escribe en el disco tal como se recibe; no se aplica ningún procesamiento ni recodificación; La calidad de grabación es la misma que la calidad de transmisión.
+Las grabaciones se guardan de forma predeterminada en `Documentos\FreeRadio Recordings\`. El nombre del archivo incluye el nombre de la estación (o el título de la canción, en modo de grabación de canciones) y la hora de inicio de la grabación. La carpeta de grabaciones se puede cambiar en cualquier momento desde el Menú NVDA → Preferencias → Opciones → FreeRadio → **Carpeta de grabaciones**.
+
+La configuración **Formato de salida de grabación** controla cómo se guardan las grabaciones completadas:
+- **Formato de flujo original** escribe el flujo exactamente como se recibió. Por lo tanto, una transmision HLS puede generar un archivo `.ts` .
+- **Solo audio, codec original** elimina la capa de vídeo/contenedor sin volver a codificar el audio. Por ejemplo, el audio AAC de una grabación HLS `.ts` normalmente se guarda como `.m4a`, preservando la calidad de la transmisión.
+- **MP3** convierte el audio después de grabar usando la velocidad de bits seleccionada. La conversión utiliza el `ffmpeg.exe` incluido con FreeRadio y se ejecuta en segundo plano para que NVDA siga respondiendo. Si la conversión falla, se conserva la grabación original.
 
 **Grabación instantánea:** Mientras se reproduce una estación, pulse una vez `Ctrl+Win+E`. Pulse nuevamente para detener. La reproducción continúa sin interrupción.
 
@@ -476,6 +483,8 @@ Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencia
 | Ruta wmplayer.exe | Ingrese la ruta a Windows Media Player aquí si es necesario. |
 | Ruta PotPlayer | Si PotPlayer se encuentra en una ubicación no estándar, su ruta se puede ingresar aquí. |
 | Carpeta de grabaciones | Establece la carpeta donde se guardan los archivos grabados. Si se deja en blanco, la ubicación predeterminada `Documentos\FreeRadio Recordings\` se utiliza. Un botón Explorar carpeta le permite seleccionar la carpeta de forma interactiva. Los cambios entran en vigor inmediatamente después de guardarlos. |
+| Formato de salida de grabación | Conserva el flujo original, extrae el audio sin cambiar su codec o convierte grabaciones completas a MP3. El valor predeterminado es el formato de flujo original. |
+| Velocidad de bits de grabación de MP3 | Establece la velocidad de bits utilizada cuando el formato de salida de grabación es MP3. El valor predeterminado es 128 kbps. |
 | Desactivar la verificación de conectividad a Internet antes de reproducir | Recomendado para usuarios que experimentan un retraso antes de que una estación comience a reproducirse. También es útil cuando el DNS está bloqueado. |
 
 ## Silenciar Notificaciones

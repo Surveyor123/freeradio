@@ -54,6 +54,7 @@ Tous les raccourcis peuvent être réassignés depuis le Menu NVDA → Préfére
 | `Ctrl+Win+J` | Retour en arrière (décalage temporel) | Recule la radio en direct de 15 secondes. La première pulsation entre en mode décalage temporel ; chaque pulsation supplémentaire recule de 15 secondes de plus, jusqu'à la limite de la mémoire tampon (~10 minutes). Nécessite que la mémoire tampon de décalage temporel soit activée dans les Paramètres. |
 | `Ctrl+Win+K` | Avance rapide (décalage temporel) | Avance de 15 secondes en mode décalage temporel. Une fois le bord du direct atteint, la lecture revient automatiquement au direct et cette commande est sans effet jusqu'au prochain retour en arrière. |
 | `Ctrl+Win+T` | Basculer la mémoire tampon de décalage temporel | Active ou désactive la mémoire tampon de décalage temporel instantanément, reflétant la case à cocher dans les Paramètres. La désactiver renvoie immédiatement au direct si vous étiez en mode décalage et arrête la capture en arrière-plan. |
+| *(non assigné)* | Sélectionner le périphérique de sortie | Ouvre une liste à la demande des principaux périphériques de sortie disponibles. La liste s'affiche uniquement lorsque le BASS détecte plus d'un périphérique de sortie physique. Assigner une combinaison de touches via NVDA Menu → Préférences → Gestes de commandes → FreeRadio. |
 | *(non assigné)* | Activer/désactiver les notifications muettes | Active/désactive le paramètre Muet des notifications à la volée. Assigner une combinaison de touches via NVDA Menu → Préférences → Gestes de commandes → FreeRadio. |
 | *(non assigné)* | Lire une station favorite directement | Chaque station de la liste des favoris apparaît comme une entrée distincte dans le Menu NVDA → Préférences → Gestes de commandes → **Stations FreeRadio**. Assigner n'importe quel raccourci clavier à une station pour la démarrer instantanément depuis n'importe où, sans ouvrir le navigateur. |
 
@@ -67,7 +68,7 @@ La fenêtre ouverte avec `Ctrl+Win+R` contient six onglets : Toutes les stations
 
 Lorsque l'onglet Toutes les stations s'ouvre, le top 1 000 des stations les plus votées sont automatiquement chargées à partir de Radio Browser. La sélection d'un pays dans la liste déroulante met à jour la liste pour montrer les stations de ce pays. Taper dans le champ de recherche effectue instantanément une recherche complète dans toute la base de données de Radio Browser simultanément par nom, pays et genre.
 
-La liste déroulante **Périphérique de sortie** en bas de la fenêtre du navigateur (en dehors des onglets) répertorie tous les périphériques de sortie audio reconnus par BASS. La sélection d'un périphérique redirige immédiatement la sortie audio vers celui-ci et enregistre le choix de manière permanente ; le même périphérique est utilisé automatiquement lors de la session suivante. Si le périphérique sélectionné n'est pas connecté, l'extension revient automatiquement au valeur système par défaut. Ce contrôle n'est fonctionnel que lorsque le BASS backend est actif.
+La liste déroulante **Périphérique de sortie** en bas de la fenêtre du navigateur (en dehors des onglets) répertorie tous les périphériques de sortie audio reconnus par BASS. La sélection d'un périphérique redirige immédiatement la sortie audio vers celui-ci et enregistre le choix de manière permanente ; le même périphérique est utilisé automatiquement lors de la session suivante. Si le périphérique sélectionné n'est pas connecté, l'extension revient automatiquement au valeur système par défaut. Appuyez sur `F11` pour ouvrir un sélecteur de périphérique à la demande plus simple depuis n'importe où dans le Navigateur de stations. Le sélecteur ne s'affiche pas automatiquement et s'ouvre uniquement lorsque le BASS détecte plusieurs périphériques de sortie physiques. Lorsqu'un seul est disponible, aucune sélection n'est nécessaire et FreeRadio utilise la sortie par défaut du système. Cette fonctionnalité n'est fonctionnelle que lorsque le BASS backend est actif.
 
 Les contrôles de **Volume** (0–200) et **Effets** dans la même zone peut être ajusté à tout moment lorsque la fenêtre est ouverte. Depuis la liste des Effets, Chœur, Compression, Distorsion, Echo, Flanger, Gargle, Réverbération, EQ: Bass Boost, EQ: Treble Boost et EQ: Vocal Boost peut être activé simultanément ; les modifications sont appliquées instantanément au flux actif. Chaque effet peut également être activé instantanément avec `Ctrl+1` jusqu'à `Ctrl+0` sans quitter le clavier — consultez la section [Raccourcis de l'Effet](#effect-shortcuts). Ces contrôles ne sont pleinement fonctionnelles que lorsque le BASS backend est actif.
 
@@ -110,6 +111,7 @@ Les touches suivantes fonctionnent uniquement lorsque la fenêtre Navigateur de 
 | `F7` | Mettre en pause / reprendre | Met en pause la station actuelle si elle est en cours de lecture ; reprend en cas de pause et le média est chargé. |
 | `F8` | Arrêter | Arrête complètement la station actuelle et réinitialise le lecteur. |
 | `F9` | Renommer | Ouvre la boîte de dialogue  pour renommer la station ayant le focus dans l'onglet Favoris. |
+| `F11` | Sélectionner le périphérique de sortie | Ouvre le sélecteur de périphérique de sortie principal lorsque le BASS détecte plusieurs périphériques de sortie physiques. L'appareil actuel est présélectionné ; Entrée applique et enregistre le choix. |
 
 #### Liste et Raccourcis de Navigation
 
@@ -250,7 +252,12 @@ Au premier appui, une boîte de dialogue de sélection répertoriant les périph
 
 ## Enregistrement
 
-Les enregistrements sont enregistrés par défaut dans `Documents\FreeRadio Recordings\`. Le nom du fichier inclut le nom de la station (ou le titre du morceau, en mode enregistrement de morceau) et l'heure de début de l'enregistrement. Le dossier des enregistrements peut être modifié à tout moment depuis NVDA Menu → Préférences → Paramètres → FreeRadio → **Dossier des enregistrements**. Étant donné que le moteur d'enregistrement se connecte directement au flux, l'audio est écrit sur le disque tel qu'il est reçu — aucun traitement ni réencodage n'est appliqué ; la qualité d'enregistrement est identique à la qualité de diffusion.
+Les enregistrements sont enregistrés par défaut dans `Documents\FreeRadio Recordings\`. Le nom du fichier inclut le nom de la station (ou le titre du morceau, en mode enregistrement de morceau) et l'heure de début de l'enregistrement. Le dossier des enregistrements peut être modifié à tout moment depuis NVDA Menu → Préférences → Paramètres → FreeRadio → **Dossier des enregistrements**.
+
+Le paramètre **Format de sortie d'enregistrement** contrôle la manière dont les enregistrements terminés sont enregistrés:
+- **Format de flux original** écrit le flux exactement tel qu'il a été reçu. Une diffusion HLS peut donc produire un fichier `.ts`.
+- **Audio uniquement, codec original** supprime la couche vidéo/conteneur sans réencoder l'audio. Par exemple, l'audio AAC d'un enregistrement HLS `.ts` est normalement enregistré sous `.m4a`, préservant ainsi la qualité de diffusion.
+- **MP3** convertit l'audio après l'enregistrement en utilisant le débit binaire sélectionné. La conversion utilise le `ffmpeg.exe` fourni avec FreeRadio et s'exécute en arrière-plan afin que NVDA reste réactif. Si la conversion échoue, l'enregistrement original est conservé.
 
 **Enregistrement instantané:** Pendant la lecture d'une station, appuyez une fois sur `Ctrl+Win+E`. Appuyez à nouveau pour arrêter. La lecture se poursuit sans interruption.
 
@@ -476,6 +483,8 @@ Les options suivantes peuvent être configurées à partir de NVDA Menu → Pré
 | Chemin wmplayer.exe | Entrez le chemin d'accès à Windows Media Player ici si nécessaire. |
 | Chemin PotPlayer | Si PotPlayer se trouve dans un emplacement non standard, son chemin peut être saisi ici. |
 | Dossier des enregistrements | Définit le dossier dans lequel les fichiers enregistrés sont sauvegardés. Si laissé vide, l'emplacement par défaut `Documents\FreeRadio Recordings\` est utilisé. Un bouton Explorer le dossier vous permet de sélectionner le dossier de manière interactive. Les modifications prennent effet immédiatement après l'enregistrement. |
+| Format de sortie d'enregistrement | Conserve le flux original, extrait l'audio sans changer son codec ou convertit les enregistrements terminés en MP3. La valeur par défaut est le format de flux d'origine. |
+| Débit d'enregistrement MP3 | Définit le débit binaire utilisé lorsque le format de sortie d'enregistrement est MP3. La valeur par défaut est 128 Ko/s. |
 | Désactiver la vérification de la connectivité Internet avant de la lecture | Recommandé pour les utilisateurs qui subissent un délai avant le début de la lecture d'une station. Également utile lorsque le DNS est bloqué. |
 
 ## Notifications Muettes

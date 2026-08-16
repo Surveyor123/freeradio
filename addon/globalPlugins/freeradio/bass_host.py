@@ -46,8 +46,15 @@ import atexit
 # can be traced across all three in chronological order.
 _DEBUG_LOG_PATH = os.path.join(tempfile.gettempdir(), "freeradio_timeshift_debug.log")
 
+# Off by default, matching timeshift.py's own _DEBUG_ENABLED — this file
+# previously had no gate at all and wrote unconditionally, so disabling
+# debug logging in timeshift.py had no effect on it.
+_DEBUG_ENABLED = False
+
 
 def _debug_log(msg):
+    if not _DEBUG_ENABLED:
+        return
     try:
         with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
             f.write("%s [bass_host.py] %s\n" % (time.strftime("%Y-%m-%d %H:%M:%S"), msg))

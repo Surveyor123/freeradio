@@ -52,9 +52,14 @@ class TimeShiftBuffer:
 	so it can be rewound and replayed.
 	"""
 
-	CAPACITY_SECONDS = 600		  # 10 minutes
+	CAPACITY_SECONDS = 600		  # 10 minutes (user-configurable via RadioPlayer.set_timeshift_capacity_seconds)
 	_TRIM_MARGIN_SECONDS = 120
 	_TRIM_CHECK_INTERVAL = 30
+	# Safety ceiling applied instead of CAPACITY_SECONDS when HLS variant
+	# selection couldn't find an audio-only rendition and had to fall back
+	# to one that also carries video (see _run_hls). Keeps a multi-hour
+	# buffer setting from growing an unbounded video-inclusive capture.
+	_VIDEO_FALLBACK_CAP_SECONDS = 1800  # 30 minutes
 
 	def __init__(self, tmp_dir=None):
 		self._tmp_dir = tmp_dir or tempfile.gettempdir()
@@ -87,6 +92,16 @@ class TimeShiftBuffer:
 		self._icy_metaint = 0
 		self._icy_bytes_until_meta = 0
 		self._icy_meta_remaining = 0
+		# Disk-full handling: notified at most once per capture session so
+		# a persistently-full disk doesn't spam the user every chunk.
+		self._notify_disk_full = None
+		self._disk_full_notified = False
+		# True once HLS variant selection had to fall back to a
+		# video-carrying rendition because no audio-only one was offered —
+		# used to apply a stricter fallback storage ceiling (see
+		# _VIDEO_FALLBACK_CAP_SECONDS) since such a buffer can be far
+		# larger per second of audio than a normal one.
+		self._hls_is_video = False
 
 	# -- Public API ---------------------------------------------------------
 
@@ -114,6 +129,8 @@ class TimeShiftBuffer:
 		self._icy_metaint = 0
 		self._icy_bytes_until_meta = 0
 		self._icy_meta_remaining = 0
+		self._disk_full_notified = False
+		self._hls_is_video = False
 
 		try:
 			fd, path = tempfile.mkstemp(prefix="freeradio_timeshift_", suffix=".buf", dir=self._tmp_dir)
@@ -676,20 +693,49 @@ class TimeShiftBuffer:
 				if self._is_stale(my_gen):
 					return
 
-				# Master playlist? Switch to the highest-bandwidth sub-manifest.
+				# Master playlist? Switch to the best matching sub-manifest.
+				# Prefer an audio-only rendition when the manifest offers
+				# one: a "RESOLUTION" attribute (or a video codec in
+				# CODECS) marks a variant as carrying video, and time-shift
+				# only needs the audio — video variants can be many times
+				# larger, which matters far more now that buffers can span
+				# hours. Falls back to the previous highest-bandwidth pick
+				# (which may include video) only if no audio-only variant
+				# exists; _maybe_trim_hls then applies a stricter storage
+				# ceiling in that case.
 				best_manifest, best_bw = None, -1
+				best_audio_manifest, best_audio_bw = None, -1
 				for i, line in enumerate(lines):
 					if line.startswith("#EXT-X-STREAM-INF"):
 						m = _re.search(r"BANDWIDTH=(\d+)", line, _re.IGNORECASE)
 						bw = int(m.group(1)) if m else 0
+						has_resolution = "RESOLUTION=" in line.upper()
+						codecs_m = _re.search(r'CODECS="([^"]+)"', line, _re.IGNORECASE)
+						codecs = codecs_m.group(1).lower() if codecs_m else ""
+						looks_video = has_resolution or any(
+							c in codecs for c in ("avc1", "hvc1", "hev1", "vp09", "vp9", "av01")
+						)
 						if i + 1 < len(lines):
 							nxt = lines[i + 1].strip()
-							if nxt and bw > best_bw:
-								best_bw, best_manifest = bw, _abs(nxt, base_url)
-				if best_manifest and best_manifest != manifest_url:
-					log.info("FreeRadio TimeShift: HLS -> best sub-manifest (bw=%d): %s",
-							 best_bw, best_manifest)
-					manifest_url = best_manifest
+							if nxt:
+								if bw > best_bw:
+									best_bw, best_manifest = bw, _abs(nxt, base_url)
+								if not looks_video and bw > best_audio_bw:
+									best_audio_bw, best_audio_manifest = bw, _abs(nxt, base_url)
+				if best_audio_manifest:
+					chosen_manifest, chosen_bw, is_video_choice = best_audio_manifest, best_audio_bw, False
+				elif best_manifest:
+					chosen_manifest, chosen_bw, is_video_choice = best_manifest, best_bw, True
+				else:
+					chosen_manifest = None
+				if chosen_manifest and chosen_manifest != manifest_url:
+					self._hls_is_video = is_video_choice
+					log.info(
+						"FreeRadio TimeShift: HLS -> %s sub-manifest (bw=%d): %s",
+						"audio-only" if not is_video_choice else "highest-bandwidth (includes video)",
+						chosen_bw, chosen_manifest,
+					)
+					manifest_url = chosen_manifest
 					continue
 
 				# #EXT-X-MAP initialization segment (required for fMP4 streams).
@@ -796,6 +842,61 @@ class TimeShiftBuffer:
 				self._bytes_written += len(data)
 			except OSError as e:
 				log.info("FreeRadio TimeShift: write failed: %s", e)
+				# Out of disk space specifically (as opposed to some other
+				# transient write error): don't crash the capture loop -
+				# recording/recognition/live playback don't depend on new
+				# bytes landing here, so just stop growing and let the next
+				# trim pass reclaim space. Surface it once, not every chunk.
+				is_disk_full = (
+					getattr(e, "errno", None) in (28, 112)
+					or getattr(e, "winerror", None) == 112
+				)
+				if is_disk_full and not self._disk_full_notified:
+					self._disk_full_notified = True
+					if self._notify_disk_full:
+						try:
+							self._notify_disk_full()
+						except Exception:
+							pass
+
+	_TRIM_COPY_CHUNK_BYTES = 1024 * 1024  # 1 MiB — bounds memory use while trimming, however large the buffer is
+
+	def _shift_file_left(self, path, prefix_len, drop_bytes):
+		"""Drop drop_bytes immediately after the first prefix_len bytes,
+		shifting everything after that window left by copying in fixed-size
+		chunks (never the whole remainder at once). This is what makes
+		trimming safe for multi-hour buffers: the old approach read the
+		entire retained portion into memory and rewrote the whole file,
+		which for a 5-hour buffer (or an HLS one that ended up including
+		video) could be a large memory/disk-I/O spike on every trim pass.
+
+		Returns the new file size, or None on failure (caller keeps the
+		file as-is and just reopens it for appending).
+		"""
+		try:
+			size = os.path.getsize(path)
+		except OSError as e:
+			log.info("FreeRadio TimeShift: trim stat failed: %s", e)
+			return None
+
+		read_pos = prefix_len + drop_bytes
+		write_pos = prefix_len
+		try:
+			with open(path, "r+b") as f:
+				while read_pos < size:
+					f.seek(read_pos)
+					chunk = f.read(min(self._TRIM_COPY_CHUNK_BYTES, size - read_pos))
+					if not chunk:
+						break
+					f.seek(write_pos)
+					f.write(chunk)
+					read_pos += len(chunk)
+					write_pos += len(chunk)
+				f.truncate(write_pos)
+		except OSError as e:
+			log.info("FreeRadio TimeShift: trim shift failed: %s", e)
+			return None
+		return write_pos
 
 	def _maybe_trim(self, my_gen):
 		"""Drop the oldest portion of the buffer file once it exceeds capacity."""
@@ -837,16 +938,12 @@ class TimeShiftBuffer:
 					self._file_handle = open(path, "ab", buffering=0)
 					return
 				drop_bytes = trimmable - keep_bytes
-				with open(path, "rb") as f:
-					prefix = f.read(prefix_len) if prefix_len else b""
-					f.seek(prefix_len + drop_bytes)
-					remainder = f.read()
-				with open(path, "wb") as f:
-					if prefix:
-						f.write(prefix)
-					f.write(remainder)
+				new_size = self._shift_file_left(path, prefix_len, drop_bytes)
+				if new_size is None:
+					self._file_handle = open(path, "ab", buffering=0)
+					return
 				self._shrink_captured_seconds(drop_bytes / bytes_per_second)
-				self._bytes_written = len(prefix) + len(remainder)
+				self._bytes_written = new_size
 				self._file_handle = open(path, "ab", buffering=0)
 			except OSError as e:
 				log.info("FreeRadio TimeShift: trim failed: %s", e)
@@ -857,7 +954,15 @@ class TimeShiftBuffer:
 
 	def _maybe_trim_hls(self, my_gen):
 		"""HLS version of _maybe_trim(): drops the oldest whole segments."""
-		if self._hls_captured_seconds <= self.CAPACITY_SECONDS + self._TRIM_MARGIN_SECONDS:
+		effective_capacity = self.CAPACITY_SECONDS
+		if self._hls_is_video:
+			# No audio-only rendition was available, so this buffer carries
+			# video too. Video-inclusive HLS can run many times larger per
+			# second of audio than a normal stream, so cap it well below
+			# whatever multi-hour duration the user configured rather than
+			# letting it grow to the full (audio-sized) budget.
+			effective_capacity = min(effective_capacity, self._VIDEO_FALLBACK_CAP_SECONDS)
+		if self._hls_captured_seconds <= effective_capacity + self._TRIM_MARGIN_SECONDS:
 			return
 		if not self._hls_segment_durations:
 			return
@@ -877,7 +982,7 @@ class TimeShiftBuffer:
 						pass
 					self._file_handle = None
 
-				target_drop_duration = self._hls_captured_seconds - self.CAPACITY_SECONDS
+				target_drop_duration = self._hls_captured_seconds - effective_capacity
 				drop_bytes = 0
 				drop_duration = 0.0
 				while (len(self._hls_segment_durations) > 1
@@ -897,17 +1002,13 @@ class TimeShiftBuffer:
 					self._file_handle = open(path, "ab", buffering=0)
 					return
 
-				with open(path, "rb") as f:
-					prefix = f.read(prefix_len) if prefix_len else b""
-					f.seek(prefix_len + drop_bytes)
-					remainder = f.read()
-				with open(path, "wb") as f:
-					if prefix:
-						f.write(prefix)
-					f.write(remainder)
+				new_size = self._shift_file_left(path, prefix_len, drop_bytes)
+				if new_size is None:
+					self._file_handle = open(path, "ab", buffering=0)
+					return
 
 				self._hls_captured_seconds = max(0.0, self._hls_captured_seconds - drop_duration)
-				self._bytes_written = len(prefix) + len(remainder)
+				self._bytes_written = new_size
 				self._file_handle = open(path, "ab", buffering=0)
 			except OSError as e:
 				log.info("FreeRadio TimeShift: HLS trim failed: %s", e)

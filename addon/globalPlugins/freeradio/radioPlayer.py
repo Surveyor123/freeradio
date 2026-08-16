@@ -859,6 +859,11 @@ class RadioPlayer:
 		# the BASS backend.
 		self._timeshift_enabled = False
 		self._timeshift_active  = False   # True while time-shifted (buffered) playback is active
+		# User-configurable rewind buffer capacity in seconds (default 10
+		# min; up to 5 hours via Settings). Only applies once the
+		# time-shift feature itself is enabled — the always-on lightweight
+		# buffer stays fixed at _LIGHT_BUFFER_SECONDS regardless.
+		self._timeshift_capacity_seconds = 600
 		self._timeshift_buffer  = _timeshift_mod.TimeShiftBuffer()
 		# _play_gen value for which _timeshift_buffer currently holds the
 		# right station's capture session. _timeshift_active is reset to
@@ -1862,7 +1867,7 @@ class RadioPlayer:
 					# the newer, correct capture session.
 					if self._play_gen == gen:
 						self._timeshift_buffer.CAPACITY_SECONDS = (
-							600 if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
+							self._timeshift_capacity_seconds if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
 						)
 						# HLS master playlists are not simple "one line = one
 						# audio URL" playlists - resolving them the way
@@ -2383,6 +2388,29 @@ class RadioPlayer:
 	# actually feeding the audio output - the capture itself is untouched,
 	# so returning to live never loses buffered audio.
 
+	def set_timeshift_capacity_seconds(self, seconds):
+		"""Set how much rewind-buffer audio to retain once the time-shift
+		feature is enabled (clamped to 10 minutes .. 5 hours). Takes effect
+		immediately — including on a capture that's already running, no
+		restart or reconnect needed — since the buffer just reads this
+		value back on its next periodic trim check.
+		"""
+		try:
+			seconds = int(seconds)
+		except (TypeError, ValueError):
+			seconds = 600
+		seconds = max(600, min(seconds, 18000))
+		self._timeshift_capacity_seconds = seconds
+		if self._timeshift_enabled:
+			self._timeshift_buffer.CAPACITY_SECONDS = seconds
+
+	def set_timeshift_disk_full_callback(self, callback):
+		"""Register a callback invoked (at most once per capture session)
+		if the time-shift buffer can't keep writing because the disk is
+		full. Purely informational — capture keeps running with whatever
+		space is available, live playback is never affected."""
+		self._timeshift_buffer._notify_disk_full = callback
+
 	def set_timeshift_enabled(self, enabled):
 		"""Enable or disable the time-shift buffer feature.
 
@@ -2403,7 +2431,7 @@ class RadioPlayer:
 			# left untouched.
 			self._timeshift_buffer.CAPACITY_SECONDS = _LIGHT_BUFFER_SECONDS
 		elif self._is_playing and self._backend == self.BACKEND_BASS:
-			self._timeshift_buffer.CAPACITY_SECONDS = 600
+			self._timeshift_buffer.CAPACITY_SECONDS = self._timeshift_capacity_seconds
 			stream_url = self._current_url_resolved or self._current_url
 			captured_gen = self._play_gen
 			if stream_url:

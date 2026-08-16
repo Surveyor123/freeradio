@@ -270,6 +270,7 @@ def _init_config():
 		"crossfade":              "string(default='off')",  # off | short | normal | tuning
 		"result_limit":           "integer(default=1000, min=100, max=10000)",
 		"timeshift_enabled":      "boolean(default=False)",
+		"timeshift_buffer_seconds": "integer(default=600, min=600, max=18000)",
 	}
 
 _init_config()
@@ -287,6 +288,15 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		# default, opt-in via the settings panel or config.
 		self._player.set_timeshift_enabled(
 			config.conf["freeradio"].get("timeshift_enabled", False)
+		)
+		self._player.set_timeshift_capacity_seconds(
+			config.conf["freeradio"].get("timeshift_buffer_seconds", 600)
+		)
+		self._player.set_timeshift_disk_full_callback(
+			lambda: wx.CallAfter(
+				_notify,
+				_("Time-shift buffer: running low on disk space, the oldest audio is being dropped more aggressively."),
+			)
 		)
 		# Apply saved audio output device (only if BASS is enabled)
 		if not disable_bass:
@@ -3034,6 +3044,32 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		self._timeshift_enabled.SetValue(config.conf["freeradio"].get("timeshift_enabled", False))
 		sHelper.addItem(self._timeshift_enabled)
 
+		# --- Time-shift buffer duration ---
+		self._timeshift_duration_seconds = [600, 1800, 3600, 7200, 18000]
+		duration_label = _("Time-shift buffer duration:")
+		self._timeshift_duration_choice = sHelper.addLabeledControl(
+			duration_label,
+			wx.Choice,
+			choices=[
+				_("10 minutes"), _("30 minutes"), _("1 hour"),
+				_("2 hours"), _("5 hours"),
+			],
+		)
+		saved_seconds = config.conf["freeradio"].get("timeshift_buffer_seconds", 600)
+		try:
+			sel_index = self._timeshift_duration_seconds.index(saved_seconds)
+		except ValueError:
+			sel_index = 0
+		self._timeshift_duration_choice.SetSelection(sel_index)
+
+		self._timeshift_duration_hint = wx.StaticText(
+			self,
+			label=_("Longer buffers use more temporary disk space, especially for "
+			        "high-bitrate stations — a 5-hour buffer can use several gigabytes."),
+		)
+		self._timeshift_duration_hint.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT))
+		sHelper.addItem(self._timeshift_duration_hint)
+
 		# Hint text for BASS-dependent features
 		self._bass_hint = wx.StaticText(
 			self,
@@ -3788,6 +3824,12 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		# Time-shift buffer
 		new_timeshift_enabled = self._timeshift_enabled.GetValue()
 		config.conf["freeradio"]["timeshift_enabled"] = new_timeshift_enabled
+		_duration_sel = self._timeshift_duration_choice.GetSelection()
+		new_timeshift_seconds = (
+			self._timeshift_duration_seconds[_duration_sel]
+			if 0 <= _duration_sel < len(self._timeshift_duration_seconds) else 600
+		)
+		config.conf["freeradio"]["timeshift_buffer_seconds"] = new_timeshift_seconds
 
 		for plugin in globalPluginHandler.runningPlugins:
 			if isinstance(plugin, GlobalPlugin):
@@ -3799,6 +3841,7 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 				plugin._player.set_audio_device_refresh_mode(new_audio_device_refresh_mode)
 				plugin._player.set_volume(vol)
 				plugin._player.set_timeshift_enabled(new_timeshift_enabled)
+				plugin._player.set_timeshift_capacity_seconds(new_timeshift_seconds)
 				
 				# Handle BASS disable change
 				if new_disable_bass != old_disable_bass:
@@ -3814,6 +3857,13 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 					plugin._player.set_audio_device_refresh_mode(new_audio_device_refresh_mode)
 					plugin._player.set_volume(vol)
 					plugin._player.set_timeshift_enabled(new_timeshift_enabled)
+					plugin._player.set_timeshift_capacity_seconds(new_timeshift_seconds)
+					plugin._player.set_timeshift_disk_full_callback(
+						lambda: wx.CallAfter(
+							_notify,
+							_("Time-shift buffer: running low on disk space, the oldest audio is being dropped more aggressively."),
+						)
+					)
 					plugin._player.on_device_lost = plugin._on_audio_device_lost
 					plugin._player.on_podcast_progress_saved = plugin._on_podcast_progress_saved
 					if not new_disable_bass:

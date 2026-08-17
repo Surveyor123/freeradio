@@ -1325,7 +1325,7 @@ class RadioDialog(wx.Dialog):
 				else:
 					when = _("Every %s") % ", ".join(_FULL_DAY_NAMES[d] for d in days)
 				t    = rec.start_time.strftime("%H:%M")
-				line = "%s — %s — %s, %d min, %s" % (station, when, t, rec.duration_minutes, mode)
+				line = _("%s — %s — %s, %d min, %s") % (station, when, t, rec.duration_minutes, mode)
 			else:
 				ts   = rec.start_time.strftime("%d.%m.%Y %H:%M")
 				line = "%s — %s — %d min, %s" % (station, ts, rec.duration_minutes, mode)

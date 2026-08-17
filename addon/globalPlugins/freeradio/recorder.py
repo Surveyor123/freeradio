@@ -1264,6 +1264,11 @@ class Recorder:
 		self._output_path     = None
 		self._station_name    = ""
 		self._scheduled       = _load_schedules()
+		self._schedule_lock   = threading.Lock()  # guards self._scheduled — mutated
+		                                           # from the GUI thread (add/remove),
+		                                           # the scheduler loop thread, and
+		                                           # each per-recording worker thread
+		                                           # (re-queueing recurring entries)
 		self._scheduler_thread = None
 		self._stop_scheduler  = threading.Event()
 		self._dll_dir         = dll_dir
@@ -1330,13 +1335,17 @@ class Recorder:
 				if id(r) not in seen:
 					active.append(r)
 					seen.add(id(r))
-		_save_schedules(self._scheduled + active)
+		with self._schedule_lock:
+			pending = list(self._scheduled)
+		_save_schedules(pending + active)
 
 	def _overlaps(self, start, duration_minutes):
 		"""Return plans that overlap with the given range."""
 		end = start + datetime.timedelta(minutes=duration_minutes)
 		result = []
-		for rec in self._scheduled:
+		with self._schedule_lock:
+			candidates = list(self._scheduled)
+		for rec in candidates:
 			if rec.fired:
 				continue
 			rec_end = rec.start_time + datetime.timedelta(minutes=rec.duration_minutes)
@@ -1492,19 +1501,24 @@ class Recorder:
 			max_occurrences=max_occurrences,
 			output_folder=output_folder,
 		)
-		self._scheduled.append(rec)
-		self._scheduled.sort(key=lambda r: r.start_time)
+		with self._schedule_lock:
+			self._scheduled.append(rec)
+			self._scheduled.sort(key=lambda r: r.start_time)
 		self._persist_schedules()
 		self._ensure_scheduler()
 		return rec, conflict_names
 
 	def remove_schedule(self, rec):
-		if rec in self._scheduled:
-			self._scheduled.remove(rec)
-			self._persist_schedules()
+		with self._schedule_lock:
+			if rec in self._scheduled:
+				self._scheduled.remove(rec)
+			else:
+				return
+		self._persist_schedules()
 
 	def get_schedules(self):
-		return list(self._scheduled)
+		with self._schedule_lock:
+			return list(self._scheduled)
 
 	def get_active_scheduled(self):
 		"""Return a list of ScheduledRecording objects currently being recorded."""
@@ -1538,7 +1552,9 @@ class Recorder:
 		while not self._stop_scheduler.is_set():
 			now = datetime.datetime.now()
 			fired = []
-			for rec in list(self._scheduled):
+			with self._schedule_lock:
+				candidates = list(self._scheduled)
+			for rec in candidates:
 				if not rec.fired and now >= rec.start_time:
 					rec.fired = True
 					fired.append(rec)
@@ -1549,7 +1565,8 @@ class Recorder:
 					).start()
 
 			# Remove fired entries from the pending list.
-			self._scheduled = [r for r in self._scheduled if not r.fired]
+			with self._schedule_lock:
+				self._scheduled = [r for r in self._scheduled if not r.fired]
 
 			if fired:
 				self._persist_schedules(extra_active=fired)
@@ -1647,8 +1664,9 @@ class Recorder:
 					occurrences_done = rec.occurrences_done,
 					output_folder    = rec.output_folder,
 				)
-				self._scheduled.append(next_rec)
-				self._scheduled.sort(key=lambda r: r.start_time)
+				with self._schedule_lock:
+					self._scheduled.append(next_rec)
+					self._scheduled.sort(key=lambda r: r.start_time)
 				self._persist_schedules()
 				log.info(
 					"FreeRadio Recorder: recurring entry re-queued — "
@@ -1668,6 +1686,6 @@ class Recorder:
 		if self._writer:
 			self._writer.stop()
 			self._writer = None
-		for rec in self._scheduled:
+		for rec in self.get_schedules():
 			if hasattr(rec, "_writer") and rec._writer:
 				rec._writer.stop()

@@ -276,10 +276,32 @@ def _init_config():
 _init_config()
 
 
+def _cleanup_orphaned_timeshift_buffers():
+	"""Remove leftover freeradio_timeshift_*.buf files from previous
+	sessions. TimeShiftBuffer.stop() normally deletes its own buffer file,
+	but that only runs on a clean shutdown - an abrupt one (crash, power
+	loss, Windows forcing NVDA closed) skips it, leaving the file behind in
+	the temp folder. Safe to do unconditionally here: this runs during
+	add-on startup, before any capture session of this run has begun, so
+	every matching file at this point is necessarily orphaned.
+	"""
+	try:
+		tmp_dir = tempfile.gettempdir()
+		for name in os.listdir(tmp_dir):
+			if name.startswith("freeradio_timeshift_") and name.endswith(".buf"):
+				try:
+					os.remove(os.path.join(tmp_dir, name))
+				except OSError:
+					pass
+	except OSError:
+		pass
+
+
 class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 
 	def __init__(self):
 		super().__init__()
+		_cleanup_orphaned_timeshift_buffers()
 		disable_bass = config.conf["freeradio"].get("disable_bass", False)
 		self._player  = radioPlayer.RadioPlayer(disable_bass=disable_bass)
 		self._player.set_audio_device_refresh_mode(_audio_device_refresh_mode())

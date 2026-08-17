@@ -1542,6 +1542,36 @@ class GlobalPlugin(globalPluginHandler.GlobalPlugin):
 		_notify(_("Volume %d") % vol)
 		self._sync_dialog_volume(vol)
 
+	@script(
+		description=_("Increase podcast playback speed"),
+		category=_("FreeRadio"),
+		gesture="kb:control+windows+shift+k",
+	)
+	def script_playbackRateUp(self, gesture):
+		self._report_playback_rate(*self._player.increase_playback_rate())
+
+	@script(
+		description=_("Decrease podcast playback speed"),
+		category=_("FreeRadio"),
+		gesture="kb:control+windows+shift+j",
+	)
+	def script_playbackRateDown(self, gesture):
+		self._report_playback_rate(*self._player.decrease_playback_rate())
+
+	def _report_playback_rate(self, applied, rate, reason):
+		if applied:
+			if abs(rate - 1.0) < 0.05:
+				_notify(_("Rate normal"))
+			else:
+				_notify(_("Rate %.1f") % rate)
+			return
+		if reason == "bass_fx_unavailable":
+			_notify(_("Playback speed control needs the bass_fx add-on library — see the FreeRadio docs."))
+		elif reason in ("not_tempo_stream", "wrong_backend"):
+			_notify(_("Playback speed control is only available for podcasts."))
+		else:
+			_notify(_("Could not change playback speed."))
+
 	def _sync_dialog_volume(self, vol):
 		"""Update the volume SpinCtrl in the browser dialog if it is open."""
 		if self._dialog and self._dialog.IsShown():

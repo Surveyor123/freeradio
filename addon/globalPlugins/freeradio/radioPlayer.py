@@ -621,6 +621,32 @@ class _BassSubprocessEngine:
 		"""Adjust the bass boost level (0.0 = off, 1.0 = max +12 dB)."""
 		self._send({"cmd": "bass_boost", "value": max(0.0, min(1.0, float(boost_0_1)))})
 
+	def set_playback_rate(self, rate, timeout=3.0):
+		"""Set pitch-preserving playback speed (podcasts only).
+
+		rate: 1.0 = normal, 1.1 = 10% faster, 0.9 = 10% slower (clamped to
+		0.5-3.0 on the host side). Returns (applied, actual_rate, reason) —
+		applied is False when bass_fx.dll isn't available or the current
+		stream can't be tempo-adjusted; the rate is still remembered on the
+		host for the next tempo-capable stream either way.
+		"""
+		if not self.ready():
+			return False, rate, "not_ready"
+		evt = threading.Event()
+		result = [(False, rate, "timeout")]
+
+		old_on_reply = getattr(self, "_on_playback_rate_reply", None)
+
+		def _on_reply(applied, actual_rate, reason):
+			result[0] = (applied, actual_rate, reason)
+			evt.set()
+
+		self._on_playback_rate_reply = _on_reply
+		self._send({"cmd": "set_playback_rate", "rate": float(rate)})
+		evt.wait(timeout=timeout)
+		self._on_playback_rate_reply = old_on_reply
+		return result[0]
+
 	def set_fx(self, fx_name):
 		"""Adjust DirectX 8 effect.
 
@@ -721,6 +747,15 @@ class _BassSubprocessEngine:
 						except Exception:
 							pass
 					continue
+				if reply_cmd == "set_playback_rate":
+					cb = getattr(self, "_on_playback_rate_reply", None)
+					if cb:
+						try:
+							cb(bool(msg.get("rate_applied", False)),
+							   msg.get("rate", 1.0), msg.get("reason", ""))
+						except Exception:
+							pass
+					continue
 
 				# Play result — route to waiting play() call
 				seq = msg.get("seq")
@@ -782,6 +817,7 @@ class RadioPlayer:
 		self._is_playing = False
 		self._volume = 100
 		self._bass_boost = 0.0   # bass boost level: 0.0–1.0
+		self._playback_rate = 1.0  # pitch-preserving speed for podcasts: 1.0 = normal
 		self._audio_fx   = "none"  # active DirectX 8 effect name
 		self._intentional_stop = False
 		self._play_lock = threading.RLock()  # Prevent concurrent play operations
@@ -2163,6 +2199,44 @@ class RadioPlayer:
 				self._bass_engine.set_bass_boost(self._bass_boost)
 			except Exception:
 				pass
+
+	_PLAYBACK_RATE_STEP = 0.1
+	_PLAYBACK_RATE_MIN  = 0.5
+	_PLAYBACK_RATE_MAX  = 2.0
+
+	def _step_playback_rate(self, delta):
+		"""Increase/decrease the pitch-preserving podcast playback rate by
+		*delta* (rounded to 1 decimal place so repeated steps land cleanly
+		on 0.9/1.0/1.1 etc. instead of drifting from float addition).
+
+		Returns (applied, actual_rate, reason):
+		- applied=True  -> the rate is actually in effect right now.
+		- applied=False -> not currently possible (wrong backend, bass_fx.dll
+		  not installed, or the current stream isn't tempo-wrapped e.g. a
+		  live station or a podcast episode that fell back to a plain
+		  stream) - the requested rate is still remembered and will apply
+		  automatically to the next tempo-capable stream that opens.
+		"""
+		new_rate = round(self._playback_rate + delta, 1)
+		new_rate = max(self._PLAYBACK_RATE_MIN, min(self._PLAYBACK_RATE_MAX, new_rate))
+		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+			try:
+				applied, actual_rate, reason = self._bass_engine.set_playback_rate(new_rate)
+			except Exception:
+				applied, actual_rate, reason = False, new_rate, "engine_error"
+			self._playback_rate = actual_rate if applied else new_rate
+			return applied, self._playback_rate, reason
+		self._playback_rate = new_rate
+		return False, new_rate, "wrong_backend"
+
+	def increase_playback_rate(self):
+		return self._step_playback_rate(self._PLAYBACK_RATE_STEP)
+
+	def decrease_playback_rate(self):
+		return self._step_playback_rate(-self._PLAYBACK_RATE_STEP)
+
+	def get_playback_rate(self):
+		return self._playback_rate
 
 	def get_bass_boost(self):
 		return getattr(self, "_bass_boost", 0.0)

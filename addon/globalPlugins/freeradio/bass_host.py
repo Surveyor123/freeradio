@@ -20,6 +20,7 @@ Supported commands:
   resume     {"cmd":"resume"}
   volume     {"cmd":"volume",     "value":0.0-2.0}
   bass_boost {"cmd":"bass_boost", "value":0.0-1.0}
+  set_playback_rate {"cmd":"set_playback_rate", "rate":0.5-3.0}  # pitch-preserving, podcasts only (needs bass_fx.dll)
   ping       {"cmd":"ping"}
   quit       {"cmd":"quit"}
 
@@ -76,6 +77,9 @@ _BASS_ERROR_FILEFORM      = 40
 _BASS_ERROR_NOTAVAIL      = 37
 _BASS_ERROR_SSL           = 41
 _BASS_STREAM_BLOCK        = 0x100000
+_BASS_STREAM_DECODE       = 0x200000  # source-only stream, feeds into BASS_FX_TempoCreate
+_BASS_FX_FREESOURCE       = 0x10000   # BASS_FX_TempoCreate: free the source stream when the tempo one is freed
+_BASS_ATTRIB_TEMPO        = 0x10000   # BASS_FX attribute id: tempo change in % (-95..+5000, 0 = normal)
 _BASS_ACTIVE_STOPPED      = 0
 _BASS_ACTIVE_PLAYING      = 1
 _BASS_ACTIVE_STALLED      = 2
@@ -207,6 +211,11 @@ class BassHost:
         self._device_index = device_index  # -1 = system default
         self._dll      = None
         self._dll_hls  = None
+        self._bass_fx_dll = None  # bass_fx.dll - optional, only used for
+                                  # pitch-preserving podcast playback speed
+        self._tempo_active = False  # True while self._handle is a BASS_FX
+                                     # tempo-wrapped stream (podcasts only)
+        self._playback_rate = 1.0   # persists across episodes, like volume
         self._handle   = 0
         self._lock     = threading.RLock()
         self._meta_stop   = threading.Event()
@@ -416,6 +425,25 @@ class BassHost:
                     except Exception:
                         self._dll_hls = None
 
+        # bass_fx.dll (optional, separate add-on library from un4seen.com) -
+        # enables pitch-preserving playback speed control for podcasts.
+        # Not a BASS_PluginLoad-style plugin; it's loaded directly and its
+        # BASS_ATTRIB_TEMPO/etc. attributes are then used through the
+        # normal BASS_ChannelSetAttribute on streams it has wrapped.
+        # Absent entirely if the user hasn't downloaded/placed the DLL -
+        # every caller must check self._bass_fx_dll before relying on it.
+        bass_fx_path = os.path.join(base_dll_dir, "bass_fx.dll")
+        if os.path.isfile(bass_fx_path):
+            try:
+                fx_dll = ctypes.WinDLL(bass_fx_path)
+                fx_dll.BASS_FX_TempoCreate.restype = ctypes.c_ulong
+                fx_dll.BASS_FX_TempoCreate.argtypes = [
+                    ctypes.c_ulong, ctypes.c_uint32,
+                ]
+                self._bass_fx_dll = fx_dll
+            except Exception:
+                self._bass_fx_dll = None
+
         self._dll = dll
         dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 0)
         dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL, 1)
@@ -539,6 +567,11 @@ class BassHost:
             return 0
 
     def _try_create_url(self, url, seekable=False):
+        # Reset up front — only the seekable/tempo-wrap path below sets this
+        # back to True, so a stale value from a previous podcast session
+        # never lingers onto an unrelated live-radio stream.
+        if not seekable:
+            self._tempo_active = False
         url_lower = url.split("?")[0].lower()
         is_hls = url_lower.endswith(".m3u8")
         is_aac_ext = url_lower.endswith(".aac")
@@ -590,14 +623,52 @@ class BassHost:
 
         try:
             if seekable:
-                # Try without BLOCK first
+                # Try without BLOCK first — request a plain decode-only
+                # stream when bass_fx is available so it can be wrapped for
+                # pitch-preserving playback-rate control (podcasts only;
+                # "seekable" is only ever True for podcast playback). A
+                # decode-only stream can't be played directly, so if the
+                # wrap step fails for any reason, fall back to a normal
+                # (non-decode) stream instead of leaving playback broken.
+                use_tempo = bool(self._bass_fx_dll)
                 stream = self._dll.BASS_StreamCreateURL(
                     url.encode("utf-8"),
                     ctypes.c_uint32(0),
-                    ctypes.c_uint32(0),
+                    ctypes.c_uint32(_BASS_STREAM_DECODE if use_tempo else 0),
                     ctypes.c_void_p(0),
                     ctypes.c_void_p(0),
                 )
+                if stream and use_tempo:
+                    tempo_stream = self._bass_fx_dll.BASS_FX_TempoCreate(
+                        stream, ctypes.c_uint32(_BASS_FX_FREESOURCE)
+                    )
+                    if tempo_stream:
+                        stream = tempo_stream
+                        self._tempo_active = True
+                        if self._playback_rate != 1.0:
+                            try:
+                                self._dll.BASS_ChannelSetAttribute(
+                                    stream, _BASS_ATTRIB_TEMPO,
+                                    ctypes.c_float((self._playback_rate - 1.0) * 100.0),
+                                )
+                            except Exception:
+                                pass
+                    else:
+                        # Wrap failed — the decode-only stream is unplayable
+                        # on its own; drop it and get a normal stream so
+                        # podcast playback still works, just without rate
+                        # control for this episode.
+                        try:
+                            self._dll.BASS_StreamFree(stream)
+                        except Exception:
+                            pass
+                        self._tempo_active = False
+                        stream = self._dll.BASS_StreamCreateURL(
+                            url.encode("utf-8"), ctypes.c_uint32(0), ctypes.c_uint32(0),
+                            ctypes.c_void_p(0), ctypes.c_void_p(0),
+                        )
+                else:
+                    self._tempo_active = False
                 if stream:
                     # Do NOT check length; just return and hope it's seekable.
                     # If it's not seekable, timeshift_seek will fail.
@@ -605,6 +676,7 @@ class BassHost:
                     return stream
                 else:
                     # If opening fails, fall back to download
+                    self._tempo_active = False
                     _debug_log("seekable stream failed, trying download: %s" % url)
                     return self._try_download_and_play(url)
             else:
@@ -1587,6 +1659,39 @@ class BassHost:
                 except Exception:
                     pass
 
+    def set_playback_rate(self, rate):
+        """Set pitch-preserving playback speed for the current stream
+        (podcasts only). rate: 1.0 = normal, 1.1 = 10% faster, 0.9 = 10%
+        slower. Persists across episodes (like volume) so it applies again
+        automatically the next time a tempo-capable stream is opened.
+
+        Returns (ok, actual_rate, reason). ok is False when either
+        bass_fx.dll isn't available at all, or the current stream isn't a
+        tempo-wrapped one (e.g. it fell back to a plain stream because
+        wrapping failed for this particular episode) — in both cases the
+        rate is remembered for next time but has no effect right now.
+        """
+        rate = max(0.5, min(3.0, float(rate)))
+        with self._lock:
+            self._playback_rate = rate
+            if not self._bass_fx_dll:
+                return False, rate, "bass_fx_unavailable"
+            if not (self._tempo_active and self._handle and self._dll):
+                return False, rate, "not_tempo_stream"
+            try:
+                ok = self._dll.BASS_ChannelSetAttribute(
+                    self._handle, _BASS_ATTRIB_TEMPO,
+                    ctypes.c_float((rate - 1.0) * 100.0),
+                )
+            except Exception:
+                ok = False
+            if not ok:
+                return False, rate, "set_attribute_failed"
+            return True, rate, ""
+
+    def get_playback_rate(self):
+        return self._playback_rate
+
     def unload(self):
         self._cancel_pending_play()
         self._stop_meta_thread()
@@ -1839,6 +1944,12 @@ def main():
             val = float(cmd_obj.get("value", 0.0))
             host.set_bass_boost(val)
             _ok()
+
+        elif cmd == "set_playback_rate":
+            rate = float(cmd_obj.get("rate", 1.0))
+            ok, actual_rate, reason = host.set_playback_rate(rate)
+            _ok(cmd="set_playback_rate", rate_applied=ok,
+                rate=actual_rate, reason=reason)
 
         elif cmd == "set_fx":
             fx = cmd_obj.get("fx", "none")

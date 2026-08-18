@@ -17,7 +17,12 @@ import uuid
 
 log = logging.getLogger(__name__)
 
-_USER_AGENT = "FreeRadio-NVDA/1.0"
+# Primary User-Agent (works with ICY and most stations)
+_USER_AGENT_PRIMARY = "FreeRadio-NVDA/1.0"
+# Fallback User-Agent (used for servers like SomaFM that expect a browser-like UA)
+_USER_AGENT_FALLBACK = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+# Default to primary
+_USER_AGENT = _USER_AGENT_PRIMARY
 _CHUNK      = 65536   # 64 KB read chunk
 
 # Some stream servers present expired or otherwise invalid TLS certificates
@@ -291,10 +296,11 @@ def _open_icy(url, timeout=20):
 		raw_path = "/"
 
 	sock = socket.create_connection((host, port), timeout=timeout)
+	# Always use the primary UA for ICY servers; they often reject browser-like UAs.
 	request = (
 		f"GET {raw_path} HTTP/1.0\r\n"
 		f"Host: {host}:{port}\r\n"
-		f"User-Agent: {_USER_AGENT}\r\n"
+		f"User-Agent: {_USER_AGENT_PRIMARY}\r\n"
 		f"Icy-MetaData: 0\r\n"
 		f"Connection: close\r\n"
 		f"\r\n"
@@ -387,7 +393,8 @@ def _resolve_hls(url):
 	from urllib.parse import urljoin
 	import re
 	try:
-		req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+		# Use primary UA for manifest resolution; fallback is handled inside _run_hls.
+		req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT_PRIMARY})
 		with _urlopen(req, 10) as resp:
 			text = resp.read(8192).decode("utf-8", errors="ignore")
 		lines = text.splitlines()
@@ -425,6 +432,11 @@ class _StreamWriter:
 		self._error      = None
 		self._container_detected = False
 		self._container_type = "unknown"
+		# Set the first time a connection actually succeeds and data starts
+		# being written — lets callers (e.g. scheduled recordings) tell a
+		# real recording apart from one that spent its whole window failing
+		# to connect (see _run_once / _run_icy / _run_hls).
+		self._connected = threading.Event()
 		
 		# Resolve HLS to final URL if possible
 		resolved = url
@@ -446,6 +458,11 @@ class _StreamWriter:
 		self._stop.set()
 		if self._thread:
 			self._thread.join(timeout=5)
+
+	def is_connected(self):
+		"""True once a connection has succeeded and data has started writing
+		at least once (not necessarily still connected right now)."""
+		return self._connected.is_set()
 
 	def _detect_and_fix_extension(self, first_chunk):
 		"""Detect container from first chunk and adjust output extension."""
@@ -520,12 +537,16 @@ class _StreamWriter:
 					return
 				time.sleep(0.1)
 
-	def _run_once(self, first):
+	def _run_once(self, first, use_fallback=False):
 		"""Single connection attempt via urllib.  Raises _IcyProtocolError when
-		the server replies with 'ICY 200 OK' so the caller can switch modes."""
+		the server replies with 'ICY 200 OK' so the caller can switch modes.
+		If use_fallback is True, the fallback browser-like UA is used instead
+		of the primary UA. This helps with stations that filter by User-Agent.
+		"""
+		ua = _USER_AGENT_FALLBACK if use_fallback else _USER_AGENT_PRIMARY
 		req = urllib.request.Request(
 			self._effective_url,
-			headers={"User-Agent": _USER_AGENT, "Icy-MetaData": "0"},
+			headers={"User-Agent": ua, "Icy-MetaData": "0"},
 		)
 		try:
 			resp_cm = _urlopen(req, 20)
@@ -534,6 +555,10 @@ class _StreamWriter:
 			# The message reliably contains "ICY" in that case.
 			if _is_icy_error(e):
 				raise _IcyProtocolError() from e
+			# If the connection was closed without response and we haven't tried
+			# the fallback UA yet, retry with the fallback UA.
+			if not use_fallback and "Remote end closed" in str(e):
+				return self._run_once(first, use_fallback=True)
 			raise
 
 		with resp_cm as resp:
@@ -545,6 +570,7 @@ class _StreamWriter:
 				log.info("FreeRadio Recorder: writing to %s (ct=%s)", self.output_path, ct)
 
 			with open(self.output_path, "ab") as f:
+				self._connected.set()
 				while not self._stop.is_set():
 					chunk = resp.read(_CHUNK)
 					if not chunk:
@@ -563,6 +589,7 @@ class _StreamWriter:
 				log.info("FreeRadio Recorder: ICY writing to %s (ct=%s)", self.output_path, ct)
 
 			with open(self.output_path, "ab") as f:
+				self._connected.set()
 				if body_prefix:
 					f.write(body_prefix)
 				while not self._stop.is_set():
@@ -575,6 +602,28 @@ class _StreamWriter:
 				sock.close()
 			except Exception:
 				pass
+
+	def _fetch_manifest_with_fallback(self, manifest_url):
+		"""Fetch an HLS manifest, trying primary then fallback User-Agent."""
+		for ua in (_USER_AGENT_PRIMARY, _USER_AGENT_FALLBACK):
+			try:
+				req = urllib.request.Request(manifest_url, headers={"User-Agent": ua})
+				with _urlopen(req, 10) as resp:
+					return resp.read(32768).decode("utf-8", errors="ignore")
+			except Exception:
+				continue
+		raise RuntimeError("Could not fetch HLS manifest: %s" % manifest_url)
+
+	def _fetch_segment_with_fallback(self, seg_url):
+		"""Fetch an HLS segment, trying primary then fallback User-Agent."""
+		for ua in (_USER_AGENT_PRIMARY, _USER_AGENT_FALLBACK):
+			try:
+				req = urllib.request.Request(seg_url, headers={"User-Agent": ua})
+				with _urlopen(req, 15) as resp:
+					return resp.read()
+			except Exception:
+				continue
+		raise RuntimeError("Could not fetch segment: %s" % seg_url)
 
 	def _run_hls(self):
 		"""Download HLS segments sequentially and write to a single file."""
@@ -598,9 +647,8 @@ class _StreamWriter:
 		while not self._stop.is_set():
 			try:
 				base_url = manifest_url.rsplit("/", 1)[0] + "/"
-				req = urllib.request.Request(manifest_url, headers={"User-Agent": _USER_AGENT})
-				with _urlopen(req, 10) as resp:
-					text = resp.read(32768).decode("utf-8", errors="ignore")
+				# Use the helper that tries primary then fallback UA
+				text = self._fetch_manifest_with_fallback(manifest_url)
 				lines = text.splitlines()
 				manifest_errors = 0
 
@@ -670,26 +718,23 @@ class _StreamWriter:
 								output_file.close()
 							return
 						try:
-							seg_req = urllib.request.Request(seg_url, headers={"User-Agent": _USER_AGENT})
-							with _urlopen(seg_req, 15) as seg_resp:
-								data = seg_resp.read()
+							# Use the helper that tries primary then fallback UA
+							data = self._fetch_segment_with_fallback(seg_url)
 							
 							# First segment: detect container, write init segment if needed, open file
 							if not first_segment_written:
 								self._detect_and_fix_extension(data)
 								output_file = open(self.output_path, "ab")
 								first_segment_written = True
+								self._connected.set()
 								log.info("FreeRadio Recorder: first segment written to %s", self.output_path)
 
 								# fMP4 streams carry moov/init in a separate #EXT-X-MAP segment.
 								# Without it, players see no audio/video tracks.
 								if current_map_url and current_map_url != seg_url:
 									try:
-										map_req = urllib.request.Request(
-											current_map_url, headers={"User-Agent": _USER_AGENT}
-										)
-										with _urlopen(map_req, 15) as map_resp:
-											init_data = map_resp.read()
+										# Use fallback for init segment too
+										init_data = self._fetch_segment_with_fallback(current_map_url)
 										output_file.write(init_data)
 										output_file.flush()
 										last_map_url = current_map_url
@@ -700,11 +745,7 @@ class _StreamWriter:
 								# If the init segment changed mid-stream, write the new one
 								if current_map_url and current_map_url != last_map_url:
 									try:
-										map_req = urllib.request.Request(
-											current_map_url, headers={"User-Agent": _USER_AGENT}
-										)
-										with _urlopen(map_req, 15) as map_resp:
-											init_data = map_resp.read()
+										init_data = self._fetch_segment_with_fallback(current_map_url)
 										output_file.write(init_data)
 										output_file.flush()
 										last_map_url = current_map_url
@@ -776,7 +817,8 @@ def _resolve_url(url):
 def _resolve_playlist(url):
 	"""Resolve .m3u or .pls playlist to first stream URL."""
 	try:
-		req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT})
+		# Use primary UA for playlist resolution.
+		req = urllib.request.Request(url, headers={"User-Agent": _USER_AGENT_PRIMARY})
 		with _urlopen(req, 10) as resp:
 			text = resp.read(4096).decode("utf-8", errors="ignore")
 		for line in text.splitlines():
@@ -1106,149 +1148,6 @@ def _load_schedules():
 		return []
 
 
-
-
-class _TimeshiftTailWriter:
-	"""Writes a recording by tailing FreeRadio's already-running time-shift
-	capture buffer instead of opening a brand-new connection to the stream.
-
-	Why: some stations serve a fresh, per-connection ad to every new
-	listener session (server-side ad insertion). The main player's own
-	connection has already passed that ad by the time the user presses
-	record, but a second, independent connection made at that moment (the
-	old _StreamWriter behaviour) looks like a brand-new listener to the ad
-	server and gets served a new ad instead of whatever track is actually
-	airing. The time-shift buffer already has its own long-running
-	connection open (started when the station began playing) - tailing it,
-	rather than reconnecting, captures what is actually playing right now.
-	"""
-
-	_POLL_INTERVAL = 1.0
-
-	def __init__(self, timeshift_buffer, output_path):
-		self._buffer     = timeshift_buffer
-		self.output_path = output_path
-		self._stop       = threading.Event()
-		self._thread     = None
-		self._error      = None
-
-	def start(self):
-		# Suspend the buffer's trimming for as long as we're reading it,
-		# same guard the rewind feature uses for the same reason.
-		try:
-			self._buffer.enter_playback()
-		except Exception:
-			pass
-		self._thread = threading.Thread(
-			target=self._run, daemon=True, name="FreeRadio-RecorderTail",
-		)
-		self._thread.start()
-
-	def stop(self):
-		self._stop.set()
-		if self._thread:
-			self._thread.join(timeout=5)
-		try:
-			self._buffer.exit_playback()
-		except Exception:
-			pass
-
-	def _run(self):
-		path = self._buffer.get_file_path()
-		if not path:
-			self._error = RuntimeError("Time-shift buffer has no active file")
-			return
-
-		# If this stream needs a container header to be decodable (fMP4-
-		# packaged HLS), it lives in the first prefix_len bytes of the
-		# buffer and must be prepended to our own output file too, or the
-		# finished recording won't be playable on its own.
-		prefix_len = 0
-		try:
-			prefix_len = self._buffer.get_reserved_prefix_len()
-		except Exception:
-			pass
-		prefix_bytes = b""
-		if prefix_len:
-			try:
-				with open(path, "rb") as f:
-					prefix_bytes = f.read(prefix_len)
-			except OSError:
-				prefix_bytes = b""
-
-		try:
-			pos = os.path.getsize(path)
-		except OSError:
-			pos = 0
-
-		out_f = None
-		try:
-			while not self._stop.is_set():
-				try:
-					size = os.path.getsize(path)
-				except OSError:
-					size = pos
-				if size > pos:
-					try:
-						with open(path, "rb") as buf_f:
-							buf_f.seek(pos)
-							chunk = buf_f.read(size - pos)
-					except OSError as e:
-						log.warning("FreeRadio Recorder: tail read failed: %s", e)
-						chunk = b""
-					if chunk:
-						if out_f is None:
-							self._detect_and_fix_extension(prefix_bytes[:64] or chunk[:64])
-							out_f = open(self.output_path, "ab")
-							if prefix_bytes:
-								out_f.write(prefix_bytes)
-						out_f.write(chunk)
-						pos += len(chunk)
-				self._stop.wait(self._POLL_INTERVAL)
-		finally:
-			if out_f:
-				try:
-					out_f.close()
-				except Exception:
-					pass
-
-	_CONTAINER_EXT = {
-		"mp4":  ".m4a",
-		"ts":   ".ts",
-		"flac": ".flac",
-		"ogg":  ".ogg",
-		"mp3":  ".mp3",
-	}
-
-	def _detect_and_fix_extension(self, first_bytes):
-		container = _detect_container_from_segment(first_bytes)
-		base, current_ext = os.path.splitext(self.output_path)
-		ext = self._CONTAINER_EXT.get(container)
-		if ext:
-			if current_ext != ext:
-				self.output_path = base + ext
-				log.warning("FreeRadio Recorder: detected %s container, saving as %s",
-						  container, self.output_path)
-			return
-		# Byte sniffing came back inconclusive. For HLS (.m3u8) stations,
-		# most AAC content is MP4-boxed even when the sniffed first bytes
-		# didn't show it (e.g. mid-fragment), so keep the old .m4a default
-		# for those. Otherwise guess from the station's own URL rather than
-		# assuming every buffer-tailed recording is HLS/AAC.
-		try:
-			url = self._buffer.get_url() or ""
-		except Exception:
-			url = ""
-		if url.lower().split("?")[0].endswith(".m3u8"):
-			guessed = ".m4a"
-		else:
-			guessed = "." + _guess_ext(url)
-		if current_ext != guessed:
-			self.output_path = base + guessed
-			log.warning("FreeRadio Recorder: unknown container from buffer, "
-					  "guessed %s from station URL", guessed)
-
-
 class Recorder:
 	"""Manages instant and scheduled recordings."""
 
@@ -1264,11 +1163,6 @@ class Recorder:
 		self._output_path     = None
 		self._station_name    = ""
 		self._scheduled       = _load_schedules()
-		self._schedule_lock   = threading.Lock()  # guards self._scheduled — mutated
-		                                           # from the GUI thread (add/remove),
-		                                           # the scheduler loop thread, and
-		                                           # each per-recording worker thread
-		                                           # (re-queueing recurring entries)
 		self._scheduler_thread = None
 		self._stop_scheduler  = threading.Event()
 		self._dll_dir         = dll_dir
@@ -1335,17 +1229,13 @@ class Recorder:
 				if id(r) not in seen:
 					active.append(r)
 					seen.add(id(r))
-		with self._schedule_lock:
-			pending = list(self._scheduled)
-		_save_schedules(pending + active)
+		_save_schedules(self._scheduled + active)
 
 	def _overlaps(self, start, duration_minutes):
 		"""Return plans that overlap with the given range."""
 		end = start + datetime.timedelta(minutes=duration_minutes)
 		result = []
-		with self._schedule_lock:
-			candidates = list(self._scheduled)
-		for rec in candidates:
+		for rec in self._scheduled:
 			if rec.fired:
 				continue
 			rec_end = rec.start_time + datetime.timedelta(minutes=rec.duration_minutes)
@@ -1354,14 +1244,25 @@ class Recorder:
 		return result
 
 	def start(self, player, station_name, timeshift_buffer=None):
-		"""Start instant recording. VLC keeps playing; Python writes the stream.
+		"""Start instant recording. VLC keeps playing; Python writes the stream
+		via its own independent connection.
 
-		timeshift_buffer: the RadioPlayer's TimeShiftBuffer, if available. When
-		it is actively capturing, the recording tails that already-open
-		connection instead of opening a fresh one - some stations serve a new
-		ad to every brand-new connection, which a second connection made
-		just for this recording would otherwise capture instead of the
-		track actually airing.
+		timeshift_buffer is no longer used to tail the main player's capture
+		(see history below) - kept as a parameter for call-site compatibility
+		only, so a recording is never affected by anything that happens to
+		the main player afterwards (station switch, pause/resume, stop).
+
+		Previously, when the buffer was actively capturing this exact URL,
+		the recording tailed it instead of opening a fresh connection - some
+		stations serve a new ad to every brand-new connection, which a
+		second connection made just for this recording would otherwise
+		capture instead of the track actually airing. That optimisation
+		tied the recording's lifetime to RadioPlayer's single shared
+		_timeshift_buffer: switching station (or a long-pause resume) stops
+		and restarts that same buffer object for the new URL, silently
+		cutting off a recording that was tailing it. Recordings must
+		survive playback changes, so this now always opens its own
+		connection instead.
 
 		Returns output file path.
 		"""
@@ -1375,11 +1276,7 @@ class Recorder:
 		out = _make_output_path(station_name)
 		self._output_path  = out
 		self._station_name = station_name
-		if timeshift_buffer is not None and timeshift_buffer.is_active() and timeshift_buffer.is_tail_safe():
-			self._writer = _TimeshiftTailWriter(timeshift_buffer, out)
-			log.warning("FreeRadio Recorder: instant recording via time-shift buffer tail (no new connection)")
-		else:
-			self._writer = _StreamWriter(original_url, out)
+		self._writer = _StreamWriter(original_url, out)
 		self._writer.start()
 		log.warning("FreeRadio Recorder: instant recording started → %s", out)
 		return out
@@ -1392,7 +1289,8 @@ class Recorder:
 		identify later.  The caller is responsible for stopping the recording when
 		the track changes (see Recorder.stop_song_capture).
 
-		timeshift_buffer: see start().
+		timeshift_buffer: see start() - no longer used to tail the buffer,
+		kept only for call-site compatibility.
 
 		Returns the output file path.
 		"""
@@ -1408,11 +1306,7 @@ class Recorder:
 		self._output_path  = out
 		self._station_name = song_title   # store the song title in the station-name slot
 		self._song_capture = True         # flag: this recording was started in song-capture mode
-		if timeshift_buffer is not None and timeshift_buffer.is_active() and timeshift_buffer.is_tail_safe():
-			self._writer = _TimeshiftTailWriter(timeshift_buffer, out)
-			log.warning("FreeRadio Recorder: song-capture recording via time-shift buffer tail (no new connection)")
-		else:
-			self._writer = _StreamWriter(original_url, out)
+		self._writer = _StreamWriter(original_url, out)
 		self._writer.start()
 		log.warning("FreeRadio Recorder: song-capture recording started → %s", out)
 		return out
@@ -1501,24 +1395,19 @@ class Recorder:
 			max_occurrences=max_occurrences,
 			output_folder=output_folder,
 		)
-		with self._schedule_lock:
-			self._scheduled.append(rec)
-			self._scheduled.sort(key=lambda r: r.start_time)
+		self._scheduled.append(rec)
+		self._scheduled.sort(key=lambda r: r.start_time)
 		self._persist_schedules()
 		self._ensure_scheduler()
 		return rec, conflict_names
 
 	def remove_schedule(self, rec):
-		with self._schedule_lock:
-			if rec in self._scheduled:
-				self._scheduled.remove(rec)
-			else:
-				return
-		self._persist_schedules()
+		if rec in self._scheduled:
+			self._scheduled.remove(rec)
+			self._persist_schedules()
 
 	def get_schedules(self):
-		with self._schedule_lock:
-			return list(self._scheduled)
+		return list(self._scheduled)
 
 	def get_active_scheduled(self):
 		"""Return a list of ScheduledRecording objects currently being recorded."""
@@ -1552,9 +1441,7 @@ class Recorder:
 		while not self._stop_scheduler.is_set():
 			now = datetime.datetime.now()
 			fired = []
-			with self._schedule_lock:
-				candidates = list(self._scheduled)
-			for rec in candidates:
+			for rec in list(self._scheduled):
 				if not rec.fired and now >= rec.start_time:
 					rec.fired = True
 					fired.append(rec)
@@ -1565,8 +1452,7 @@ class Recorder:
 					).start()
 
 			# Remove fired entries from the pending list.
-			with self._schedule_lock:
-				self._scheduled = [r for r in self._scheduled if not r.fired]
+			self._scheduled = [r for r in self._scheduled if not r.fired]
 
 			if fired:
 				self._persist_schedules(extra_active=fired)
@@ -1621,6 +1507,13 @@ class Recorder:
 				break
 			time.sleep(min(1.0, deadline - time.time()))
 
+		# Capture before _finalize_writer() stops the writer, so we know
+		# whether it ever actually connected during the whole scheduled
+		# window - a stream that only ever failed to connect (see
+		# _StreamWriter._run's reconnect loop) produces no output file, and
+		# without this check the recording is silently reported as
+		# "finished" with nothing actually captured.
+		ever_connected = writer.is_connected()
 		rec.output_path = self._finalize_writer(writer)
 		rec._writer = None
 
@@ -1638,9 +1531,17 @@ class Recorder:
 					log.info("FreeRadio Recorder: stopped scheduled playback on main player")
 			# else: user changed station; keep playing what they chose
 
-		log.info("FreeRadio Recorder: scheduled recording finished — %s", rec.output_path)
-		if hasattr(self, "_notify_finish") and self._notify_finish:
-			self._notify_finish(rec)
+		if not ever_connected:
+			log.error(
+				"FreeRadio Recorder: scheduled recording never connected — %s (no file was written)",
+				name,
+			)
+			if hasattr(self, "_notify_failed") and self._notify_failed:
+				self._notify_failed(rec)
+		else:
+			log.info("FreeRadio Recorder: scheduled recording finished — %s", rec.output_path)
+			if hasattr(self, "_notify_finish") and self._notify_finish:
+				self._notify_finish(rec)
 
 		# Re-queue recurring entries after the recording has fully completed.
 		# Doing this here (rather than in _scheduler_loop) prevents a duplicate
@@ -1664,9 +1565,8 @@ class Recorder:
 					occurrences_done = rec.occurrences_done,
 					output_folder    = rec.output_folder,
 				)
-				with self._schedule_lock:
-					self._scheduled.append(next_rec)
-					self._scheduled.sort(key=lambda r: r.start_time)
+				self._scheduled.append(next_rec)
+				self._scheduled.sort(key=lambda r: r.start_time)
 				self._persist_schedules()
 				log.info(
 					"FreeRadio Recorder: recurring entry re-queued — "
@@ -1686,6 +1586,6 @@ class Recorder:
 		if self._writer:
 			self._writer.stop()
 			self._writer = None
-		for rec in self.get_schedules():
+		for rec in self._scheduled:
 			if hasattr(rec, "_writer") and rec._writer:
 				rec._writer.stop()

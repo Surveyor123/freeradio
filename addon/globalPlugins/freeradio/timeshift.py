@@ -21,7 +21,7 @@ _CHUNK = 65536
 
 # Debug logging - disabled by default
 # Set to True to enable detailed debug logs
-_DEBUG_ENABLED = True
+_DEBUG_ENABLED = False
 
 # Shared debug log
 _DEBUG_LOG_PATH = os.path.join(tempfile.gettempdir(), "freeradio_timeshift_debug.log")

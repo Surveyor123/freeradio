@@ -1359,6 +1359,23 @@ class RadioPlayer:
 					self._bass_engine.set_fx(fx)
 				except Exception:
 					pass
+			# Reapply playback rate (podcasts only) — bass_host.py's Host
+			# remembers the rate on its own and reapplies it automatically
+			# the next time a tempo-capable stream is opened *within the
+			# same subprocess* (see _try_create_url). But whenever a fresh
+			# _BassEngine is created instead of reusing the existing one —
+			# crossfade/tuning transitions (play()), or switch_output_device()
+			# — the new subprocess's Host starts at the default rate (1.0)
+			# and never learns about self._playback_rate, so the previously
+			# chosen speed silently reverts to normal on the next episode or
+			# resume. Resending it here (same safety-net pattern as bass
+			# boost/FX above) keeps it in sync regardless of which engine
+			# instance ended up serving this stream.
+			if is_podcast and self._playback_rate != 1.0:
+				try:
+					self._bass_engine.set_playback_rate(self._playback_rate)
+				except Exception:
+					pass
 			# Resume podcasts from where they were left off - podcasts are
 			# always opened seekable (see the "seekable" flag above), so
 			# this is just a relative seek from the fresh position (0).

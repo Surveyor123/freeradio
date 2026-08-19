@@ -966,6 +966,23 @@ class RadioPlayer:
 			self.stop()
 			return
 
+		# bass_host's stall watcher monitors whatever is on the single BASS
+		# channel, live URL or the local time-shift .buf file alike, and
+		# can't tell us which one stalled. A still-growing .buf file is
+		# especially prone to tripping its buffer-empty/position-stuck
+		# checks spuriously. If we're currently time-shifted, treat this
+		# as that (not a dead live connection) and just fall back to live
+		# the same clean way exit_timeshift_to_live() always does -
+		# running the live-URL reconnect/backoff loop below instead would
+		# silently tear down time-shift mode via _bg_launch's own reset,
+		# then immediately race back into a fresh, still-too-small buffer
+		# on the next rewind press, repeating indefinitely.
+		if self._timeshift_active:
+			log.warning("FreeRadio: BASS stall detected during time-shifted "
+						"playback, returning to live")
+			self.exit_timeshift_to_live()
+			return
+
 		url = self._current_url
 		vol = self._volume
 		if not url:
@@ -2644,7 +2661,16 @@ class RadioPlayer:
 
 		ok, position, length = self._bass_engine.timeshift_seek(abs(seconds))
 		if not ok:
-			return False, 0.0, False
+			# Once time-shifted, a forward seek can only fail because the
+			# requested position is beyond what has actually been captured
+			# so far - i.e. we're already at (or asking past) the live
+			# edge. BASS_ChannelSetPosition usually errors out here rather
+			# than landing close to the end, so the normal "within
+			# _EDGE_MARGIN_SECONDS of length" check below never gets a
+			# chance to fire. Treat the failure itself as having reached
+			# live instead of surfacing a raw seek error to the user.
+			self.exit_timeshift_to_live()
+			return True, None, True
 
 		_EDGE_MARGIN_SECONDS = 2.0
 		if length - position <= _EDGE_MARGIN_SECONDS:

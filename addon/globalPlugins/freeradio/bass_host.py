@@ -50,7 +50,7 @@ _DEBUG_LOG_PATH = os.path.join(tempfile.gettempdir(), "freeradio_timeshift_debug
 # Off by default, matching timeshift.py's own _DEBUG_ENABLED — this file
 # previously had no gate at all and wrote unconditionally, so disabling
 # debug logging in timeshift.py had no effect on it.
-_DEBUG_ENABLED = False
+_DEBUG_ENABLED = True
 
 
 def _debug_log(msg):

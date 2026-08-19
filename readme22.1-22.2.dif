@@ -1,0 +1,87 @@
+--- README.md (mevcut)
++++ README.md (güncel)
+@@ -30,6 +30,8 @@
+ | `Ctrl+Win+↑` | Volume up | Increases volume by 5; maximum 200. |
+ | `Ctrl+Win+↓` | Volume down | Decreases volume by 5; minimum 0. |
+ | `Ctrl+Win+V` | Add to favourites | Adds the currently playing station to the favourites list. Announces if the station is already in the list. |
++| `Ctrl+Win+Shift+K` | Increase playback speed | Increases the playback speed of a podcast episode by 0.1x (pitch-preserving). Range: 0.5x to 2.0x. Requires `bass_fx.dll` to be placed in the add‑on folder. |
++| `Ctrl+Win+Shift+J` | Decrease playback speed | Decreases the playback speed of a podcast episode by 0.1x. Requires `bass_fx.dll`. |
+ | `Ctrl+Win+I` | Station info | Announces the currently playing station name. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
+ | `Ctrl+Win+M` | Audio mirror | Mirrors the current stream to an additional audio output device simultaneously. Press again to stop mirroring. |
+ | `Ctrl+Win+E` | Instant recording | Press once to start recording the current station; press again to stop. Press **twice** to start a **song recording** — the file is named after the current track and the recording stops automatically when the track changes. Press twice again while a song recording is active to stop it early. Playback continues uninterrupted in all recording modes. Only available for stations that broadcast ICY metadata. |
+@@ -40,6 +42,8 @@
+ 
+ Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
+ 
++When searching, results from Radio Browser are supplemented with stations from TuneIn and iHeartRadio (when available). These external sources are searched in the background and their results are merged into the list automatically, giving you access to even more stations without any extra action.
++
+ The **Output Device** dropdown at the bottom of the browser window — outside the tabs — lists all BASS-recognised audio output devices. Selecting a device immediately redirects audio output to it and saves the choice permanently; the same device is used automatically in the next session. If the selected device is not connected, the add-on falls back to the system default automatically. Press `F11` to open a simpler on-demand device picker from anywhere in the Station Browser. The picker is not shown automatically and opens only when BASS detects more than one physical output device. When just one is available, no selection is needed and FreeRadio uses the system default output. This feature is only functional when the BASS backend is active.
+ 
+@@ -207,14 +211,20 @@
+ 
+ **Scheduled recording:** Open the Recording tab in the browser. Select a station from your favourites, enter the start time in HH:MM format and the duration in minutes, select one or more active days, then choose a recurrence mode and a recording mode:
+ 
++A **Filter** field above the station list lets you narrow the favourites list in real time, so you can quickly find the station you want to schedule.
++
+ **Active days:** Check one or more days of the week. In single-recording mode, a separate entry is created for each selected day, each placed on the next upcoming occurrence of that day. In recurring mode, the recording repeats only on the checked days. If no days are checked, the recording is not restricted to specific days.
+ 
+ **Recurrence:**
+ - **Record once** — records a single time on each selected day. Each entry is placed on the next upcoming occurrence of that day; if the selected time has already passed today, the entry moves to the same day next week automatically.
+ - **Repeat weekly** — repeats every week on the selected active days until removed from the schedule list.
+ 
++**Save recording to:** For each scheduled recording, you can choose to save to the default recordings folder or a custom folder. Use the **Browse...** button to select a folder interactively. If the chosen folder becomes unavailable, the recording falls back to the default folder and you are notified.
++
+ **Recording mode:**
+ - **Record while listening** — plays and records simultaneously. A playback backend is started using the BASS → VLC → PotPlayer → Windows Media Player priority order.
+ - **Record only** — records silently in the background without any audio output; the recording engine connects directly to the stream.
+ 
++Once a schedule is added, it appears in the list below. Use the **Remove Selected** button to delete a schedule, or **Edit Selected** to modify its time, duration, recurrence, active days, recording mode, or output folder.
++
+ NVDA announces when a recording starts and when it finishes. If NVDA is restarted while a scheduled recording is active, the recording resumes automatically on startup.
+@@ -241,6 +251,11 @@
+ 
+ Podcast episodes are played using the **BASS backend** (the same engine used for radio streams). Because episodes are downloaded progressively and are seekable, you can use the time-shift rewind/forward shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`) while playing a podcast to jump back or forward **5 seconds** at a time (instead of the 15‑second rewind used for live radio). The position is saved automatically so you can resume later.
+ 
++**Playback speed:** You can adjust the playback speed of podcast episodes using `Ctrl+Win+Shift+K` (faster) and `Ctrl+Win+Shift+J` (slower). The speed changes in 0.1x increments, ranging from 0.5x to 2.0x, with pitch preserved. This requires the optional `bass_fx.dll` library to be placed in the add‑on's folder. If the library is missing, NVDA will inform you that the feature is unavailable.
++
++> **Note:** `bass_fx.dll` is not bundled with FreeRadio by default. You can download it from the [BASS FX page](https://www.un4seen.com/bass-fx.html) and place it in the add‑on's `bass/x64` (for 64‑bit NVDA) or `bass` (for 32‑bit NVDA) folder to enable this feature.
++
+ If the BASS backend is disabled (or fails), podcast playback falls back to the same chain of external players (VLC → PotPlayer → WMP) used for radio, but **seek and resume functionality will not work** in that case — the episode will play from the beginning each time. For the full podcast experience, keep the BASS backend enabled.
+ 
+ ### Podcast Data Storage
+@@ -257,6 +272,8 @@
+ 
+ ## Liked Songs Tab
+ 
++The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened. Right‑click a song, or select it and press the Applications key / `Shift+F10`, to open a context menu with the same actions described below.
++
+ A **Filter** field above the list lets you narrow the displayed tracks in real time. Type any part of a song title or artist name and the list updates instantly on every keystroke. NVDA announces the number of matching results after each change. Press the `Down` arrow from the filter field to move focus directly into the list.
+ 
+ Selecting a track from the list enables the following actions:
+@@ -282,6 +299,8 @@
+ 
+ Open the Timer tab in the station browser (`Alt+4`). Two types of timer can be added:
+ 
++When choosing a station for an alarm timer, a **Filter** field above the station list lets you narrow the favourites list in real time.
++
+ **Alarm — start radio:** Automatically starts playing a selected station from your favourites at the specified time. Choose a station and enter the time in HH:MM format.
+ 
+ **Sleep — stop radio:** Stops playback at the specified time. When the timer fires, volume is gradually reduced over 60 seconds before playback stops. No station selection is needed; just enter the time.
+@@ -408,6 +427,8 @@
+ 
+ | Option | Description |
+ |---|---|
++| Disable BASS backend | When enabled, FreeRadio will not use the bundled BASS engine and will rely on VLC, PotPlayer, or Windows Media Player instead. Restart NVDA for this change to take effect. |
++| Track change voice | Choose whether auto‑announced track changes are spoken using the NVDA synthesizer or a selected SAPI5 voice. |
+ | Audio output device (BASS backend) | Sets the audio output device for radio playback. The list includes all BASS-compatible devices on the system plus a "System default" option. Changes are applied immediately on save; if the selected device is disconnected, the add-on automatically falls back to the system default and announces the change. Only active when the BASS backend is in use. |
+ | Audio device refresh mode (BASS backend) | Controls how FreeRadio refreshes BASS output-device numbers. **Reliable** mode (default) probes devices live and tracks Bluetooth/USB changes more accurately, but can make device changes slightly slower. **Fast** mode uses the current BASS device list and is quicker, but device numbers may stay stale until BASS or NVDA is restarted. |
+ | Volume | Sets the add-on's starting volume (0–200). Changes made during playback with `Ctrl+Win+↑` / `Ctrl+Win+↓` are also reflected here. |
+@@ -425,7 +446,7 @@
+ | Braille messages | When enabled, FreeRadio also sends its notifications directly to the braille display. This is useful for track titles, station changes, playback state and volume changes. Disabled by default. |
+ | Enable time-shift buffer (rewind live radio, ~10 minutes) | Turns the rewind controls (`Ctrl+Win+J`/`Ctrl+Win+K`) on or off and grows the background capture from ~45 seconds up to ~10 minutes. A small background capture of the currently playing station always runs, even when this is off — see the note in the **Time-Shift (Rewind Live Radio)** section below. Can also be toggled instantly with `Ctrl+Win+T`. Requires the BASS backend. Disabled by default — see the **Time-Shift (Rewind Live Radio)** section below for full details. |
+ | Save liked songs to a text file | When enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended to `Documents\FreeRadio Recordings\likedSongs.txt`. If no ICY metadata is available, the Shazam recognition result is saved to the same file. Disabled by default. |
+-| When Ctrl+Win+P is pressed with no active playback | Determines what happens when this shortcut is pressed and nothing is playing: start the last station or open the favourites list. |
++| Time-shift buffer duration | Sets the maximum length of the rewind buffer. Options range from 10 minutes up to 5 hours. Longer buffers consume more temporary disk space. |
+ | When Ctrl+Win+P is pressed twice | Selects what happens when the shortcut is pressed twice in quick succession: do nothing, open the favourites list, open the recording tab or open the timer tab. When "do nothing" is selected, the first press responds instantly with no delay. |
+ | When Ctrl+Win+P is pressed three times | Selects what happens when the shortcut is pressed three times in quick succession: do nothing, open the favourites list, open station search, open the recording tab or open the timer tab. |
+ | Check for updates automatically | When enabled, a background update check runs each time NVDA starts; you are notified if a new version is found. When disabled, automatic checks stop but manual checks remain available. |

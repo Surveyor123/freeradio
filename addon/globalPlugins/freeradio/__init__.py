@@ -424,6 +424,10 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		# Refresh the podcast episode list's row when a position is saved
 		# due to a pause or the episode finishing (not the periodic autosave).
 		self._player.on_podcast_progress_saved = self._on_podcast_progress_saved
+		# Auto-advance to the next part when a GETEM audio book chapter
+		# reaches its end on its own (regular podcast episodes are left as
+		# manual advance - see RadioDialog._on_playback_finished()).
+		self._player.on_podcast_finished = self._on_podcast_finished
 		self._manager = stationManager.StationManager()
 		# Initialize Recorder with dll_dir, player_paths, volume and main player reference
 		dll_dir = os.path.dirname(os.path.abspath(__file__))
@@ -681,7 +685,7 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 
 
 	@script(
-		description=_("Add currently playing station to favourites, or download the episode if a podcast is playing"),
+		description=_("Add currently playing station to favourites, download the whole audio book if one is playing, or download the episode if a podcast is playing"),
 		category=_("FreeRadio"),
 		gesture="kb:control+windows+v",
 	)
@@ -690,7 +694,15 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		if not station:
 			ui.message(_("No station is playing"))
 			return
-		if "podcast" in station.get("tags", ""):
+		tags = station.get("tags", "")
+		# Checked ahead of the plain "podcast" branch below: GETEM chapters
+		# carry both tags (see getem.GetemBook.to_dict()), and a whole-book
+		# download - into its own folder, all parts - is what's wanted here
+		# rather than a single-episode-style download of just this part.
+		if "audiobook" in tags:
+			self._download_current_getem_book(station)
+			return
+		if "podcast" in tags:
 			self._download_current_podcast_episode(station)
 			return
 		if self._manager.is_favorite(station):
@@ -699,6 +711,25 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		self._manager.add_favorite(station)
 		ui.message(_("Added to favourites: %s") % station.get("name", "").strip())
 		self._rebuild_station_scripts()
+
+	def _download_current_getem_book(self, station):
+		"""Downloads every part of the GETEM audio book currently playing
+		into its own folder under the recordings directory - the
+		audiobook branch of script_addToFavorites() above. The book
+		object (with its already-resolved chapter list) lives on the
+		dialog, not here, so this just hands off to it; the dialog
+		instance persists (Hide(), not Destroy()) for as long as
+		something it started is still playing, so it's expected to exist
+		whenever this is reachable."""
+		detail_url = station.get("getem_detail_url")
+		if not detail_url or not self._dialog:
+			ui.message(_("No audio book is playing"))
+			return
+		try:
+			self._dialog.download_getem_book_by_detail_url(detail_url)
+		except Exception:
+			log.error("FreeRadio: could not start audio book download", exc_info=True)
+			ui.message(_("Could not download this audio book."))
 
 
 	def _sync_dialog_device(self, device_index):
@@ -728,6 +759,22 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		if self._dialog and self._dialog.IsShown():
 			try:
 				self._dialog.refresh_episode_progress(url)
+			except Exception:
+				pass
+
+	def _on_podcast_finished(self, station):
+		"""Called (possibly from a background thread - e.g. from
+		radioPlayer's stall/finish detection) only when a podcast/GETEM item
+		actually reaches its end, never on a plain pause - see
+		radioPlayer.RadioPlayer.on_podcast_finished. Marshals onto the UI
+		thread and asks the dialog, if open, to react (currently: auto-
+		advance to the next GETEM chapter)."""
+		wx.CallAfter(self._on_podcast_finished_ui, station)
+
+	def _on_podcast_finished_ui(self, station):
+		if self._dialog and self._dialog.IsShown():
+			try:
+				self._dialog._on_playback_finished(station)
 			except Exception:
 				pass
 

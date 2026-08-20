@@ -66,7 +66,7 @@ Next / previous shortcuts only navigate the favourites list; they do not work wi
 
 FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
 
-The window opened with `Ctrl+Win+R` contains six tabs: All Stations, Favourites, Recording, Timer, Liked Songs, and Podcasts. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+6`.
+The window opened with `Ctrl+Win+R` contains seven tabs: All Stations, Favourites, Recording, Timer, Liked Songs, Podcasts and Audio Books. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+6`.
 
 When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
@@ -437,6 +437,64 @@ If the BASS backend is disabled (or fails), podcast playback falls back to the s
 ### Podcast Data Storage
 
 Your subscriptions are stored in `freeradio_podcasts.json` in the NVDA user configuration folder. Episode positions are stored separately in `podcast_positions.json` in the same location. Both files are plain JSON and can be backed up or transferred to another computer.
+
+## Audio Books (GETEM)
+
+FreeRadio includes an audio book player for [GETEM](https://getem.boun.edu.tr/), the digital library run by Boğaziçi University's Center for the Visually Impaired. You can search its catalogue, preview and add books to a personal library, play multi-part works with automatic resume, and download books for offline listening — all fully accessible.
+
+GETEM is the first source supported by this feature. The Audio Books tab is built so that further libraries or catalogues can be added alongside it in the future; for now, GETEM is the only one available.
+
+> **Note:** Listening requires a free GETEM membership. Browsing the catalogue does not need an account, but resolving and playing a book's audio does — see [Signing In](#signing-in) below.
+
+### Accessing the Audio Books Tab
+
+Open the station browser with `Ctrl+Win+R` and switch to the **Audio Books** tab using `Ctrl+Tab` or `Alt+7`. The tab has three main areas:
+
+1. **Search** — a text field to search GETEM's catalogue, with a results list that appears once a search is run.
+2. **Library** — the list of books you have added, where you play, download and manage them.
+3. **Details** — a read-only box showing the title, author, narrator, publisher, format, number of parts, description and catalogue URL of whichever book is selected, in either list.
+
+### Signing In
+
+GETEM requires being a registered member to stream or download a book's actual audio, even though the catalogue itself can be searched freely. Enter your GETEM username and password once in **NVDA Menu → Preferences → Settings → FreeRadio**; they are stored encrypted on disk (via the Windows Data Protection API, tied to your Windows user account) and reused automatically afterward. If you try to play or download a book before entering credentials, FreeRadio tells you to add them in Settings first.
+
+### Searching for Audio Books
+
+Type a search term — title, author, narrator, subject or publisher — into the search field and press `Enter`. FreeRadio searches all of these fields at once and merges the results, since GETEM's own search form only supports narrowing by all of them together rather than a single search across any of them. Only works that are actually available as audio (human or computer narration, audio description, radio drama, DAISY talking books, etc.) are shown; braille, large-print and other non-audio formats are filtered out automatically. NVDA announces how many audio books were found.
+
+Selecting a result shows its details — author, narrator, publisher, format and part count — in the details box below.
+
+**Previewing:** Select a result and press `Space`, or open its context menu (Applications key / `Shift+F10`, or right‑click) and choose **Preview**, to start playing it from its first part without adding it to your library. While a book is being previewed, the same context menu shows **Stop Preview** in its place — choose it, or press `Space` again, to stop. Previewing a book does not save your listening position, since that is only tracked for books already in your library.
+
+**Adding to your library:** Select a result and press `Enter`, or use its context menu and choose **Add to Library**, to add it. FreeRadio tells you if the book is already there.
+
+### Your Library
+
+Books you've added appear in the **Library** list, showing title, author and format. Selecting one shows its details below.
+
+- Press `Enter` or `Space` to play the selected book. If nothing is loaded, `Space` starts it; if something is already playing, `Space` pauses it instead, matching the rest of the player.
+- Use `F3` / `F4` on the Audio Books tab to move to the previous / next **book** in your library and start playing it. `Ctrl+←` / `Ctrl+→` do the same while the library list is focused.
+- Use `Shift+F3` / `Shift+F4` to move between **parts** of the currently playing book instead — the reverse of the Podcasts tab, where F3/F4 move between episodes and Shift+F3/F4 move between feeds. This is because a book is a single library entry even when it has several parts, so the finer-grained "part" navigation sits on the Shift-modified keys here.
+
+**Context menu for library entries:** Right‑click a book, or select it and press the Applications key / `Shift+F10`, to open a menu with:
+- **Play Media** — start playing, same as `Enter`.
+- **Download Book** — download every part of the book; see [Downloading Audio Books](#downloading-audio-books) below.
+- **Copy the URL** — copy the book's GETEM catalogue page URL to the clipboard.
+- **Remove from the Library** — delete the book from your library.
+
+### Playback and Resuming
+
+A multi-part work is treated as a single item in the player, not one row per part — the same way a podcast episode is a single item regardless of how it's delivered. FreeRadio remembers which part you last listened to and resumes there automatically the next time you play that book, even across an NVDA restart.
+
+Playback streams through a small local relay rather than downloading the whole part first, so listening starts as soon as the first bytes arrive — the same immediate-start behaviour podcasts use. All the usual player controls (pause, volume, time-shift, playback speed, output device, etc.) work on an audio book exactly as they would on a station or podcast episode.
+
+### Downloading Audio Books
+
+Select a book in your library and choose **Download Book** from its context menu to save every part to its own folder (named after the book) inside your recordings folder (`Documents\FreeRadio Recordings\` by default). Files are numbered so the parts always sort back into listening order, regardless of what GETEM itself calls them. NVDA announces how many parts were saved once the download finishes; if a part fails, the last error is reported alongside the count.
+
+### Audio Book Data Storage
+
+Your GETEM library (added books and their listening progress) is stored in `freeradio_getem_library.json` in the NVDA user configuration folder. Your encrypted GETEM credentials are stored separately in `freeradio_getem_credentials.bin` in the same location, and can only be decrypted by the same Windows user account that saved them.
 
 ## Liked Songs
 

@@ -19,6 +19,7 @@ import wx
 import winsound
 import gui
 from . import podcast
+from . import getem
 import urllib.parse
 import urllib.request
 from gui import nvdaControls
@@ -231,6 +232,7 @@ class RadioDialog(wx.Dialog):
 		self._timer_manager = timer_manager
 		self._plugin        = plugin
 		self._podcast_manager = podcast.PodcastManager()
+		self._getem_library   = getem.GetemLibrary()
 		self._all_stations    = []
 		self._extra_stations  = []   # additional stations from country selection
 		self._search_stations = []   # Stations from API text search
@@ -269,6 +271,7 @@ class RadioDialog(wx.Dialog):
 		self._timer_panel  = wx.Panel(self._notebook)
 		self._liked_panel  = wx.Panel(self._notebook)
 		self._podcast_panel = wx.Panel(self._notebook)
+		self._getem_panel   = wx.Panel(self._notebook)
 		# Tab labels no longer carry letter accelerators; numeric shortcuts
 		# Alt+1..5 are handled in _on_char_hook via an accelerator table.
 		self._notebook.AddPage(self._all_panel,   _("All Stations"))
@@ -277,6 +280,7 @@ class RadioDialog(wx.Dialog):
 		self._notebook.AddPage(self._timer_panel, _("Timer"))
 		self._notebook.AddPage(self._liked_panel, _("Liked Songs"))
 		self._notebook.AddPage(self._podcast_panel, _("Podcasts"))
+		self._notebook.AddPage(self._getem_panel, _("Audio Books"))
 		self._notebook.SetSelection(0)  # Start on the All Stations tab
 		main_sizer.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -410,6 +414,7 @@ class RadioDialog(wx.Dialog):
 		self._build_timer_tab()
 		self._build_liked_tab()
 		self._build_podcast_tab()
+		self._build_audiobooks_tab()
 
 		self._play_btn.Bind(wx.EVT_BUTTON,    self._on_play_clicked)
 		self._del_btn.Bind(wx.EVT_BUTTON,     self._on_delete_station)
@@ -930,7 +935,7 @@ class RadioDialog(wx.Dialog):
 		population runs.  Without this deferral the Clear()+Append() calls block
 		the wx paint cycle and the tab switch feels sluggish.
 		"""
-		on_rec_or_timer = (sel in (2, 3, 4, 5))
+		on_rec_or_timer = (sel in (2, 3, 4, 5, 6))
 		self._play_btn.Show(not on_rec_or_timer)
 		self._fav_btn.Show(not on_rec_or_timer)
 		self._del_btn.Show(not on_rec_or_timer)
@@ -952,6 +957,8 @@ class RadioDialog(wx.Dialog):
 			wx.CallLater(0, self._refresh_liked_list)
 		elif sel == 5:
 			wx.CallLater(0, self._refresh_all_podcast_feeds)
+		elif sel == 6:
+			wx.CallLater(0, self._refresh_getem_library_list)
 		if sel != 1 and hasattr(self, "_save_audio_btn"):
 			self._save_audio_btn.Enable(False)
 
@@ -3087,6 +3094,12 @@ class RadioDialog(wx.Dialog):
 		if is_context_key and focused == self._podcast_preview_list:
 			self._show_podcast_preview_context_menu()
 			return
+		if is_context_key and focused == self._getem_results:
+			self._show_getem_result_context_menu()
+			return
+		if is_context_key and focused == self._getem_library_ctrl:
+			self._show_getem_library_context_menu()
+			return
 
 		if key == wx.WXK_TAB and event.ControlDown() and not event.AltDown():
 			count = self._notebook.GetPageCount()
@@ -3147,6 +3160,15 @@ class RadioDialog(wx.Dialog):
 			if focused == self._podcast_preview_list:
 				self._on_podcast_preview_toggle(None)
 				return
+			if focused == self._getem_search:
+				self._on_getem_search(event)
+				return
+			if focused == self._getem_results:
+				self._on_getem_add_to_library(None)
+				return
+			if focused == self._getem_library_ctrl:
+				self._on_getem_play(None)
+				return
 			# For any other widget (country combo, search box, fav filter,
 			# timer/sched/liked lists, SpinCtrl, RadioButton, etc.) Enter must
 			# NOT bubble up to the default button (Play/Pause).  Consume it here.
@@ -3196,10 +3218,10 @@ class RadioDialog(wx.Dialog):
 				self.Hide()
 				gui.mainFrame.postPopup()
 				return
-			# Numeric tab shortcuts: Alt+1..5 switch to the corresponding tab.
-			# Tab order: 1=All Stations, 2=Favourites, 3=Recording, 4=Timer, 5=Liked Songs, 6=Podcasts
-			if ord("1") <= key <= ord("6"):
-				tab_index = key - ord("1")   # 1->0, 2->1, ..., 6->5
+			# Numeric tab shortcuts: Alt+1..7 switch to the corresponding tab.
+			# Tab order: 1=All Stations, 2=Favourites, 3=Recording, 4=Timer, 5=Liked Songs, 6=Podcasts, 7=Audio Books
+			if ord("1") <= key <= ord("7"):
+				tab_index = key - ord("1")   # 1->0, 2->1, ..., 7->6
 				self._notebook.SetSelection(tab_index)
 				self._on_tab_changed_index(tab_index)
 				return
@@ -3254,6 +3276,36 @@ class RadioDialog(wx.Dialog):
 					return
 				if key == wx.WXK_RIGHT and event.ControlDown():
 					self._play_next_episode()
+					return
+
+		# --- Unique shortcuts to the Audio Books tab ---
+		# A book is a single source even though it's split into parts -
+		# see GetemBook.last_chapter_index - so F3/F4 (and Ctrl+Left/
+		# Ctrl+Right on the library list) here switch BOOKS, the reverse
+		# of the Podcast tab above (where F3/F4 is the finer-grained
+		# "episode" switch and Shift+F3/F4 is the coarser "feed" switch):
+		# on this tab the part is the finer-grained unit, so it's the one
+		# that moves to the Shift-modified keys instead.
+		if self._notebook.GetSelection() == 6:  # Audio Books tab
+			focused = wx.Window.FindFocus()
+			if key == wx.WXK_F3 and event.ShiftDown():
+				self._play_prev_getem_chapter()
+				return
+			if key == wx.WXK_F4 and event.ShiftDown():
+				self._play_next_getem_chapter()
+				return
+			if key == wx.WXK_F3:
+				self._play_prev_getem_book()
+				return
+			if key == wx.WXK_F4:
+				self._play_next_getem_book()
+				return
+			if focused == self._getem_library_ctrl:
+				if key == wx.WXK_LEFT and event.ControlDown():
+					self._play_prev_getem_book()
+					return
+				if key == wx.WXK_RIGHT and event.ControlDown():
+					self._play_next_getem_book()
 					return
 
 		event.Skip()
@@ -4865,6 +4917,606 @@ class RadioDialog(wx.Dialog):
 			finally:
 				wx.TheClipboard.Close()
 			ui.message(_("Copied to clipboard"))
+
+	# ------------------------------------------------------------------ #
+	# Audio Books Tab (GETEM e-library)
+	# ------------------------------------------------------------------ #
+
+	def _build_audiobooks_tab(self):
+		"""Audio book search and library tab. Search UI is modeled on the
+		Podcasts tab above: a single search field, a results list that
+		only appears once a search has actually been run, and adding an
+		item to the library is done from the results list's context menu
+		rather than a dedicated button - see _show_getem_result_context_menu().
+		"""
+		panel = self._getem_panel
+		sizer = wx.BoxSizer(wx.VERTICAL)
+
+		# --- Search row ---
+		search_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		search_sizer.Add(wx.StaticText(panel, label=_("Search:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+		self._getem_search = wx.TextCtrl(panel)
+		self._getem_search.SetName(_("Search GETEM audio books by title, author, narrator, subject, or publisher. Press enter to search"))
+		search_sizer.Add(self._getem_search, 1, wx.EXPAND)
+		sizer.Add(search_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Search results list ---
+		# Hidden until a search is actually performed, same as the
+		# Podcasts tab's search results - see _set_getem_results_visible().
+		self._getem_results_label = wx.StaticText(panel, label=_("Search results:"))
+		sizer.Add(self._getem_results_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._getem_results = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._getem_results.SetName(_("GETEM search results"))
+		self._getem_results.SetMinSize((-1, 100))
+		sizer.Add(self._getem_results, 0, wx.EXPAND | wx.ALL, 8)
+		self._getem_search_sizer = sizer
+		self._set_getem_results_visible(False)
+
+		# --- Separator ---
+		sizer.Add(wx.StaticLine(panel), 0, wx.EXPAND | wx.ALL, 4)
+
+		# --- Library list ---
+		sizer.Add(wx.StaticText(panel, label=_("My Library:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._getem_library_ctrl = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._getem_library_ctrl.SetName(_("Audio books library"))
+		self._getem_library_ctrl.SetMinSize((-1, 120))
+		sizer.Add(self._getem_library_ctrl, 1, wx.EXPAND | wx.ALL, 8)
+
+		# --- Selected item details (read-only, reachable by Tab right
+		# after either list) ---
+		self._getem_details = wx.TextCtrl(panel, style=wx.TE_MULTILINE | wx.TE_READONLY)
+		self._getem_details.SetName(_("Audio book details"))
+		self._getem_details.SetMinSize((-1, 80))
+		sizer.Add(self._getem_details, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.BOTTOM, 8)
+
+		panel.SetSizer(sizer)
+
+		# --- Bind events ---
+		self._getem_search.Bind(wx.EVT_KEY_DOWN, self._on_getem_search_key)
+		self._getem_results.Bind(wx.EVT_LISTBOX, self._on_getem_result_selected)
+		self._getem_results.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._getem_results.Bind(wx.EVT_KEY_DOWN, self._on_getem_results_key)
+		self._getem_library_ctrl.Bind(wx.EVT_LISTBOX, self._on_getem_library_selected)
+		self._getem_library_ctrl.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._getem_library_ctrl.Bind(wx.EVT_KEY_DOWN, self._on_getem_library_key)
+
+		self._refresh_getem_library_list()
+
+	def _set_getem_results_visible(self, visible):
+		"""Show or hide the search-results list (with its label) in the
+		Audio Books tab. Hidden until a search is actually performed."""
+		sizer = getattr(self, "_getem_search_sizer", None)
+		widgets = (self._getem_results_label, self._getem_results)
+		for widget in widgets:
+			if sizer:
+				sizer.Show(widget, visible)
+			else:
+				widget.Show(visible)
+		try:
+			if sizer:
+				sizer.Layout()
+			else:
+				self._getem_panel.Layout()
+		except Exception:
+			pass
+
+	def _format_getem_result_label(self, book):
+		"""Listbox label for a GetemBook: title, author, and its format
+		(the user-facing "type" of the source - human/computer narration,
+		audio description, radio theatre, etc.)."""
+		parts = [book.title]
+		if book.author:
+			parts.append(book.author)
+		label = " — ".join(parts)
+		if book.format_label:
+			label += f" ({book.format_label})"
+		return label
+
+	def _format_getem_details(self, book):
+		if book is None:
+			return ""
+		lines = [book.title]
+		if book.author:
+			lines.append(_("Author: %s") % book.author)
+		if book.narrator:
+			lines.append(_("Narrator: %s") % book.narrator)
+		if book.publisher:
+			lines.append(_("Publisher: %s") % book.publisher)
+		if book.format_label:
+			lines.append(_("Type: %s") % book.format_label)
+		if book.chapters:
+			lines.append(ngettext("%d part", "%d parts", len(book.chapters)) % len(book.chapters))
+		if book.description:
+			description = self._html_to_text(book.description)
+			if description:
+				lines.append("")
+				lines.append(description)
+		lines.append("")
+		lines.append(book.detail_url)
+		return "\n".join(lines)
+
+	def _on_getem_search_key(self, event):
+		if event.GetKeyCode() == wx.WXK_RETURN:
+			self._on_getem_search(event)
+		else:
+			event.Skip()
+
+	def _on_getem_search(self, event):
+		query = self._getem_search.GetValue().strip()
+		if not query:
+			ui.message(_("Please enter a search term."))
+			return
+
+		self._set_getem_results_visible(True)
+		self._getem_search.Disable()
+		ui.message(_("Searching GETEM..."))
+
+		self._getem_search_id = getattr(self, "_getem_search_id", 0) + 1
+		search_id = self._getem_search_id
+
+		def _do_search():
+			books, error = getem.search_getem(query)
+			wx.CallAfter(self._on_getem_search_done, books, error, search_id)
+
+		threading.Thread(target=_do_search, daemon=True).start()
+
+	def _on_getem_search_done(self, books, error, search_id):
+		if search_id != getattr(self, "_getem_search_id", None):
+			return  # A newer search was started before this one finished.
+		self._getem_search.Enable()
+		self._getem_results.Clear()
+		self._getem_search_results = books
+		if error:
+			ui.message(error)
+			return
+		if not books:
+			ui.message(_("No audio books found."))
+			return
+		for book in books:
+			self._getem_results.Append(self._format_getem_result_label(book))
+		ui.message(_("%d audio books found.") % len(books))
+		self._getem_results.SetSelection(0)
+		self._on_getem_result_selected(None)
+
+	def _on_getem_result_selected(self, event):
+		idx = self._getem_results.GetSelection()
+		results = getattr(self, "_getem_search_results", None) or []
+		book = results[idx] if idx != wx.NOT_FOUND and idx < len(results) else None
+		self._getem_details.ChangeValue(self._format_getem_details(book))
+
+	def _on_getem_add_to_library(self, event):
+		"""Adds the selected search result to the library. Reached via the
+		search results' context menu or Enter - there is no separate button."""
+		idx = self._getem_results.GetSelection()
+		results = getattr(self, "_getem_search_results", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(results):
+			return
+		book = results[idx]
+		if self._getem_library.is_in_library(book):
+			ui.message(_("This audio book is already in your library."))
+			return
+		if self._getem_library.add_book(book):
+			ui.message(_("Added to library: %s") % book.title)
+			self._refresh_getem_library_list()
+		else:
+			ui.message(_("Could not add to library."))
+
+	def _show_getem_result_context_menu(self):
+		"""Context menu for the selected item in the search results list."""
+		idx = self._getem_results.GetSelection()
+		results = getattr(self, "_getem_search_results", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(results):
+			return
+		book = results[idx]
+
+		menu = wx.Menu()
+		item_add = menu.Append(wx.ID_ANY, _("&Add to Library"))
+		self.Bind(wx.EVT_MENU, self._on_getem_add_to_library, item_add)
+
+		menu.AppendSeparator()
+
+		label = _("&Stop Preview") if self._is_previewing_getem_book(book) else _("&Preview")
+		item_preview = menu.Append(wx.ID_ANY, label)
+		self.Bind(wx.EVT_MENU, self._on_getem_preview_toggle, item_preview)
+
+		self.PopupMenu(menu, self._getem_results.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _is_previewing_getem_book(self, book):
+		"""Whether *book* (from the search results list) is the audio book
+		currently loaded in the player, regardless of whether it's playing
+		or paused - the GETEM equivalent of _is_previewing() for podcast
+		episodes, matched on getem_detail_url (see GetemBook.to_dict())
+		rather than on url, since a book's stream URL changes per part."""
+		if not book or not book.detail_url or not self._player.has_media():
+			return False
+		current = self._player.get_current_station() or {}
+		return current.get("getem_detail_url") == book.detail_url
+
+	def _on_getem_results_key(self, event):
+		if event.GetKeyCode() == wx.WXK_SPACE:
+			self._on_getem_preview_toggle(None)
+			return
+		event.Skip()
+
+	def _on_getem_preview_toggle(self, event):
+		"""Preview (play) the selected search result from its first part,
+		or stop it if it's already the one being previewed. Reached via
+		the search results' context menu or Space - mirrors
+		_on_podcast_preview_toggle(). Doesn't add the book to the library;
+		_play_getem_book()/_start_getem_chapter() only persist progress
+		for books that are already in it (see GetemLibrary.mark_progress())."""
+		idx = self._getem_results.GetSelection()
+		results = getattr(self, "_getem_search_results", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(results):
+			return
+		book = results[idx]
+
+		if self._is_previewing_getem_book(book):
+			if self._plugin:
+				wx.CallAfter(self._plugin._stop_from_dialog)
+			return
+
+		self._play_getem_book(book)
+
+	def _refresh_getem_library_list(self):
+		"""Populate the library listbox, preserving whichever book is
+		selected at the moment this runs (mirrors _refresh_podcast_list())."""
+		prev_key = None
+		idx = self._getem_library_ctrl.GetSelection()
+		books_before = self._getem_library.get_books()
+		if idx != wx.NOT_FOUND and idx < len(books_before):
+			prev_key = books_before[idx].identity_key()
+
+		self._getem_library_ctrl.Clear()
+		books = self._getem_library.get_books()
+		for book in books:
+			self._getem_library_ctrl.Append(self._format_getem_result_label(book))
+
+		if not books:
+			self._getem_details.ChangeValue("")
+			return
+
+		restore_idx = 0
+		if prev_key:
+			for i, book in enumerate(books):
+				if book.identity_key() == prev_key:
+					restore_idx = i
+					break
+		self._getem_library_ctrl.SetSelection(restore_idx)
+		self._on_getem_library_selected(None)
+
+	def _on_getem_library_selected(self, event):
+		idx = self._getem_library_ctrl.GetSelection()
+		books = self._getem_library.get_books()
+		book = books[idx] if idx != wx.NOT_FOUND and idx < len(books) else None
+		self._getem_details.ChangeValue(self._format_getem_details(book))
+
+	def _on_getem_library_key(self, event):
+		key = event.GetKeyCode()
+		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+			self._on_getem_play(None)
+			return
+		if key == wx.WXK_SPACE:
+			# Space: pause whatever is currently playing; otherwise start
+			# (or resume) the highlighted book - matches the Space handling
+			# on the station lists (_on_list_key/_on_fav_list_key) and the
+			# podcast episode list (_on_episode_key).
+			if self._player.is_playing():
+				self._player.pause()
+				_notify(_("Paused"))
+			else:
+				self._on_getem_play(None)
+			return
+		event.Skip()
+
+	def _on_getem_play(self, event):
+		idx = self._getem_library_ctrl.GetSelection()
+		books = self._getem_library.get_books()
+		if idx == wx.NOT_FOUND or idx >= len(books):
+			return
+		self._play_getem_book(books[idx])
+
+	def _play_getem_book(self, book):
+		"""Resolves (if needed) and starts playing *book*, resuming from
+		whichever part it was last left off on (book.last_chapter_index -
+		see getem.GetemLibrary.mark_progress()). Every part of a
+		multi-part work is fed to the player as the same played item - see
+		getem.GetemBook.to_dict() and _start_getem_chapter() - so it gets
+		the same resume/seek/speed-change handling a podcast episode does,
+		without a separate per-part row anywhere in the UI: the book is
+		one source, not one row per part."""
+		if book.chapters:
+			start_idx = min(max(book.last_chapter_index, 0), len(book.chapters) - 1)
+			self._start_getem_chapter(book, start_idx)
+			return
+
+		ui.message(_("Loading: %s") % book.title)
+
+		def _do_resolve():
+			resolved_book, error = getem.resolve_media(book)
+			wx.CallAfter(self._on_getem_media_resolved, resolved_book, error)
+
+		threading.Thread(target=_do_resolve, daemon=True).start()
+
+	def _on_getem_media_resolved(self, book, error):
+		if error:
+			ui.message(error)
+			return
+		if self._getem_library.is_in_library(book):
+			# Persist the now-resolved chapter list so this work doesn't
+			# need re-resolving (and re-logging-in) the next time it's played.
+			self._getem_library.save()
+		start_idx = min(max(book.last_chapter_index, 0), len(book.chapters) - 1) if book.chapters else 0
+		self._start_getem_chapter(book, start_idx)
+
+	def _start_getem_chapter(self, book, chapter_index):
+		"""Plays the given part by pointing the player at the local GETEM
+		streaming proxy (see getem.get_stream_url()) rather than
+		downloading the whole chapter first - playback starts as soon as
+		the first bytes come back, the same as a normal podcast episode.
+		A remote GETEM URL can't be handed to the player directly: it only
+		works with our Python session's login cookie, which the audio
+		backend (BASS, in its own subprocess) has no way to send when it
+		opens a URL on its own - the proxy is what supplies that cookie
+		on its behalf."""
+		if chapter_index < 0 or chapter_index >= len(book.chapters):
+			return
+		self._getem_now_playing = (book, chapter_index)
+		self._getem_library.mark_progress(book, chapter_index)
+		chapter = book.chapters[chapter_index]
+
+		ui.message(_("Loading: %s") % chapter["title"])
+
+		stream_url = getem.get_stream_url(chapter["url"], referer=book.detail_url)
+		station_dict = book.to_dict()
+		station_dict["name"] = chapter["title"]
+		station_dict["url"] = stream_url
+		station_dict["url_resolved"] = stream_url
+		self._play_callback(station_dict, [station_dict], 0, announce=True)
+
+	def _getem_current_book_index(self, books):
+		"""Index (within *books*) of whichever audio book is currently
+		loaded/playing, falling back to the library list's own selection
+		if nothing is playing yet - used by _play_prev_getem_book()/
+		_play_next_getem_book()."""
+		playing = getattr(self, "_getem_now_playing", None)
+		if playing:
+			key = playing[0].identity_key()
+			for i, b in enumerate(books):
+				if b.identity_key() == key:
+					return i
+		return self._getem_library_ctrl.GetSelection()
+
+	def _play_prev_getem_book(self):
+		"""Plays the previous audio book in the library, resuming wherever
+		it was last left off - the book-level equivalent of
+		_play_prev_getem_chapter(), and the primary F3 action on this tab
+		since a book (not a part) is the source the listener thinks in
+		terms of - see GetemBook.last_chapter_index."""
+		books = self._getem_library.get_books()
+		if not books:
+			ui.message(_("Library is empty"))
+			return
+		idx = self._getem_current_book_index(books)
+		if idx <= 0:
+			ui.message(_("Already at first book"))
+			return
+		new_idx = idx - 1
+		self._getem_library_ctrl.SetSelection(new_idx)
+		self._on_getem_library_selected(None)
+		self._play_getem_book(books[new_idx])
+
+	def _play_next_getem_book(self):
+		"""Plays the next audio book in the library, resuming wherever it
+		was last left off - the book-level equivalent of
+		_play_next_getem_chapter(), and the primary F4 action on this tab."""
+		books = self._getem_library.get_books()
+		if not books:
+			ui.message(_("Library is empty"))
+			return
+		idx = self._getem_current_book_index(books)
+		if idx >= len(books) - 1:
+			ui.message(_("Already at last book"))
+			return
+		new_idx = idx + 1
+		self._getem_library_ctrl.SetSelection(new_idx)
+		self._on_getem_library_selected(None)
+		self._play_getem_book(books[new_idx])
+
+	def _play_prev_getem_chapter(self):
+		"""Plays the previous part of whichever audio book is currently
+		loaded - the equivalent of _play_prev_episode() on the Podcasts tab."""
+		playing = getattr(self, "_getem_now_playing", None)
+		if not playing:
+			return
+		book, idx = playing
+		if idx <= 0:
+			ui.message(_("Already at first part"))
+			return
+		self._start_getem_chapter(book, idx - 1)
+
+	def _play_next_getem_chapter(self, auto=False):
+		"""Plays the next part of whichever audio book is currently loaded.
+
+		*auto* is True when called from _on_playback_finished() right after
+		a part played to the end on its own, rather than from a user key
+		press: in that case, running off the end of the book is the normal,
+		expected outcome (not a mistake to report as "already at last
+		part"), so a softer "book finished" message is given instead."""
+		playing = getattr(self, "_getem_now_playing", None)
+		if not playing:
+			return
+		book, idx = playing
+		if idx >= len(book.chapters) - 1:
+			if auto:
+				ui.message(_("Finished: %s") % book.title)
+			else:
+				ui.message(_("Already at last part"))
+			return
+		self._start_getem_chapter(book, idx + 1)
+
+	def _on_playback_finished(self, station):
+		"""Called (via radioPlayer.RadioPlayer.on_podcast_finished, wired up
+		alongside on_podcast_progress_saved/on_device_lost) when whatever
+		was playing reached its end on its own - as opposed to being paused
+		or stopped by the user. For a GETEM audio book part, this is the cue
+		to automatically move on to the next part; regular podcast episodes
+		are left as-is (the user only asked for auto-advance on audio
+		books) and are still advanced manually via _play_next_episode()."""
+		if not station or "audiobook" not in station.get("tags", ""):
+			return
+		playing = getattr(self, "_getem_now_playing", None)
+		if not playing:
+			return
+		book, idx = playing
+		# Make sure the finished item still belongs to the book we think is
+		# loaded - e.g. the user could have already skipped away from it by
+		# hand right as it ended.
+		if book.detail_url != station.get("getem_detail_url"):
+			return
+		self._play_next_getem_chapter(auto=True)
+
+	def _show_getem_library_context_menu(self):
+		"""Context menu for the selected item in the library list: play,
+		copy the URL, or remove from the library."""
+		idx = self._getem_library_ctrl.GetSelection()
+		books = self._getem_library.get_books()
+		if idx == wx.NOT_FOUND or idx >= len(books):
+			return
+		book = books[idx]
+
+		menu = wx.Menu()
+
+		item_play = menu.Append(wx.ID_ANY, _("&Play Media"))
+		self.Bind(wx.EVT_MENU, self._on_getem_play, item_play)
+
+		menu.AppendSeparator()
+
+		item_download = menu.Append(wx.ID_ANY, _("&Download Book"))
+		self.Bind(wx.EVT_MENU, lambda e: self._download_getem_book(book), item_download)
+
+		menu.AppendSeparator()
+
+		item_copy_url = menu.Append(wx.ID_ANY, _("&Copy the URL"))
+		self.Bind(wx.EVT_MENU, lambda e: self._copy_to_clipboard(book.detail_url), item_copy_url)
+
+		menu.AppendSeparator()
+
+		item_remove = menu.Append(wx.ID_ANY, _("&Remove from the Library"))
+		self.Bind(wx.EVT_MENU, self._on_getem_remove_from_library, item_remove)
+
+		self.PopupMenu(menu, self._getem_library_ctrl.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _on_getem_remove_from_library(self, event):
+		idx = self._getem_library_ctrl.GetSelection()
+		books = self._getem_library.get_books()
+		if idx == wx.NOT_FOUND or idx >= len(books):
+			return
+		book = books[idx]
+		if self._getem_library.remove_book(book):
+			ui.message(_("Removed from library: %s") % book.title)
+			self._refresh_getem_library_list()
+
+	def download_getem_book_by_detail_url(self, detail_url):
+		"""Downloads every part of the GETEM audio book identified by
+		*detail_url* into its own folder under the recordings directory -
+		reached from GlobalPlugin._download_current_getem_book() in
+		__init__.py, the Ctrl+Win+V action while one of its parts is
+		playing (see script_addToFavorites()). Looks first at whichever
+		book is currently loaded (self._getem_now_playing already has its
+		resolved chapter list), then falls back to the library, so this
+		works whether or not the currently-playing book was ever added to
+		it."""
+		playing = getattr(self, "_getem_now_playing", None)
+		book = playing[0] if playing and playing[0].detail_url == detail_url else None
+		if book is None:
+			book = self._getem_library.get_book_by_key(detail_url)
+		if book is None:
+			ui.message(_("Could not find this audio book."))
+			return
+		self._download_getem_book(book)
+
+	def _download_getem_book(self, book):
+		"""Saves a permanent, user-visible copy of every part of *book* into
+		its own folder named after the book (see getem.book_download_dir()) -
+		the "Download Book" library context-menu action and its Ctrl+Win+V
+		equivalent. Distinct from a single-part download: resolves the full
+		chapter list first if it isn't already known."""
+		if book.chapters:
+			self._start_getem_book_download(book)
+			return
+
+		ui.message(_("Loading: %s") % book.title)
+
+		def _do_resolve():
+			resolved_book, error = getem.resolve_media(book)
+			wx.CallAfter(self._on_getem_book_download_resolve_done, resolved_book, error)
+
+		threading.Thread(target=_do_resolve, daemon=True).start()
+
+	def _on_getem_book_download_resolve_done(self, book, error):
+		if error:
+			ui.message(error)
+			return
+		if self._getem_library.is_in_library(book):
+			self._getem_library.save()
+		self._start_getem_book_download(book)
+
+	def _start_getem_book_download(self, book):
+		if not book.chapters:
+			ui.message(_("No audio parts found for this book."))
+			return
+
+		# Guard against firing the same book's download twice in a row
+		# (e.g. Ctrl+Win+V pressed twice while it's already under way) -
+		# there's no per-part row in the UI to disable like the podcast
+		# episode list's download button does.
+		key = book.identity_key()
+		if getattr(self, "_getem_book_download_active", None) == key:
+			ui.message(_("Already downloading: %s") % book.title)
+			return
+		self._getem_book_download_active = key
+
+		ui.message(_("Downloading book: %s") % book.title)
+
+		def _do_download():
+			out_dir = getem.book_download_dir(book)
+			try:
+				os.makedirs(out_dir, exist_ok=True)
+			except Exception as e:
+				wx.CallAfter(self._on_getem_book_download_done, book, 0, len(book.chapters), str(e))
+				return
+
+			saved = 0
+			last_error = None
+			for i, chapter in enumerate(book.chapters):
+				out_path = getem.download_book_chapter_target(book, chapter, i)
+				if os.path.exists(out_path):
+					saved += 1
+					continue
+				try:
+					getem.download_chapter_to(chapter["url"], out_path, referer=book.detail_url)
+					saved += 1
+				except FileExistsError:
+					saved += 1
+				except Exception as e:
+					last_error = str(e)
+			wx.CallAfter(self._on_getem_book_download_done, book, saved, len(book.chapters), last_error)
+
+		threading.Thread(target=_do_download, daemon=True).start()
+
+	def _on_getem_book_download_done(self, book, saved, total, error):
+		if getattr(self, "_getem_book_download_active", None) == book.identity_key():
+			self._getem_book_download_active = None
+		if saved >= total:
+			ui.message(_("Download complete: %s") % book.title)
+		elif saved > 0:
+			ui.message(_("Downloaded %(saved)d of %(total)d parts of %(book.title)s. Last error: %(error)s") % (saved, total, book.title, error))
+		else:
+			ui.message(_("Download failed: %s") % (error or book.title))
+
 
 class LyricsDialog(wx.Dialog):
 	"""Read-only lyrics viewer."""

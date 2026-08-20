@@ -30,6 +30,7 @@ from . import (
 	_AUDIO_DEVICE_REFRESH_MODE_KEYS,
 )
 from . import radioPlayer
+from . import getem
 
 
 def _get_freeradio_plugin():
@@ -435,6 +436,32 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		sHelper.addItem(_default_hint)
 		rec_dir_browse.Bind(wx.EVT_BUTTON, self._on_browse_recordings_dir)
 
+		# --- GETEM audio books account ---
+		# Credentials are not part of config.conf (which is stored as
+		# plain text) - they're saved separately, encrypted with the
+		# Windows Data Protection API; see getem.save_credentials().
+		sHelper.addItem(wx.StaticText(self, label=_("GETEM Audio Books Account:")))
+
+		getem_username_label = _("GETEM username:")
+		sHelper.addItem(wx.StaticText(self, label=getem_username_label))
+		_saved_getem_username, _saved_getem_password = getem.load_credentials()
+		self._getem_username = wx.TextCtrl(self, value=_saved_getem_username)
+		self._getem_username.SetName(getem_username_label)
+		sHelper.addItem(self._getem_username, flag=wx.EXPAND)
+
+		getem_password_label = _("GETEM password:")
+		sHelper.addItem(wx.StaticText(self, label=getem_password_label))
+		self._getem_password = wx.TextCtrl(self, value=_saved_getem_password, style=wx.TE_PASSWORD)
+		self._getem_password.SetName(getem_password_label)
+		sHelper.addItem(self._getem_password, flag=wx.EXPAND)
+
+		_getem_hint = wx.StaticText(
+			self,
+			label=_("Stored encrypted on this computer, for this Windows user only. Leave both fields empty and save to remove them."),
+		)
+		_getem_hint.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT))
+		sHelper.addItem(_getem_hint)
+
 		# --- Recording output format ---
 		recording_format_label = _("Recording output format:")
 		self._recording_format_keys = ["original", "audio_only", "mp3"]
@@ -822,6 +849,14 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			config.conf["freeradio"]["audio_fx"] = "none"
 		
 		config.conf["freeradio"]["recordings_dir"] = self._recordings_dir.GetValue().strip()
+
+		# GETEM credentials: stored encrypted, outside of config.conf - see
+		# getem.save_credentials(). Both fields empty clears any saved
+		# credentials rather than leaving the old ones in place.
+		_getem_username = self._getem_username.GetValue().strip()
+		_getem_password = self._getem_password.GetValue().strip()
+		getem.save_credentials(_getem_username, _getem_password)
+
 		_format_sel = self._recording_format.GetSelection()
 		_recording_format = (
 			self._recording_format_keys[_format_sel]

@@ -19,11 +19,20 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.22.2",
+	addon_version="2026.23.0",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
+## Audio Books (GETEM)
+- Added a new **Audio Books** tab (`Alt+7`) powered by [GETEM](https://getem.boun.edu.tr/), Boğaziçi University's digital library for the visually impaired — the first to be supported audio book sources.
+- Search GETEM's catalogue by title, author, narrator, subject, or publisher; results are automatically filtered to audio-only formats (human/computer narration, audio description, radio drama, DAISY talking books, etc.).
+- Preview any search result before committing to it, or add it straight to a personal library.
+- Multi-part works are handled as a single library entry: playback automatically resumes from the last part and position you left off on, even across NVDA restarts.
+- Play audio books through the same BASS-backed player used for radio and podcasts, with full support for pause/resume, volume, time-shift, playback speed, and output device selection.
+- Download an entire book — all parts, correctly numbered and named — to your recordings folder for offline listening.
+- GETEM sign-in credentials are stored encrypted on disk (Windows Data Protection API) and entered once from FreeRadio's Settings panel.
+- Fixed duplicate/repeated audio in recordings and Time-Shift on HLS streams that rotate session tokens in their segment URLs.
 ## Fixed:
 - Cleaned up leftover time-shift buffer files (`freeradio_timeshift_*.buf`) from previous sessions on startup. These are normally deleted when time-shift capture stops cleanly, but an abrupt shutdown (crash, power loss, Windows force-closing NVDA) would skip that step and leave the file in the temp folder — these could accumulate over time, especially with longer buffer durations. The add-on now clears out any matching leftover files each time it starts, before any new capture session begins.
 - Podcast playback speed reverting to normal (1.0x) after switching episodes or resuming from pause. The chosen speed is now resent to the audio engine every time a podcast stream is (re)started, so it stays in effect across episode changes, pause/resume, and station-transition effects (crossfade/tuning) instead of silently resetting.

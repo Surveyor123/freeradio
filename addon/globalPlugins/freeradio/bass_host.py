@@ -50,7 +50,7 @@ _DEBUG_LOG_PATH = os.path.join(tempfile.gettempdir(), "freeradio_timeshift_debug
 # Off by default, matching timeshift.py's own _DEBUG_ENABLED — this file
 # previously had no gate at all and wrote unconditionally, so disabling
 # debug logging in timeshift.py had no effect on it.
-_DEBUG_ENABLED = False
+_DEBUG_ENABLED = True
 
 
 def _debug_log(msg):
@@ -566,12 +566,81 @@ class BassHost:
                 pass
             return 0
 
+    def _try_create_local_file(self, path, seekable=False):
+        """Opens a local audio file via BASS_StreamCreateFile - the
+        counterpart to _try_create_url() for content that's already on
+        disk (currently: a GETEM audio-book chapter downloaded ahead of
+        playback, see getem.download_chapter()). Deliberately not routed
+        through BASS_StreamCreateURL: passing it a plain filesystem path
+        can happen to open something playable, but the resulting stream
+        isn't reliably seekable afterwards (BASS_ChannelSetPosition fails
+        on it) - the same class of BASS_ERROR_NOTAVAIL quirk already
+        worked around for the live-radio time-shift buffer file (see
+        play_timeshift_file()). BASS_StreamCreateFile doesn't have that
+        problem, so local files go straight to it instead.
+
+        Mirrors the seekable branch of _try_create_url()'s DECODE +
+        BASS_FX tempo-wrap logic, so local-file playback (GETEM chapters)
+        gets the same pitch-preserving playback-rate support podcasts do."""
+        use_tempo = seekable and bool(self._bass_fx_dll)
+        stream = self._dll.BASS_StreamCreateFile(
+            ctypes.c_int32(0), ctypes.c_wchar_p(path),
+            ctypes.c_uint64(0), ctypes.c_uint64(0),
+            ctypes.c_uint32((_BASS_STREAM_DECODE if use_tempo else 0) | _BASS_UNICODE),
+        )
+        if stream and use_tempo:
+            tempo_stream = self._bass_fx_dll.BASS_FX_TempoCreate(
+                stream, ctypes.c_uint32(_BASS_FX_FREESOURCE)
+            )
+            if tempo_stream:
+                stream = tempo_stream
+                self._tempo_active = True
+                if self._playback_rate != 1.0:
+                    try:
+                        self._dll.BASS_ChannelSetAttribute(
+                            stream, _BASS_ATTRIB_TEMPO,
+                            ctypes.c_float((self._playback_rate - 1.0) * 100.0),
+                        )
+                    except Exception:
+                        pass
+            else:
+                # Wrap failed - the decode-only stream is unplayable on
+                # its own; drop it and get a normal (non-decode) file
+                # stream so playback still works, just without rate
+                # control for this file.
+                try:
+                    self._dll.BASS_StreamFree(stream)
+                except Exception:
+                    pass
+                self._tempo_active = False
+                stream = self._dll.BASS_StreamCreateFile(
+                    ctypes.c_int32(0), ctypes.c_wchar_p(path),
+                    ctypes.c_uint64(0), ctypes.c_uint64(0),
+                    ctypes.c_uint32(_BASS_UNICODE),
+                )
+        if stream:
+            _debug_log("local file stream opened: %s" % path)
+        else:
+            try:
+                err = self._dll.BASS_ErrorGetCode()
+            except Exception:
+                err = -1
+            _debug_log("BASS_StreamCreateFile failed for local file, err=%d: %s" % (err, path))
+        return stream
+
     def _try_create_url(self, url, seekable=False):
         # Reset up front — only the seekable/tempo-wrap path below sets this
         # back to True, so a stale value from a previous podcast session
         # never lingers onto an unrelated live-radio stream.
         if not seekable:
             self._tempo_active = False
+
+        # A plain local filesystem path (not an http/https URL) - route to
+        # BASS_StreamCreateFile instead of treating it as a network URL;
+        # see _try_create_local_file() for why.
+        if not url.lower().startswith(("http://", "https://")) and os.path.isfile(url):
+            return self._try_create_local_file(url, seekable=seekable)
+
         url_lower = url.split("?")[0].lower()
         is_hls = url_lower.endswith(".m3u8")
         is_aac_ext = url_lower.endswith(".aac")

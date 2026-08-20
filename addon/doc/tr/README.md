@@ -440,7 +440,7 @@ Abonelikleriniz, NVDA kullanıcı yapılandırma klasöründeki `freeradio_podca
 
 ## Sesli Kitaplar (GETEM)
 
-FreeRadio, Boğaziçi Üniversitesi Görme Engelliler Teknoloji ve Eğitim Laboratuvarı (GETEM) tarafından işletilen dijital kütüphane [GETEM](https://getem.boun.edu.tr/) için bir sesli kitap oynatıcısı içerir. Kataloğunda arama yapabilir, kitapları önizleyebilir ve kişisel bir kütüphaneye ekleyebilir, çok bölümlü eserleri otomatik devam etme özelliğiyle oynatabilir ve kitapları çevrimdışı dinlemek için  indirebilirsiniz — tümü tam erişilebilir şekilde.
+FreeRadio, Boğaziçi Üniversitesi Görme Engelliler Teknoloji ve Eğitim Laboratuvarı (GETEM) tarafından işletilen dijital kütüphane [GETEM](https://getem.boun.edu.tr/) için bir sesli kitap oynatıcısı içerir. Kataloğunda arama yapabilir, kitapları önizleyebilir ve kişisel kitaplığa ekleyebilir, çok bölümlü eserleri otomatik devam etme özelliğiyle oynatabilir ve kitapları çevrimdışı dinlemek için  indirebilirsiniz — tümü tam erişilebilir şekilde.
 
 GETEM, bu özellik tarafından desteklenen ilk kaynaktır. Sesli Kitaplar sekmesi, gelecekte yanına başka kütüphaneler veya kataloglar eklenebilecek şekilde oluşturulmuştur; şimdilik GETEM mevcut olan tek kaynaktır.
 
@@ -452,7 +452,7 @@ GETEM, bu özellik tarafından desteklenen ilk kaynaktır. Sesli Kitaplar sekmes
 
 1. **Arama** — GETEM kataloğunda arama yapmak için bir metin alanı ve arama yapıldığında görünen bir sonuç listesi.
 2. **Kitaplık** — eklediğiniz kitapların listesi; burada oynatabilir, indirebilir ve yönetebilirsiniz.
-3. **Ayrıntılar** — her iki listede de seçili olan kitabın başlığını, yazarını, anlatıcısını, yayıncısını, biçimini, bölüm sayısını, açıklamasını ve katalog URL'sini gösteren salt okunur bir kutu.
+3. **Ayrıntılar** — her iki listede de seçili olan kitabın başlığını, yazarını, seslendireni, yayıncısını, biçimini, bölüm sayısını, açıklamasını ve katalog URL'sini gösteren salt okunur bir kutu.
 
 ### Oturum Açma
 
@@ -460,13 +460,13 @@ GETEM, kataloğun kendisi özgürce taranabilse de, bir kitabın gerçek sesini 
 
 ### Sesli Kitapları Arama
 
-Arama alanına bir arama terimi — başlık, yazar, seslendiren, konu veya yayıncı — yazın ve `Enter`'a basın. FreeRadio tüm bu alanları aynı anda arar ve sonuçları birleştirir, çünkü GETEM'in kendi arama formu bunların hepsini birlikte daraltmayı destekler, tek bir aramayla herhangi birinde arama yapmayı değil. Yalnızca gerçekten sesli olarak mevcut olan eserler (insan veya bilgisayar anlatımı, sesli betimleme, radyo tiyatrosu, DAISY konuşan kitaplar vb.) gösterilir; braille, büyük puntolu ve diğer ses dışı biçimler otomatik olarak filtrelenir. NVDA kaç sesli kitap bulunduğunu bildirir.
+Arama alanına bir arama terimi — başlık, yazar, seslendiren, konu veya yayıncı — yazın ve `Enter`'a basın. FreeRadio tüm bu alanları aynı anda arar ve sonuçları birleştirir, çünkü GETEM'in kendi arama formu bunların hepsini birlikte daraltmayı destekler, tek bir aramayla herhangi birinde arama yapmayı değil. Yalnızca gerçekten sesli olarak mevcut olan eserler (insan veya bilgisayar sesi, sesli betimleme, radyo tiyatrosu, DAISY konuşan kitaplar vb.) gösterilir; braille, büyük puntolu ve diğer ses dışı biçimler otomatik olarak filtrelenir. NVDA kaç sesli kitap bulunduğunu bildirir.
 
-Seçilen sonuçla ilgili bilgiler, — yazar, anlatıcı, yayıncı, biçim ve bölüm sayısı — aşağıdaki ayrıntı kutusunda gösterilir.
+Seçilen sonuçla ilgili bilgiler, — yazar, seslendiren, yayıncı, biçim ve bölüm sayısı — aşağıdaki ayrıntı kutusunda gösterilir.
 
-**Önizleme:** Bir sonucu seçin ve `aralık tuşu`'na basın veya bağlam menüsünü (Uygulamalar tuşu / `Shift+F10` veya sağ tık) açıp **Önizle**'yi seçerek ilk bölümünden itibaren kütüphanenize eklemeden oynatmaya başlayın. Bir kitap önizlenirken, aynı bağlam menüsünde yerine **Önizlemeyi Durdur** görünür — bunu seçin veya tekrar `Boşluk`'a basarak durdurun. Bir kitabı önizlemek, dinleme konumunuzu kaydetmez, kalınan yer takibi yalnızca kitaplıktaki  kitaplar için geçerlidir.
+**Önizleme:** Bir sonucu seçin ve `aralık tuşu`'na basın veya bağlam menüsünü (Uygulamalar tuşu / `Shift+F10` veya sağ tık) açıp **Önizle**'yi seçerek ilk bölümünden itibaren kitaplığa eklemeden oynatmaya başlayın. Bir kitap önizlenirken, aynı bağlam menüsünde yerine **Önizlemeyi Durdur** görünür — bunu seçin veya tekrar `Boşluk`'a basarak durdurun. Bir kitabı önizlemek, dinleme konumunuzu kaydetmez, kalınan yer takibi yalnızca kitaplıktaki  kitaplar için geçerlidir.
 
-**Kitaplığa ekleme:** Bir sonucu seçin ve `Enter`'a basın veya bağlam menüsünü kullanıp **Kütüphaneye Ekle**'yi seçerek ekleyin. FreeRadio kitap zaten oradaysa bunu bildirir.
+**Kitaplığa ekleme:** Bir sonucu seçin ve `Enter`'a basın veya bağlam menüsünü kullanıp **Kitaplığa Ekle**'yi seçerek ekleyin. FreeRadio kitap zaten oradaysa bunu bildirir.
 
 ### Kitaplık
 
@@ -474,7 +474,7 @@ Eklediğiniz kitaplar, başlık, yazar ve biçimi gösteren **Kitaplık** listes
 
 - Seçili kitabı oynatmak için `Enter` veya `Boşluk`'a basın. Hiçbir şey yüklenmemişse `Boşluk` başlatır; zaten bir şey çalıyorsa `Boşluk` bunun yerine duraklatır, oynatıcının geri kalanıyla eşleşir.
 - Sesli Kitaplar sekmesinde bir önceki / sonraki **kitaba** geçmek ve hemen oynatmaya başlamak için `F3` / `F4` kullanın. Kitaplık listesi odaklanmışken `Ctrl+←` / `Ctrl+→` de aynısını yapar.
-- Bunun yerine o an çalan kitabın **bölümleri** arasında geçmek için `Shift+F3` / `Shift+F4` kullanın — Podcastler sekmesinin tersidir; orada F3/F4 bölümler arasında, Shift+F3/F4 ise akışlar arasında geçer. Bunun nedeni, bir kitabın birden fazla bölümü olsa bile tek bir kütüphane girişi olmasıdır, bu nedenle daha ince taneli "bölüm" gezintisi burada Shift ile değiştirilmiş tuşlara yerleştirilmiştir.
+- Bunun yerine o an çalan kitabın **bölümleri** arasında geçiş yapmak için `Shift+F3` / `Shift+F4` kullanın — Podcastler sekmesinin tersidir; orada F3/F4 bölümler arasında, Shift+F3/F4 ise akışlar arasında geçiş yapar. Bunun nedeni, bir kitabın birden fazla bölümü olsa bile tek bir kaynak  olmasıdır, bu nedenle daha ince taneli "bölüm" gezintisi burada Shift ile değiştirilmiş tuşlara yerleştirilmiştir.
 
 **Kitaplık girişleri için bağlam menüsü:** Bir kitaba sağ tıklayın veya seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açın:
 - **Medyayı Oynat** — oynatmaya başlar, `Enter` ile aynı.

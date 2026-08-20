@@ -6,7 +6,9 @@
 #   - For HLS streams: resolves the master playlist, downloads segments sequentially.
 #   - Output format: .m4a for AAC/MP4 streams, .ts for MPEG-TS streams, .aac for raw AAC.
 
+import collections
 import datetime
+import hashlib
 import logging
 import os
 import ssl
@@ -44,6 +46,123 @@ def _urlopen(req, timeout):
 	Use this instead of calling urllib.request.urlopen() directly anywhere
 	a stream, playlist, or segment is fetched."""
 	return urllib.request.urlopen(req, timeout=timeout, context=_INSECURE_SSL_CONTEXT)
+
+
+def _parse_hls_media_segments(lines, base_url):
+	"""Return ``(media_sequence, segments)`` for an HLS media playlist.
+
+	Each segment is returned as ``(identity, absolute_url, duration)``. When
+	``#EXT-X-MEDIA-SEQUENCE`` is present, the identity is the protocol-level
+	media sequence number rather than the complete URL. This matters for HLS
+	servers that add a fresh session token to every playlist response: the URL
+	changes even though the segment is still exactly the same one.
+	"""
+	from urllib.parse import urljoin
+	import re
+
+	media_sequence = None
+	skipped_segments = 0
+	for raw_line in lines:
+		line = raw_line.strip()
+		if line.startswith("#EXT-X-MEDIA-SEQUENCE:"):
+			try:
+				media_sequence = int(line.split(":", 1)[1].strip())
+			except (TypeError, ValueError):
+				media_sequence = None
+		elif line.startswith("#EXT-X-SKIP:"):
+			attributes = line.split(":", 1)[1]
+			match = re.search(
+				r"(?:^|,)SKIPPED-SEGMENTS=(\d+)(?:,|$)",
+				attributes,
+				re.IGNORECASE,
+			)
+			if match:
+				skipped_segments = int(match.group(1))
+
+	segments = []
+	pending_duration = 0.0
+	pending_byterange = ""
+	ordinal = skipped_segments
+	for raw_line in lines:
+		line = raw_line.strip()
+		if line.startswith("#EXTINF"):
+			match = re.search(r"#EXTINF:\s*([\d.]+)", line)
+			if match:
+				try:
+					pending_duration = float(match.group(1))
+				except ValueError:
+					pending_duration = 0.0
+			continue
+		if line.startswith("#EXT-X-BYTERANGE:"):
+			pending_byterange = line.split(":", 1)[1].strip()
+			continue
+		if not line or line.startswith("#"):
+			continue
+
+		segment_url = urljoin(base_url, line)
+		if media_sequence is not None:
+			identity = ("sequence", media_sequence + ordinal)
+		else:
+			# Preserve URL-based behaviour for playlists that do not expose
+			# media sequence numbers. Include BYTERANGE because several logical
+			# segments may intentionally share one resource URL.
+			identity = ("url", segment_url, pending_byterange)
+		segments.append((identity, segment_url, pending_duration))
+		ordinal += 1
+		pending_duration = 0.0
+		pending_byterange = ""
+
+	return media_sequence, segments
+
+
+class _HlsSegmentTracker:
+	"""Ordered, bounded set of successfully written HLS segment identities."""
+
+	def __init__(self, max_entries=10000):
+		self._max_entries = max(100, int(max_entries))
+		self._seen = set()
+		self._order = collections.deque()
+		self._highest_sequence = None
+
+	def prepare_playlist(self, segments):
+		"""Notice a genuine server sequence reset without reacting to stale CDN data."""
+		sequence_numbers = [
+			identity[1] for identity, _url, _duration in segments
+			if identity and identity[0] == "sequence"
+		]
+		if not sequence_numbers:
+			return False
+		current_highest = max(sequence_numbers)
+		# A small backwards step can be a stale CDN response. A large one is
+		# almost certainly an encoder/server restart and starts a new epoch.
+		if self._highest_sequence is not None and current_highest + 128 < self._highest_sequence:
+			self.clear()
+			self._highest_sequence = current_highest
+			return True
+		if self._highest_sequence is None or current_highest > self._highest_sequence:
+			self._highest_sequence = current_highest
+		return False
+
+	def contains(self, identity):
+		return identity in self._seen
+
+	def mark_written(self, identity):
+		if identity in self._seen:
+			return
+		self._seen.add(identity)
+		self._order.append(identity)
+		while len(self._order) > self._max_entries:
+			oldest = self._order.popleft()
+			self._seen.discard(oldest)
+
+	def clear(self):
+		self._seen.clear()
+		self._order.clear()
+
+
+def _hls_content_signature(data):
+	"""Return a stable signature for HLS initialization data."""
+	return hashlib.sha256(data).digest()
 
 
 class _IcyProtocolError(Exception):
@@ -636,13 +755,14 @@ class _StreamWriter:
 			from urllib.parse import urljoin
 			return urljoin(base_url, url)
 
-		seen_segments = set()
+		seen_segments = _HlsSegmentTracker()
 		manifest_url  = self._effective_url
 		manifest_errors = 0
 		target_dur    = 5
 		first_segment_written = False
 		output_file = None
-		last_map_url = None   # tracks #EXT-X-MAP initialization segment
+		last_map_url = None   # tracks #EXT-X-MAP initialization segment URL
+		last_map_signature = None
 
 		while not self._stop.is_set():
 			try:
@@ -693,20 +813,28 @@ class _StreamWriter:
 							current_map_url = _abs(m.group(1), base_url)
 						break
 
-				# Otherwise it's a media playlist: collect new segment URLs
-				segments = []
-				for line in lines:
-					line = line.strip()
-					if line and not line.startswith("#"):
-						seg_url = _abs(line, base_url)
-						if seg_url not in seen_segments:
-							segments.append(seg_url)
+				# Otherwise it's a media playlist. Use protocol-level media sequence
+				# numbers as identities: signed/session query parameters may change
+				# between two responses while still pointing to the same segment.
+				media_sequence, parsed_segments = _parse_hls_media_segments(lines, base_url)
+				if seen_segments.prepare_playlist(parsed_segments):
+					log.info(
+						"FreeRadio Recorder: HLS media sequence reset detected; "
+						"starting a new segment epoch"
+					)
+				segments = [
+					entry for entry in parsed_segments
+					if not seen_segments.contains(entry[0])
+				]
 
-				log.debug("FreeRadio Recorder: HLS %d new segments (target_dur=%ds)",
-				          len(segments), target_dur)
+				log.debug(
+					"FreeRadio Recorder: HLS %d new segments "
+					"(target_dur=%ds, media_sequence=%s)",
+					len(segments), target_dur, media_sequence,
+				)
 
 				seg_errors = 0
-				for seg_url in segments:
+				for segment_identity, seg_url, _segment_duration in segments:
 					if self._stop.is_set():
 						if output_file:
 							output_file.close()
@@ -735,10 +863,21 @@ class _StreamWriter:
 									try:
 										# Use fallback for init segment too
 										init_data = self._fetch_segment_with_fallback(current_map_url)
-										output_file.write(init_data)
-										output_file.flush()
+										map_signature = _hls_content_signature(init_data)
+										if map_signature != last_map_signature:
+											output_file.write(init_data)
+											output_file.flush()
+											last_map_signature = map_signature
+											log.info(
+												"FreeRadio Recorder: wrote fMP4 init segment from %s",
+												current_map_url,
+											)
+										else:
+											log.debug(
+												"FreeRadio Recorder: ignored unchanged fMP4 init "
+												"segment with refreshed URL"
+											)
 										last_map_url = current_map_url
-										log.info("FreeRadio Recorder: wrote fMP4 init segment from %s", current_map_url)
 									except Exception as e:
 										log.warning("FreeRadio Recorder: failed to fetch init segment: %s", e)
 							else:
@@ -746,10 +885,21 @@ class _StreamWriter:
 								if current_map_url and current_map_url != last_map_url:
 									try:
 										init_data = self._fetch_segment_with_fallback(current_map_url)
-										output_file.write(init_data)
-										output_file.flush()
+										map_signature = _hls_content_signature(init_data)
+										if map_signature != last_map_signature:
+											output_file.write(init_data)
+											output_file.flush()
+											last_map_signature = map_signature
+											log.info(
+												"FreeRadio Recorder: wrote new fMP4 init segment from %s",
+												current_map_url,
+											)
+										else:
+											log.debug(
+												"FreeRadio Recorder: ignored unchanged fMP4 init "
+												"segment with refreshed URL"
+											)
 										last_map_url = current_map_url
-										log.info("FreeRadio Recorder: wrote new fMP4 init segment from %s", current_map_url)
 									except Exception as e:
 										log.warning("FreeRadio Recorder: failed to fetch new init segment: %s", e)
 
@@ -757,7 +907,7 @@ class _StreamWriter:
 								output_file.write(data)
 								output_file.flush()
 							
-							seen_segments.add(seg_url)
+							seen_segments.mark_written(segment_identity)
 							seg_errors = 0
 							break
 						except Exception as e:

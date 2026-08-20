@@ -19,17 +19,52 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.22.1",
+	addon_version="2026.22.2",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-**Added**
-- Search results now include **TuneIn** and **iHeartRadio** stations alongside Radio Browser — both sources are queried in the background and merged into the existing result list; the source is shown next to the station name ("... - TuneIn" / "... - iHeart").
-- **Selectable recording output format**: keep the original stream format, extract audio losslessly, or convert to MP3 at a chosen bitrate (96–320 kb/s, default 128). Conversion runs in the background; if it fails, the original recording is kept. (#21, contributed by @michalkasperczak)
-- **On-demand, accessible output device picker**: opened with `F11` (unbound by default, customizable via NVDA's input gestures settings), pre-selects the currently active device, applies the choice on Enter. Only appears when more than one physical output device is detected — stays out of the way with a single device. (#22, contributed by @michalkasperczak)
-**Notes**
-- iHeartRadio integration may not work on some networks/regions (e.g. where the provider restricts access at the ISP level); it fails silently in that case without affecting other sources.
+## Fixed:
+- Cleaned up leftover time-shift buffer files (`freeradio_timeshift_*.buf`) from previous sessions on startup. These are normally deleted when time-shift capture stops cleanly, but an abrupt shutdown (crash, power loss, Windows force-closing NVDA) would skip that step and leave the file in the temp folder — these could accumulate over time, especially with longer buffer durations. The add-on now clears out any matching leftover files each time it starts, before any new capture session begins.
+- Podcast playback speed reverting to normal (1.0x) after switching episodes or resuming from pause. The chosen speed is now resent to the audio engine every time a podcast stream is (re)started, so it stays in effect across episode changes, pause/resume, and station-transition effects (crossfade/tuning) instead of silently resetting.
+## Fixed
+- Fixed a bug where playing a podcast episode could cause a temporary buffer file (`freeradio_timeshift_*.buf` in the system temp folder) to grow to several gigabytes within minutes, potentially filling up the disk.
+  - The time-shift (rewind) capture — designed for continuous live radio streams — was also being started for on-demand podcast/audio book playback. Since those sources can be read far faster than real-time the buffer's time-based trimming couldn't keep up, and each time a chapter finished downloading it was mistaken for a dropped connection and re-downloaded into the same file instead of being cleaned up.
+  - The time-shift buffer is no longer started for podcasts or audio books at all — they already support proper rewind/fast-forward/resume through their own seekable file playback, so nothing is lost.
+  - Live radio time-shift/rewind behavior is unaffected.
+## Fixed
+- **Recording no longer stops when playback changes.** Instant and song-capture
+  recordings were tied to the main player's shared time-shift buffer as an
+  optimisation to avoid capturing a freshly-inserted ad on a brand-new
+  connection. That buffer is a single instance shared by the whole player, so
+  switching stations (or resuming after a long pause) silently cut off any
+  recording that was reading from it. Recordings now always open their own
+  independent connection, so switching stations, pausing/resuming, or
+  stopping playback no longer affects an active recording. The now-unused
+  buffer-tailing code path was removed.
+- **Scheduled recordings no longer report false success.** If a station's
+  stream failed to connect for an entire scheduled recording window, the
+  add-on still announced "Recording started" and, at the end, "Recording
+  finished" — with no file ever written. A scheduled recording that never
+  connects now reports a failure instead of a false "finished" notification.
+## Changed (internal, no functional impact)
+`__init__.py` has been split from a single ~4,200-line file into ten focused
+modules, each ~100–400 lines. `GlobalPlugin` itself is now under 300 lines
+containing only setup/teardown and script routing; everything else is a mixin
+NVDA's script discovery picks up through normal class inheritance, so all
+keyboard shortcuts and default gestures behave exactly as before.
+
+| File | Contents |
+--|---|
+| `settingsPanel.py` | The NVDA Settings → FreeRadio panel |
+| `timerManager.py` | Sleep/alarm timer scheduling |
+| `audioDeviceMixin.py` | Output device selection, audio mirroring |
+| `playbackCoreMixin.py` | Pause/resume, stop, next/prev station |
+| `timeshiftMixin.py` | Rewind/fast-forward, time-shift toggle |
+| `audioFxMixin.py` | Volume, EQ/bass/treble/vocal boost, crossfade, playback rate |
+| `recordingMixin.py` | Instant recording toggle, recordings folder, podcast download |
+| `trackInfoMixin.py` | "What's playing", station details, track info, ICY polling |
+| `miscTogglesMixin.py` | Notification mute, BASS backend, track-change announce/voice, liked songs |
 """),
 	
 	# Author(s)

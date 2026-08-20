@@ -791,10 +791,11 @@ class TimeShiftBuffer:
 			return urljoin(base_url, u)
 
 		manifest_url = self._url
-		seen_segments = set()
+		seen_segments = _recorder_mod._HlsSegmentTracker()
 		manifest_attempts = 0
 		first_segment_written = False
 		last_map_url = None
+		last_map_signature = None
 		last_trim_check = time.time()
 		chunk_count = 0
 
@@ -901,28 +902,26 @@ class TimeShiftBuffer:
 							current_map_url = _abs(m.group(1), base_url)
 						break
 
-				new_segments = []
-				pending_duration = 0.0
-				for line in lines:
-					line = line.strip()
-					if line.startswith("#EXTINF"):
-						m = _re.search(r'#EXTINF:\s*([\d.]+)', line)
-						if m:
-							try:
-								pending_duration = float(m.group(1))
-							except ValueError:
-								pending_duration = 0.0
-						continue
-					if line and not line.startswith("#"):
-						seg_url = _abs(line, base_url)
-						if seg_url not in seen_segments:
-							new_segments.append((seg_url, pending_duration))
-						pending_duration = 0.0
+				media_sequence, parsed_segments = _recorder_mod._parse_hls_media_segments(
+					lines, base_url,
+				)
+				if seen_segments.prepare_playlist(parsed_segments):
+					log.info(
+						"FreeRadio TimeShift: HLS media sequence reset detected; "
+						"starting a new segment epoch"
+					)
+				new_segments = [
+					entry for entry in parsed_segments
+					if not seen_segments.contains(entry[0])
+				]
+				log.debug(
+					"FreeRadio TimeShift: HLS %d new segments (media_sequence=%s)",
+					len(new_segments), media_sequence,
+				)
 
-				for seg_url, seg_duration in new_segments:
+				for segment_identity, seg_url, seg_duration in new_segments:
 					if self._stop_event.is_set() or self._is_stale(my_gen):
 						return
-					seen_segments.add(seg_url)
 
 					if current_map_url and current_map_url != last_map_url:
 						try:
@@ -931,12 +930,22 @@ class TimeShiftBuffer:
 							)
 							with _recorder_mod._urlopen(map_req, 15) as map_resp:
 								init_data = map_resp.read()
-							self._write_chunk(init_data, my_gen)
-							with self._file_lock:
-								self._reserved_prefix_len += len(init_data)
+							map_signature = _recorder_mod._hls_content_signature(init_data)
+							if map_signature != last_map_signature:
+								self._write_chunk(init_data, my_gen)
+								with self._file_lock:
+									self._reserved_prefix_len += len(init_data)
+								last_map_signature = map_signature
+								log.info(
+									"FreeRadio TimeShift: wrote fMP4 init segment (%d bytes)",
+									len(init_data),
+								)
+							else:
+								log.debug(
+									"FreeRadio TimeShift: ignored unchanged fMP4 init segment "
+									"with refreshed URL"
+								)
 							last_map_url = current_map_url
-							log.info("FreeRadio TimeShift: wrote fMP4 init segment (%d bytes)",
-									 len(init_data))
 						except Exception as e:
 							log.info("FreeRadio TimeShift: failed to fetch init segment: %s", e)
 
@@ -980,6 +989,7 @@ class TimeShiftBuffer:
 							return
 
 					self._write_chunk(data, my_gen)
+					seen_segments.mark_written(segment_identity)
 					first_segment_written = True
 					chunk_count += 1
 					with self._file_lock:
@@ -991,9 +1001,6 @@ class TimeShiftBuffer:
 						last_trim_check = now
 						if not self._suspend_trim:
 							self._maybe_trim(my_gen)
-
-				if len(seen_segments) > 500:
-					seen_segments = set(list(seen_segments)[-200:])
 
 				if self._stop_event.wait(4):
 					return

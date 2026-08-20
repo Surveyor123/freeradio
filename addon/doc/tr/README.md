@@ -66,7 +66,7 @@ Sonraki / önceki kısayollar yalnızca favoriler listesinde dolaşır; tüm ist
 
 FreeRadio ayrıca NVDA Araçlar menüsüne **FreeRadio** adlı bir alt menü ekler. Bu alt menüden İstasyon Tarayıcısı'nı ve FreeRadio Ayarları'nı doğrudan açabilirsiniz.
 
-`Ctrl+Win+R` ile açılan pencerede yedi sekme bulunur: Tüm İstasyonlar, Favoriler, Kayıt, Zamanlayıcı, Beğenilen Şarkılar, Podcastler ve Sesli Kitaplar. Sekmeler arasında `Ctrl+Tab` ile veya `Alt+1` ile `Alt+6` arasındaki tuşlarla dolaşılabilir.
+`Ctrl+Win+R` ile açılan pencerede yedi sekme bulunur: Tüm İstasyonlar, Favoriler, Kayıt, Zamanlayıcı, Beğenilen Şarkılar, Podcastler ve Sesli Kitaplar. Sekmeler arasında `Ctrl+Tab` ile veya `Alt+1` ile `Alt+7` arasındaki tuşlarla dolaşılabilir.
 
 Tüm İstasyonlar sekmesi açıldığında Radio Browser'dan en çok oylanan 1000 istasyon otomatik olarak yüklenir. Ülke açılır listesinden bir ülke seçildiğinde liste o ülkenin istasyonlarıyla güncellenir. Arama alanına harf girilmesi anlık olarak Radio Browser'ın tamamında ad, ülke ve tür üzerinden eş zamanlı arama yapar.
 

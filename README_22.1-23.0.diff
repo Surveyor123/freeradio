@@ -1,0 +1,182 @@
+--- /mnt/user-data/uploads/README22_1.md	2026-08-20 19:26:30.273330000 +0000
++++ README23_0_fixed.md	2026-08-20 19:30:49.673952662 +0000
+@@ -47,6 +47,8 @@
+ | `Ctrl+Win+↑` | Volume up | Increases volume by 5; maximum 200. |
+ | `Ctrl+Win+↓` | Volume down | Decreases volume by 5; minimum 0. |
+ | `Ctrl+Win+V` | Add to favourites | Adds the currently playing station to the favourites list. Announces if the station is already in the list. |
++| `Ctrl+Win+Shift+K` | Increase playback speed | Increases the playback speed of a podcast episode by 0.1x (pitch-preserving). Range: 0.5x to 2.0x. Requires `bass_fx.dll` to be placed in the add‑on folder. |
++| `Ctrl+Win+Shift+J` | Decrease playback speed | Decreases the playback speed of a podcast episode by 0.1x. Requires `bass_fx.dll`. |
+ | `Ctrl+Win+I` | Station info | Announces the currently playing station name. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
+ | `Ctrl+Win+M` | Audio mirror | Mirrors the current stream to an additional audio output device simultaneously. Press again to stop mirroring. |
+ | `Ctrl+Win+E` | Instant recording | Press once to start recording the current station; press again to stop. Press **twice** to start a **song recording** — the file is named after the current track and the recording stops automatically when the track changes. Press twice again while a song recording is active to stop it early. Playback continues uninterrupted in all recording modes. Only available for stations that broadcast ICY metadata. |
+@@ -64,10 +66,12 @@
+ 
+ FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
+ 
+-The window opened with `Ctrl+Win+R` contains six tabs: All Stations, Favourites, Recording, Timer, Liked Songs, and Podcasts. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+6`.
++The window opened with `Ctrl+Win+R` contains seven tabs: All Stations, Favourites, Recording, Timer, Liked Songs, Podcasts and Audio Books. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+7`.
+ 
+ When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
+ 
++When searching, results from Radio Browser are supplemented with stations from TuneIn and iHeartRadio (when available). These external sources are searched in the background and their results are merged into the list automatically, giving you access to even more stations without any extra action.
++
+ The **Output Device** dropdown at the bottom of the browser window — outside the tabs — lists all BASS-recognised audio output devices. Selecting a device immediately redirects audio output to it and saves the choice permanently; the same device is used automatically in the next session. If the selected device is not connected, the add-on falls back to the system default automatically. Press `F11` to open a simpler on-demand device picker from anywhere in the Station Browser. The picker is not shown automatically and opens only when BASS detects more than one physical output device. When just one is available, no selection is needed and FreeRadio uses the system default output. This feature is only functional when the BASS backend is active.
+ 
+ The **Volume** (0–200) and **Effects** controls in the same area can be adjusted at any time while the window is open. From the Effects list, Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, EQ: Bass Boost, EQ: Treble Boost and EQ: Vocal Boost can be enabled simultaneously; changes are applied to the active stream instantly. Each effect can also be toggled instantly with `Ctrl+1` through `Ctrl+0` without leaving the keyboard — see [Effect Shortcuts](#effect-shortcuts). These controls are fully functional only when the BASS backend is active.
+@@ -123,7 +127,7 @@
+ | `Ctrl+←` | Previous episode | When the Podcasts tab is active, moves to the previous episode and plays it (same as `←` while episode list is focused). |
+ | `Enter` | Play | When a station or episode list is focused, starts playing the selected item immediately. Switches to the selected station even if another station is already playing. |
+ | `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected item. |
+-| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts). |
++| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts → Audio Books). |
+ | `Ctrl+Shift+Tab` | Previous tab | Switches to the previous tab. |
+ | `Escape` | Hide | Hides the window; the add-on continues playing in the background. |
+ 
+@@ -163,6 +167,7 @@
+ | `Alt+4` | Timer | Switches to the Timer tab. |
+ | `Alt+5` | Liked Songs | Switches to the Liked Songs tab. |
+ | `Alt+6` | Podcasts | Switches to the Podcasts tab. |
++| `Alt+7` | Audio Books | Switches to the Audio Books tab. |
+ | `Alt+K` | Close | Closes the window; the add-on continues playing in the background. |
+ 
+ ## Favourites
+@@ -265,16 +270,22 @@
+ 
+ **Scheduled recording:** Open the Recording tab in the browser. Select a station from your favourites, enter the start time in HH:MM format and the duration in minutes, select one or more active days, then choose a recurrence mode and a recording mode:
+ 
++A **Filter** field above the station list lets you narrow the favourites list in real time, so you can quickly find the station you want to schedule.
++
+ **Active days:** Check one or more days of the week. In single-recording mode, a separate entry is created for each selected day, each placed on the next upcoming occurrence of that day. In recurring mode, the recording repeats only on the checked days. If no days are checked, the recording is not restricted to specific days.
+ 
+ **Recurrence:**
+ - **Record once** — records a single time on each selected day. Each entry is placed on the next upcoming occurrence of that day; if the selected time has already passed today, the entry moves to the same day next week automatically.
+ - **Repeat weekly** — repeats every week on the selected active days until removed from the schedule list.
+ 
++**Save recording to:** For each scheduled recording, you can choose to save to the default recordings folder or a custom folder. Use the **Browse...** button to select a folder interactively. If the chosen folder becomes unavailable, the recording falls back to the default folder and you are notified.
++
+ **Recording mode:**
+ - **Record while listening** — plays and records simultaneously. A playback backend is started using the BASS → VLC → PotPlayer → Windows Media Player priority order.
+ - **Record only** — records silently in the background without any audio output; the recording engine connects directly to the stream.
+ 
++Once a schedule is added, it appears in the list below. Use the **Remove Selected** button to delete a schedule, or **Edit Selected** to modify its time, duration, recurrence, active days, recording mode, or output folder.
++
+ NVDA announces when a recording starts and when it finishes. If NVDA is restarted while a scheduled recording is active, the recording resumes automatically on startup.
+ 
+ Like music recognition, instant and song recording reuse FreeRadio's existing background stream connection when it's available, rather than opening a new one, so a recording captures what's actually airing even on stations that would otherwise serve a fresh ad to a brand-new connection. This does not apply to scheduled **Record only** recordings, since no station is already playing at the time they start.
+@@ -323,6 +334,8 @@
+ 
+ Open the Timer tab in the station browser (`Alt+4`). Two types of timer can be added:
+ 
++When choosing a station for an alarm timer, a **Filter** field above the station list lets you narrow the favourites list in real time.
++
+ **Alarm — start radio:** Automatically starts playing a selected station from your favourites at the specified time. Choose a station and enter the time in HH:MM format.
+ 
+ **Sleep — stop radio:** Stops playback at the specified time. When the timer fires, volume is gradually reduced over 60 seconds before playback stops. No station selection is needed; just enter the time.
+@@ -416,12 +429,74 @@
+ 
+ Podcast episodes are played using the **BASS backend** (the same engine used for radio streams). Because episodes are downloaded progressively and are seekable, you can use the time-shift rewind/forward shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`) while playing a podcast to jump back or forward **5 seconds** at a time (instead of the 15‑second rewind used for live radio). The position is saved automatically so you can resume later.
+ 
++**Playback speed:** You can adjust the playback speed of podcast episodes using `Ctrl+Win+Shift+K` (faster) and `Ctrl+Win+Shift+J` (slower). The speed changes in 0.1x increments, ranging from 0.5x to 2.0x, with pitch preserved. This requires the optional `bass_fx.dll` library to be placed in the add‑on's folder. If the library is missing, NVDA will inform you that the feature is unavailable.
++
++> **Note:** `bass_fx.dll` is not bundled with FreeRadio by default. You can download it from the [BASS FX page](https://www.un4seen.com/bass-fx.html) and place it in the add‑on's `bass/x64` (for 64‑bit NVDA) or `bass` (for 32‑bit NVDA) folder to enable this feature.
++
+ If the BASS backend is disabled (or fails), podcast playback falls back to the same chain of external players (VLC → PotPlayer → WMP) used for radio, but **seek and resume functionality will not work** in that case — the episode will play from the beginning each time. For the full podcast experience, keep the BASS backend enabled.
+ 
+ ### Podcast Data Storage
+ 
+ Your subscriptions are stored in `freeradio_podcasts.json` in the NVDA user configuration folder. Episode positions are stored separately in `podcast_positions.json` in the same location. Both files are plain JSON and can be backed up or transferred to another computer.
+ 
++## Audio Books (GETEM)
++
++FreeRadio includes an audio book player for [GETEM](https://getem.boun.edu.tr/), the digital library run by Boğaziçi University's Center for the Visually Impaired. You can search its catalogue, preview and add books to a personal library, play multi-part works with automatic resume, and download books for offline listening — all fully accessible.
++
++GETEM is the first source supported by this feature. The Audio Books tab is built so that further libraries or catalogues can be added alongside it in the future; for now, GETEM is the only one available.
++
++> **Note:** Listening requires a free GETEM membership. Browsing the catalogue does not need an account, but resolving and playing a book's audio does — see [Signing In](#signing-in) below.
++
++### Accessing the Audio Books Tab
++
++Open the station browser with `Ctrl+Win+R` and switch to the **Audio Books** tab using `Ctrl+Tab` or `Alt+7`. The tab has three main areas:
++
++1. **Search** — a text field to search GETEM's catalogue, with a results list that appears once a search is run.
++2. **Library** — the list of books you have added, where you play, download and manage them.
++3. **Details** — a read-only box showing the title, author, narrator, publisher, format, number of parts, description and catalogue URL of whichever book is selected, in either list.
++
++### Signing In
++
++GETEM requires being a registered member to stream or download a book's actual audio, even though the catalogue itself can be searched freely. Enter your GETEM username and password once in **NVDA Menu → Preferences → Settings → FreeRadio**; they are stored encrypted on disk (via the Windows Data Protection API, tied to your Windows user account) and reused automatically afterward. If you try to play or download a book before entering credentials, FreeRadio tells you to add them in Settings first.
++
++### Searching for Audio Books
++
++Type a search term — title, author, narrator, subject or publisher — into the search field and press `Enter`. FreeRadio searches all of these fields at once and merges the results, since GETEM's own search form only supports narrowing by all of them together rather than a single search across any of them. Only works that are actually available as audio (human or computer narration, audio description, radio drama, DAISY talking books, etc.) are shown; braille, large-print and other non-audio formats are filtered out automatically. NVDA announces how many audio books were found.
++
++Selecting a result shows its details — author, narrator, publisher, format and part count — in the details box below.
++
++**Previewing:** Select a result and press `Space`, or open its context menu (Applications key / `Shift+F10`, or right‑click) and choose **Preview**, to start playing it from its first part without adding it to your library. While a book is being previewed, the same context menu shows **Stop Preview** in its place — choose it, or press `Space` again, to stop. Previewing a book does not save your listening position, since that is only tracked for books already in your library.
++
++**Adding to your library:** Select a result and press `Enter`, or use its context menu and choose **Add to Library**, to add it. FreeRadio tells you if the book is already there.
++
++### Your Library
++
++Books you've added appear in the **Library** list, showing title, author and format. Selecting one shows its details below.
++
++- Press `Enter` or `Space` to play the selected book. If nothing is loaded, `Space` starts it; if something is already playing, `Space` pauses it instead, matching the rest of the player.
++- Use `F3` / `F4` on the Audio Books tab to move to the previous / next **book** in your library and start playing it. `Ctrl+←` / `Ctrl+→` do the same while the library list is focused.
++- Use `Shift+F3` / `Shift+F4` to move between **parts** of the currently playing book instead — the reverse of the Podcasts tab, where F3/F4 move between episodes and Shift+F3/F4 move between feeds. This is because a book is a single library entry even when it has several parts, so the finer-grained "part" navigation sits on the Shift-modified keys here.
++
++**Context menu for library entries:** Right‑click a book, or select it and press the Applications key / `Shift+F10`, to open a menu with:
++- **Play Media** — start playing, same as `Enter`.
++- **Download Book** — download every part of the book; see [Downloading Audio Books](#downloading-audio-books) below.
++- **Copy the URL** — copy the book's GETEM catalogue page URL to the clipboard.
++- **Remove from the Library** — delete the book from your library.
++
++### Playback and Resuming
++
++A multi-part work is treated as a single item in the player, not one row per part — the same way a podcast episode is a single item regardless of how it's delivered. FreeRadio remembers which part you last listened to and resumes there automatically the next time you play that book, even across an NVDA restart.
++
++Playback streams through a small local relay rather than downloading the whole part first, so listening starts as soon as the first bytes arrive — the same immediate-start behaviour podcasts use. All the usual player controls (pause, volume, time-shift, playback speed, output device, etc.) work on an audio book exactly as they would on a station or podcast episode.
++
++### Downloading Audio Books
++
++Select a book in your library and choose **Download Book** from its context menu to save every part to its own folder (named after the book) inside your recordings folder (`Documents\FreeRadio Recordings\` by default). Files are numbered so the parts always sort back into listening order, regardless of what GETEM itself calls them. NVDA announces how many parts were saved once the download finishes; if a part fails, the last error is reported alongside the count.
++
++### Audio Book Data Storage
++
++Your GETEM library (added books and their listening progress) is stored in `freeradio_getem_library.json` in the NVDA user configuration folder. Your encrypted GETEM credentials are stored separately in `freeradio_getem_credentials.bin` in the same location, and can only be decrypted by the same Windows user account that saved them.
++
+ ## Liked Songs
+ 
+ When the **Save liked songs to a text file** option is enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended line by line to `Documents\FreeRadio Recordings\likedSongs.txt`.
+@@ -430,7 +505,7 @@
+ 
+ ## Liked Songs Tab
+ 
+-The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened.
++The **Liked Songs** tab in the station browser displays all tracks saved in `likedSongs.txt`. The list is automatically reloaded from the file each time the tab is opened. Right‑click a song, or select it and press the Applications key / `Shift+F10`, to open a context menu with the same actions described below.
+ 
+ A **Filter** field above the list lets you narrow the displayed tracks in real time. Type any part of a song title or artist name and the list updates instantly on every keystroke. NVDA announces the number of matching results after each change. Press the `Down` arrow from the filter field to move focus directly into the list.
+ 
+@@ -462,6 +537,8 @@
+ 
+ | Option | Description |
+ |---|---|
++| Disable BASS backend | When enabled, FreeRadio will not use the bundled BASS engine and will rely on VLC, PotPlayer, or Windows Media Player instead. Restart NVDA for this change to take effect. |
++| Track change voice | Choose whether auto‑announced track changes are spoken using the NVDA synthesizer or a selected SAPI5 voice. |
+ | Audio output device (BASS backend) | Sets the audio output device for radio playback. The list includes all BASS-compatible devices on the system plus a "System default" option. Changes are applied immediately on save; if the selected device is disconnected, the add-on automatically falls back to the system default and announces the change. Only active when the BASS backend is in use. |
+ | Audio device refresh mode (BASS backend) | Controls how FreeRadio refreshes BASS output-device numbers. **Reliable** mode (default) probes devices live and tracks Bluetooth/USB changes more accurately, but can make device changes slightly slower. **Fast** mode uses the current BASS device list and is quicker, but device numbers may stay stale until BASS or NVDA is restarted. |
+ | Volume | Sets the add-on's starting volume (0–200). Changes made during playback with `Ctrl+Win+↑` / `Ctrl+Win+↓` are also reflected here. |
+@@ -475,6 +552,7 @@
+ | Enable time-shift buffer (rewind live radio, ~10 minutes) | Turns the rewind controls (`Ctrl+Win+J`/`Ctrl+Win+K`) on or off and grows the background capture from ~45 seconds up to ~10 minutes. A small background capture of the currently playing station always runs, even when this is off — see the note in the **Time-Shift (Rewind Live Radio)** section below. Can also be toggled instantly with `Ctrl+Win+T`. Requires the BASS backend. Disabled by default — see the **Time-Shift (Rewind Live Radio)** section below for full details. |
+ | Save liked songs to a text file | When enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended to `Documents\FreeRadio Recordings\likedSongs.txt`. If no ICY metadata is available, the Shazam recognition result is saved to the same file. Disabled by default. |
+ | When Ctrl+Win+P is pressed with no active playback | Determines what happens when this shortcut is pressed and nothing is playing: start the last station or open the favourites list. |
++| Time-shift buffer duration | Sets the maximum length of the rewind buffer. Options range from 10 minutes up to 5 hours. Longer buffers consume more temporary disk space. |
+ | When Ctrl+Win+P is pressed twice | Selects what happens when the shortcut is pressed twice in quick succession: do nothing, open the favourites list, open the recording tab or open the timer tab. When "do nothing" is selected, the first press responds instantly with no delay. |
+ | When Ctrl+Win+P is pressed three times | Selects what happens when the shortcut is pressed three times in quick succession: do nothing, open the favourites list, open station search, open the recording tab or open the timer tab. |
+ | Check for updates automatically | When enabled, a background update check runs each time NVDA starts; you are notified if a new version is found. When disabled, automatic checks stop but manual checks remain available. |
+@@ -536,4 +614,4 @@
+ 
+ ## License
+ 
+-GPL v2
++GPL v2
+\ No newline at end of file

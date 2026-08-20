@@ -66,7 +66,7 @@ Next / previous shortcuts only navigate the favourites list; they do not work wi
 
 FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
 
-The window opened with `Ctrl+Win+R` contains seven tabs: All Stations, Favourites, Recording, Timer, Liked Songs, Podcasts and Audio Books. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+6`.
+The window opened with `Ctrl+Win+R` contains seven tabs: All Stations, Favourites, Recording, Timer, Liked Songs, Podcasts and Audio Books. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+7`.
 
 When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
@@ -127,7 +127,7 @@ The following keys work only while the Station Browser window is active.
 | `Ctrl+←` | Previous episode | When the Podcasts tab is active, moves to the previous episode and plays it (same as `←` while episode list is focused). |
 | `Enter` | Play | When a station or episode list is focused, starts playing the selected item immediately. Switches to the selected station even if another station is already playing. |
 | `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected item. |
-| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts). |
+| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts → Audio Books). |
 | `Ctrl+Shift+Tab` | Previous tab | Switches to the previous tab. |
 | `Escape` | Hide | Hides the window; the add-on continues playing in the background. |
 
@@ -167,6 +167,7 @@ Each shortcut mirrors checking or unchecking the corresponding entry in the **Ef
 | `Alt+4` | Timer | Switches to the Timer tab. |
 | `Alt+5` | Liked Songs | Switches to the Liked Songs tab. |
 | `Alt+6` | Podcasts | Switches to the Podcasts tab. |
+| `Alt+7` | Audio Books | Switches to the Audio Books tab. |
 | `Alt+K` | Close | Closes the window; the add-on continues playing in the background. |
 
 ## Favourites
@@ -550,6 +551,7 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | Braille messages | When enabled, FreeRadio also sends its notifications directly to the braille display. This is useful for track titles, station changes, playback state and volume changes. Disabled by default. |
 | Enable time-shift buffer (rewind live radio, ~10 minutes) | Turns the rewind controls (`Ctrl+Win+J`/`Ctrl+Win+K`) on or off and grows the background capture from ~45 seconds up to ~10 minutes. A small background capture of the currently playing station always runs, even when this is off — see the note in the **Time-Shift (Rewind Live Radio)** section below. Can also be toggled instantly with `Ctrl+Win+T`. Requires the BASS backend. Disabled by default — see the **Time-Shift (Rewind Live Radio)** section below for full details. |
 | Save liked songs to a text file | When enabled, track info copied to the clipboard by pressing `Ctrl+Win+I` three times is also appended to `Documents\FreeRadio Recordings\likedSongs.txt`. If no ICY metadata is available, the Shazam recognition result is saved to the same file. Disabled by default. |
+| When Ctrl+Win+P is pressed with no active playback | Determines what happens when this shortcut is pressed and nothing is playing: start the last station or open the favourites list. |
 | Time-shift buffer duration | Sets the maximum length of the rewind buffer. Options range from 10 minutes up to 5 hours. Longer buffers consume more temporary disk space. |
 | When Ctrl+Win+P is pressed twice | Selects what happens when the shortcut is pressed twice in quick succession: do nothing, open the favourites list, open the recording tab or open the timer tab. When "do nothing" is selected, the first press responds instantly with no delay. |
 | When Ctrl+Win+P is pressed three times | Selects what happens when the shortcut is pressed three times in quick succession: do nothing, open the favourites list, open station search, open the recording tab or open the timer tab. |

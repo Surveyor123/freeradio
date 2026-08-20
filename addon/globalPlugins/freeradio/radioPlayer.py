@@ -857,6 +857,15 @@ class RadioPlayer:
 		# [Listened]/duration display without a continuously-ticking timer.
 		# May run on a background thread (called from _on_bass_stall).
 		self.on_podcast_progress_saved = None
+		# Callback: called with (station) only when a podcast/GETEM item
+		# actually reaches its end (never on a plain pause) - see the
+		# is_podcast branch of _on_bass_stall(). Lets the UI auto-advance to
+		# the next episode/chapter. Deliberately separate from
+		# on_podcast_progress_saved, which also fires on pause and only
+		# gets a bare url, not enough to tell "finished" from "paused".
+		# May run on a background thread (called from _on_bass_stall); the
+		# handler is responsible for marshalling onto the UI thread.
+		self.on_podcast_finished = None
 
 		# Crossfade
 		self._crossfade_duration = 0.0   # seconds; 0.0 = disabled
@@ -961,6 +970,12 @@ class RadioPlayer:
 			if cb:
 				try:
 					cb(station.get("url") or self._current_url)
+				except Exception:
+					pass
+			finished_cb = self.on_podcast_finished
+			if finished_cb:
+				try:
+					finished_cb(station)
 				except Exception:
 					pass
 			self.stop()
@@ -1936,50 +1951,72 @@ class RadioPlayer:
 					# out without touching the buffer so we can't clobber
 					# the newer, correct capture session.
 					if self._play_gen == gen:
-						self._timeshift_buffer.CAPACITY_SECONDS = (
-							self._timeshift_capacity_seconds if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
-						)
-						# HLS master playlists are not simple "one line = one
-						# audio URL" playlists - resolving them the way
-						# _resolve_playlist_url() resolves .pls/.m3u files
-						# could pick the wrong sub-stream. TimeShiftBuffer
-						# does its own HLS master/media playlist resolution
-						# internally (see timeshift.py's _run_hls), so the
-						# raw .m3u8 URL is passed through unresolved here.
-						is_hls = stream_url.lower().split("?")[0].endswith(".m3u8")
-						capture_url = stream_url if is_hls else _resolve_playlist_url(stream_url)
-
-						# If the buffer is already actively capturing this exact
-						# URL, this _bg_launch is a *reconnect* of the same
-						# station - e.g. resume() falling back to a full relaunch
-						# after a long pause, not the user picking a different
-						# station. Tearing the capture down and restarting it
-						# here would throw away a connection that has already
-						# played past whatever per-connection ad the station
-						# serves brand-new listeners; a fresh start() would just
-						# get served that ad again, reintroducing the exact bug
-						# this buffer exists to avoid for recognition/recording.
-						# Only stop()+start() when the station actually changed.
-						if self._timeshift_buffer.is_active() and self._timeshift_buffer.get_url() == capture_url:
-							log.info("FreeRadio TimeShift: reusing existing capture for %s (same station, "
-									  "not a switch)", capture_url)
-						else:
+						is_podcast = "podcast" in self._current_station.get("tags", "")
+						if is_podcast:
+							# Podcasts and GETEM audio books are on-demand,
+							# already-seekable files (via seek_relative()/
+							# timeshift_seek() directly on the BASS engine -
+							# see script_timeshiftRewind's podcast branch),
+							# not a live ad-inserted stream - none of the
+							# reasons this buffer exists for live radio
+							# (a rewind window, letting recognition/recording
+							# tail an already-open connection past a
+							# per-connection ad) apply to them. Capturing one
+							# anyway was ballooning the .buf file far past
+							# CAPACITY_SECONDS for file-based streams - just
+							# stop whatever capture was left running from a
+							# previous (live) station instead of starting or
+							# keeping one for this one.
 							try:
 								self._timeshift_buffer.stop()
 							except Exception:
 								pass
-							try:
-								if is_hls:
-									log.info("FreeRadio TimeShift: starting HLS capture for %s", capture_url)
-								else:
-									log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
-											  capture_url, stream_url)
-								self._timeshift_buffer.start(capture_url)
-							except Exception as e:
-								log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
-						# Whether reused or freshly started, this buffer instance
-						# now genuinely belongs to *this* launch's station.
-						self._timeshift_buffer_gen = gen
+							self._timeshift_buffer_gen = None
+						else:
+							self._timeshift_buffer.CAPACITY_SECONDS = (
+								self._timeshift_capacity_seconds if self._timeshift_enabled else _LIGHT_BUFFER_SECONDS
+							)
+							# HLS master playlists are not simple "one line = one
+							# audio URL" playlists - resolving them the way
+							# _resolve_playlist_url() resolves .pls/.m3u files
+							# could pick the wrong sub-stream. TimeShiftBuffer
+							# does its own HLS master/media playlist resolution
+							# internally (see timeshift.py's _run_hls), so the
+							# raw .m3u8 URL is passed through unresolved here.
+							is_hls = stream_url.lower().split("?")[0].endswith(".m3u8")
+							capture_url = stream_url if is_hls else _resolve_playlist_url(stream_url)
+
+							# If the buffer is already actively capturing this exact
+							# URL, this _bg_launch is a *reconnect* of the same
+							# station - e.g. resume() falling back to a full relaunch
+							# after a long pause, not the user picking a different
+							# station. Tearing the capture down and restarting it
+							# here would throw away a connection that has already
+							# played past whatever per-connection ad the station
+							# serves brand-new listeners; a fresh start() would just
+							# get served that ad again, reintroducing the exact bug
+							# this buffer exists to avoid for recognition/recording.
+							# Only stop()+start() when the station actually changed.
+							if self._timeshift_buffer.is_active() and self._timeshift_buffer.get_url() == capture_url:
+								log.info("FreeRadio TimeShift: reusing existing capture for %s (same station, "
+										  "not a switch)", capture_url)
+							else:
+								try:
+									self._timeshift_buffer.stop()
+								except Exception:
+									pass
+								try:
+									if is_hls:
+										log.info("FreeRadio TimeShift: starting HLS capture for %s", capture_url)
+									else:
+										log.info("FreeRadio TimeShift: starting capture for %s (resolved from %s)",
+												  capture_url, stream_url)
+									self._timeshift_buffer.start(capture_url)
+								except Exception as e:
+									log.info("FreeRadio TimeShift: could not start capture: %s", e, exc_info=True)
+							# Whether reused or freshly started, this buffer instance
+							# now genuinely belongs to *this* launch's station.
+							self._timeshift_buffer_gen = gen
 
 			# The mirror (re)connect was already started concurrently above;
 			# just make sure it has finished before this launch is done.
@@ -2538,7 +2575,15 @@ class RadioPlayer:
 			# connection (and its "past the ad" position in the stream) is
 			# left untouched.
 			self._timeshift_buffer.CAPACITY_SECONDS = _LIGHT_BUFFER_SECONDS
-		elif self._is_playing and self._backend == self.BACKEND_BASS:
+		elif (
+			self._is_playing
+			and self._backend == self.BACKEND_BASS
+			# Podcasts/GETEM audio books never get a capture started for
+			# them in the first place (see _bg_launch above) - they're
+			# already seekable files, so there's nothing here to widen the
+			# retention window on.
+			and "podcast" not in self._current_station.get("tags", "")
+		):
 			self._timeshift_buffer.CAPACITY_SECONDS = self._timeshift_capacity_seconds
 			stream_url = self._current_url_resolved or self._current_url
 			captured_gen = self._play_gen

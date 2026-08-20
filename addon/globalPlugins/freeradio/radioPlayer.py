@@ -2707,9 +2707,12 @@ class RadioPlayer:
 				self._timeshift_buffer.exit_playback()
 				return False, 0.0, buffered, "engine_error"
 			self._timeshift_active = True
+			self._sync_mirror_timeshift_enter(path, start_pos)
 			return True, start_pos, buffered, "ok"
 
 		ok, position, _length = self._bass_engine.timeshift_seek(-abs(seconds))
+		if ok:
+			self._sync_mirror_timeshift_seek(-abs(seconds))
 		return ok, position, buffered, ("ok" if ok else "engine_error")
 
 	def forward_timeshift(self, seconds=15):
@@ -2734,6 +2737,8 @@ class RadioPlayer:
 			self.exit_timeshift_to_live()
 			return True, None, True
 
+		self._sync_mirror_timeshift_seek(abs(seconds))
+
 		_EDGE_MARGIN_SECONDS = 2.0
 		if length - position <= _EDGE_MARGIN_SECONDS:
 			self.exit_timeshift_to_live()
@@ -2757,6 +2762,73 @@ class RadioPlayer:
 					self._bass_engine.play(stream_url, vol)
 				except Exception:
 					pass
+		self._sync_mirror_exit_to_live()
+
+	# -- Mirror sync helpers for time-shift and playback rate ------------
+	#
+	# The mirror output is a second, independent bass_host subprocess (see
+	# start_mirror()), so nothing that happens on the main engine reaches
+	# it automatically. Without these, entering/seeking/exiting time-shift
+	# or changing podcast playback speed would only ever affect the main
+	# output, leaving the mirrored device stuck on live audio at normal
+	# speed. Each helper is fire-and-forget on a background thread so a
+	# slow mirror round-trip never delays the main output's response.
+
+	def _get_ready_mirror(self):
+		mirror = getattr(self, "_mirror_engine", None)
+		if mirror is not None and mirror.ready():
+			return mirror
+		return None
+
+	def _sync_mirror_timeshift_enter(self, path, start_pos):
+		"""Open the same time-shift buffer file, at the same position, on
+		the mirror engine right after the main engine enters time-shift."""
+		mirror = self._get_ready_mirror()
+		if mirror is None:
+			return
+		vol = self._volume / 100.0
+
+		def _do(m=mirror, p=path, pos=start_pos, v=vol):
+			try:
+				m.play_timeshift_file(p, v, pos)
+			except Exception:
+				pass
+
+		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-timeshift").start()
+
+	def _sync_mirror_timeshift_seek(self, delta_seconds):
+		"""Apply the same rewind/forward seek to the mirror engine's
+		already-open time-shift file, so it tracks the main output."""
+		mirror = self._get_ready_mirror()
+		if mirror is None:
+			return
+
+		def _do(m=mirror, d=delta_seconds):
+			try:
+				m.timeshift_seek(d)
+			except Exception:
+				pass
+
+		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-timeshift").start()
+
+	def _sync_mirror_exit_to_live(self):
+		"""Switch the mirror engine back to the live URL right after the
+		main engine does, so it doesn't stay stuck on the time-shift file."""
+		mirror = self._get_ready_mirror()
+		if mirror is None:
+			return
+		stream_url = self._current_url_resolved or self._current_url
+		if not stream_url:
+			return
+		vol = self._volume / 100.0
+
+		def _do(m=mirror, u=stream_url, v=vol):
+			try:
+				m.play(u, v)
+			except Exception:
+				pass
+
+		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-timeshift").start()
 
 	def get_audio_devices(self, fresh=None):
 		"""Zwróć listę (indeks, nazwa) dostępnych urządzeń wyjściowych BASS.
@@ -2822,11 +2894,22 @@ class RadioPlayer:
 
 	def start_mirror(self, device_index):
 		"""Start mirroring the current stream to an additional output device.
-		Launches a second bass_host process on device_index and plays the same URL.
-		If a podcast is currently playing, the mirror is opened seekable and
-		seeked to the main output's current position, so switching on audio
-		mirroring continues from where playback already was instead of
-		restarting the episode from the top.
+		Launches a second bass_host process on device_index and plays the
+		same source the main output is already on, so switching on audio
+		mirroring continues from where playback already was rather than
+		starting over. Three cases:
+		- Time-shifted live radio: the mirror opens the same time-shift
+		  buffer file, seeked to the main output's current time-shift
+		  position, instead of jumping to the live edge.
+		- Podcasts: the mirror is opened seekable and seeked to the main
+		  output's current position, same as before.
+		- Live (non-time-shifted) radio: the mirror just opens the live URL.
+		If a podcast playback-rate adjustment is active, it's reapplied on
+		the mirror engine too - it's a brand-new subprocess (unlike the
+		mirror-resync paths in _bg_launch/_bg_resume, which reuse the
+		already-running mirror subprocess and so don't need this), so it
+		would otherwise silently come up at normal speed. See the matching
+		safety-net comment in _launch().
 		Returns True on success, False otherwise.
 		"""
 		if self._disable_bass:
@@ -2838,21 +2921,36 @@ class RadioPlayer:
 		mirror_engine = _BassEngine(dll_dir, output_device=device_index)
 		if not mirror_engine.load():
 			return False
-		url = self._current_url_resolved or self._current_url
 		vol = self._volume / 100.0
 		station = self._current_station
 		is_podcast = bool(station and "podcast" in station.get("tags", ""))
+		timeshifted = self._timeshift_active
+
 		current_pos = 0.0
-		if is_podcast:
+		if timeshifted:
 			pos_ok, current_pos, _length = self.get_playback_position()
 			if not pos_ok:
 				current_pos = 0.0
-		ok = mirror_engine.play(url, vol, seekable=is_podcast)
+			path = self._timeshift_buffer.get_file_path()
+			ok = bool(path) and mirror_engine.play_timeshift_file(path, vol, current_pos)
+		else:
+			url = self._current_url_resolved or self._current_url
+			if is_podcast:
+				pos_ok, current_pos, _length = self.get_playback_position()
+				if not pos_ok:
+					current_pos = 0.0
+			ok = mirror_engine.play(url, vol, seekable=is_podcast)
+
 		time.sleep(1.0)
 		if not ok:
 			mirror_engine.unload()
 			return False
-		if is_podcast and current_pos > 1.0:
+		if is_podcast and self._playback_rate != 1.0:
+			try:
+				mirror_engine.set_playback_rate(self._playback_rate)
+			except Exception:
+				pass
+		if not timeshifted and is_podcast and current_pos > 1.0:
 			self._resume_podcast_position_on_engine(mirror_engine, current_pos)
 		self._mirror_engine	   = mirror_engine
 		self._mirror_device_index = device_index

@@ -2292,7 +2292,9 @@ msgid "Could not open recordings folder: %s"
 msgstr ""
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:70
-msgid "&Enable time-shift buffer (rewind live radio, ~10 minutes)"
+msgid ""
+"&Enable time-shift buffer (rewind live radio, no effect on potcasts and "
+"audio books)"
 msgstr ""
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:77
@@ -2836,8 +2838,7 @@ msgid ""
 "## Audio Books (GETEM)\n"
 "- Added a new **Audio Books** tab (`Alt+7`) powered by [GETEM](https://"
 "getem.boun.edu.tr/), Boğaziçi University's digital library for the visually "
-"impaired — the first of what's planned to be several supported audio book "
-"sources.\n"
+"impaired — the first to be supported audio book sources.\n"
 "- Search GETEM's catalogue by title, author, narrator, subject, or "
 "publisher; results are automatically filtered to audio-only formats (human/"
 "computer narration, audio description, radio drama, DAISY talking books, "

@@ -67,7 +67,7 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		# cassette tape. Requires the BASS backend.
 		self._timeshift_enabled = wx.CheckBox(
 			self,
-			label=_("&Enable time-shift buffer (rewind live radio, ~10 minutes)")
+			label=_("&Enable time-shift buffer (rewind live radio, no effect on potcasts and audio books)")
 		)
 		self._timeshift_enabled.SetValue(config.conf["freeradio"].get("timeshift_enabled", False))
 		sHelper.addItem(self._timeshift_enabled)

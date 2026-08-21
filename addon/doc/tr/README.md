@@ -6,7 +6,7 @@ FreeRadio, ekran okuyucu NVDA için geliştirilmiş bir internet radyo eklentisi
 
 FreeRadio, istasyon kataloğu için [Radio Browser](https://www.radio-browser.info/) açık veritabanını kullanır. Radio Browser; dünya genelinde 50.000'i aşkın internet radyo istasyonunu barındıran, topluluk tarafından yönetilen ücretsiz bir dizindir. Kayıt veya hesap gerektirmez ve API'si herkese açıktır. Her istasyon için adres, ülke, tür, dil ve bit hızı bilgileri mevcuttur; istasyonlar kullanıcı oylarıyla sıralanır. FreeRadio bu API'ye Almanya, Hollanda ve Avusturya'da bulunan yansı sunucuları üzerinden bağlanır; bir sunucuya ulaşılamazsa otomatik olarak bir sonrakine geçer.
 
-Tarayıcının hızlı kalması ve her arama veya ülke değişiminde API'ye yük bindirilmemesi için FreeRadio, istasyon kataloğunun yerel bir önbelleğini diskte tutar. Bu önbellek arka planda belirli aralıklarla otomatik olarak yenilenir; bu sayede gördüğünüz liste sizin herhangi bir işlem yapmanıza gerek kalmadan genellikle zaten güncel olur. Ayrıca istediğiniz an **İstasyon Listesini Güncelle** düğmesiyle anında yeniden eşitleme başlatabilirsiniz — aşağıdaki İstasyon Tarayıcısı bölümüne bakın.
+Tarayıcının hızlı kalması ve her arama veya ülke değişiminde API'ye yük bindirilmemesi için FreeRadio, istasyon kataloğunun yerel bir önbelleğini diskte tutar. Bu önbellek arka planda belirli aralıklarla otomatik olarak yenilenir; bu sayede gördüğünüz liste sizin herhangi bir işlem yapmanıza gerek kalmadan genellikle zaten güncel olur. Ayrıca istediğiniz an **İstasyon Listesini Güncelle** düğmesiyle anında yeniden eşitleme başlatabilirsiniz — aşağıdaki [İstasyon Tarayıcısı](#i̇stasyon-tarayıcısı) bölümüne bakın.
 
 ## Radio Browser'a İstasyon Ekleme
 
@@ -21,7 +21,7 @@ Sayfadaki formu doldurun:
 - **Etiketler** — virgülle ayrılmış tür veya konu etiketleri; örneğin `haber`, `caz`, `klasik`. Arama ve filtreleme için kullanılır.
 - **Logo adresi** — varsa istasyon logosunun doğrudan bağlantısı.
 
-Gönderildikten sonra istasyon incelenerek dizine eklenir. Kabul edildikten sonra FreeRadio'nun arama sonuçlarında ve ülke listelerinde otomatik olarak görünür; dizin her zaman canlı API'den yüklenir.
+Gönderildikten sonra istasyon incelenerek dizine eklenir. Kabul edildikten sonra FreeRadio'nun arama sonuçlarında ve ülke listelerinde otomatik olarak görünür; dizin her zaman canlı API'den yenilenir.
 
 ## Gereksinimler
 
@@ -35,30 +35,30 @@ Gönderildikten sonra istasyon incelenerek dizine eklenir. Kabul edildikten sonr
 
 ## Klavye Kısayolları
 
-NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden yeniden atanabilir. Bu kısayollar, odak hangi pencerede olursa olsun her yerden çalışır.
+Tüm kısayollar NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden yeniden atanabilir. Bu kısayollar, odak hangi pencerede olursa olsun her yerden çalışır.
 
 | Kısayol | İşlev | Açıklama |
 |---|---|---|
 | `Ctrl+Win+R` | İstasyon tarayıcısını aç | Tarayıcı penceresi kapalıysa açar, açıksa öne getirir. |
-| `Ctrl+Win+P` | Duraklat / devam et | Çalan istasyon varsa duraklatır; duraklatılmışsa devam ettirir. Hiç istasyon çalmıyorsa ayara göre son istasyonu başlatır veya favoriler listesini açar. İki kez basıldığında ayara göre farklı bir sekmeye doğrudan atlanır. Üç kez basıldığında ayara bağlı olarak ayrı bir işlem tetiklenebilir. |
+| `Ctrl+Win+P` | Duraklat / devam et | Çalan istasyon varsa duraklatır; duraklatılmışsa devam ettirir. Hiçbir şey çalmıyorsa ayarınıza bağlı olarak son istasyonu başlatır veya favoriler listesini açar. Hızlıca iki kez basıldığında seçtiğiniz bir sekmeye doğrudan atlar. Üç kez basıldığında ayarınıza bağlı olarak ayrı bir işlemi tetikleyebilir. |
 | `Ctrl+Win+S` | Durdur | Çalan istasyonu tamamen durdurur ve oynatıcıyı sıfırlar. |
 | `Ctrl+Win+→` | Sonraki favori | Favoriler listesindeki bir sonraki istasyona geçer. Liste sonuna gelindiğinde başa döner. |
 | `Ctrl+Win+←` | Önceki favori | Favoriler listesindeki bir önceki istasyona geçer. Listenin başındayken sona atlar. |
 | `Ctrl+Win+↑` | Ses artır | Ses seviyesini 5 birim artırır; azami 200. |
 | `Ctrl+Win+↓` | Ses azalt | Ses seviyesini 5 birim düşürür; asgari 0. |
-| `Ctrl+Win+Shift+K` | Oynatma hızını artır | Bir podcast bölümünün oynatma hızını 0.1x artırır (perde korunarak). Aralık: 0.5x ila 2.0x. Eklenti klasörüne `bass_fx.dll` yerleştirilmesini gerektirir. |
-| `Ctrl+Win+Shift+J` | Oynatma hızını azalt | Bir podcast bölümünün oynatma hızını 0.1x azaltır. `bass_fx.dll` gerektirir. |
-| `Ctrl+Win+V` | Favorilere ekle | O an çalan istasyonu favoriler listesine ekler; podcast bölümünü ya da sesli kitabı bilgisayara indirir. İstasyon zaten listedeyse ya da öğe zaten indirilmişse bildirir. |
-| `Ctrl+Win+İ` | İstasyon bilgisi | Çalan istasyonu seslendirir. İki kez basıldığında ülke, tür, bit hızı gibi ayrıntıları bir iletişim kutusunda gösterir. Üç kez basıldığında çalan parça bilgisi (ICY metadata) varsa panoya kopyalar; yoksa Shazam ile müzik tanıma başlatır. Dört kez basıldığında çalan parça bilgisi (ICY metadata) yanlışsa müzik tanıma servisini başlatmaya zorlar. |
-| `Ctrl+Win+M` | Ses yansıtma | O an çalan akışı ek bir çıkış aygıtına yansıtır. Yansıtma zaten aktifse durdurur. |
+| `Ctrl+Win+V` | Favorilere ekle / Medyayı İndir | O an çalan istasyonu favoriler listesine ekler veya çalan podcast bölümünü ya da sesli kitabı indirir. İstasyon zaten listedeyse veya medya zaten indirilmişse bildirir. |
+| `Ctrl+Win+Shift+K` | Oynatma hızını artır | Bir podcast bölümünün veya sesli kitabın oynatma hızını 0.1x artırır (perde korunarak). Aralık: 0.5x ila 2.0x. Eklenti klasörüne `bass_fx.dll` yerleştirilmesini gerektirir. |
+| `Ctrl+Win+Shift+J` | Oynatma hızını azalt | Bir podcast bölümünün veya sesli kitabın oynatma hızını 0.1x azaltır. `bass_fx.dll` gerektirir. |
+| `Ctrl+Win+İ` | İstasyon bilgisi | O an çalan istasyon adını, podcast bölümünü veya sesli kitabı seslendirir. İki kez basıldığında ülke, tür, bit hızı gibi ayrıntıları bir iletişim kutusunda gösterir. Üç kez basıldığında çalan parça bilgisi (ICY metadata) varsa panoya kopyalar; yoksa Shazam ile müzik tanıma başlatır. Dört kez basıldığında çalan parça bilgisi (ICY metadata) yanlışsa müzik tanıma servisini başlatmaya zorlar. |
+| `Ctrl+Win+M` | Ses yansıtma | O an çalan akışı veya medyayı eş zamanlı olarak ek bir ses çıkış aygıtına yansıtır. Yansıtmayı durdurmak için tekrar basın. |
 | `Ctrl+Win+E` | Anlık kayıt | Bir kez basıldığında çalan istasyonu kaydetmeye başlar; tekrar basıldığında durdurur. **İki kez** basıldığında **şarkı kaydı** başlar — dosya o anki parça adıyla adlandırılır ve parça değiştiğinde kayıt otomatik olarak durur. Şarkı kaydı aktifken tekrar iki kez basılması kaydı erken sonlandırır. Oynatma tüm kayıt modlarında kesintisiz sürer. Yalnızca ICY metadata yayınlayan istasyonlarda kullanılabilir. |
 | `Ctrl+Win+W` | Kayıt klasörünü aç | Kaydedilen dosyaların bulunduğu klasörü Dosya Gezgini'nde açar. |
-| `Ctrl+Win+J` | Zaman kaydırma geri sarma | Canlı radyoyu 15 saniye geri sarar. İlk basış zaman kaydırma moduna girer; her ek basış tamponu sınırına (~10 dakika) kadar 15 saniye daha geri gider. Zaman kaydırma tamponunun Ayarlar'dan etkinleştirilmesi gerekir. |
-| `Ctrl+Win+K` | Zaman kaydırma ileri sarma | Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve yeniden geri sarılana kadar bu komut işlevsiz kalır. |
-| `Ctrl+Win+T` | Zaman kaydırma tamponunu aç/kapat | Zaman kaydırma tamponunu anında etkinleştirir veya devre dışı bırakır; Ayarlar'daki onay kutusunu yansıtır. Devre dışı bırakıldığında zaman kaydırma modundaysa hemen canlıya döner ve arka plan yakalamayı durdurur. |
+| `Ctrl+Win+J` | Zaman kaydırma geri sarma | Canlı radyoyu 15 saniye geri sarar. İlk basış zaman kaydırma moduna girer; her ek basış FreeRadio ayarlarında belirlenen tampon sınırına kadar 15 saniye daha geri gider. Zaman kaydırma tamponunun Ayarlar'dan etkinleştirilmesi gerekir. Podcast veya sesli kitap oynatılırken ayardan bağımsız olarak 5 saniye geri sarar. |
+| `Ctrl+Win+K` | Zaman kaydırma ileri sarma | Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve yeniden geri sarılana kadar bu komut işlevsiz kalır. Podcast veya sesli kitap oynatılırken ayardan bağımsız olarak 5 saniye ileri sarar. |
+| `Ctrl+Win+T` | Zaman kaydırma tamponunu aç/kapat | Zaman kaydırma tamponunu anında etkinleştirir veya devre dışı bırakır; Ayarlar'daki onay kutusunu yansıtır. Devre dışı bırakıldığında zaman kaydırma modundaysa hemen canlıya döner ve arka plan yakalamayı durdurur. Podcast veya sesli kitap oynatmasında etkisi yoktur. |
 | *(atanmamış)* | Çıkış aygıtı seç | Kullanılabilir ana çıkış aygıtlarının bir listesini isteğe bağlı olarak açar. Liste yalnızca BASS birden fazla fiziksel çıkış aygıtı algıladığında gösterilir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
 | *(atanmamış)* | Bildirimleri sessize al / aç | Bildirim sessize alma ayarını anlık olarak değiştirir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
-| *(atanmamış)* | Favori istasyonu doğrudan çal | Favoriler listenizdeki her istasyon, NVDA Menüsü → Tercihler → Girdi Hareketleri → **FreeRadio İstasyonları** kategorisinde ayrı bir girdi olarak görünür. Bir istasyona klavye kısayolu atayarak tarayıcıyı açmadan her yerden doğrudan çalmaya başlayabilirsiniz. |
+| *(atanmamış)* | Favori istasyonu doğrudan çal | Favoriler listenizdeki her istasyon, NVDA Menüsü → Tercihler → Girdi Hareketleri → **FreeRadio Stations** kategorisinde ayrı bir girdi olarak görünür. Bir istasyona klavye kısayolu atayarak tarayıcıyı açmadan her yerden doğrudan çalmaya başlayabilirsiniz. |
 
 Sonraki / önceki kısayollar yalnızca favoriler listesinde dolaşır; tüm istasyonlar listesinde çalışmaz. Tarayıcı penceresinde listeler odaklanmışken sol ve sağ ok tuşları da aynı işlevi görür: bkz. Diyalog İçi Kısayollar.
 
@@ -74,15 +74,15 @@ Arama yapıldığında, Radio Browser sonuçlarına TuneIn ve iHeartRadio'dan (m
 
 Tarayıcı penceresinin alt kısmında sekmelerin dışında yer alan **Çıkış Cihazı** açılır listesi, o an BASS tarafından tanınan ses çıkış aygıtlarını listeler. Listeden bir aygıt seçildiğinde ses çıkışı anında o aygıta yönlendirilir ve seçim kalıcı olarak kaydedilir; bir sonraki oturumda aynı aygıt otomatik olarak kullanılır. Seçili aygıt sisteme bağlı değilse otomatik olarak sistem varsayılanına dönülür. İstasyon Tarayıcısı içindeyken herhangi bir yerden `F11` tuşuna basarak daha basit, isteğe bağlı bir aygıt seçicisi açabilirsiniz. Bu seçici otomatik olarak gösterilmez; yalnızca BASS birden fazla fiziksel çıkış aygıtı algıladığında açılır. Yalnızca bir aygıt varsa seçim yapmaya gerek yoktur ve FreeRadio sistem varsayılan çıkışını kullanır. Bu özellik yalnızca BASS arka ucu aktifken işlev görür.
 
-Aynı bölümde yer alan **Ses Seviyesi** (0–200) ve **Efektler** denetim çubuğu, pencere açıkken anlık olarak ayarlanabilir. Efektler listesinden Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ile EQ: Bass Boost, EQ: Treble Boost ve EQ: Vocal Boost seçenekleri aynı anda birden fazla seçilerek etkinleştirilebilir; değişiklikler çalan akışa anında uygulanır. Her efekt, klavyeden elinizi kaldırmadan `Ctrl+1` ile `Ctrl+0` arasındaki kısayollarla da anında açılıp kapatılabilir — aşağıdaki Efekt Kısayolları bölümüne bakın. Bu denetimler yalnızca BASS arka ucu aktifken tam işlev görür.
+Aynı bölümde yer alan **Ses Seviyesi** (0–200) ve **Efektler** denetimleri, pencere açıkken anlık olarak ayarlanabilir. Efektler listesinden Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ile EQ: Bass Boost, EQ: Treble Boost ve EQ: Vocal Boost seçenekleri aynı anda birden fazla seçilerek etkinleştirilebilir; değişiklikler çalan akışa anında uygulanır. Her efekt, klavyeden elinizi kaldırmadan `Ctrl+1` ile `Ctrl+0` arasındaki kısayollarla da anında açılıp kapatılabilir — aşağıdaki [Efekt Kısayolları](#efekt-kısayolları) bölümüne bakın. Bu denetimler yalnızca BASS arka ucu aktifken tam işlev görür.
 
-EQ efektlerinden biri veya birkaçı etkinleştirildiğinde, her aktif band için bir **kazanç denetimi** otomatik olarak görünür. Kazanç −15 dB ile +15 dB arasında ayarlanabilir; varsayılan değerler Bas +9 dB, Tiz +9 dB ve Vokal +6 dB'dir. Kazanç denetimleri yalnızca işaretli EQ bandları için gösterilir, efekt kapatıldığında otomatik olarak gizlenir. Değerler kalıcı olarak kaydedilir ve bir sonraki oturumda geri yüklenir.
+EQ efektlerinden biri veya birkaçı etkinleştirildiğinde, her aktif band için bir **kazanç denetimi** otomatik olarak görünür. Kazanç −15 dB ile +15 dB arasında ayarlanabilir; varsayılan değerler Bas +9 dB, Tiz +9 dB ve Vokal +6 dB'dir. Kazanç denetimleri yalnızca işaretli EQ bandları için gösterilir, efekt kapatıldığında otomatik olarak gizlenir. Kazanç değerleri genel olarak kaydedilir ve bir sonraki oturumda geri yüklenir.
 
 Pencerenin alt kısmında ayrıca **Çal/Duraklat** düğmesi bulunur. Herhangi bir istasyon çalmıyorsa seçili istasyonu başlatır; bir istasyon çalıyorsa oynatmayı duraklatır.
 
 **İstasyon Listesini Güncelle** düğmesi, periyodik arka plan güncellemesini beklemek yerine yerel istasyon kataloğunu Radio Browser API'siyle anında yeniden eşitler. Güncelleme sürerken düğme devre dışı kalır ve NVDA bir güncellemenin sürmekte olduğunu bildirir; mevcut güncelleme tamamlanmadan düğmeye tekrar basarsanız NVDA zaten bir güncellemenin sürmekte olduğunu söyler. Güncelleme tamamlandığında NVDA istasyon listesinin güncellendiğini bildirir ve o an ekranda gösterilen arama sonuçları veya ülke listesi, yeni verileri yansıtacak şekilde otomatik olarak yenilenir.
 
-Listede bir istasyon seçiliyken **İstasyon Detayları** düğmesi, o istasyona ait ülke, dil, tür, format, bit hızı, web sitesi ve akış adresi gibi bilgileri ayrı bir iletişim kutusunda gösterir. İletişim kutusunda her alan ayrı bir salt-okunur metin kutusunda yer alır; Tab tuşuyla alanlar arasında gezinilebilir. **Tümünü panoya kopyala** düğmesiyle tüm bilgiler tek seferde panoya alınabilir. Bu düğme hem Tüm İstasyonlar hem de Favoriler sekmesinde bulunur.
+Listede bir istasyon seçiliyken **İstasyon Detayları** düğmesi, o istasyona ait ülke, dil, tür, format, bit hızı, web sitesi ve akış adresi gibi bilgileri ayrı bir iletişim kutusunda gösterir. İletişim kutusunda her alan ayrı bir salt-okunur metin kutusunda yer alır; Tab tuşuyla alanlar arasında gezinilebilir ve **Tümünü panoya kopyala** düğmesiyle tüm bilgiler tek seferde panoya alınabilir. Bu düğme hem Tüm İstasyonlar hem de Favoriler sekmesinde bulunur.
 
 ### İstasyon Bağlam Menüsü
 
@@ -92,7 +92,7 @@ Tüm İstasyonlar veya Favoriler listesinde bir istasyona sağ tıklayarak ya da
 - **Favorilere Ekle** *(Tüm İstasyonlar sekmesi)* / **İstasyonu Sil** *(Favoriler sekmesi)*.
 - **İstasyonu Yeniden Adlandır** *(Favoriler sekmesi)* — `F9` ile aynıdır.
 - **Bu İstasyon İçin Ses Profili Kaydet** / **Ses Profilini Temizle** *(Favoriler sekmesi)* — bkz. [İstasyon Ses Profili](#i̇stasyon-ses-profili).
-- **Adresi Test Et** — seçili istasyonun akışının, oynatmayı başlatmadan şu an erişilebilir olup olmadığını denetler ve sonucu (erişilebilir ya da HTTP hatası veya zaman aşımı gibi başarısızlık nedeni) seslendirir.
+- **Adresi Test Et** — seçili istasyonun akışının, oynatmayı başlatmadan şu an erişilebilir olup olmadığını denetler ve sonucu (erişilebilir ya da HTTP hatası veya ağ zaman aşımı gibi başarısızlık nedeni) seslendirir.
 
 Yalnızca geçerli sekme ve seçime uygun olan öğeler kullanılabilir olarak gösterilir.
 
@@ -105,7 +105,7 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 | Kısayol | İşlev | Açıklama |
 |---|---|---|
 | `F1` | Yardım kılavuzu | Eklentinin yardım dosyasını varsayılan tarayıcıda açar. Önce etkin NVDA diline ait kılavuz aranır; yoksa varsayılan kılavuz açılır. |
-| `F2` | ne çalıyor | Çalan istasyonu seslendirir. İki kez basıldığında ülke, tür, bit hızı gibi ayrıntıları bir iletişim kutusunda gösterir. Üç kez basıldığında çalan parça bilgisi (ICY metadata) varsa panoya kopyalar; yoksa Shazam ile müzik tanıma başlatır. Dört kez basıldığında çalan parça bilgisi (ICY metadata) yanlışsa müzik tanıma servisini başlatmaya zorlar. |
+| `F2` | Ne çalıyor | Çalan istasyonu ve parça adını seslendirir. İki kez basıldığında ülke, tür, bit hızı gibi ayrıntıları bir iletişim kutusunda gösterir. Üç kez basıldığında çalan parça bilgisi (ICY metadata) varsa panoya kopyalar; yoksa Shazam ile müzik tanıma başlatır. Dört kez basıldığında çalan parça bilgisi (ICY metadata) yanlışsa müzik tanıma servisini başlatmaya zorlar. |
 | `F3` | Önceki öğe | Tüm İstasyonlar veya Favoriler sekmesinde bir önceki istasyona geçer ve hemen çalmaya başlar. Podcastler sekmesinde ise bölüm listesindeki bir önceki bölüme geçer ve çalar. |
 | `F4` | Sonraki öğe | Tüm İstasyonlar veya Favoriler sekmesinde bir sonraki istasyona geçer ve hemen çalmaya başlar. Podcastler sekmesinde ise bir sonraki bölüme geçer ve çalar. |
 | `Shift+F3` | Önceki akış | Yalnızca Podcastler sekmesinde: abonelikler listesinde bir üst akışa geçer. |
@@ -127,7 +127,7 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 | `Ctrl+←` | Önceki bölüm | Podcastler sekmesi etkinken bir önceki bölüme geçer ve çalar (bölüm listesi odaklanmışken `←` ile aynıdır). |
 | `Enter` | Çal | Bir istasyon veya bölüm listesi odaklanmışken seçili öğeyi doğrudan çalmaya başlar. Başka bir istasyon çalıyor olsa bile çalmayı keserek seçili istasyona geçer. |
 | `Boşluk` | Çal / Duraklat | Çalan istasyon varsa duraklatır; yoksa listede seçili öğeyi çalmaya başlar. |
-| `Ctrl+Tab` | Sonraki sekme | Bir sonraki sekmeye geçer (Tüm İstasyonlar → Favoriler → Kayıt → Zamanlayıcı → Beğenilen Şarkılar → Podcastler). |
+| `Ctrl+Tab` | Sonraki sekme | Bir sonraki sekmeye geçer (Tüm İstasyonlar → Favoriler → Kayıt → Zamanlayıcı → Beğenilen Şarkılar → Podcastler → Sesli Kitaplar). |
 | `Ctrl+Shift+Tab` | Önceki sekme | Bir önceki sekmeye döner. |
 | `Escape` | Gizle | Pencereyi gizler; eklenti arka planda çalmaya devam eder. |
 
@@ -149,9 +149,9 @@ Aşağıdaki tuşlar yalnızca İstasyon Tarayıcısı penceresi etkinken çalı
 | `Ctrl+5` | Flanger'ı aç/kapat | Flanger efektini açar veya kapatır ve çalan akışa anında uygular. |
 | `Ctrl+6` | Gargle'ı aç/kapat | Gargle efektini açar veya kapatır ve çalan akışa anında uygular. |
 | `Ctrl+7` | Reverb'i aç/kapat | Reverb efektini açar veya kapatır ve çalan akışa anında uygular. |
-| `Ctrl+8` | EQ: Bass Boost'u aç/kapat | EQ: Bass Boost bandını açar veya kapatır ve çalan akışa anında uygular. |
-| `Ctrl+9` | EQ: Treble Boost'u aç/kapat | EQ: Treble Boost bandını açar veya kapatır ve çalan akışa anında uygular. |
-| `Ctrl+0` | EQ: Vocal Boost'u aç/kapat | EQ: Vocal Boost bandını açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+8` | EQ: Bass Boost'u aç/kapat | Bass Boost EQ bandını açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+9` | EQ: Treble Boost'u aç/kapat | Treble Boost EQ bandını açar veya kapatır ve çalan akışa anında uygular. |
+| `Ctrl+0` | EQ: Vocal Boost'u aç/kapat | Vocal Boost EQ bandını açar veya kapatır ve çalan akışa anında uygular. |
 
 Her kısayol, **Efektler** listesindeki ilgili öğeyi işaretlemek veya işaretini kaldırmakla aynı etkiyi yaratır: NVDA efektin açıldığını veya kapandığını bildirir, değişiklik otomatik olarak kaydedilir ve ilgili bandın kazanç denetimi (varsa) buna göre görünür veya gizlenir. Yalnızca BASS arka ucu aktifken kullanılabilir.
 
@@ -159,7 +159,7 @@ Her kısayol, **Efektler** listesindeki ilgili öğeyi işaretlemek veya işaret
 
 | Kısayol | İşlev | Açıklama |
 |---|---|---|
-| `Alt+R` | Arama alanına git | Odağı arama metin kutusuna taşır. Yazıldıkça ad, ülke ve tür eş zamanlı aranır. |
+| `Alt+R` | Arama alanına git | Odağı arama metin kutusuna taşır. Arama alanındaki metinle Radio Browser taranır; ad, ülke ve tür eş zamanlı aranır. |
 | `Alt+V` | Favori ekle / kaldır | Seçili istasyonu favorilere ekler; zaten listedeyse kaldırır. |
 | `Alt+1` | Tüm İstasyonlar | Tüm İstasyonlar sekmesine geçer. |
 | `Alt+2` | Favoriler | Favoriler sekmesine geçer. |
@@ -167,6 +167,7 @@ Her kısayol, **Efektler** listesindeki ilgili öğeyi işaretlemek veya işaret
 | `Alt+4` | Zamanlayıcı | Zamanlayıcı sekmesine geçer. |
 | `Alt+5` | Beğenilen Şarkılar | Beğenilen Şarkılar sekmesine geçer. |
 | `Alt+6` | Podcastler | Podcastler sekmesine geçer. |
+| `Alt+7` | Sesli Kitaplar | Sesli Kitaplar sekmesine geçer. |
 | `Alt+K` | Kapat | Pencereyi kapatır; eklenti arka planda çalmaya devam eder. |
 
 ## Favoriler
@@ -238,17 +239,17 @@ Tanıma şu şekilde çalışır: ffmpeg kullanılarak akıştan kısa bir ses �
 
 **Gereksinim:** ffmpeg.exe gereklidir. Eklenti klasörüne yerleştirilen ffmpeg.exe otomatik olarak kullanılır; farklı bir konumdaysa yol Ayarlar'dan belirtilebilir. ffmpeg'i [ffmpeg.org](https://ffmpeg.org/download.html) adresinden indirin.
 
-**Reklam ekleyen istasyonlar hakkında bir not:** bazı istasyonlar, akışlarına yapılan her yeni bağlantıya, o an dinlediğiniz yayından ayrı olarak kısa bir reklam sunar. Tanıma işlemi, bu reklamdan örnek almaktan kaçınmak için yeni bir bağlantı açmak yerine FreeRadio'nun zaten var olan arka plan akış bağlantısını (aynısı [Zaman Kaydırma](#zaman-kaydırma-canlı-radyoyu-geri-sarma) için de kullanılır) yeniden kullanır; böylece bir reklam yerine gerçekte çalan içeriği tanımlar. Bu, herhangi bir yapılandırma gerektirmeden otomatik olarak çalışır.
+**Reklam ekleyen istasyonlar hakkında bir not:** bazı istasyonlar, akışlarına yapılan her yeni bağlantıya, o an dinlediğiniz yayından ayrı olarak kısa bir reklam sunar. Tanıma işlemi, bu reklamdan örnek almaktan kaçınmak için yeni bir bağlantı açmak yerine FreeRadio'nun zaten var olan arka plan akış bağlantısını (aynısı [Zaman Kaydırma (Canlı Radyoyu Geri Sarma)](#zaman-kaydırma-canlı-radyoyu-geri-sarma) için de kullanılır) yeniden kullanır; böylece bir reklam yerine gerçekte çalan içeriği tanımlar. Bu, herhangi bir yapılandırma gerektirmeden otomatik olarak çalışır.
 
 ## Ses Yansıtma
 
-`Ctrl+Win+M` kısayolu, çalan akışı eş zamanlı olarak ikinci bir ses çıkış aygıtına yansıtır. Hoparlör ve kulaklık gibi iki farklı aygıttan aynı anda dinlemek için kullanışlıdır.
+`Ctrl+Win+M` kısayolu, çalan akışı veya medyayı eş zamanlı olarak ikinci bir ses çıkış aygıtına yansıtır. Hoparlör ve kulaklık gibi iki farklı aygıttan aynı anda dinlemek için kullanışlıdır.
 
 İlk basışta mevcut çıkış aygıtlarını listeleyen bir seçim iletişim kutusu açılır. Bir aygıt seçildiğinde yansıtma başlar ve ana oynatma kesintisiz devam eder. Kısayola tekrar basıldığında yansıtma durdurulur.
 
 **Kullanım senaryoları:**
 - **Hoparlör + kulaklık** — Siz bilgisayar hoparlöründen dinlerken bir misafirin aynı yayını kulaklıkla takip etmesini sağlayın.
-- **Kayıt kurulumu** — Ana çıkışı hoparlöre, ikinci çıkışı harici bir kayıt cihazına veya ses arabirimine yönlendirin.
+- **Kayıt kurulumu** — Ana çıkışı hoparlöre, ikinci çıkışı harici bir kayıt cihazına veya harici yakalama için bir ses arabirimine yönlendirin.
 - **Çok odalı** — Bluetooth hoparlör ve dahili hoparlörden eş zamanlı çalın; sesi başka bir odaya taşımak için ek yazılım gerekmez.
 - **Uzaktan izleme** — Ekran paylaşımı veya uzak masaüstü oturumunda hem yerel hem de uzak taraf aynı akışı eş zamanlı duyabilir.
 
@@ -293,23 +294,23 @@ Müzik tanıma gibi, anlık ve şarkı kaydı da mevcutsa FreeRadio'nun zaten va
 
 Zaman kaydırma, o an dinlediğiniz istasyonu bir DVR veya kaset gibi geri sarmanızı sağlar — anı durdurun, birkaç dakika geri gidin ve istediğinizde canlıya tekrar yetişin. Oynatmanın durması gerekmez: geri ve ileri sarma aynı ses akışında anında gerçekleşir.
 
-Bu özellik **varsayılan olarak devre dışıdır**. NVDA Menüsü → Tercihler → Ayarlar → FreeRadio → **Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar, ~10 dakika)** seçeneğiyle veya `Ctrl+Win+T` ile istediğiniz zaman anında etkinleştirebilirsiniz.
+Bu özellik **varsayılan olarak devre dışıdır**. NVDA Menüsü → Tercihler → Ayarlar → FreeRadio → **Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar)** seçeneğiyle veya `Ctrl+Win+T` ile istediğiniz zaman anında etkinleştirebilirsiniz.
 
-> **Not:** FreeRadio artık, yalnızca bu ayar etkinleştirildiğinde değil, her zaman o an çalan istasyonun küçük bir arka plan yakalamasını çalışır durumda tutar; çünkü [Müzik Tanıma](#müzik-tanıma) ve [Kayıt](#kayıt) bu bölümlerde açıklanan reklamdan kaçınma davranışı için buna dayanır. Bu ayar **kapalıyken** bu arka plan yakalaması yaklaşık son 45 saniyeyle sınırlı kalır ve `Ctrl+Win+J`/`Ctrl+Win+K` kullanılamaz durumda kalır — yalnızca tampon boyutu değişir, çalışıp çalışmadığı değil. Ayarı etkinleştirmek aynı yakalamayı aşağıda açıklanan tam ~10 dakikalık geri sarma tamponuna büyütür.
+> **Not:** FreeRadio artık, yalnızca bu ayar etkinleştirildiğinde değil, her zaman o an çalan istasyonun küçük bir arka plan yakalamasını çalışır durumda tutar; çünkü [Müzik Tanıma](#müzik-tanıma) ve [Kayıt](#kayıt) bu bölümlerde açıklanan reklamdan kaçınma davranışı için buna dayanır. Bu ayar **kapalıyken** bu arka plan yakalaması yaklaşık son 45 saniyeyle sınırlı kalır ve `Ctrl+Win+J`/`Ctrl+Win+K` kullanılamaz durumda kalır — yalnızca tampon boyutu değişir, çalışıp çalışmadığı değil. Ayarı etkinleştirmek aynı yakalamayı aşağıda açıklanan tam geri sarma tamponuna büyütür.
 
 ### Nasıl Çalışır
 
-Etkinleştirildiğinde FreeRadio, çalan istasyonu arka planda yerel bir tampona sürekli olarak yakalar. Tampon yaklaşık **son 10 dakika** ses içerir; yeni ses geldikçe eski ses silinir, böylece tampon her zaman canlı kenarına göre "yakın geçmişi" temsil eder.
+Etkinleştirildiğinde FreeRadio, normal oynatmadan bağımsız olarak çalan istasyonu arka planda yerel bir döner tampona sürekli olarak yakalar. Tampon yaklaşık olarak ayarlarda belirlenen **son dakikaları** içerir; yeni ses geldikçe eski ses baştan silinir, böylece tampon her zaman canlı kenarına göre "yakın geçmişi" temsil eder. Tampon süresi Ayarlar'dan belirlenir.
 
-- **`Ctrl+Win+J`** — 15 saniye geri sar. İlk basış sizi canlı oynatmadan zaman kaydırma oynatmasına geçirir; her ek basış tamponu sınırına kadar 15 saniye daha geri gider.
-- **`Ctrl+Win+K`** — Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve NVDA "Canlıya dön" duyurusunu yapar.
-- **`Ctrl+Win+T`** — Özelliği tamamen açar veya kapatır. Zaman kaydırma modundayken kapatıldığında hemen canlıya döner ve arka plan yakalamayı durdurur.
+- **`Ctrl+Win+J`** — 15 saniye geri sar. İlk basış sizi canlı oynatmadan canlı kenarının 15 saniye gerisinde zaman kaydırma oynatmasına geçirir; her ek basış tampon sınırına kadar 15 saniye daha geri gider.
+- **`Ctrl+Win+K`** — Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlı akışa döner ve NVDA "Canlıya dön" duyurusunu yapar — normal dinlemeye dönmek için fazladan bir şey yapmanız gerekmez.
+- **`Ctrl+Win+T`** — Özelliği tamamen açar veya kapatır. Zaman kaydırma modundayken kapatıldığında hemen canlıya döner ve geçerli istasyon için arka plan yakalamayı durdurur.
 
 Arka plan yakalama zaman kaydırma sırasında çalışmaya devam eder; canlı kenar birkaç dakika öncesini dinlerken bile ilerlemeye devam eder — tıpkı gerçek bir DVR gibi.
 
 ### Etkinleştirme ve Tampon Isınması
 
-Tampon, özellik etkinken bir istasyon çalmaya başlar başlamaz ya da bir istasyonu dinlerken özelliği etkinleştirdiğiniz anda dolmaya başlar. Bu nedenle geri sarma yalnızca birkaç saniyelik ses yakalandıktan sonra mümkündür — istasyon değiştirdikten hemen sonra `Ctrl+Win+J` tuşuna basarsanız NVDA henüz yeterli ses olmadığını bildirir. Birkaç saniye bekleyip tekrar deneyin.
+Tampon, özellik etkinken bir istasyon çalmaya başlar başlamaz ya da bir istasyonu dinlerken özelliği etkinleştirdiğiniz anda dolmaya başlar. Bu nedenle geri sarma yalnızca birkaç saniyelik ses yakalandıktan sonra mümkündür — istasyon değiştirdikten hemen sonra `Ctrl+Win+J` tuşuna basarsanız NVDA henüz yeterli tamponlanmış ses olmadığını bildirir. Birkaç saniye bekleyip tekrar deneyin.
 
 Farklı bir istasyona geçmek yeni istasyon için tamponu her zaman sıfırlar; önceki istasyonun tamponlanmış sesi silinir.
 
@@ -318,16 +319,16 @@ Farklı bir istasyona geçmek yeni istasyon için tamponu her zaman sıfırlar; 
 Zaman kaydırma, FreeRadio'nun zaten desteklediği akış türleriyle çalışır:
 
 - Shoutcast/Icecast tarzı sunucular dahil düz HTTP/HTTPS akışları (MP3, AAC, OGG vb.).
-- **HLS (`.m3u8`) akışları** — FreeRadio istasyonun ana çalma listesini çözümler, medya çalma listesini takip eder ve tamponu doldurmak için arka planda segmentleri indirir.
+- **HLS (`.m3u8`) akışları** — FreeRadio istasyonun ana çalma listesini çözümler, medya çalma listesini takip eder ve düz akışlarda olduğu gibi tamponu doldurmak için arka planda segmentleri indirir.
 
 Bir istasyonun çalma listesi hiç okunamazsa (örneğin bozuk veya erişilemeyen bir `.m3u8` manifestosu) NVDA, o istasyon için geri sarmanın mevcut olmadığını bildirir.
 
 ### Gereksinimler ve Sınırlamalar
 
 - **BASS arka ucunu gerektirir.** BASS devre dışıyken ve oynatma VLC, PotPlayer veya Windows Media Player'a düştüğünde zaman kaydırma kullanılamaz. Arka plan yakalamasının kendisi (ve Müzik Tanıma ile Kayıt'a sağladığı reklamdan kaçınma) da aynı BASS tabanlı bağlantıya dayandığından bu durumda kullanılamaz.
-- Tampon yaklaşık 10 dakikadır; bundan daha geriye gidemezsiniz.
-- Tampon istasyona özgüdür: istasyon değiştirme, oynatmayı durdurma veya NVDA'yı yeniden başlatma tamponu sıfırlar.
-- Zaman kaydırmalı oynatma kendi yerel tampon dosyasını kullanır ve kayıtlı bir kayıt üretmez — sesi kalıcı olarak saklamak istiyorsanız Anlık Kayıt (`Ctrl+Win+E`) özelliğini de kullanın.
+- Tampon süresi Ayarlar'dan belirlenir.
+- Tampon istasyona özgüdür: istasyon değiştirme, oynatmayı durdurma veya NVDA'yı yeniden başlatma tamponu sıfırlar ve baştan başlatır.
+- Zaman kaydırmalı oynatma kendi yerel tampon dosyasını kullanır ve kayıtlı bir dosya üretmez — sesi kalıcı olarak saklamak istiyorsanız Anlık Kayıt (`Ctrl+Win+E`) özelliğini de kullanın.
 
 ## Zamanlayıcı
 
@@ -335,11 +336,11 @@ Bir istasyonun çalma listesi hiç okunamazsa (örneğin bozuk veya erişilemeye
 
 Alarm zamanlayıcısı için bir istasyon seçerken, istasyon listesinin üzerindeki **Filtre** alanı favoriler listesini gerçek zamanlı olarak daraltmanıza olanak tanır.
 
-**Alarm — radyoyu başlat:** Belirtilen saatte favoriler listesinden seçilen istasyonu otomatik olarak çalmaya başlar. İstasyonu ve saati SS:DD biçiminde girin.
+**Alarm — radyoyu başlat:** Belirtilen saatte favoriler listesinden seçilen istasyonu otomatik olarak çalmaya başlar. İstasyonu seçin ve saati SS:DD biçiminde girin.
 
 **Uyku — radyoyu durdur:** Belirtilen saatte oynatmayı durdurur. Zamanlayıcı tetiklendiğinde ses 60 saniye boyunca kademeli olarak kısılır, ardından oynatma durur. İstasyon seçmeye gerek yoktur; yalnızca saat girilmesi yeterlidir.
 
-Her iki tür için de girilen saat geçmişse işlem ertesi güne planlanır. Aynı saatte zaten bir zamanlayıcı varsa (türü ne olursa olsun) yeni zamanlayıcı eklenmez; çakışma hakkında bilgi verilir ve mevcut girişin önce kaldırılması istenir. Bekleyen zamanlayıcılar sekmede listelenir; listeden seçip Seçili Zamanlayıcıyı Kaldır düğmesine basılarak iptal edilebilir.
+Her iki tür için de girilen saat geçmişse işlem ertesi güne planlanır. Aynı saatte zaten bir zamanlayıcı varsa (türü ne olursa olsun) yeni zamanlayıcı eklenmesi engellenir; çakışma hakkında bilgi verilir ve mevcut girişin önce kaldırılması istenir. Bekleyen zamanlayıcılar sekmede listelenir; listeden seçip Seçili Zamanlayıcıyı Kaldır düğmesine basılarak iptal edilebilir.
 
 ## Podcastler
 
@@ -377,7 +378,7 @@ Bir podcast akışını iki şekilde ekleyebilirsiniz:
 Bir aboneliğe karar vermeden önce, bir podcastin bölümlerini doğrudan arama sonuçlarından dinleyebilirsiniz. **Arama sonuçları** listesinde bir podcast seçtiğinizde FreeRadio o akışı getirir ve bölümlerini — başlık ve yayın tarihiyle — altındaki **Seçili sonuçtaki bölümler** listesinde gösterir.
 
 - Bu önizleme listesinde bir bölüm seçip `Enter`'a basın ya da bağlam menüsünü açıp (Uygulamalar tuşu / `Shift+F10` veya sağ tık) **Önizle**'yi seçerek normal oynatıcı üzerinden çalmaya başlayabilirsiniz. Olağan tüm oynatma denetimleri (duraklat, ses seviyesi, zaman kaydırma vb.) diğer herhangi bir istasyon veya bölümde olduğu gibi burada da çalışır.
-- Bir bölüm önizlenirken aynı bağlam menüsünde **Önizle** yerine **Önizlemeyi Durdur** görünür — bunu seçin ya da aynı bölümde tekrar `Enter`'a basın, durdurmak için.
+- Bir bölüm önizlenirken aynı bağlam menüsünde **Önizle** yerine **Önizlemeyi Durdur** görünür — bunu seçin ya da aynı bölümde tekrar `Enter`'a basarak durdurun.
 - Önizleme sizi herhangi bir şeye abone etmez; yalnızca karar vermeden önce dinlemek içindir. Önizleme listesinin kendisi geçicidir — farklı bir arama sonucu seçtiğinizde hemen değişir ve gerçek aboneliklerinizin aksine hiçbir yerde kalıcı olarak saklanmaz.
 
 ### Abonelikleri Yönetme
@@ -385,10 +386,10 @@ Bir aboneliğe karar vermeden önce, bir podcastin bölümlerini doğrudan arama
 Birkaç akış eklediğinizde bunlar **Abonelikler** listesinde görünür. Her girdi, akış başlığını ve mevcut bölüm sayısını gösterir.
 
 - **Bir akış seçin**, bölümlerini alttaki listede görmek için. Abonelikler listesinin altındaki salt okunur **Akış ayrıntıları** metin kutusu; akış başlığını, yazarını, açıklamasını, bölüm sayısını ve URL'sini gösterir.
-- **Bir akışı yenileyin** — seçip **akışı Yenile** komutunu kullanın (bağlam menüsünden erişilebilir, aşağıya bakın) basarak en yeni bölümleri getirin. Podcastler sekmesini her açtığınızda tüm akışlar arka planda otomatik olarak yenilenir; böylece genellikle elle müdahale etmeden en yeni bölümleri görürsünüz.
+- **Bir akışı yenileyin** — seçip **Akışı Yenile** komutunu kullanın (bağlam menüsünden erişilebilir, aşağıya bakın) basarak en yeni bölümleri getirin. Podcastler sekmesini her açtığınızda tüm akışlar arka planda otomatik olarak yenilenir; böylece genellikle elle müdahale etmeden en yeni bölümleri görürsünüz.
 - **Bir akışı kaldırın** — seçip `Delete` tuşuna basın ya da bağlam menüsünü kullanarak aboneliklerinizden kaldırın. Kaldırmadan önce onay istenir.
 
-**akışlar için bağlam menüsü:** Bir akışa sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açabilirsiniz:
+**Akışlar için bağlam menüsü:** Bir akışa sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açabilirsiniz:
 - **Akışı Yenile** — yeni bölümleri şimdi getirir.
 - **Akışı Kaldır** — aboneliği siler.
 - **Akış URL'sini Kopyala** — akış URL'sini panoya kopyalar.
@@ -418,7 +419,7 @@ Abonelikler listesinde bir akış seçin; bölümleri aşağıdaki **Bölümler*
 
 ### Bölümleri İndirme
 
-Bir bölüm seçip **Bölümü İndir** düğmesine tıklayın (ya da bağlam menüsünü kullanın). Bölüm, kayıt klasörünüze indirilir (varsayılan olarak `Belgeler\FreeRadio Recordings\`). Dosya adı, bölüm başlığına ve algılanan dosya uzantısına (`.mp3`, `.m4a`, `.ogg` vb.) dayanır. İndirme başladığında ve bittiğinde NVDA bunu bildirir. Dosya zaten mevcutsa bilgilendirilirsiniz ve indirme atlanır.
+Bir bölüm seçip **Bölümü İndir** düğmesine tıklayın (ya da bağlam menüsünü kullanın). Bölüm, kayıt klasörünüze indirilir (varsayılan olarak `Belgeler\FreeRadio Recordings\`). Dosya adı, bölüm başlığına ve algılanan dosya uzantısına (`.mp3`, `.m4a`, `.ogg` vb.) dayanır. NVDA indirme başladığında ve bittiğinde bunu bildirir. Dosya zaten mevcutsa bilgilendirilirsiniz ve indirme atlanır.
 
 ### Bölümleri Filtreleme
 
@@ -428,7 +429,7 @@ Bölüm listesinin üzerinde bir **Filtre** alanı bulunur. Yazdıkça bölüm l
 
 Podcast bölümleri, **BASS arka ucu** kullanılarak çalınır (radyo akışları için kullanılan aynı motor). Bölümler kademeli olarak indirildiği ve konum atlanabilir olduğu için, bir podcast çalarken zaman kaydırma geri/ileri sarma kısayollarını (`Ctrl+Win+J`/`Ctrl+Win+K`) kullanarak her seferinde **5 saniye** geri veya ileri atlayabilirsiniz (canlı radyoda kullanılan 15 saniyelik geri sarma yerine). Konum otomatik olarak kaydedilir, böylece daha sonra devam edebilirsiniz.
 
-**Oynatma hızı:** Podcast bölümlerinin oynatma hızını `Ctrl+Win+Shift+K` (hızlandır) ve `Ctrl+Win+Shift+J` (yavaşlat) kullanarak ayarlayabilirsiniz. Hız 0.1x adımlarla değişir, aralık 0.5x ila 2.0x arasındadır ve perde korunur. Bu, eklenti klasörüne `bass_fx.dll` kütüphanesinin yerleştirilmesini gerektirir. Kütüphane eksikse, NVDA bu özelliğin kullanılamadığını bildirir.
+**Oynatma hızı:** Podcast bölümlerinin oynatma hızını `Ctrl+Win+Shift+K` (hızlandır) ve `Ctrl+Win+Shift+J` (yavaşlat) kullanarak ayarlayabilirsiniz. Hız 0.1x adımlarla değişir, aralık 0.5x ila 2.0x arasındadır ve perde korunur. Bu, eklenti klasörüne isteğe bağlı `bass_fx.dll` kütüphanesinin yerleştirilmesini gerektirir. Kütüphane eksikse, NVDA bu özelliğin kullanılamadığını bildirir.
 
 > **Not:** `bass_fx.dll` varsayılan olarak FreeRadio ile birlikte gelmez. Bu özelliği etkinleştirmek için [BASS FX sayfasından](https://www.un4seen.com/bass-fx.html) indirip eklentinin `bass/x64` (64-bit NVDA için) veya `bass` (32-bit NVDA için) klasörüne yerleştirebilirsiniz.
 
@@ -440,7 +441,7 @@ Abonelikleriniz, NVDA kullanıcı yapılandırma klasöründeki `freeradio_podca
 
 ## Sesli Kitaplar (GETEM)
 
-FreeRadio, Boğaziçi Üniversitesi Görme Engelliler Teknoloji ve Eğitim Laboratuvarı (GETEM) tarafından işletilen dijital kütüphane [GETEM](https://getem.boun.edu.tr/) için bir sesli kitap oynatıcısı içerir. Kataloğunda arama yapabilir, kitapları önizleyebilir ve kişisel kitaplığa ekleyebilir, çok bölümlü eserleri otomatik devam etme özelliğiyle oynatabilir ve kitapları çevrimdışı dinlemek için  indirebilirsiniz — tümü tam erişilebilir şekilde.
+FreeRadio, Boğaziçi Üniversitesi Görme Engelliler Teknoloji ve Eğitim Laboratuvarı (GETEM) tarafından işletilen dijital kütüphane [GETEM](https://getem.boun.edu.tr/) için bir sesli kitap oynatıcısı içerir. Kataloğunda arama yapabilir, kitapları önizleyebilir ve kişisel kitaplığa ekleyebilir, çok bölümlü eserleri otomatik devam etme özelliğiyle oynatabilir ve kitapları çevrimdışı dinlemek için indirebilirsiniz — tümü tam erişilebilir şekilde.
 
 GETEM, bu özellik tarafından desteklenen ilk kaynaktır. Sesli Kitaplar sekmesi, gelecekte yanına başka kütüphaneler veya kataloglar eklenebilecek şekilde oluşturulmuştur; şimdilik GETEM mevcut olan tek kaynaktır.
 
@@ -456,15 +457,15 @@ GETEM, bu özellik tarafından desteklenen ilk kaynaktır. Sesli Kitaplar sekmes
 
 ### Oturum Açma
 
-GETEM, kataloğun kendisi özgürce taranabilse de, bir kitabın gerçek sesini akışla iletmek veya indirmek için kayıtlı bir üye olmayı gerektirir. GETEM kullanıcı adınızı ve şifrenizi **NVDA Menüsü → Tercihler → Ayarlar → FreeRadio** bölümüne bir kez girin; bunlar diskte (Windows Veri Koruma API'si aracılığıyla, Windows kullanıcı hesabınıza bağlı olarak) şifrelenmiş olarak saklanır ve daha sonra otomatik olarak yeniden kullanılır. Kimlik bilgilerini girmeden bir kitabı oynamaya veya indirmeye çalışırsanız, FreeRadio önce bunları Ayarlar'a eklemenizi söyler.
+GETEM, kataloğun kendisi özgürce taranabilse de, bir kitabın gerçek sesini akışla iletmek veya indirmek için kayıtlı bir üye olmayı gerektirir. GETEM kullanıcı adınızı ve şifrenizi **NVDA Menüsü → Tercihler → Ayarlar → FreeRadio** bölümüne bir kez girin; bunlar diskte (Windows Veri Koruma API'si aracılığıyla, Windows kullanıcı hesabınıza bağlı olarak) şifrelenmiş olarak saklanır ve daha sonra otomatik olarak yeniden kullanılır. Kimlik bilgilerini girmeden bir kitabı oynatmaya veya indirmeye çalışırsanız, FreeRadio önce bunları Ayarlar'a eklemenizi söyler.
 
 ### Sesli Kitapları Arama
 
 Arama alanına bir arama terimi — başlık, yazar, seslendiren, konu veya yayıncı — yazın ve `Enter`'a basın. FreeRadio tüm bu alanları aynı anda arar ve sonuçları birleştirir, çünkü GETEM'in kendi arama formu bunların hepsini birlikte daraltmayı destekler, tek bir aramayla herhangi birinde arama yapmayı değil. Yalnızca gerçekten sesli olarak mevcut olan eserler (insan veya bilgisayar sesi, sesli betimleme, radyo tiyatrosu, DAISY konuşan kitaplar vb.) gösterilir; braille, büyük puntolu ve diğer ses dışı biçimler otomatik olarak filtrelenir. NVDA kaç sesli kitap bulunduğunu bildirir.
 
-Seçilen sonuçla ilgili bilgiler, — yazar, seslendiren, yayıncı, biçim ve bölüm sayısı — aşağıdaki ayrıntı kutusunda gösterilir.
+Seçilen sonuçla ilgili bilgiler — yazar, seslendiren, yayıncı, biçim ve bölüm sayısı — aşağıdaki ayrıntı kutusunda gösterilir.
 
-**Önizleme:** Bir sonucu seçin ve `aralık tuşu`'na basın veya bağlam menüsünü (Uygulamalar tuşu / `Shift+F10` veya sağ tık) açıp **Önizle**'yi seçerek ilk bölümünden itibaren kitaplığa eklemeden oynatmaya başlayın. Bir kitap önizlenirken, aynı bağlam menüsünde yerine **Önizlemeyi Durdur** görünür — bunu seçin veya tekrar `Boşluk`'a basarak durdurun. Bir kitabı önizlemek, dinleme konumunuzu kaydetmez, kalınan yer takibi yalnızca kitaplıktaki  kitaplar için geçerlidir.
+**Önizleme:** Bir sonucu seçin ve `Boşluk` tuşuna basın veya bağlam menüsünü (Uygulamalar tuşu / `Shift+F10` veya sağ tık) açıp **Önizle**'yi seçerek ilk bölümünden itibaren kitaplığa eklemeden oynatmaya başlayın. Bir kitap önizlenirken, aynı bağlam menüsünde yerine **Önizlemeyi Durdur** görünür — bunu seçin veya tekrar `Boşluk`'a basarak durdurun. Bir kitabı önizlemek dinleme konumunuzu kaydetmez; kalınan yer takibi yalnızca kitaplıktaki kitaplar için geçerlidir.
 
 **Kitaplığa ekleme:** Bir sonucu seçin ve `Enter`'a basın veya bağlam menüsünü kullanıp **Kitaplığa Ekle**'yi seçerek ekleyin. FreeRadio kitap zaten oradaysa bunu bildirir.
 
@@ -474,13 +475,13 @@ Eklediğiniz kitaplar, başlık, yazar ve biçimi gösteren **Kitaplık** listes
 
 - Seçili kitabı oynatmak için `Enter` veya `Boşluk`'a basın. Hiçbir şey yüklenmemişse `Boşluk` başlatır; zaten bir şey çalıyorsa `Boşluk` bunun yerine duraklatır, oynatıcının geri kalanıyla eşleşir.
 - Sesli Kitaplar sekmesinde bir önceki / sonraki **kitaba** geçmek ve hemen oynatmaya başlamak için `F3` / `F4` kullanın. Kitaplık listesi odaklanmışken `Ctrl+←` / `Ctrl+→` de aynısını yapar.
-- Bunun yerine o an çalan kitabın **bölümleri** arasında geçiş yapmak için `Shift+F3` / `Shift+F4` kullanın — Podcastler sekmesinin tersidir; orada F3/F4 bölümler arasında, Shift+F3/F4 ise akışlar arasında geçiş yapar. Bunun nedeni, bir kitabın birden fazla bölümü olsa bile tek bir kaynak  olmasıdır, bu nedenle daha ince taneli "bölüm" gezintisi burada Shift ile değiştirilmiş tuşlara yerleştirilmiştir.
+- Bunun yerine o an çalan kitabın **bölümleri** arasında geçiş yapmak için `Shift+F3` / `Shift+F4` kullanın — Podcastler sekmesinin tersidir; orada F3/F4 bölümler arasında, Shift+F3/F4 ise akışlar arasında geçiş yapar. Bunun nedeni, bir kitabın birden fazla bölümü olsa bile tek bir kitaplık girişi olmasıdır, bu nedenle daha ince taneli "bölüm" gezintisi burada Shift ile değiştirilmiş tuşlara yerleştirilmiştir.
 
 **Kitaplık girişleri için bağlam menüsü:** Bir kitaba sağ tıklayın veya seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açın:
 - **Medyayı Oynat** — oynatmaya başlar, `Enter` ile aynı.
 - **Kitabı İndir** — kitabın her bölümünü indirir; aşağıdaki [Sesli Kitapları İndirme](#sesli-kitapları-i̇ndirme) bölümüne bakın.
 - **URL'yi Kopyala** — kitabın GETEM katalog sayfası URL'sini panoya kopyalar.
-- **Kitaplıktan Kaldır** — kitabı kütüphanenizden siler.
+- **Kitaplıktan Kaldır** — kitabı kitaplığınızdan siler.
 
 ### Oynatma ve Devam Etme
 
@@ -494,13 +495,13 @@ Kitaplıktan bir kitap seçin ve bağlam menüsünden **Kitabı İndir**'i seçe
 
 ### Sesli Kitap Veri Depolama
 
-GETEM kütüphaneniz (eklenen kitaplar ve dinleme ilerlemeleri), NVDA kullanıcı yapılandırma klasöründeki `freeradio_getem_library.json` dosyasında saklanır. Şifrelenmiş GETEM kimlik bilgileriniz aynı konumdaki `freeradio_getem_credentials.bin` dosyasında ayrı olarak saklanır ve yalnızca bunları kaydeden Windows kullanıcı hesabı tarafından şifresi çözülebilir.
+GETEM kitaplığınız (eklenen kitaplar ve dinleme ilerlemeleri), NVDA kullanıcı yapılandırma klasöründeki `freeradio_getem_library.json` dosyasında saklanır. Şifrelenmiş GETEM kimlik bilgileriniz aynı konumdaki `freeradio_getem_credentials.bin` dosyasında ayrı olarak saklanır ve yalnızca bunları kaydeden Windows kullanıcı hesabı tarafından şifresi çözülebilir.
 
 ## Beğenilen Şarkılar
 
-Ayarlar'dan **Beğenilen şarkıları metin dosyasına kaydet** seçeneği açıldığında `Ctrl+Win+İ` kısayoluna üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da satır satır eklenir (varsayılan: `Belgeler\FreeRadio Recordings\likedSongs.txt`).
+Ayarlar'dan **Beğenilen şarkıları metin dosyasına kaydet** seçeneği açıldığında `Ctrl+Win+İ` kısayoluna üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da satır satır eklenir (`Belgeler\FreeRadio Recordings\likedSongs.txt`).
 
-ICY metadata mevcut olan istasyonlarda parça adı ve sanatçı bilgisi, metadata bulunmayan istasyonlarda ise Shazam tanıma sonucu kaydedilir; her iki durumda da aynı dosya kullanılır. Dosya yoksa otomatik oluşturulur; her kayıt dosyanın sonuna eklenir, önceki girişler silinmez.
+ICY metadata mevcut olan istasyonlarda parça adı ve sanatçı bilgisi doğrudan kaydedilir. Metadata bulunmayan istasyonlarda ise Shazam tanıma sonucu aynı dosyaya kaydedilir — her iki kaynak da aynı listeyi paylaşır. Dosya yoksa otomatik oluşturulur; her kayıt dosyanın sonuna eklenir, önceki girişler silinmez.
 
 ## Beğenilen Şarkılar Sekmesi
 
@@ -510,10 +511,10 @@ Listenin üzerindeki **Filtre** alanı, görüntülenen parçaları gerçek zama
 
 Listeden bir parça seçildiğinde şu işlemler yapılabilir:
 
-- **Spotify'da Çal:** Önce Spotify masaüstü uygulamasını açmayı dener. Uygulama kurulu değilse Spotify web sitesinde aramayı başlatır ve ilk sonucu otomatik oynatır.
+- **Spotify'da Çal:** Önce Spotify masaüstü uygulamasını doğrudan açmayı dener. Uygulama kurulu değilse Spotify web sitesine geri döner ve ilk sonucu otomatik oynatır.
 - **YouTube'da Çal (`Alt+O`):** Seçili parçayla YouTube'da arama yapar ve sonuçları varsayılan tarayıcıda açar.
 - **Şarkı Sözlerini Göster:** Seçili parçanın şarkı sözlerini getirir ve görüntüler. Şarkı sözleri [lrclib.net](https://lrclib.net) adresinden alınır (ücretsiz, hesap gerekmez). Arama arka planda çalışırken kısa bir "Şarkı sözleri getiriliyor…" mesajı seslendirilir. Şarkı sözleri bulunursa, NVDA ile okuyabileceğiniz ve panoya kopyalayabileceğiniz salt okunur bir iletişim kutusunda açılır. Şarkı sözleri bulunamazsa NVDA bunu bildirir. Yinelenen istekleri önlemek için bir getirme işlemi devam ederken düğme geçici olarak devre dışı bırakılır.
-- **Sil (`Alt+M`):** Seçili parçayı `likedSongs.txt` dosyasından kaldırır ve listeyi günceller. Liste odaklanmışken `Delete` tuşu da aynı işlevi görür.
+- **Sil (`Alt+M`):** Seçili parçayı `likedSongs.txt` dosyasından kaldırır ve listeyi günceller. Liste odaklanmışken `Delete` tuşu da bu düğmeyi tetikler.
 - **Yenile (`Alt+E`):** Listeyi dosyadan yeniden yükler.
 
 Spotify, YouTube, Şarkı Sözlerini Göster ve Sil düğmeleri yalnızca listeden gerçek bir parça seçiliyken etkin olur.
@@ -538,29 +539,32 @@ NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki
 |---|---|
 | BASS arka ucunu devre dışı bırak | Etkinleştirildiğinde, FreeRadio dahili BASS motorunu kullanmaz ve bunun yerine VLC, PotPlayer veya Windows Media Player'a güvenir. Bu değişikliğin etkili olması için NVDA'yı yeniden başlatın. |
 | Parça değişimi sesi | Otomatik olarak duyurulan parça değişikliklerinin NVDA sentezleyici mi yoksa seçili bir SAPI5 sesi mi kullanılarak konuşulacağını seçin. |
-| Ses çıkış cihazı (BASS arka ucu) | Radyo sesinin yönlendirileceği çıkış aygıtını belirler. Listede sistemdeki BASS uyumlu tüm ses aygıtları ve "Sistem varsayılanı" seçeneği yer alır. Kaydedildiğinde değişiklik anında uygulanır; seçili aygıt bağlantısı kesilirse otomatik olarak sistem varsayılanına dönülür ve bildirim verilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
+| SAPI5 sesi | **Parça değişimi sesi** SAPI5 olarak ayarlandığında, parça değişikliklerini seslendirmek için sistemde yüklü hangi SAPI5 sesinin kullanılacağını belirler. Liste, sistemde kurulu seslerden arka planda doldurulur. |
+| Ses çıkış cihazı (BASS arka ucu) | Radyo çalma sesinin yönlendirileceği çıkış aygıtını belirler. Listede sistemdeki BASS uyumlu tüm aygıtlar ve "Sistem varsayılanı" seçeneği yer alır. Kaydedildiğinde değişiklik anında uygulanır; seçili aygıtın bağlantısı kesilirse otomatik olarak sistem varsayılanına dönülür ve değişiklik bildirilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
 | Ses aygıtı yenileme modu (BASS arka ucu) | FreeRadio'nun BASS çıkış aygıtı numaralarını nasıl yenilediğini kontrol eder. **Güvenilir** mod (varsayılan) aygıtları canlı olarak yoklar ve Bluetooth/USB değişikliklerini daha doğru izler, ancak aygıt değişikliklerini biraz yavaşlatabilir. **Hızlı** mod mevcut BASS aygıt listesini kullanır ve daha hızlıdır, ancak BASS veya NVDA yeniden başlatılana kadar aygıt numaraları güncel kalmayabilir. |
 | Ses seviyesi | Eklentinin başlangıç ses seviyesini belirler (0–200). Çalma sırasında `Ctrl+Win+↑` / `Ctrl+Win+↓` ile değiştirilen değer buraya da yansır. |
-| Başlangıç ses efekti | NVDA başladığında veya istasyon çalmaya başladığında uygulanacak varsayılan ses efektini belirler. Seçilen efekt, İstasyon Tarayıcısı'nda Efektler listesindeki seçimle eşleşir. Yalnızca BASS arka ucu aktifken geçerlidir. |
-| EQ kazancı (Bas / Tiz / Vokal) | Her EQ bandının kazanç düzeyini dB cinsinden belirler (−15 ile +15 arasında). İlgili EQ efekti etkinleştirildiğinde kontrol otomatik olarak görünür, efekt kapatıldığında gizlenir. Değerler kalıcı olarak kaydedilir; istasyona özel geçersiz kılmalar Favoriler sekmesindeki **Ses Profilini Kaydet** düğmesiyle yapılabilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
+| Ses efektleri | NVDA başladığında veya bir istasyon çalmaya başladığında hangi efektlerin (Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ve üç EQ artırma seçeneği) aktif olacağını belirler. İstasyon Tarayıcısı'ndaki Efektler listesiyle eşleşecek şekilde birden fazla efekt aynı anda işaretlenebilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
+| EQ kazancı (Bas / Tiz / Vokal) | Her EQ bandının kazanç düzeyini dB cinsinden belirler (−15 ile +15 arasında). İlgili EQ efekti etkinleştirildiğinde bu değerler uygulanır ve genel olarak kaydedilir. İstasyona özel geçersiz kılmalar Favoriler sekmesindeki **Ses Profilini Kaydet** düğmesiyle yapılabilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
 | İstasyon geçiş efekti (BASS arka ucu) | İstasyonlar arasında geçiş yapılırken uygulanacak davranışı belirler. **Anlık kesme** (varsayılan) yeni istasyon başlamadan önce eskisini hemen durdurur. **Kısa geçiş efekti (1 saniye)** ve **Normal geçiş efekti (2 saniye)** seçeneklerinde yeni istasyon hiç boşluk olmadan hemen başlar; yeni akışın aktif olduğu onaylandıktan sonra eski istasyonun sesi arka planda kademeli olarak azaltılarak kesilir. **İstasyon ayarlama sesi efekti** eski istasyonu hemen durdurur ve yeni istasyon başlamadan önce bir istasyon ayarlama sesi efekti çalar. Anlık kesme seçiliyken herhangi bir performans etkisi yoktur. Yalnızca BASS arka ucu aktifken geçerlidir. |
-| NVDA başlangıcında devam ettir | Açıksa NVDA her başlatıldığında en son çalınan istasyon otomatik olarak yeniden başlar. |
+| NVDA başlangıcında son istasyonu devam ettir | Açıksa NVDA her başlatıldığında en son çalınan istasyon otomatik olarak yeniden başlar. |
 | Parça değişimlerini otomatik seslendir (ICY metadata) | Açıksa çalan istasyon ICY metadata yayınlıyorken parça her değiştiğinde NVDA yeni parça adını otomatik olarak okur. İstasyon değiştiğinde de ilk parça bilgisi anında seslendirilir. Varsayılan olarak kapalıdır. |
 | Bildirimleri sessize al | Açıksa NVDA; istasyon değişikliklerini, oynatma durumu değişikliklerini (çal, duraklat, durdur) ve kayıt olaylarını (başladı, durdu, bitti) anons etmez. Hata mesajları, favori geri bildirimleri, müzik tanıma sonuçları ve güncelleme bildirimleri bu kapsamın dışındadır. Atanmamış bir girdi hareketi aracılığıyla anlık olarak da değiştirilebilir. Varsayılan olarak kapalıdır. |
 | Braille mesajları | Etkinleştirildiğinde, FreeRadio bildirimlerini doğrudan braille ekrana da gönderir. Bu, parça başlıkları, istasyon değişiklikleri, oynatma durumu ve ses seviyesi değişiklikleri için kullanışlıdır. Varsayılan olarak kapalıdır. |
-| Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar, ~10 dakika) | Geri sarma denetimlerini (`Ctrl+Win+J`/`Ctrl+Win+K`) açar veya kapatır ve arka plan yakalamasını ~45 saniyeden ~10 dakikaya kadar büyütür. Bu ayar kapalıyken bile o an çalan istasyonun küçük bir arka plan yakalaması her zaman çalışır — ayrıntılar için aşağıdaki **Zaman Kaydırma** bölümündeki nota bakın. `Ctrl+Win+T` ile de anında geçiş yapılabilir. BASS arka ucunu gerektirir. Varsayılan olarak devre dışıdır — tam ayrıntılar için aşağıdaki **Zaman Kaydırma** bölümüne bakın. |
+| Zaman kaydırma tamponunu etkinleştir (canlı radyoyu geri sar) | Geri sarma denetimlerini (`Ctrl+Win+J`/`Ctrl+Win+K`) açar veya kapatır ve arka plan yakalamasını ~45 saniyeden ayarlarda belirlenen süreye kadar büyütür. Bu ayar kapalıyken bile o an çalan istasyonun küçük bir arka plan yakalaması her zaman çalışır — ayrıntılar için aşağıdaki **Zaman Kaydırma (Canlı Radyoyu Geri Sarma)** bölümündeki nota bakın. `Ctrl+Win+T` ile de anında geçiş yapılabilir. BASS arka ucunu gerektirir. Varsayılan olarak devre dışıdır — tam ayrıntılar için aşağıdaki **Zaman Kaydırma (Canlı Radyoyu Geri Sarma)** bölümüne bakın. |
+| Beğenilen şarkıları metin dosyasına kaydet | Açıksa `Ctrl+Win+İ` üç kez basıldığında panoya kopyalanan parça bilgisi, `Belgeler\FreeRadio Recordings\likedSongs.txt` dosyasına da eklenir. ICY metadata yoksa Shazam tanıma sonucu da aynı dosyaya kaydedilir. Varsayılan olarak kapalıdır. |
+| Ctrl+Win+P hiçbir şey çalmıyorken basıldığında | Bu kısayola basıldığında ve hiçbir şey çalmıyorken ne yapılacağını belirler: son istasyonu başlat veya favoriler listesini aç. |
 | Zaman kaydırma tamponu süresi | Geri sarma tamponunun maksimum uzunluğunu belirler. Seçenekler 10 dakikadan 5 saate kadar değişir. Daha uzun tamponlar daha fazla geçici disk alanı tüketir. |
-| Beğenilen şarkıları metin dosyasına kaydet | Açıksa `Ctrl+Win+İ` üç kez basıldığında panoya kopyalanan parça bilgisi, kayıt klasöründeki `likedSongs.txt` dosyasına da eklenir. ICY metadata yoksa Shazam tanıma sonucu da aynı dosyaya kaydedilir. Varsayılan olarak kapalıdır. |
-| Ctrl+Win+P iki kez basıldığında: | Kısayola art arda iki kez basıldığında gerçekleşecek işlemi seçer: hiçbir şey yapma, favoriler listesini aç, kayıt sekmesini aç veya zamanlayıcı sekmesini aç. "Hiçbir şey yapma" seçiliyken ilk basışta gecikme uygulanmaz ve yanıt anında gerçekleşir. |
-| Ctrl+Win+P üç kez basıldığında: | Kısayola art arda üç kez basıldığında gerçekleşecek işlemi seçer: hiçbir şey yapma, favoriler listesini aç, istasyon aramasını aç, kayıt sekmesini aç veya zamanlayıcı sekmesini aç. |
+| Ctrl+Win+P iki kez basıldığında | Kısayola art arda iki kez basıldığında gerçekleşecek işlemi seçer: hiçbir şey yapma, favoriler listesini aç, kayıt sekmesini aç veya zamanlayıcı sekmesini aç. "Hiçbir şey yapma" seçiliyken ilk basışta gecikme uygulanmaz ve yanıt anında gerçekleşir. |
+| Ctrl+Win+P üç kez basıldığında | Kısayola art arda üç kez basıldığında gerçekleşecek işlemi seçer: hiçbir şey yapma, favoriler listesini aç, istasyon aramasını aç, kayıt sekmesini aç veya zamanlayıcı sekmesini aç. |
+| Güncellemeleri otomatik denetle | Açıksa NVDA her başlatıldığında arka planda güncelleme kontrolü yapılır; yeni sürüm bulunursa bildirim verilir. Kapatıldığında otomatik kontrol devre dışı kalır, elle kontrol hâlâ kullanılabilir. |
 | ffmpeg.exe yolu | Müzik tanıma için kullanılan ffmpeg.exe'nin konumu. Boş bırakılırsa eklenti klasöründeki ffmpeg.exe otomatik olarak kullanılır. |
 | VLC yolu | VLC kurulu değilse veya standart dışı bir konumdaysa yürütülebilir dosyanın tam yolu buraya girilebilir. |
 | wmplayer.exe yolu | Windows Media Player'ın yolu gerekiyorsa buraya girilebilir. |
 | PotPlayer yolu | PotPlayer standart dışı bir konumdaysa yolu buraya girilebilir. |
 | Kayıt klasörü | Kayıt dosyalarının yazılacağı klasörü belirler. Boş bırakılırsa varsayılan konum olan `Belgeler\FreeRadio Recordings\` kullanılır. Gözat düğmesiyle klasör seçilebilir. Değişiklikler kaydedildikten hemen sonra geçerli olur. |
+| GETEM kullanıcı adı / GETEM şifresi | Bir kitabın sesini akışla dinlemek veya indirmek için gereken [GETEM](https://getem.boun.edu.tr/) sesli kitap üyelik kimlik bilgileriniz — bkz. [Oturum Açma](#oturum-açma). Windows kullanıcı hesabınıza bağlı olarak diskte Windows Veri Koruma API'si aracılığıyla şifrelenmiş saklanır; asla düz metin olarak tutulmaz. Her iki alanı da boş bırakıp kaydetmek kayıtlı kimlik bilgilerini siler. |
 | Kayıt çıkış formatı | Orijinal akışı korur, sesi codec'ini değiştirmeden ayıklar veya tamamlanan kayıtları MP3'e dönüştürür. Varsayılan, orijinal akış formatıdır. |
 | MP3 kayıt bit hızı | Kayıt çıkış formatı MP3 olarak seçildiğinde kullanılacak bit hızını belirler. Varsayılan 128 kb/sn'dir. |
-| Güncellemeleri otomatik denetle | Açıksa NVDA her başlatıldığında arka planda güncelleme kontrolü yapılır; yeni sürüm bulunursa bildirim verilir. Kapatıldığında otomatik kontrol devre dışı kalır, elle kontrol hâlâ kullanılabilir. |
 | İstasyon çalmadan önce internet bağlantısı kontrolünü devre dışı bırak | İstasyon çalmaya başlamadan önce gecikme yaşayan kullanıcılar için önerilir. DNS'in engellendiği durumlarda da faydalıdır. |
 
 ## Bildirimleri Sessize Alma

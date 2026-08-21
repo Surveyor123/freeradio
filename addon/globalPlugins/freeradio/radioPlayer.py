@@ -1847,14 +1847,36 @@ class RadioPlayer:
 				mirror = getattr(self, "_mirror_engine", None)
 				mirror_dev = getattr(self, "_mirror_device_index", None)
 				if mirror is not None and mirror_dev is not None:
-					def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen):
+					station = self._current_station
+					is_podcast = bool(station and "podcast" in station.get("tags", ""))
+					saved_pos = 0.0
+					if is_podcast:
+						saved_pos = self.get_podcast_position(station.get("url") or stream_url)
+					rate = self._playback_rate
+
+					def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen,
+									  podcast=is_podcast, pos=saved_pos, r=rate):
 						if self._play_gen != g:
 							return
 						try:
 							m.stop()
-							m.play(u, v / 100.0)
+							# Podcasts/audio books must open seekable, same as
+							# the main engine, or the resume-position and
+							# rewind/forward seeks below silently no-op on
+							# the mirror.
+							m.play(u, v / 100.0, seekable=podcast)
 						except Exception:
-							pass
+							return
+						if self._play_gen != g:
+							return
+						if podcast and r != 1.0:
+							try:
+								m.set_playback_rate(r)
+							except Exception:
+								pass
+						if podcast and pos > 1.0:
+							self._resume_podcast_position_on_engine(m, pos)
+
 					mirror_thread = threading.Thread(
 						target=_sync_mirror, daemon=True,
 						name="FreeRadio-mirror-sync")
@@ -2149,14 +2171,34 @@ class RadioPlayer:
 			if not self._disable_bass:
 				mirror = getattr(self, "_mirror_engine", None)
 				if mirror and mirror.ready():
-					def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen):
+					station = self._current_station
+					podcast = bool(station and "podcast" in station.get("tags", ""))
+					pos = self.get_podcast_position(station.get("url") or stream_url) if podcast else 0.0
+					rate = self._playback_rate
+
+					def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen,
+									  podcast=podcast, pos=pos, r=rate):
 						if self._play_gen != g:
 							return
 						try:
 							m.stop()
-							m.play(u, v / 100.0)
+							# Podcasts/audio books must reopen seekable, same
+							# as the main engine, or the resume-position and
+							# rewind/forward seeks below silently no-op on
+							# the mirror.
+							m.play(u, v / 100.0, seekable=podcast)
 						except Exception:
-							pass
+							return
+						if self._play_gen != g:
+							return
+						if podcast and r != 1.0:
+							try:
+								m.set_playback_rate(r)
+							except Exception:
+								pass
+						if podcast and pos > 1.0:
+							self._resume_podcast_position_on_engine(m, pos)
+
 					mirror_thread = threading.Thread(
 						target=_sync_mirror, daemon=True,
 						name="FreeRadio-mirror-sync")
@@ -2296,6 +2338,8 @@ class RadioPlayer:
 			except Exception:
 				applied, actual_rate, reason = False, new_rate, "engine_error"
 			self._playback_rate = actual_rate if applied else new_rate
+			if applied:
+				self._sync_mirror_playback_rate(self._playback_rate)
 			return applied, self._playback_rate, reason
 		self._playback_rate = new_rate
 		return False, new_rate, "wrong_backend"
@@ -2366,6 +2410,7 @@ class RadioPlayer:
 				station = self._current_station
 				if station and "podcast" in station.get("tags", ""):
 					self._save_podcast_position_now(station, pos, length)
+				self._sync_mirror_timeshift_seek(seconds)
 			return ok, pos
 		except Exception:
 			return False, 0.0
@@ -2829,6 +2874,21 @@ class RadioPlayer:
 				pass
 
 		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-timeshift").start()
+
+	def _sync_mirror_playback_rate(self, rate):
+		"""Reapply a just-changed podcast playback rate on the mirror
+		engine too, so both outputs stay at the same speed."""
+		mirror = self._get_ready_mirror()
+		if mirror is None:
+			return
+
+		def _do(m=mirror, r=rate):
+			try:
+				m.set_playback_rate(r)
+			except Exception:
+				pass
+
+		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-rate").start()
 
 	def get_audio_devices(self, fresh=None):
 		"""Zwróć listę (indeks, nazwa) dostępnych urządzeń wyjściowych BASS.

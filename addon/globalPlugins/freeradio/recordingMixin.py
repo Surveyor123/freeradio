@@ -110,6 +110,13 @@ class RecordingMixin:
 			def _start_song_capture():
 				from . import radioPlayer as _rp
 
+				station = self._player.get_current_station()
+				is_podcast_or_audiobook = station and ("podcast" in station.get("tags", "") or "audiobook" in station.get("tags", ""))
+
+				if is_podcast_or_audiobook:
+					wx.CallAfter(ui.message, _("Podcast or audiobook cannot be recorded. To download the episode or book, press Ctrl+Win+V."))
+					return
+
 				# Try the fast in-memory title first; fall back to a live HTTP probe.
 				icy = self._player.get_icy_title()
 				if not icy:
@@ -153,11 +160,14 @@ class RecordingMixin:
 		def _do_single_press():
 			self._record_action_timer = None
 
-			# If a song-capture is active, a single press does nothing here —
-			# the user must double-press to stop song-capture mode.
+			# If song-capture is active, single press does nothing (double-press stops it)
 			if self._recorder.is_song_capture():
 				return
 
+			station = self._player.get_current_station()
+			is_podcast_or_audiobook = station and ("podcast" in station.get("tags", "") or "audiobook" in station.get("tags", ""))
+
+			# If a recording is already running, stop it (user may want to end it)
 			if self._recorder.is_recording():
 				def _stop_recording():
 					path = self._recorder.stop(self._player)
@@ -165,11 +175,12 @@ class RecordingMixin:
 						wx.CallAfter(_notify, _("Recording stopped: %s") % os.path.basename(path))
 					else:
 						wx.CallAfter(_notify, _("Recording stopped"))
-				threading.Thread(
-					target=_stop_recording,
-					daemon=True,
-					name="FreeRadio-RecordingFinalize",
-				).start()
+				threading.Thread(target=_stop_recording, daemon=True, name="FreeRadio-RecordingFinalize").start()
+				return
+
+			# No recording; if it's a podcast/audiobook, warn and abort
+			if is_podcast_or_audiobook:
+				wx.CallAfter(ui.message, _("Podcast or audiobook cannot be recorded. To download the episode or book, press Ctrl+Win+V."))
 				return
 
 			if not self._player.has_media():
@@ -203,4 +214,3 @@ class RecordingMixin:
 			os.startfile(recordings_dir)
 		except Exception as e:
 			ui.message(_("Could not open recordings folder: %s") % str(e))
-

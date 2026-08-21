@@ -639,12 +639,8 @@ class RadioDialog(wx.Dialog):
 	def _build_rec_tab(self):
 		sizer = wx.BoxSizer(wx.VERTICAL)
 
-		sizer.Add(wx.StaticText(self._rec_panel, label=_("Instant Recording")),
-		          0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
-		self._rec_status = wx.StaticText(self._rec_panel, label=_("Not recording"))
-		sizer.Add(self._rec_status, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
-		self._rec_btn = wx.Button(self._rec_panel, label=_("Start &Recording"))
-		sizer.Add(self._rec_btn, 0, wx.ALL, 8)
+		# Instant Recording section removed entirely.
+		# Only Scheduled Recording remains.
 
 		sizer.Add(wx.StaticLine(self._rec_panel), 0, wx.EXPAND | wx.ALL, 8)
 
@@ -769,7 +765,7 @@ class RadioDialog(wx.Dialog):
 
 		self._rec_panel.SetSizer(sizer)
 
-		self._rec_btn.Bind(wx.EVT_BUTTON,       self._on_rec_btn)
+		# _rec_btn bind removed.
 		self._sched_add_btn.Bind(wx.EVT_BUTTON, self._on_sched_add)
 		self._sched_del_btn.Bind(wx.EVT_BUTTON, self._on_sched_del)
 		self._sched_edit_btn.Bind(wx.EVT_BUTTON, self._on_sched_edit)
@@ -784,6 +780,7 @@ class RadioDialog(wx.Dialog):
 		self._sched_rec_once.Bind(wx.EVT_RADIOBUTTON,   self._on_sched_recurrence_changed)
 		self._sched_rec_indef.Bind(wx.EVT_RADIOBUTTON,  self._on_sched_recurrence_changed)
 		# Type-ahead for the station listbox is handled in _on_char_hook.
+		wx.CallAfter(self._sched_station_filter.SetFocus)
 
 	def _build_timer_tab(self):
 		"""Timer tab: start (alarm) or stop (sleep) the radio at a specific time."""
@@ -1387,26 +1384,7 @@ class RadioDialog(wx.Dialog):
 		event.Skip()
 
 
-	def _on_rec_btn(self, event):
-		if not self._recorder:
-			ui.message(_("Recording is not available"))
-			return
-		if self._recorder.is_recording():
-			path = self._recorder.stop(self._player)
-			self._rec_btn.SetLabel(_("Start &Recording"))
-			self._rec_status.SetLabel(
-				_("Saved: %s") % os.path.basename(path) if path else _("Not recording")
-			)
-			ui.message(_("Recording stopped"))
-		else:
-			if not self._player.has_media():
-				ui.message(_("No station is playing"))
-				return
-			name = self._player.get_current_name()
-			self._recorder.start(self._player, name)
-			self._rec_btn.SetLabel(_("Stop &Recording"))
-			self._rec_status.SetLabel(_("Recording: %s") % name)
-			ui.message(_("Recording started: %s") % name)
+	# _on_rec_btn removed entirely.
 
 	def _on_sched_add(self, event):
 		if not self._recorder:

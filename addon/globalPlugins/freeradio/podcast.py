@@ -198,6 +198,11 @@ class PodcastFeed:
 		self.last_refresh = 0.0     # timestamp
 		self._etag = ""
 		self._modified = ""
+		# Optional dict of {"volume": int, "fx": str, "eq_gains": {...},
+		# "speed": float} applied to every episode of this feed when it
+		# starts playing - see playbackCoreMixin._play_station() and
+		# RadioDialog._on_episode_play(). None if the user hasn't saved one.
+		self.audio_profile = None
 
 	def to_dict(self):
 		return {
@@ -209,6 +214,7 @@ class PodcastFeed:
 			"last_refresh": self.last_refresh,
 			"_etag": self._etag,
 			"_modified": self._modified,
+			"audio_profile": self.audio_profile,
 		}
 
 	@classmethod
@@ -223,6 +229,7 @@ class PodcastFeed:
 		feed.last_refresh = data.get("last_refresh", 0.0)
 		feed._etag = data.get("_etag", "")
 		feed._modified = data.get("_modified", "")
+		feed.audio_profile = data.get("audio_profile") or None
 		return feed
 
 

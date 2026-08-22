@@ -735,7 +735,7 @@ class RadioDialog(wx.Dialog):
 			self._rec_panel,
 			label=_("Record &only (no audio output)"),
 		)
-		self._sched_mode_play.SetValue(True)
+		self._sched_mode_rec.SetValue(True)
 		sizer.Add(self._sched_mode_play, 0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
 		sizer.Add(self._sched_mode_rec,  0, wx.LEFT | wx.RIGHT | wx.TOP, 4)
 
@@ -754,23 +754,16 @@ class RadioDialog(wx.Dialog):
 		self._sched_list = wx.ListBox(self._rec_panel, style=wx.LB_SINGLE)
 		sizer.Add(self._sched_list, 1, wx.EXPAND | wx.ALL, 8)
 
-		self._sched_del_btn = wx.Button(self._rec_panel, label=_("&Remove Selected"))
-		self._sched_del_btn.Enable(False)
-		self._sched_edit_btn = wx.Button(self._rec_panel, label=_("&Edit Selected"))
-		self._sched_edit_btn.Enable(False)
-		sched_btn_row = wx.BoxSizer(wx.HORIZONTAL)
-		sched_btn_row.Add(self._sched_del_btn,  0, wx.RIGHT, 8)
-		sched_btn_row.Add(self._sched_edit_btn, 0)
-		sizer.Add(sched_btn_row, 0, wx.LEFT | wx.BOTTOM, 8)
-
 		self._rec_panel.SetSizer(sizer)
 
-		# _rec_btn bind removed.
+		# _rec_btn bind removed. Edit/Remove are no longer dedicated buttons —
+		# their functionality moved into the list's context menu — see
+		# _show_sched_context_menu(); reached via the Applications key /
+		# Shift+F10, or Delete / Shift+Delete removes directly.
 		self._sched_add_btn.Bind(wx.EVT_BUTTON, self._on_sched_add)
-		self._sched_del_btn.Bind(wx.EVT_BUTTON, self._on_sched_del)
-		self._sched_edit_btn.Bind(wx.EVT_BUTTON, self._on_sched_edit)
 		self._sched_list.Bind(wx.EVT_LISTBOX,   self._on_sched_selected)
 		self._sched_list.Bind(wx.EVT_CHAR,      self._on_list_char)
+		self._sched_list.Bind(wx.EVT_KEY_DOWN,  self._on_sched_list_key)
 		self._sched_station_cb.Bind(wx.EVT_SET_FOCUS, self._on_sched_station_focus)
 		# Filter field: rebuild the station list on every keystroke.
 		self._sched_station_filter.Bind(wx.EVT_TEXT,     self._on_sched_station_filter_changed)
@@ -1315,7 +1308,6 @@ class RadioDialog(wx.Dialog):
 		self._sched_index_map = []
 
 		if not self._recorder:
-			self._sched_del_btn.Enable(False)
 			return
 
 		for rec in self._recorder.get_schedules():
@@ -1336,9 +1328,6 @@ class RadioDialog(wx.Dialog):
 
 			self._sched_list.Append(line)
 			self._sched_index_map.append(rec)
-
-		self._sched_del_btn.Enable(bool(self._sched_index_map))
-		self._sched_edit_btn.Enable(bool(self._sched_index_map))
 
 	def _on_sched_station_focus(self, event):
 		"""Apply the pending selection when the station listbox actually gets focus.
@@ -1534,6 +1523,14 @@ class RadioDialog(wx.Dialog):
 			return
 		self._recorder.remove_schedule(index_map[idx])
 		self._refresh_sched_list()
+		# Select whatever now sits at the removed position (i.e. the item
+		# that followed it) or, if it was the last item, whatever is now
+		# last (i.e. the item that preceded it).
+		count = self._sched_list.GetCount()
+		if count:
+			new_idx = idx if idx < count else count - 1
+			self._sched_list.SetSelection(new_idx)
+			self._on_sched_selected(None)
 		ui.message(_("Schedule deleted"))
 
 	def _on_sched_edit(self, event):
@@ -1575,10 +1572,41 @@ class RadioDialog(wx.Dialog):
 		dlg.Destroy()
 
 	def _on_sched_selected(self, event):
+		pass
+
+	def _on_sched_list_key(self, event):
+		"""Scheduled recordings list — Delete/Shift+Delete remove the selected
+		schedule directly; Applications key / Shift+F10 opens the context
+		menu that also carries Edit/Remove (see _show_sched_context_menu)."""
+		key = event.GetKeyCode()
+		if key == wx.WXK_DELETE:
+			self._on_sched_del(event)
+			return
+		if key == wx.WXK_WINDOWS_MENU or (key == wx.WXK_F10 and event.ShiftDown()):
+			self._show_sched_context_menu()
+			return
+		event.Skip()
+
+	def _show_sched_context_menu(self):
+		"""Context menu for the selected item in the scheduled recordings
+		list — carries the Edit/Remove actions that used to live on
+		dedicated buttons."""
 		idx = self._sched_list.GetSelection()
-		has = idx != wx.NOT_FOUND
-		self._sched_del_btn.Enable(has)
-		self._sched_edit_btn.Enable(has)
+		index_map = getattr(self, "_sched_index_map", [])
+		has_selection = idx != wx.NOT_FOUND and idx < len(index_map)
+
+		menu = wx.Menu()
+
+		item_edit = menu.Append(wx.ID_ANY, _("&Edit Selected"))
+		item_edit.Enable(has_selection)
+		self.Bind(wx.EVT_MENU, self._on_sched_edit, item_edit)
+
+		item_remove = menu.Append(wx.ID_ANY, _("&Remove Selected"))
+		item_remove.Enable(has_selection)
+		self.Bind(wx.EVT_MENU, self._on_sched_del, item_remove)
+
+		self.PopupMenu(menu, self._sched_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
 
 
 
@@ -2327,6 +2355,84 @@ class RadioDialog(wx.Dialog):
 		self._clear_audio_btn.Enable(is_fav_tab and is_fav and has_profile)
 		self._rename_btn.Enable(is_fav_tab and is_fav)
 
+	def _prompt_and_build_audio_profile(self, existing, allow_speed=False):
+		"""Shared "what would you like to save" dialog for audio profiles -
+		used by favourites (_on_save_audio_profile), podcast feeds
+		(_on_save_feed_audio_profile), and GETEM library books
+		(_on_save_getem_audio_profile). Reads the live volume/effects/EQ
+		(and, when *allow_speed* is True, the live playback speed) straight
+		off the current UI/player state and merges them into *existing*
+		according to the option the user picks, so a choice that doesn't
+		touch a given field (e.g. "Volume only") leaves whatever was
+		already saved for the others untouched.
+
+		Returns the new profile dict, or None if the user cancelled.
+		"""
+		choices = [
+			# Translators: Option in audio profile save dialog: save volume level only
+			_("Volume only"),
+			# Translators: Option in audio profile save dialog: save effects (FX/EQ) only
+			_("Effects only"),
+			# Translators: Option in audio profile save dialog: save both volume and effects
+			_("Volume and effects"),
+		]
+		if allow_speed:
+			# Translators: Option in audio profile save dialog: save volume, effects, and the current playback speed
+			choices.append(_("Volume, effects, and playback speed"))
+
+		dlg = wx.SingleChoiceDialog(
+			self,
+			# Translators: Message shown in the audio profile save dialog
+			_("What would you like to save in the audio profile?"),
+			# Translators: Title of the audio profile save dialog
+			_("Save Audio Profile"),
+			choices,
+		)
+		# Pre-select the most complete option as the default.
+		dlg.SetSelection(len(choices) - 1)
+		result = dlg.ShowModal()
+		sel = dlg.GetSelection()
+		dlg.Destroy()
+
+		if result != wx.ID_OK:
+			return None
+
+		# Read current UI/player values.
+		vol = self._vol_spin.GetValue()
+		checked = self._fx_choice.GetCheckedItems()
+		active = [self._fx_keys[i] for i in checked if 0 <= i < len(self._fx_keys)]
+		fx_str = ",".join(active) if active else "none"
+
+		eq_gains = {}
+		for band, _label, _default in self._eq_bands:
+			eq_gains[band] = self._eq_spins[band].GetValue()
+
+		# Build the profile dict based on the user's choice.
+		existing = existing or {}
+		if sel == 0:
+			# Volume only: keep any existing effects/speed, replace volume.
+			profile = dict(existing)
+			profile["volume"] = vol
+		elif sel == 1:
+			# Effects only: keep any existing volume/speed, replace fx/eq_gains.
+			profile = dict(existing)
+			profile["fx"] = fx_str
+			profile["eq_gains"] = eq_gains
+		elif sel == 2:
+			# Volume and effects: keep any existing speed, replace the rest.
+			profile = dict(existing)
+			profile["volume"] = vol
+			profile["fx"] = fx_str
+			profile["eq_gains"] = eq_gains
+		else:
+			# Volume, effects and speed: replace everything.
+			profile = dict(existing)
+			profile["volume"] = vol
+			profile["fx"] = fx_str
+			profile["eq_gains"] = eq_gains
+			profile["speed"] = self._player.get_playback_rate()
+		return profile
+
 	def _on_save_audio_profile(self, event):
 		"""Save audio profile for the selected station.
 
@@ -2339,56 +2445,9 @@ class RadioDialog(wx.Dialog):
 		if not station or not self._manager.is_favorite(station):
 			return
 
-		# Ask the user which parts of the audio profile to save.
-		choices = [
-			# Translators: Option in audio profile save dialog: save volume level only
-			_("Volume only"),
-			# Translators: Option in audio profile save dialog: save effects (FX/EQ) only
-			_("Effects only"),
-			# Translators: Option in audio profile save dialog: save both volume and effects
-			_("Volume and effects"),
-		]
-		dlg = wx.SingleChoiceDialog(
-			self,
-			# Translators: Message shown in the audio profile save dialog
-			_("What would you like to save in the audio profile?"),
-			# Translators: Title of the audio profile save dialog
-			_("Save Audio Profile"),
-			choices,
-		)
-		# Pre-select "Volume and effects" as the default.
-		dlg.SetSelection(2)
-		result = dlg.ShowModal()
-		sel = dlg.GetSelection()
-		dlg.Destroy()
-
-		if result != wx.ID_OK:
+		profile = self._prompt_and_build_audio_profile(station.get("station_audio"), allow_speed=False)
+		if profile is None:
 			return
-
-		# Read current UI values.
-		vol = self._vol_spin.GetValue()
-		checked = self._fx_choice.GetCheckedItems()
-		active = [self._fx_keys[i] for i in checked if 0 <= i < len(self._fx_keys)]
-		fx_str = ",".join(active) if active else "none"
-
-		eq_gains = {}
-		for band, _label, _default in self._eq_bands:
-			eq_gains[band] = self._eq_spins[band].GetValue()
-
-		# Build the profile dict based on the user's choice.
-		existing = station.get("station_audio") or {}
-		if sel == 0:
-			# Volume only: keep any existing effects, replace volume.
-			profile = dict(existing)
-			profile["volume"] = vol
-		elif sel == 1:
-			# Effects only: keep any existing volume, replace fx/eq_gains.
-			profile = dict(existing)
-			profile["fx"] = fx_str
-			profile["eq_gains"] = eq_gains
-		else:
-			# Volume and effects: replace everything.
-			profile = {"volume": vol, "fx": fx_str, "eq_gains": eq_gains}
 
 		station["station_audio"] = profile
 		self._manager._save_favorites()
@@ -4290,6 +4349,41 @@ class RadioDialog(wx.Dialog):
 		self._episode_filter.ChangeValue("")
 		self._refresh_episode_list()
 
+	def _get_selected_podcast_feed(self):
+		"""Return the PodcastFeed currently selected in the subscriptions
+		list, or None. Used to look up (or set) the feed-wide audio
+		profile that applies to all of its episodes - see
+		_on_episode_play(), _on_save_feed_audio_profile()."""
+		idx = self._podcast_list.GetSelection()
+		feeds = self._podcast_manager.get_feeds()
+		if idx == wx.NOT_FOUND or idx >= len(feeds):
+			return None
+		return feeds[idx]
+
+	def _on_save_feed_audio_profile(self, event):
+		"""Save an audio profile (volume/effects/EQ, and optionally
+		playback speed) that applies to every episode of the selected
+		podcast feed - see playbackCoreMixin._play_station() and
+		_on_episode_play()."""
+		feed = self._get_selected_podcast_feed()
+		if not feed:
+			return
+		profile = self._prompt_and_build_audio_profile(feed.audio_profile, allow_speed=True)
+		if profile is None:
+			return
+		feed.audio_profile = profile
+		self._podcast_manager._save()
+		ui.message(_("Audio profile saved for %(feed)s") % {"feed": feed.title})
+
+	def _on_clear_feed_audio_profile(self, event):
+		"""Remove the saved audio profile from the selected podcast feed."""
+		feed = self._get_selected_podcast_feed()
+		if not feed or not feed.audio_profile:
+			return
+		feed.audio_profile = None
+		self._podcast_manager._save()
+		ui.message(_("Audio profile cleared for %(feed)s") % {"feed": feed.title})
+
 	def _format_feed_details(self, feed):
 		"""Build the text shown in the read-only feed-details field for the
 		given PodcastFeed (or "" if none is selected).
@@ -4429,6 +4523,14 @@ class RadioDialog(wx.Dialog):
 			return
 
 		self._podcast_manager.remove_feed(feed.url)
+		# The feed's own audio profile is discarded automatically along with
+		# the rest of the feed object above. Its episodes' saved resume
+		# positions live separately, in RadioPlayer's own store (keyed by
+		# episode URL), and are cleaned up here so they don't linger for
+		# episodes the user can no longer see or resume.
+		if feed.episodes and self._player:
+			urls = [ep.url for ep in feed.episodes if ep.url]
+			self._player.clear_podcast_positions(urls)
 		ui.message(_("Feed removed: %s") % feed.title)
 		self._refresh_podcast_list()
 
@@ -4556,6 +4658,13 @@ class RadioDialog(wx.Dialog):
 		episode = episodes[idx]
 
 		station_dict = episode.to_dict()
+		# Apply the feed-wide audio profile (volume/effects/EQ and,
+		# optionally, playback speed) if the currently selected feed has
+		# one saved - see _on_save_feed_audio_profile() and
+		# playbackCoreMixin._play_station().
+		feed = self._get_selected_podcast_feed()
+		if feed and feed.audio_profile:
+			station_dict["station_audio"] = feed.audio_profile
 		self._play_callback(station_dict, [station_dict], 0, announce=announce)
 
 	def _on_episode_download(self, event):
@@ -4764,48 +4873,57 @@ class RadioDialog(wx.Dialog):
 		self._refresh_podcast_list()
 
 	def _play_prev_episode(self):
-		"""Play the previous episode (select the previous item in the episode list and play)."""
+		"""Play the previous episode (select the previous item in the episode list, move
+		focus to it, and play)."""
 		idx = self._episode_list.GetSelection()
 		if idx <= 0:
 			ui.message(_("Already at first episode"))
 			return
 		self._episode_list.SetSelection(idx - 1)
+		self._episode_list.SetFocus()
 		self._on_episode_play(None)
 
 	def _play_next_episode(self):
-		"""Play the next episode."""
+		"""Play the next episode, moving focus to the episode list."""
 		idx = self._episode_list.GetSelection()
 		if idx == wx.NOT_FOUND:
 			if self._episode_list.GetCount() > 0:
 				self._episode_list.SetSelection(0)
+				self._episode_list.SetFocus()
 				self._on_episode_play(None)
 			return
 		if idx >= self._episode_list.GetCount() - 1:
 			ui.message(_("Already at last episode"))
 			return
 		self._episode_list.SetSelection(idx + 1)
+		self._episode_list.SetFocus()
 		self._on_episode_play(None)
 
 	def _select_prev_feed(self):
-		"""Select the previous podcast channel (previous in the subscription list)."""
+		"""Select the previous podcast channel (previous in the subscription
+		list) and move focus to it."""
 		idx = self._podcast_list.GetSelection()
 		if idx <= 0:
 			ui.message(_("Already at first feed"))
 			return
 		new_idx = idx - 1
 		self._podcast_list.SetSelection(new_idx)
+		was_focused = wx.Window.FindFocus() == self._podcast_list
+		self._podcast_list.SetFocus()
 		self._on_podcast_selected(None)
-		if wx.Window.FindFocus() != self._podcast_list:
+		if not was_focused:
 			ui.message(self._podcast_list.GetString(new_idx))
 
 	def _select_next_feed(self):
-		"""Select the next podcast channel."""
+		"""Select the next podcast channel and move focus to it."""
 		idx = self._podcast_list.GetSelection()
 		if idx == wx.NOT_FOUND:
 			if self._podcast_list.GetCount() > 0:
 				self._podcast_list.SetSelection(0)
+				was_focused = wx.Window.FindFocus() == self._podcast_list
+				self._podcast_list.SetFocus()
 				self._on_podcast_selected(None)
-				if wx.Window.FindFocus() != self._podcast_list:
+				if not was_focused:
 					ui.message(self._podcast_list.GetString(0))
 			return
 		if idx >= self._podcast_list.GetCount() - 1:
@@ -4813,8 +4931,10 @@ class RadioDialog(wx.Dialog):
 			return
 		new_idx = idx + 1
 		self._podcast_list.SetSelection(new_idx)
+		was_focused = wx.Window.FindFocus() == self._podcast_list
+		self._podcast_list.SetFocus()
 		self._on_podcast_selected(None)
-		if wx.Window.FindFocus() != self._podcast_list:
+		if not was_focused:
 			ui.message(self._podcast_list.GetString(new_idx))
 
 	def _show_podcast_result_context_menu(self):
@@ -4851,6 +4971,17 @@ class RadioDialog(wx.Dialog):
 
 		item_remove = menu.Append(wx.ID_ANY, _("Re&move Feed"))
 		self.Bind(wx.EVT_MENU, self._on_podcast_remove, item_remove)
+
+		menu.AppendSeparator()
+
+		# Translators: Context menu item - saves an audio profile (volume/effects/speed) that applies to every episode of this podcast
+		item_save_profile = menu.Append(wx.ID_ANY, _("Save Audio Pr&ofile for This Podcast"))
+		self.Bind(wx.EVT_MENU, self._on_save_feed_audio_profile, item_save_profile)
+
+		# Translators: Context menu item - removes the saved audio profile from this podcast
+		item_clear_profile = menu.Append(wx.ID_ANY, _("Clear Audio Prof&ile"))
+		item_clear_profile.Enable(bool(feed.audio_profile))
+		self.Bind(wx.EVT_MENU, self._on_clear_feed_audio_profile, item_clear_profile)
 
 		menu.AppendSeparator()
 
@@ -5172,6 +5303,11 @@ class RadioDialog(wx.Dialog):
 
 	def _on_getem_library_key(self, event):
 		key = event.GetKeyCode()
+		if key == wx.WXK_DELETE:
+			# Delete / Shift+Delete both remove the selected book from the
+			# library — the keycode is the same either way.
+			self._on_getem_remove_from_library(event)
+			return
 		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
 			self._on_getem_play(None)
 			return
@@ -5248,6 +5384,11 @@ class RadioDialog(wx.Dialog):
 
 		stream_url = getem.get_stream_url(chapter["url"], referer=book.detail_url)
 		station_dict = book.to_dict()
+		# Apply the book-wide audio profile (volume/effects/EQ and,
+		# optionally, playback speed) if one was saved - see
+		# _on_save_getem_audio_profile() and playbackCoreMixin._play_station().
+		if book.audio_profile:
+			station_dict["station_audio"] = book.audio_profile
 		station_dict["name"] = chapter["title"]
 		station_dict["url"] = stream_url
 		station_dict["url_resolved"] = stream_url
@@ -5282,6 +5423,7 @@ class RadioDialog(wx.Dialog):
 			return
 		new_idx = idx - 1
 		self._getem_library_ctrl.SetSelection(new_idx)
+		self._getem_library_ctrl.SetFocus()
 		self._on_getem_library_selected(None)
 		self._play_getem_book(books[new_idx])
 
@@ -5299,8 +5441,23 @@ class RadioDialog(wx.Dialog):
 			return
 		new_idx = idx + 1
 		self._getem_library_ctrl.SetSelection(new_idx)
+		self._getem_library_ctrl.SetFocus()
 		self._on_getem_library_selected(None)
 		self._play_getem_book(books[new_idx])
+
+	def _focus_getem_library_row(self, book):
+		"""Move selection and focus in the library list to *book*'s row —
+		there is no separate per-part/chapter widget, so this is the
+		"related item" F3/F4/Shift+F3/Shift+F4 move focus to on this tab
+		when only the chapter (not the book) changed."""
+		books = self._getem_library.get_books()
+		try:
+			row = next(i for i, b in enumerate(books) if b.identity_key() == book.identity_key())
+		except StopIteration:
+			return
+		self._getem_library_ctrl.SetSelection(row)
+		self._getem_library_ctrl.SetFocus()
+		self._on_getem_library_selected(None)
 
 	def _play_prev_getem_chapter(self):
 		"""Plays the previous part of whichever audio book is currently
@@ -5312,6 +5469,7 @@ class RadioDialog(wx.Dialog):
 		if idx <= 0:
 			ui.message(_("Already at first part"))
 			return
+		self._focus_getem_library_row(book)
 		self._start_getem_chapter(book, idx - 1)
 
 	def _play_next_getem_chapter(self, auto=False):
@@ -5321,7 +5479,8 @@ class RadioDialog(wx.Dialog):
 		a part played to the end on its own, rather than from a user key
 		press: in that case, running off the end of the book is the normal,
 		expected outcome (not a mistake to report as "already at last
-		part"), so a softer "book finished" message is given instead."""
+		part"), so a softer "book finished" message is given instead, and
+		focus is left where it is since the user didn't ask for this."""
 		playing = getattr(self, "_getem_now_playing", None)
 		if not playing:
 			return
@@ -5332,6 +5491,8 @@ class RadioDialog(wx.Dialog):
 			else:
 				ui.message(_("Already at last part"))
 			return
+		if not auto:
+			self._focus_getem_library_row(book)
 		self._start_getem_chapter(book, idx + 1)
 
 	def _on_playback_finished(self, station):
@@ -5357,7 +5518,7 @@ class RadioDialog(wx.Dialog):
 
 	def _show_getem_library_context_menu(self):
 		"""Context menu for the selected item in the library list: play,
-		copy the URL, or remove from the library."""
+		copy the URL, save/clear its audio profile, or remove from the library."""
 		idx = self._getem_library_ctrl.GetSelection()
 		books = self._getem_library.get_books()
 		if idx == wx.NOT_FOUND or idx >= len(books):
@@ -5381,11 +5542,52 @@ class RadioDialog(wx.Dialog):
 
 		menu.AppendSeparator()
 
+		# Translators: Context menu item - saves an audio profile (volume/effects/speed) that applies to every part/chapter of this audio book
+		item_save_profile = menu.Append(wx.ID_ANY, _("Save Audio Pr&ofile for This Book"))
+		self.Bind(wx.EVT_MENU, self._on_save_getem_audio_profile, item_save_profile)
+
+		# Translators: Context menu item - removes the saved audio profile from this audio book
+		item_clear_profile = menu.Append(wx.ID_ANY, _("Clear Audio Prof&ile"))
+		item_clear_profile.Enable(bool(book.audio_profile))
+		self.Bind(wx.EVT_MENU, self._on_clear_getem_audio_profile, item_clear_profile)
+
+		menu.AppendSeparator()
+
 		item_remove = menu.Append(wx.ID_ANY, _("&Remove from the Library"))
 		self.Bind(wx.EVT_MENU, self._on_getem_remove_from_library, item_remove)
 
 		self.PopupMenu(menu, self._getem_library_ctrl.GetScreenPosition() - self.GetScreenPosition())
 		menu.Destroy()
+
+	def _on_save_getem_audio_profile(self, event):
+		"""Save an audio profile (volume/effects/EQ, and optionally
+		playback speed) that applies to every part/chapter of the selected
+		audio book - see playbackCoreMixin._play_station() and
+		_start_getem_chapter()."""
+		idx = self._getem_library_ctrl.GetSelection()
+		books = self._getem_library.get_books()
+		if idx == wx.NOT_FOUND or idx >= len(books):
+			return
+		book = books[idx]
+		profile = self._prompt_and_build_audio_profile(book.audio_profile, allow_speed=True)
+		if profile is None:
+			return
+		book.audio_profile = profile
+		self._getem_library.save()
+		ui.message(_("Audio profile saved for %(book)s") % {"book": book.title})
+
+	def _on_clear_getem_audio_profile(self, event):
+		"""Remove the saved audio profile from the selected audio book."""
+		idx = self._getem_library_ctrl.GetSelection()
+		books = self._getem_library.get_books()
+		if idx == wx.NOT_FOUND or idx >= len(books):
+			return
+		book = books[idx]
+		if not book.audio_profile:
+			return
+		book.audio_profile = None
+		self._getem_library.save()
+		ui.message(_("Audio profile cleared for %(book)s") % {"book": book.title})
 
 	def _on_getem_remove_from_library(self, event):
 		idx = self._getem_library_ctrl.GetSelection()
@@ -5394,6 +5596,18 @@ class RadioDialog(wx.Dialog):
 			return
 		book = books[idx]
 		if self._getem_library.remove_book(book):
+			# The book's own audio profile is discarded automatically along
+			# with the rest of the GetemBook object above. Its per-chapter
+			# resume positions live separately, in RadioPlayer's own store
+			# (keyed by each chapter's proxy stream URL - see
+			# getem.get_stream_url()), and are cleaned up here so they
+			# don't linger for a book the user can no longer see or resume.
+			if book.chapters and self._player:
+				urls = [
+					getem.get_stream_url(ch["url"], referer=book.detail_url)
+					for ch in book.chapters if ch.get("url")
+				]
+				self._player.clear_podcast_positions(urls)
 			ui.message(_("Removed from library: %s") % book.title)
 			self._refresh_getem_library_list()
 

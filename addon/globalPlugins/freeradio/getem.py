@@ -352,6 +352,12 @@ class GetemBook:
 		# getem.get_stream_url()) already tracks the exact second within
 		# it. Together the two give a full book-level resume.
 		self.last_chapter_index = 0
+		# Optional dict of {"volume": int, "fx": str, "eq_gains": {...},
+		# "speed": float} applied to every part/chapter of this book when
+		# it starts playing - see playbackCoreMixin._play_station() and
+		# RadioDialog._start_getem_chapter(). None if the user hasn't
+		# saved one.
+		self.audio_profile = None
 
 	def identity_key(self):
 		"""Stable key used for de-duplication and library membership - the
@@ -373,7 +379,13 @@ class GetemBook:
 		download_chapter()), so they qualify for that handling exactly like
 		a podcast episode does. "audiobook" is kept alongside it so callers
 		that need to tell a GETEM chapter apart from a real podcast episode
-		still can (radioDialog._on_playback_finished() does this)."""
+		still can (radioDialog._on_playback_finished() does this).
+
+		Deliberately does NOT include "station_audio" (the saved
+		audio_profile, if any) - the caller attaches that itself right
+		before playing (see _start_getem_chapter()), same as
+		PodcastEpisode.to_dict()/RadioDialog._on_episode_play() do for
+		podcast feed profiles."""
 		return {
 			"name": self.title,
 			"url": "",
@@ -395,6 +407,7 @@ class GetemBook:
 			"detail_url": self.detail_url,
 			"chapters": self.chapters,
 			"last_chapter_index": self.last_chapter_index,
+			"audio_profile": self.audio_profile,
 		}
 
 	@classmethod
@@ -410,6 +423,7 @@ class GetemBook:
 		)
 		book.chapters = data.get("chapters", []) or []
 		book.last_chapter_index = data.get("last_chapter_index", 0) or 0
+		book.audio_profile = data.get("audio_profile") or None
 		return book
 
 

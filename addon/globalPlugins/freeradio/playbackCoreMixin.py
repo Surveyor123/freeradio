@@ -343,6 +343,7 @@ class PlaybackCoreMixin:
 		# Apply station-specific audio profile if one exists, else restore global settings
 		station_audio = station.get("station_audio")
 		disable_bass = config.conf["freeradio"].get("disable_bass", False)
+		is_podcast_like = "podcast" in station.get("tags", "")
 		if station_audio and not disable_bass:
 			vol = station_audio.get("volume", config.conf["freeradio"]["volume"])
 			fx  = station_audio.get("fx", "none")
@@ -358,6 +359,19 @@ class PlaybackCoreMixin:
 					self._player.set_eq_gain(band, gain_db)
 				except Exception:
 					pass
+			# Playback speed only applies to podcasts/audio books (pitch-
+			# preserving tempo change - see RadioPlayer.set_playback_rate_value),
+			# and only when the profile actually specifies one, so a
+			# podcast/book profile that only saved volume/effects doesn't
+			# reset whatever speed the user already has dialed in for the
+			# current listening session via Ctrl+Windows+]/[.
+			if is_podcast_like:
+				speed = station_audio.get("speed")
+				if speed:
+					try:
+						self._player.set_playback_rate_value(speed)
+					except Exception:
+						pass
 			self._sync_dialog_audio(vol, fx, eq_gains=eq_gains)
 		else:
 			# Restore global settings

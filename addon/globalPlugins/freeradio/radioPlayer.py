@@ -2322,6 +2322,19 @@ class RadioPlayer:
 		*delta* (rounded to 1 decimal place so repeated steps land cleanly
 		on 0.9/1.0/1.1 etc. instead of drifting from float addition).
 
+		Returns (applied, actual_rate, reason): see set_playback_rate_value().
+		"""
+		return self.set_playback_rate_value(self._playback_rate + delta)
+
+	def set_playback_rate_value(self, rate):
+		"""Set the pitch-preserving podcast playback rate to an absolute
+		value - the counterpart to _step_playback_rate()'s delta-based
+		stepping, used to apply a saved per-feed/per-book playback speed
+		(see PodcastFeed.audio_profile / GetemBook.audio_profile and
+		playbackCoreMixin._play_station()) the moment an episode/chapter
+		from it starts playing, rather than nudging up from whatever rate
+		happened to be in effect already.
+
 		Returns (applied, actual_rate, reason):
 		- applied=True  -> the rate is actually in effect right now.
 		- applied=False -> not currently possible (wrong backend, bass_fx.dll
@@ -2330,7 +2343,7 @@ class RadioPlayer:
 		  stream) - the requested rate is still remembered and will apply
 		  automatically to the next tempo-capable stream that opens.
 		"""
-		new_rate = round(self._playback_rate + delta, 1)
+		new_rate = round(float(rate), 1)
 		new_rate = max(self._PLAYBACK_RATE_MIN, min(self._PLAYBACK_RATE_MAX, new_rate))
 		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
 			try:
@@ -2456,6 +2469,34 @@ class RadioPlayer:
 		with self._podcast_positions_lock:
 			entry = self._podcast_positions.get(url)
 		return float(entry.get("position", 0.0)) if entry else 0.0
+
+	def clear_podcast_position(self, url):
+		"""Remove the saved resume position for *url*, if any - used when
+		the episode's podcast feed is unsubscribed
+		(RadioDialog._on_podcast_remove()) or a GETEM audio book is removed
+		from the library (RadioDialog._on_getem_remove_from_library()), so
+		stale progress doesn't linger for content the user can no longer
+		see or resume."""
+		if not url:
+			return
+		with self._podcast_positions_lock:
+			removed = self._podcast_positions.pop(url, None) is not None
+		if removed:
+			self._write_podcast_positions()
+
+	def clear_podcast_positions(self, urls):
+		"""Bulk version of clear_podcast_position() for a whole feed's worth
+		of episode URLs, or a whole book's worth of chapter stream URLs, at
+		once - a single disk write instead of one per URL."""
+		if not urls:
+			return
+		changed = False
+		with self._podcast_positions_lock:
+			for url in urls:
+				if url and self._podcast_positions.pop(url, None) is not None:
+					changed = True
+		if changed:
+			self._write_podcast_positions()
 
 	def has_podcast_position_entry(self, url):
 		"""Whether *url* has ever had a podcast resume position recorded.

@@ -27,6 +27,8 @@ _ = _tr
 del _tr
 
 from . import _notify, _notifications_muted
+from . import getem
+from . import podcast
 from .settingsPanel import FreeRadioSettingsPanel
 
 
@@ -261,6 +263,54 @@ class PlaybackCoreMixin:
 		self._current_index = index
 		self._play_station(station, announce)
 
+	def _rebuild_getem_resume_url(self, detail_url, chapter_index):
+		"""Re-registers the given GETEM chapter with a freshly (re)started
+		local streaming proxy and returns (url, audio_profile), or
+		(None, None) if that isn't possible.
+
+		GETEM chapter audio is never played directly - it's relayed
+		through a local proxy (see getem._ensure_proxy_server()) whose
+		registered chapter tokens (getem._proxy_chapters) live only in
+		memory and are lost every NVDA restart, so simply replaying
+		config.conf["freeradio"]["last_station_url"] (a URL from the
+		*previous* session) always 404s even though the proxy itself is
+		listening on the same port again. This rebuilds a fresh, valid
+		proxy URL for the saved chapter from the book's own library entry -
+		looked up independently here since, on this NVDA-startup resume
+		path, no RadioDialog exists yet to already have one loaded (see
+		GlobalPlugin._download_current_getem_book() for the contrasting
+		case where the dialog is guaranteed to exist). The book's own
+		audio_profile (if any) is returned alongside the URL so
+		_resume_last_station() can apply it too - see
+		playbackCoreMixin._play_station().
+
+		Returns (None, None) if the book isn't in the library (e.g. it was
+		removed) or its chapter list was never resolved, in which case the
+		caller should not attempt to resume playback."""
+		if not detail_url:
+			return None, None
+		try:
+			chapter_index = int(chapter_index)
+		except (TypeError, ValueError):
+			chapter_index = 0
+		try:
+			library = getem.GetemLibrary()
+		except Exception:
+			return None, None
+		book = library.get_book_by_key(detail_url)
+		if not book or not book.chapters:
+			return None, None
+		if not (0 <= chapter_index < len(book.chapters)):
+			chapter_index = 0
+		chapter_url = book.chapters[chapter_index].get("url")
+		if not chapter_url:
+			return None, None
+		try:
+			url = getem.get_stream_url(chapter_url, referer=book.detail_url)
+		except Exception:
+			return None, None
+		return url, book.audio_profile
+
 	def _resume_last_station(self):
 		url  = config.conf["freeradio"].get("last_station_url", "").strip()
 		name = config.conf["freeradio"].get("last_station_name", "").strip()
@@ -307,7 +357,42 @@ class PlaybackCoreMixin:
 				"tags": tags, 
 				"votes": 0
 			}
-		
+
+		# GETEM audio books need their proxy URL rebuilt fresh every
+		# session - see _rebuild_getem_resume_url(). Bail out rather than
+		# handing the player a dead URL from the previous session, which
+		# would just fail silently a moment later.
+		if "audiobook" in tags:
+			detail_url = config.conf["freeradio"].get("last_station_getem_detail_url", "").strip()
+			chapter_index = config.conf["freeradio"].get("last_station_getem_chapter_index", 0)
+			fresh_url, audio_profile = self._rebuild_getem_resume_url(detail_url, chapter_index)
+			if not fresh_url:
+				ui.message(_(
+					"Could not resume the last audio book - it may have been "
+					"removed from your library."
+				))
+				return
+			station["url"] = fresh_url
+			station["url_resolved"] = fresh_url
+			station["getem_detail_url"] = detail_url
+			if audio_profile:
+				station["station_audio"] = audio_profile
+		elif "podcast" in tags:
+			# Likewise, re-apply the subscribed feed's saved audio profile
+			# (if any) - see _on_episode_play()/_play_station(). Unlike the
+			# audiobook case, the episode URL itself is still perfectly
+			# playable on its own, so a missing/removed feed just means no
+			# profile to apply rather than a reason to give up resuming.
+			feed_url = config.conf["freeradio"].get("last_station_podcast_feed_url", "").strip()
+			if feed_url:
+				try:
+					feed = podcast.PodcastManager().get_feed_by_url(feed_url)
+				except Exception:
+					feed = None
+				if feed and feed.audio_profile:
+					station["station_audio"] = feed.audio_profile
+					station.setdefault("podcast_feed_url", feed_url)
+
 		self._play_station(station)
 
 	def _play_station(self, station, announce=True):
@@ -337,6 +422,27 @@ class PlaybackCoreMixin:
 			# the seek-to-saved-position logic never triggers, and the
 			# episode silently restarts from 0:00 instead of resuming.
 			config.conf["freeradio"]["last_station_tags"] = station.get("tags", "")
+			# GETEM audio books additionally need to know which book/part
+			# this was, so _resume_last_station() can rebuild a fresh proxy
+			# URL for it on the next NVDA startup (last_station_url's proxy
+			# URL from *this* session is dead by then - see
+			# _rebuild_getem_resume_url()). Cleared to blank/0 for anything
+			# else so a stale audiobook resume hint never lingers once the
+			# user moves on to a station or podcast.
+			if "audiobook" in station.get("tags", ""):
+				config.conf["freeradio"]["last_station_getem_detail_url"] = station.get("getem_detail_url", "") or ""
+				config.conf["freeradio"]["last_station_getem_chapter_index"] = int(station.get("getem_chapter_index", 0) or 0)
+			else:
+				config.conf["freeradio"]["last_station_getem_detail_url"] = ""
+				config.conf["freeradio"]["last_station_getem_chapter_index"] = 0
+			# Same idea for a subscribed podcast feed's saved audio profile -
+			# see _on_episode_play()/_resume_last_station(). A GETEM chapter
+			# also carries "podcast" in its tags (see GetemBook.to_dict()),
+			# so this is explicitly the non-audiobook case only.
+			if "podcast" in station.get("tags", "") and "audiobook" not in station.get("tags", ""):
+				config.conf["freeradio"]["last_station_podcast_feed_url"] = station.get("podcast_feed_url", "") or ""
+			else:
+				config.conf["freeradio"]["last_station_podcast_feed_url"] = ""
 		except Exception:
 			pass
 

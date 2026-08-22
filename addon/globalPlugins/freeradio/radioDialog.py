@@ -4663,8 +4663,16 @@ class RadioDialog(wx.Dialog):
 		# one saved - see _on_save_feed_audio_profile() and
 		# playbackCoreMixin._play_station().
 		feed = self._get_selected_podcast_feed()
-		if feed and feed.audio_profile:
-			station_dict["station_audio"] = feed.audio_profile
+		if feed:
+			# Carried through to config.conf["freeradio"]["last_station_podcast_feed_url"]
+			# by playbackCoreMixin._play_station() - lets a "resume last
+			# station" on the next NVDA startup look this feed's audio
+			# profile back up and apply it too, the same way
+			# _rebuild_getem_resume_url() does for audio books (see
+			# GlobalPlugin._resume_last_station()).
+			station_dict["podcast_feed_url"] = feed.url
+			if feed.audio_profile:
+				station_dict["station_audio"] = feed.audio_profile
 		self._play_callback(station_dict, [station_dict], 0, announce=announce)
 
 	def _on_episode_download(self, event):
@@ -5090,6 +5098,34 @@ class RadioDialog(wx.Dialog):
 		self._getem_library_ctrl.Bind(wx.EVT_KEY_DOWN, self._on_getem_library_key)
 
 		self._refresh_getem_library_list()
+		self._sync_getem_now_playing_from_player()
+
+	def _sync_getem_now_playing_from_player(self):
+		"""If a GETEM audio book chapter is already playing by the time this
+		tab is first built - e.g. it was resumed automatically on NVDA
+		startup, see GlobalPlugin._resume_last_station()/
+		_rebuild_getem_resume_url() in playbackCoreMixin.py - then
+		_getem_now_playing wouldn't otherwise get set until the user
+		manually starts something from this tab, leaving F3/F4 book/chapter
+		navigation (_play_prev/next_getem_book/chapter) with nothing to
+		work from even though something is audibly playing. Reconstructs
+		it from the player's own current station dict instead."""
+		current = self._player.get_current_station() or {}
+		if "audiobook" not in current.get("tags", ""):
+			return
+		detail_url = current.get("getem_detail_url")
+		if not detail_url:
+			return
+		book = self._getem_library.get_book_by_key(detail_url)
+		if not book or not book.chapters:
+			return
+		try:
+			chapter_index = int(current.get("getem_chapter_index", 0))
+		except (TypeError, ValueError):
+			chapter_index = 0
+		if not (0 <= chapter_index < len(book.chapters)):
+			chapter_index = 0
+		self._getem_now_playing = (book, chapter_index)
 
 	def _set_getem_results_visible(self, visible):
 		"""Show or hide the search-results list (with its label) in the
@@ -5392,6 +5428,12 @@ class RadioDialog(wx.Dialog):
 		station_dict["name"] = chapter["title"]
 		station_dict["url"] = stream_url
 		station_dict["url_resolved"] = stream_url
+		# Carried through to config.conf["freeradio"]["last_station_getem_chapter_index"]
+		# by playbackCoreMixin._play_station() - lets a "resume last
+		# station" on the next NVDA startup know which part to rebuild a
+		# fresh proxy URL for (see GlobalPlugin._rebuild_getem_resume_url()),
+		# since the proxy URL saved this session won't still be valid then.
+		station_dict["getem_chapter_index"] = chapter_index
 		self._play_callback(station_dict, [station_dict], 0, announce=True)
 
 	def _getem_current_book_index(self, books):

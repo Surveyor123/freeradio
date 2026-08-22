@@ -242,6 +242,21 @@ def _init_config():
 		"last_station_name":"string(default='')",
 		"last_station_uuid":"string(default='')",
 		"last_station_tags":"string(default='')",
+		# Only meaningful when "audiobook" is in last_station_tags - see
+		# GlobalPlugin._rebuild_getem_resume_url() in playbackCoreMixin.py.
+		# GETEM chapters stream through a local proxy whose registered
+		# tokens live only in memory (getem._proxy_chapters), so
+		# last_station_url alone is a dead link by the next NVDA startup;
+		# these let the resume path look the book back up in the library
+		# and re-register a fresh proxy URL for the right chapter.
+		"last_station_getem_detail_url":     "string(default='')",
+		"last_station_getem_chapter_index":  "integer(default=0)",
+		# Only meaningful when "podcast" is in last_station_tags and it's
+		# NOT a GETEM audio book (those use the getem_* keys above instead) -
+		# lets the resume path re-apply the subscribed feed's saved audio
+		# profile (volume/effects/EQ/speed), same as _rebuild_getem_resume_url()
+		# does for audio books. See GlobalPlugin._resume_last_station().
+		"last_station_podcast_feed_url":     "string(default='')",
 		"resume_on_start":  "boolean(default=False)",
 		"hotkey_p_action":  "string(default='resume')",
 		"hotkey_p_double":  "string(default='none')",

@@ -311,6 +311,64 @@ class PlaybackCoreMixin:
 			return None, None
 		return url, book.audio_profile
 
+	def _advance_getem_chapter_headless(self, station):
+		"""Auto-advance a GETEM audio book to its next part when the current
+		part finishes on its own while the FreeRadio dialog isn't open (or
+		isn't shown) to do it itself via
+		RadioDialog._on_playback_finished()/_play_next_getem_chapter() -
+		see GlobalPlugin._on_podcast_finished_ui() in __init__.py.
+
+		Playback should keep moving forward the same way a podcast
+		episode's resume position keeps saving in the background,
+		regardless of whether the window happens to be open - so this
+		mirrors RadioDialog._start_getem_chapter()'s playback and progress-
+		tracking, but without touching any dialog UI (list selection/
+		focus/"now playing" state), using only the finished station's own
+		"getem_detail_url"/"getem_chapter_index" fields plus a fresh,
+		dialog-independent GetemLibrary() lookup - the same pattern
+		_rebuild_getem_resume_url() uses for the NVDA-startup-resume case.
+		If the dialog is later opened while this is playing,
+		RadioDialog._sync_getem_now_playing_from_player() picks its state
+		back up from the player, same as it does after a startup resume."""
+		if not station or "audiobook" not in station.get("tags", ""):
+			return
+		detail_url = station.get("getem_detail_url")
+		if not detail_url:
+			return
+		try:
+			chapter_index = int(station.get("getem_chapter_index", 0))
+		except (TypeError, ValueError):
+			chapter_index = 0
+		try:
+			library = getem.GetemLibrary()
+		except Exception:
+			return
+		book = library.get_book_by_key(detail_url)
+		if not book or not book.chapters:
+			return
+		next_index = chapter_index + 1
+		if next_index >= len(book.chapters):
+			# Reached the end of the book - nothing further to advance to.
+			return
+		chapter_url = book.chapters[next_index].get("url")
+		if not chapter_url:
+			return
+		try:
+			stream_url = getem.get_stream_url(chapter_url, referer=book.detail_url)
+		except Exception:
+			return
+
+		library.mark_progress(book, next_index)
+
+		station_dict = book.to_dict()
+		if book.audio_profile:
+			station_dict["station_audio"] = book.audio_profile
+		station_dict["name"] = book.chapters[next_index].get("title", book.title)
+		station_dict["url"] = stream_url
+		station_dict["url_resolved"] = stream_url
+		station_dict["getem_chapter_index"] = next_index
+		self._play_station(station_dict)
+
 	def _resume_last_station(self):
 		url  = config.conf["freeradio"].get("last_station_url", "").strip()
 		name = config.conf["freeradio"].get("last_station_name", "").strip()
@@ -465,19 +523,6 @@ class PlaybackCoreMixin:
 					self._player.set_eq_gain(band, gain_db)
 				except Exception:
 					pass
-			# Playback speed only applies to podcasts/audio books (pitch-
-			# preserving tempo change - see RadioPlayer.set_playback_rate_value),
-			# and only when the profile actually specifies one, so a
-			# podcast/book profile that only saved volume/effects doesn't
-			# reset whatever speed the user already has dialed in for the
-			# current listening session via Ctrl+Windows+]/[.
-			if is_podcast_like:
-				speed = station_audio.get("speed")
-				if speed:
-					try:
-						self._player.set_playback_rate_value(speed)
-					except Exception:
-						pass
 			self._sync_dialog_audio(vol, fx, eq_gains=eq_gains)
 		else:
 			# Restore global settings
@@ -498,6 +543,21 @@ class PlaybackCoreMixin:
 					except Exception:
 						pass
 			self._sync_dialog_audio(global_vol, global_fx)
+
+		# Playback speed - podcasts/audio books only (pitch-preserving
+		# tempo change, see RadioPlayer.set_playback_rate_value). Handled
+		# as its own step, independent of the volume/fx branch above, so
+		# it follows the same "per-item, falls back to normal 1.0x when
+		# nothing is saved" rule volume/fx already follow rather than
+		# staying sticky: leaving a fast-profiled book for one with no
+		# profile of its own must land back on normal speed, or the second
+		# book plays at whatever rate the first one left behind.
+		if is_podcast_like:
+			speed = station_audio.get("speed") if station_audio else None
+			try:
+				self._player.set_playback_rate_value(speed if speed else 1.0)
+			except Exception:
+				pass
 
 		self._pending_url     = url
 		self._pending_station = station

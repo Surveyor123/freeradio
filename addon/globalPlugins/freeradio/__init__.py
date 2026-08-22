@@ -792,6 +792,17 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 				self._dialog._on_playback_finished(station)
 			except Exception:
 				pass
+		else:
+			# The dialog isn't open to react (e.g. auto-advance a GETEM
+			# audio book to its next part) - but playback should keep
+			# moving forward on its own regardless of whether the
+			# FreeRadio window happens to be open, the same way a
+			# podcast's resume position keeps saving in the background.
+			# Do the advance ourselves, independent of any dialog UI.
+			try:
+				self._advance_getem_chapter_headless(station)
+			except Exception:
+				pass
 
 
 	def _open_dialog(self, focus=None):
@@ -858,6 +869,17 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		self._dialog.Raise()
 		try:
 			self._dialog.refresh_audio_devices(force=True)
+		except Exception:
+			pass
+		# A GETEM audio book may have kept auto-advancing chapters in the
+		# background while this dialog was closed/hidden (see
+		# _advance_getem_chapter_headless()) - resync its "now playing"
+		# state from the player so F3/F4 book/chapter navigation and the
+		# library list's "now playing" indicator reflect the actual
+		# current chapter rather than whatever was showing when the
+		# dialog was last open.
+		try:
+			self._dialog._sync_getem_now_playing_from_player()
 		except Exception:
 			pass
 

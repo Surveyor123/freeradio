@@ -19,7 +19,7 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.23.0",
+	addon_version="2026.23.1",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
@@ -74,6 +74,11 @@ keyboard shortcuts and default gestures behave exactly as before.
 | `recordingMixin.py` | Instant recording toggle, recordings folder, podcast download |
 | `trackInfoMixin.py` | "What's playing", station details, track info, ICY polling |
 | `miscTogglesMixin.py` | Notification mute, BASS backend, track-change announce/voice, liked songs |
+Fixed
+- Attribution: the GETEM catalog HTML parsing helpers (_clean_html_text, _absolute_url, _extract_select_options, _parse_catalog_results, and the "Seslendiren:" prefix cleanup) were developed with reference to Mehmet Aykurt's GETEM E-Kütüphane NVDA add-on (https://github.com/MehmetAykurt/getem). Attribution has been added to the source and this changelog; thanks to Mehmet for flagging this.
+- Recording: Instant recording and song capture are now blocked while a podcast or audiobook is playing. Users are prompted to download the episode/book via Ctrl+Win+V instead.
+- UI: Removed the redundant "Instant Recording" button from the Recording tab. The global shortcut ( Ctrl+Win+E ) remains the primary way to start/stop recordings.
+- UI: The Recording tab now sets focus to the station filter field when first opened, enabling immediate typing.
 """),
 	
 	# Author(s)

@@ -213,6 +213,12 @@ def clear_credentials():
 
 # --------------------------------------------------------------------- #
 # HTML helpers
+#
+# The parsing approach in this section (_clean_html_text, _absolute_url,
+# _extract_select_options, and the catalog-row splitting/field extraction
+# in _parse_catalog_results below) was developed with reference to Mehmet
+# Aykurt's GETEM E-Kutuphane NVDA add-on, which parses the same site:
+# https://github.com/MehmetAykurt/getem
 # --------------------------------------------------------------------- #
 
 def _clean_html_text(text):
@@ -240,7 +246,10 @@ def _absolute_url(link):
 def _extract_select_options(html_text, select_id):
 	"""Returns [(label, value), ...] for the <option>s of the <select
 	id="select_id"> found in *html_text* (GETEM's own search form uses
-	this to publish its current filter choices - see get_audio_format_options())."""
+	this to publish its current filter choices - see get_audio_format_options()).
+	Extraction approach (locate by id, slice to </select>, regex the
+	<option> tags) follows Mehmet Aykurt's GETEM add-on - see the module
+	header above."""
 	options = []
 	marker = 'id="' + select_id + '"'
 	start = html_text.find(marker)
@@ -282,7 +291,9 @@ def _extract_field_text(row_html, field_class):
 def _parse_catalog_results(html_text):
 	"""Parses GETEM's catalog search-results HTML (a Drupal Views listing)
 	into a list of GetemBook, same general shape as one search-result "row"
-	on the site."""
+	on the site. Row-splitting/field-extraction approach, and the
+	"Seslendiren:" prefix cleanup below, follow Mehmet Aykurt's GETEM
+	add-on - see the module header above."""
 	books = []
 	rows = html_text.split('<div class="views-row')
 	for row in rows[1:]:

@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FreeRadio 2026.20.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-08-22 01:26+0300\n"
-"PO-Revision-Date: 2026-08-22 01:28+0300\n"
+"POT-Creation-Date: 2026-08-22 09:00+0300\n"
+"PO-Revision-Date: 2026-08-22 09:04+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -488,43 +488,43 @@ msgstr "Normal çapraz geçiş (2 saniye)"
 msgid "Station tuning sound effect"
 msgstr "İstasyon ayarlama sesi efekti"
 
-#: addon/globalPlugins/freeradio/getem.py:298
-#: addon/globalPlugins/freeradio/getem.py:326
+#: addon/globalPlugins/freeradio/getem.py:309
+#: addon/globalPlugins/freeradio/getem.py:337
 #: addon/globalPlugins/freeradio/radioDialog.py:2762
 #: addon/globalPlugins/freeradio/utils.py:335
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
-#: addon/globalPlugins/freeradio/getem.py:433
+#: addon/globalPlugins/freeradio/getem.py:444
 msgid "Please enter your GETEM username and password in FreeRadio's settings."
 msgstr ""
 "Lütfen FreeRadio'nun ayarlarından GETEM kullanıcı adınızı ve şifrenizi girin."
 
-#: addon/globalPlugins/freeradio/getem.py:466
+#: addon/globalPlugins/freeradio/getem.py:477
 msgid "GETEM login failed. Please check your username and password."
 msgstr ""
 "GETEM girişi başarısız oldu. Lütfen kullanıcı adınızı ve şifrenizi kontrol "
 "edin."
 
-#: addon/globalPlugins/freeradio/getem.py:499
+#: addon/globalPlugins/freeradio/getem.py:510
 msgid ""
 "Please enter your GETEM username and password in FreeRadio's settings first."
 msgstr ""
 "Lütfen öncelikle FreeRadio'nun ayarlarına GETEM kullanıcı adınızı ve "
 "şifrenizi girin."
 
-#: addon/globalPlugins/freeradio/getem.py:534
+#: addon/globalPlugins/freeradio/getem.py:545
 #: addon/globalPlugins/freeradio/radioDialog.py:4622
 #: addon/globalPlugins/freeradio/radioDialog.py:5025
 msgid "Please enter a search term."
 msgstr "Lütfen bir arama terimi girin."
 
-#: addon/globalPlugins/freeradio/getem.py:540
+#: addon/globalPlugins/freeradio/getem.py:551
 msgid "Could not reach GETEM's catalog. Please check your internet connection."
 msgstr ""
 "GETEM'in kataloğuna ulaşılamadı. Lütfen internet bağlantınızı kontrol edin."
 
-#: addon/globalPlugins/freeradio/getem.py:646
+#: addon/globalPlugins/freeradio/getem.py:657
 msgid ""
 "No playable audio file was found on this work's GETEM page. It may require "
 "manual download from the site."
@@ -532,25 +532,25 @@ msgstr ""
 "Bu eserin GETEM sayfasında çalınabilir ses dosyası bulunamadı. Siteden "
 "manuel olarak indirilmesi gerekebilir."
 
-#: addon/globalPlugins/freeradio/getem.py:653
+#: addon/globalPlugins/freeradio/getem.py:664
 #, python-brace-format
 msgid "{0} - Part {1}"
 msgstr "{0} - Bölüm {1}"
 
-#: addon/globalPlugins/freeradio/getem.py:749
+#: addon/globalPlugins/freeradio/getem.py:760
 msgid "The downloaded file was empty. Please check your GETEM login."
 msgstr "İndirilen dosya boştu. Lütfen GETEM giriş bilgilerinizi kontrol edin."
 
-#: addon/globalPlugins/freeradio/getem.py:766
+#: addon/globalPlugins/freeradio/getem.py:777
 #, python-format
 msgid "GETEM did not return audio for this part: %s"
 msgstr "GETEM bu bölüm için ses göndermedi: %s"
 
-#: addon/globalPlugins/freeradio/getem.py:767
+#: addon/globalPlugins/freeradio/getem.py:778
 msgid "GETEM did not return a playable audio file for this part."
 msgstr "GETEM bu bölüm için çalınabilir bir ses dosyası göndermedi."
 
-#: addon/globalPlugins/freeradio/getem.py:1015
+#: addon/globalPlugins/freeradio/getem.py:1026
 #: addon/globalPlugins/freeradio/podcast.py:402
 #: addon/globalPlugins/freeradio/podcast.py:452
 msgid "Untitled"
@@ -3028,6 +3028,21 @@ msgid ""
 "polling |\n"
 "| `miscTogglesMixin.py` | Notification mute, BASS backend, track-change "
 "announce/voice, liked songs |\n"
+"Fixed\n"
+"- Attribution: the GETEM catalog HTML parsing helpers (_clean_html_text, "
+"_absolute_url, _extract_select_options, _parse_catalog_results, and the "
+"\"Seslendiren:\" prefix cleanup) were developed with reference to Mehmet "
+"Aykurt's GETEM E-Kütüphane NVDA add-on (https://github.com/MehmetAykurt/"
+"getem). Attribution has been added to the source and this changelog; thanks "
+"to Mehmet for flagging this.\n"
+"- Recording: Instant recording and song capture are now blocked while a "
+"podcast or audiobook is playing. Users are prompted to download the episode/"
+"book via Ctrl+Win+V instead.\n"
+"- UI: Removed the redundant \"Instant Recording\" button from the Recording "
+"tab. The global shortcut ( Ctrl+Win+E ) remains the primary way to start/"
+"stop recordings.\n"
+"- UI: The Recording tab now sets focus to the station filter field when "
+"first opened, enabling immediate typing.\n"
 msgstr ""
 "\n"
 "## Sesli Kitaplar (GETEM)\n"
@@ -3124,6 +3139,21 @@ msgstr ""
 "ICY anketleme |\n"
 "| `miscTogglesMixin.py` | Bildirim susturma, BASS arka plan, parça "
 "değişikliği duyurusu/sesi, beğenilen şarkılar |\n"
+"Eklendi\n"
+"- Atıf: GETEM kataloğu HTML ayrıştırma yardımcıları (_clean_html_text, "
+"_absolute_url, _extract_select_options, _parse_catalog_results ve "
+"'Seslendiren:' ön eki temizliği) Mehmet Aykurt'un GETEM E-Kütüphane NVDA "
+"eklentisine (https://github.com/MehmetAykurt/getem) atıfta bulunarak "
+"geliştirilmiştir. Atıf kaynağa ve bu değişiklik günlüğüne eklendi; bu durumu "
+"işaret ettiği için Mehmet'e teşekkürler.\n"
+"- Kayıt: Bir podcast veya sesli kitap oynatılırken anında kayıt ve şarkı "
+"kaydetme artık engelleniyor. Kullanıcılardan bunun yerine bölümü/kitabı "
+"Ctrl+Win+V yoluyla indirmeleri isteniyor.\n"
+"- Kullanıcı Arayüzü: Kayıt sekmesindeki gereksiz \"Anında Kayıt\" düğmesi "
+"kaldırıldı. Genel kısayol ( Ctrl+Win+E ) kayıtları başlatmanın/durdurmanın "
+"birincil yolu olmaya devam ediyor.\n"
+"- Kullanıcı Arayüzü: Kayıt sekmesi artık odağı ilk açıldığında istasyon "
+"filtre alanına ayarlıyor ve anında yazmaya olanak sağlıyor.\n"
 
 # ── Kayıt sekmesi (radioDialog.py)
 # ───────────────────────────────────────────

@@ -19,66 +19,56 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.23.1",
+	addon_version="2026.23.2",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-## Audio Books (GETEM)
-- Added a new **Audio Books** tab (`Alt+7`) powered by [GETEM](https://getem.boun.edu.tr/), Boğaziçi University's digital library for the visually impaired — the first to be supported audio book sources.
-- Search GETEM's catalogue by title, author, narrator, subject, or publisher; results are automatically filtered to audio-only formats (human/computer narration, audio description, radio drama, DAISY talking books, etc.).
-- Preview any search result before committing to it, or add it straight to a personal library.
-- Multi-part works are handled as a single library entry: playback automatically resumes from the last part and position you left off on, even across NVDA restarts.
-- Play audio books through the same BASS-backed player used for radio and podcasts, with full support for pause/resume, volume, time-shift, playback speed, and output device selection.
-- Download an entire book — all parts, correctly numbered and named — to your recordings folder for offline listening.
-- GETEM sign-in credentials are stored encrypted on disk (Windows Data Protection API) and entered once from FreeRadio's Settings panel.
-- Fixed duplicate/repeated audio in recordings and Time-Shift on HLS streams that rotate session tokens in their segment URLs.
-## Fixed:
-- Cleaned up leftover time-shift buffer files (`freeradio_timeshift_*.buf`) from previous sessions on startup. These are normally deleted when time-shift capture stops cleanly, but an abrupt shutdown (crash, power loss, Windows force-closing NVDA) would skip that step and leave the file in the temp folder — these could accumulate over time, especially with longer buffer durations. The add-on now clears out any matching leftover files each time it starts, before any new capture session begins.
-- Podcast playback speed reverting to normal (1.0x) after switching episodes or resuming from pause. The chosen speed is now resent to the audio engine every time a podcast stream is (re)started, so it stays in effect across episode changes, pause/resume, and station-transition effects (crossfade/tuning) instead of silently resetting.
-## Fixed
-- Fixed a bug where playing a podcast episode could cause a temporary buffer file (`freeradio_timeshift_*.buf` in the system temp folder) to grow to several gigabytes within minutes, potentially filling up the disk.
-  - The time-shift (rewind) capture — designed for continuous live radio streams — was also being started for on-demand podcast/audio book playback. Since those sources can be read far faster than real-time the buffer's time-based trimming couldn't keep up, and each time a chapter finished downloading it was mistaken for a dropped connection and re-downloaded into the same file instead of being cleaned up.
-  - The time-shift buffer is no longer started for podcasts or audio books at all — they already support proper rewind/fast-forward/resume through their own seekable file playback, so nothing is lost.
-  - Live radio time-shift/rewind behavior is unaffected.
-## Fixed
-- **Recording no longer stops when playback changes.** Instant and song-capture
-  recordings were tied to the main player's shared time-shift buffer as an
-  optimisation to avoid capturing a freshly-inserted ad on a brand-new
-  connection. That buffer is a single instance shared by the whole player, so
-  switching stations (or resuming after a long pause) silently cut off any
-  recording that was reading from it. Recordings now always open their own
-  independent connection, so switching stations, pausing/resuming, or
-  stopping playback no longer affects an active recording. The now-unused
-  buffer-tailing code path was removed.
-- **Scheduled recordings no longer report false success.** If a station's
-  stream failed to connect for an entire scheduled recording window, the
-  add-on still announced "Recording started" and, at the end, "Recording
-  finished" — with no file ever written. A scheduled recording that never
-  connects now reports a failure instead of a false "finished" notification.
-## Changed (internal, no functional impact)
-`__init__.py` has been split from a single ~4,200-line file into ten focused
-modules, each ~100–400 lines. `GlobalPlugin` itself is now under 300 lines
-containing only setup/teardown and script routing; everything else is a mixin
-NVDA's script discovery picks up through normal class inheritance, so all
-keyboard shortcuts and default gestures behave exactly as before.
-
-| File | Contents |
---|---|
-| `settingsPanel.py` | The NVDA Settings → FreeRadio panel |
-| `timerManager.py` | Sleep/alarm timer scheduling |
-| `audioDeviceMixin.py` | Output device selection, audio mirroring |
-| `playbackCoreMixin.py` | Pause/resume, stop, next/prev station |
-| `timeshiftMixin.py` | Rewind/fast-forward, time-shift toggle |
-| `audioFxMixin.py` | Volume, EQ/bass/treble/vocal boost, crossfade, playback rate |
-| `recordingMixin.py` | Instant recording toggle, recordings folder, podcast download |
-| `trackInfoMixin.py` | "What's playing", station details, track info, ICY polling |
-| `miscTogglesMixin.py` | Notification mute, BASS backend, track-change announce/voice, liked songs |
-Fixed
-- Attribution: the GETEM catalog HTML parsing helpers (_clean_html_text, _absolute_url, _extract_select_options, _parse_catalog_results, and the "Seslendiren:" prefix cleanup) were developed with reference to Mehmet Aykurt's GETEM E-Kütüphane NVDA add-on (https://github.com/MehmetAykurt/getem). Attribution has been added to the source and this changelog; thanks to Mehmet for flagging this.
-- Recording: Instant recording and song capture are now blocked while a podcast or audiobook is playing. Users are prompted to download the episode/book via Ctrl+Win+V instead.
-- UI: Removed the redundant "Instant Recording" button from the Recording tab. The global shortcut ( Ctrl+Win+E ) remains the primary way to start/stop recordings.
-- UI: The Recording tab now sets focus to the station filter field when first opened, enabling immediate typing.
+## scheduled recording fixes
+**Fixed**
+- Recurring scheduled recordings would only fire once and never repeat correctly.
+  - Fixed a thread-safety race where the scheduler loop's per-second cleanup of the schedule list could silently drop a freshly re-queued recurring recording before it was ever saved or checked.
+  - Fixed date calculation for recurring schedules: the next occurrence was always computed a full week ahead before checking active days, so a schedule set to record every day (e.g. daily at 09:00) actually only re-fired once a week on the original weekday. It now correctly schedules the very next matching day.
+**Note**
+- Existing entries in `freeradio_schedules.json` created before this fix may still hold a `start_time` computed by the old logic (a week ahead). Recreate those schedules, or manually correct their `start_time`, to get correct daily firing going forward.
+## Fixes for chapter Auto-advance and playback speed
+**Bug Fix — Audio Book Chapter Auto-Advance Stopped When FreeRadio Window Was Closed**
+- Fixed an issue where an audio book would correctly move to its next chapter when it finished playing while the FreeRadio window was open on the Audio Books tab, but silently stopped at the end of a chapter instead of advancing if the window was closed or hidden.
+- Chapter auto-advance no longer depends on the FreeRadio dialog being open: it now runs independently in the background, using the finished chapter's own book/part information to look up the next chapter and start it directly.
+- Progress tracking (which chapter/part you're on) is now saved correctly even while advancing in the background.
+- When the FreeRadio window is reopened, its "now playing" state (used by F3/F4 chapter/book navigation) is refreshed from the player, so it correctly reflects a book that kept advancing while the window was closed.
+**Bug Fix — Playback Speed Leaking Between Audio Books/Podcasts**
+- Fixed an issue where saving an audio profile with a sped-up playback rate (e.g. 1.4x) for one book, then switching to another book with no saved profile, would leave the second book playing at the first book's speed instead of normal speed.
+- Playback speed now follows the same rule already used for volume/effects/EQ: if the book or podcast being played has a saved profile with a speed, that speed is applied; otherwise, speed resets to normal (1.0x) rather than carrying over from whatever was played previously.
+- Arabic localization update
+## startup resume fixes
+**Bug Fix — Audio Profile Not Applied on Startup Resume**
+- Fixed an issue where a saved audio profile (volume/effects/EQ/speed) for a podcast or audio book was applied correctly when starting playback from the dialog, but was ignored when the station resumed automatically on NVDA startup.
+- Playing a podcast episode now also records which feed it belongs to; playing an audio book chapter already recorded which book it belongs to.
+- On startup resume:
+  - For audio books, the saved book profile is now looked up and applied together with the rebuilt playback URL.
+  - For podcast episodes, the subscribed feed is looked up independently (without needing the dialog open) and its saved profile, if any, is applied the same way.
+- As a result, resumed playback on NVDA startup now respects the same volume, effects, EQ, and playback speed settings as playback started manually from the dialog.
+## Recording tab rearrangements and audio profiles for podcasts and audio books
+**Recording Tab**
+- Removed the "Edit" and "Remove" buttons; their functionality moved into the list's context menu (Applications key / Shift+F10).
+- Delete / Shift+Delete now removes the selected schedule directly.
+- Default mode is now "Record only".
+- After removing a schedule, the next item in the list (or the previous one, if it was the last) is automatically selected.
+**Podcast and Audio Book Tabs**
+- F3 / F4 / Shift+F3 / Shift+F4 now also move keyboard focus to the relevant list (previously they only changed the selection).
+- On the Audio Book tab, since there's no separate list item for chapters, changing chapters moves focus to the book's row in the library list instead.
+- Delete / Shift+Delete in the Audio Book library list now removes the selected book directly (previously only available via the context menu).
+**Audio Profiles — Podcast and Audio Book Support**
+- The audio profile feature (volume/effects/EQ) from Favorites has been extended to podcast feeds and audio book library entries:
+  - Podcasts: the profile is saved on the feed and applies to **all of its episodes**.
+  - Audio Books: the profile is saved on the book and applies to **all of its chapters**.
+- Profiles can now also include **playback speed** (for podcast/audiobook content only); a new "Volume, effects, and playback speed" option captures the current speed when saving.
+- Episodes/chapters without a saved profile keep whatever playback speed is currently active (sticky) rather than being forced back to normal speed.
+- Added "Save Audio Profile" / "Clear Audio Profile" items to the context menus (Podcast: subscriptions list; Audio Book: library list).
+- When unsubscribing from a podcast or removing a book from the library:
+  - The saved audio profile is automatically cleared.
+  - The resume ("where you left off") positions for all of that feed's episodes / that book's chapters are also cleared.
 """),
 	
 	# Author(s)

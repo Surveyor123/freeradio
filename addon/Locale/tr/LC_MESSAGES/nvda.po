@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FreeRadio 2026.20.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-08-22 14:39+0300\n"
-"PO-Revision-Date: 2026-08-22 14:44+0300\n"
+"POT-Creation-Date: 2026-08-23 12:09+0300\n"
+"PO-Revision-Date: 2026-08-23 12:13+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: addon/globalPlugins/freeradio/__init__.py:363
+#: addon/globalPlugins/freeradio/__init__.py:378
 #: addon/globalPlugins/freeradio/settingsPanel.py:920
 msgid ""
 "Time-shift buffer: running low on disk space, the oldest audio is being "
@@ -27,28 +27,28 @@ msgstr ""
 "Zaman kaydırma tamponu: disk alanı azalıyor, en eski ses daha agresif bir "
 "şekilde düşürülüyor."
 
-#: addon/globalPlugins/freeradio/__init__.py:449
+#: addon/globalPlugins/freeradio/__init__.py:464
 #: addon/globalPlugins/freeradio/recordingMixin.py:193
 #, python-format
 msgid "Recording started: %s"
 msgstr "Kayıt başladı: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:452
+#: addon/globalPlugins/freeradio/__init__.py:467
 #, python-format
 msgid "Recording finished: %s"
 msgstr "Kayıt tamamlandı: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:456
+#: addon/globalPlugins/freeradio/__init__.py:471
 #, python-format
 msgid "Recording failed: could not connect to %s"
 msgstr "Kayıt başarısız oldu: %s'e bağlanılamadı"
 
-#: addon/globalPlugins/freeradio/__init__.py:460
+#: addon/globalPlugins/freeradio/__init__.py:475
 #, python-format
 msgid "Recording conversion failed. The original file was kept: %s"
 msgstr "Dönüştürme başarısız, Orijinal dosya kaydedildi: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:465
+#: addon/globalPlugins/freeradio/__init__.py:480
 #, python-format
 msgid ""
 "Could not use the selected folder for '%(station)s' (%(reason)s). Saved to "
@@ -57,42 +57,42 @@ msgstr ""
 "'%(station)s' için belirlenen klasör kullanılamadı. (%(reason)s). Bunun "
 "yerine varsayılan kayıtlar klasörüne kaydedildi."
 
-#: addon/globalPlugins/freeradio/__init__.py:530
+#: addon/globalPlugins/freeradio/__init__.py:545
 msgid "FreeRadio Stations"
 msgstr "FreeRadio İstasyonları"
 
-#: addon/globalPlugins/freeradio/__init__.py:550
+#: addon/globalPlugins/freeradio/__init__.py:565
 #, python-format
 msgid "Station no longer in favourites: %s"
 msgstr "İstasyon artık favorilerde değil: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:559
+#: addon/globalPlugins/freeradio/__init__.py:574
 #, python-format
 msgid "%s playback shortcut ()"
 msgstr "%s çalma kısayolu ()"
 
-#: addon/globalPlugins/freeradio/__init__.py:589
+#: addon/globalPlugins/freeradio/__init__.py:604
 msgid "Station &Browser...\tCtrl+Win+R"
 msgstr "İstasyon &Tarayıcısı...\tCtrl+Win+R"
 
-#: addon/globalPlugins/freeradio/__init__.py:598
+#: addon/globalPlugins/freeradio/__init__.py:613
 msgid "FreeRadio &Settings..."
 msgstr "&FreeRadio Ayarları..."
 
-#: addon/globalPlugins/freeradio/__init__.py:607
+#: addon/globalPlugins/freeradio/__init__.py:622
 msgid "Check for &Updates..."
 msgstr "&Güncellemeleri kontrol et..."
 
-#: addon/globalPlugins/freeradio/__init__.py:620
+#: addon/globalPlugins/freeradio/__init__.py:635
 msgid "&FreeRadio"
 msgstr "&FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:679
+#: addon/globalPlugins/freeradio/__init__.py:694
 msgid "Open FreeRadio station browser"
 msgstr "FreeRadio istasyon tarayıcısını aç"
 
-#: addon/globalPlugins/freeradio/__init__.py:680
-#: addon/globalPlugins/freeradio/__init__.py:689
+#: addon/globalPlugins/freeradio/__init__.py:695
+#: addon/globalPlugins/freeradio/__init__.py:704
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:30
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:161
 #: addon/globalPlugins/freeradio/audioFxMixin.py:33
@@ -108,10 +108,10 @@ msgstr "FreeRadio istasyon tarayıcısını aç"
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:69
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:92
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:111
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:40
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:137
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:189
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:225
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:42
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:139
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:191
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:227
 #: addon/globalPlugins/freeradio/recordingMixin.py:68
 #: addon/globalPlugins/freeradio/recordingMixin.py:203
 #: addon/globalPlugins/freeradio/settingsPanel.py:50
@@ -125,7 +125,7 @@ msgstr "FreeRadio istasyon tarayıcısını aç"
 msgid "FreeRadio"
 msgstr "FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:688
+#: addon/globalPlugins/freeradio/__init__.py:703
 msgid ""
 "Add currently playing station to favourites, download the whole audio book "
 "if one is playing, or download the episode if a podcast is playing"
@@ -133,50 +133,50 @@ msgstr ""
 "İstasyon oynatılıyorsa favorilere ekle; podcast oynatılıyorsa bölümü, kitap "
 "oynatılıyorsa kitabın tamamını  indir"
 
-#: addon/globalPlugins/freeradio/__init__.py:695
+#: addon/globalPlugins/freeradio/__init__.py:710
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:177
 #: addon/globalPlugins/freeradio/recordingMixin.py:106
 #: addon/globalPlugins/freeradio/recordingMixin.py:187
 msgid "No station is playing"
 msgstr "Çalan bir istasyon yok"
 
-#: addon/globalPlugins/freeradio/__init__.py:709
+#: addon/globalPlugins/freeradio/__init__.py:724
 #, python-format
 msgid "Already in favourites: %s"
 msgstr "Zaten favorilerde: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:712
+#: addon/globalPlugins/freeradio/__init__.py:727
 #, python-format
 msgid "Added to favourites: %s"
 msgstr "Favorilere eklendi: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:726
+#: addon/globalPlugins/freeradio/__init__.py:741
 msgid "No audio book is playing"
 msgstr "Çalan sesli kitap yok"
 
-#: addon/globalPlugins/freeradio/__init__.py:732
+#: addon/globalPlugins/freeradio/__init__.py:747
 msgid "Could not download this audio book."
 msgstr "Bu sesli kitap indirilemedi."
 
-#: addon/globalPlugins/freeradio/__init__.py:920
+#: addon/globalPlugins/freeradio/__init__.py:957
 msgid "No releases found on GitHub yet."
 msgstr "GitHub'da henüz bir sürüm bulunamadı."
 
-#: addon/globalPlugins/freeradio/__init__.py:924
+#: addon/globalPlugins/freeradio/__init__.py:961
 #, python-format
 msgid "Update check failed (HTTP %d)."
 msgstr "Güncelleme kontrolü başarısız (HTTP %d)."
 
-#: addon/globalPlugins/freeradio/__init__.py:929
+#: addon/globalPlugins/freeradio/__init__.py:966
 msgid "Update check failed. Please check your internet connection."
 msgstr ""
 "Güncelleme kontrolü başarısız. Lütfen internet bağlantınızı kontrol edin."
 
-#: addon/globalPlugins/freeradio/__init__.py:944
+#: addon/globalPlugins/freeradio/__init__.py:981
 msgid "Could not determine latest version."
 msgstr "En son sürüm belirlenemedi."
 
-#: addon/globalPlugins/freeradio/__init__.py:963
+#: addon/globalPlugins/freeradio/__init__.py:1000
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -189,17 +189,17 @@ msgstr ""
 "\n"
 "Şimdi indirip yüklemek ister misiniz?"
 
-#: addon/globalPlugins/freeradio/__init__.py:966
-#: addon/globalPlugins/freeradio/__init__.py:974
-#: addon/globalPlugins/freeradio/__init__.py:1035
+#: addon/globalPlugins/freeradio/__init__.py:1003
+#: addon/globalPlugins/freeradio/__init__.py:1011
+#: addon/globalPlugins/freeradio/__init__.py:1072
 msgid "unknown"
 msgstr "Bilinmeyen"
 
-#: addon/globalPlugins/freeradio/__init__.py:967
+#: addon/globalPlugins/freeradio/__init__.py:1004
 msgid "&Install"
 msgstr "&Yükle"
 
-#: addon/globalPlugins/freeradio/__init__.py:971
+#: addon/globalPlugins/freeradio/__init__.py:1008
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -212,42 +212,42 @@ msgstr ""
 "\n"
 "İndirme sayfasını açmak ister misiniz?"
 
-#: addon/globalPlugins/freeradio/__init__.py:975
+#: addon/globalPlugins/freeradio/__init__.py:1012
 msgid "&Open Page"
 msgstr "&Sayfayı Aç"
 
-#: addon/globalPlugins/freeradio/__init__.py:980
+#: addon/globalPlugins/freeradio/__init__.py:1017
 msgid "FreeRadio Update Available"
 msgstr "FreeRadio Güncellemesi Mevcut"
 
-#: addon/globalPlugins/freeradio/__init__.py:983
+#: addon/globalPlugins/freeradio/__init__.py:1020
 msgid "&Cancel"
 msgstr "&İptal"
 
-#: addon/globalPlugins/freeradio/__init__.py:998
+#: addon/globalPlugins/freeradio/__init__.py:1035
 #, python-format
 msgid "Downloading FreeRadio %s…"
 msgstr "FreeRadio %s indiriliyor…"
 
-#: addon/globalPlugins/freeradio/__init__.py:1016
-#: addon/globalPlugins/freeradio/radioDialog.py:4693
-#: addon/globalPlugins/freeradio/radioDialog.py:5710
+#: addon/globalPlugins/freeradio/__init__.py:1053
+#: addon/globalPlugins/freeradio/radioDialog.py:4701
+#: addon/globalPlugins/freeradio/radioDialog.py:5752
 #: addon/globalPlugins/freeradio/recordingMixin.py:62
 #, python-format
 msgid "Download failed: %s"
 msgstr "İndirme başarısız: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1026
+#: addon/globalPlugins/freeradio/__init__.py:1063
 #, python-format
 msgid "Could not launch installer. File saved to: %s"
 msgstr "Yükleyici başlatılamadı. Dosya şuraya kaydedildi: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1035
+#: addon/globalPlugins/freeradio/__init__.py:1072
 #, python-format
 msgid "FreeRadio is up to date. Installed: %s"
 msgstr "FreeRadio güncel. Yüklenen: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1036
+#: addon/globalPlugins/freeradio/__init__.py:1073
 msgid "FreeRadio Update Check"
 msgstr "FreeRadio Güncelleme Kontrolü"
 
@@ -514,8 +514,8 @@ msgstr ""
 "şifrenizi girin."
 
 #: addon/globalPlugins/freeradio/getem.py:559
-#: addon/globalPlugins/freeradio/radioDialog.py:4731
-#: addon/globalPlugins/freeradio/radioDialog.py:5156
+#: addon/globalPlugins/freeradio/radioDialog.py:4739
+#: addon/globalPlugins/freeradio/radioDialog.py:5192
 msgid "Please enter a search term."
 msgstr "Lütfen bir arama terimi girin."
 
@@ -624,11 +624,11 @@ msgstr ""
 "indirin ve ffmpeg.exe'yi FreeRadio eklenti klasörüne yerleştirin veya "
 "bilgisayarınızda varsa ayarlardan yolu gösterin."
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:39
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:41
 msgid "Pause or resume FreeRadio playback"
 msgstr "FreeRadio oynatmayı duraklat veya devam ettir"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:116
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:118
 #: addon/globalPlugins/freeradio/radioDialog.py:2649
 #: addon/globalPlugins/freeradio/radioDialog.py:3087
 #: addon/globalPlugins/freeradio/radioDialog.py:3481
@@ -636,24 +636,24 @@ msgstr "FreeRadio oynatmayı duraklat veya devam ettir"
 msgid "Radio paused"
 msgstr "Radyo duraklatıldı"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:119
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:121
 #: addon/globalPlugins/freeradio/radioDialog.py:3091
 msgid "Playing"
 msgstr "Çalıyor"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:136
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:138
 msgid "Stop FreeRadio playback"
 msgstr "FreeRadio oynatmayı durdur"
 
 # ── Kayıt sekmesi (radioDialog.py)
 # ───────────────────────────────────────────
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:149
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:151
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:557
 #, python-format
 msgid "Instant recording: %s"
 msgstr "Anlık kayıt: %s"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:151
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:153
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:171
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:205
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:452
@@ -663,7 +663,7 @@ msgstr "Anlık kayıt: %s"
 msgid "Scheduled recording: %s"
 msgstr "Planlı kayıt: %s"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:154
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:156
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:562
 #, python-format
 msgid ""
@@ -677,40 +677,47 @@ msgstr ""
 "\n"
 "Radyo durdurulup tüm kayıtlar sonlandırılsın mı?"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:161
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:163
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:569
 msgid "Active Recordings"
 msgstr "Aktif Kayıtlar"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:174
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:185
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:176
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:187
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:582
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:594
 msgid "Radio stopped"
 msgstr "Radyo durduruldu"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:188
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:190
 msgid "Play next station"
 msgstr "Sonraki istasyonu çal"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:224
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:226
 msgid "Play previous station"
 msgstr "Önceki istasyonu çal"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:314
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:429
+msgid ""
+"Could not resume the last audio book - it may have been removed from your "
+"library."
+msgstr ""
+"Son sesli kitap devam ettirilemedi; kitaplığınızdan kaldırılmış olabilir."
+
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:457
 msgid "Unknown station"
 msgstr "Bilinmeyen istasyon"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:320
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:463
 msgid "No stream URL available for this station"
 msgstr "Bu istasyon için yayın adresi bulunamadı"
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:327
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:470
 msgid "No internet connection. Please check your connection and try again."
 msgstr ""
 "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edip tekrar deneyin."
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:411
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:577
 msgid ""
 "Could not play station: Windows Media Player is not available on this "
 "system. Please install VLC media player."
@@ -718,8 +725,8 @@ msgstr ""
 "İstasyon çalınamadı: Bu sistemde Windows Media Player kullanılamıyor. Lütfen "
 "VLC medya oynatıcı kurun."
 
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:415
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:417
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:581
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:583
 #, python-format
 msgid "Could not play station: %s"
 msgstr "İstasyon çalınamadı: %s"
@@ -935,7 +942,7 @@ msgstr ""
 "son verileri kullanır."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:392
-#: addon/globalPlugins/freeradio/radioDialog.py:5738
+#: addon/globalPlugins/freeradio/radioDialog.py:5780
 msgid "&Close"
 msgstr "&Kapat"
 
@@ -958,8 +965,8 @@ msgstr "Ses Pr&ofilini bu İstasyon için Kaydet"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:529
 #: addon/globalPlugins/freeradio/radioDialog.py:2939
-#: addon/globalPlugins/freeradio/radioDialog.py:4982
-#: addon/globalPlugins/freeradio/radioDialog.py:5550
+#: addon/globalPlugins/freeradio/radioDialog.py:4990
+#: addon/globalPlugins/freeradio/radioDialog.py:5592
 msgid "Clear Audio Prof&ile"
 msgstr "Ses Prof&ilini sil"
 
@@ -1010,7 +1017,7 @@ msgstr "Sonuç sınırı:"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:605
 #: addon/globalPlugins/freeradio/radioDialog.py:4116
-#: addon/globalPlugins/freeradio/radioDialog.py:5046
+#: addon/globalPlugins/freeradio/radioDialog.py:5054
 msgid "Search:"
 msgstr "Ara:"
 
@@ -1045,93 +1052,93 @@ msgstr "İstasyonları filtrele"
 #: addon/globalPlugins/freeradio/radioDialog.py:798
 #: addon/globalPlugins/freeradio/radioDialog.py:802
 #: addon/globalPlugins/freeradio/radioDialog.py:3605
-#: addon/globalPlugins/freeradio/radioDialog.py:5857
-#: addon/globalPlugins/freeradio/radioDialog.py:5859
+#: addon/globalPlugins/freeradio/radioDialog.py:5899
+#: addon/globalPlugins/freeradio/radioDialog.py:5901
 msgid "Start time (HH:MM):"
 msgstr "Başlangıç saati (SS:DD):"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:677
-#: addon/globalPlugins/freeradio/radioDialog.py:5863
-#: addon/globalPlugins/freeradio/radioDialog.py:5865
+#: addon/globalPlugins/freeradio/radioDialog.py:5905
+#: addon/globalPlugins/freeradio/radioDialog.py:5907
 msgid "Duration (minutes):"
 msgstr "Süre (dakika):"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:686
-#: addon/globalPlugins/freeradio/radioDialog.py:5869
+#: addon/globalPlugins/freeradio/radioDialog.py:5911
 msgid "Recurrence:"
 msgstr "Tekrarlama:"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:691
-#: addon/globalPlugins/freeradio/radioDialog.py:5870
+#: addon/globalPlugins/freeradio/radioDialog.py:5912
 msgid "Record &once"
 msgstr "&Bir kez kaydet"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:699
-#: addon/globalPlugins/freeradio/radioDialog.py:5875
+#: addon/globalPlugins/freeradio/radioDialog.py:5917
 msgid "Repeat &weekly"
 msgstr "&Haftalık olarak tekrarla"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:710
 #: addon/globalPlugins/freeradio/radioDialog.py:720
-#: addon/globalPlugins/freeradio/radioDialog.py:5888
-#: addon/globalPlugins/freeradio/radioDialog.py:5891
+#: addon/globalPlugins/freeradio/radioDialog.py:5930
+#: addon/globalPlugins/freeradio/radioDialog.py:5933
 msgid "Active days:"
 msgstr "Aktif günler:"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:714
 #: addon/globalPlugins/freeradio/radioDialog.py:1303
-#: addon/globalPlugins/freeradio/radioDialog.py:5885
+#: addon/globalPlugins/freeradio/radioDialog.py:5927
 msgid "Monday"
 msgstr "Pazartesi"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:714
 #: addon/globalPlugins/freeradio/radioDialog.py:1303
-#: addon/globalPlugins/freeradio/radioDialog.py:5885
+#: addon/globalPlugins/freeradio/radioDialog.py:5927
 msgid "Tuesday"
 msgstr "Salı"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:714
 #: addon/globalPlugins/freeradio/radioDialog.py:1303
-#: addon/globalPlugins/freeradio/radioDialog.py:5885
+#: addon/globalPlugins/freeradio/radioDialog.py:5927
 msgid "Wednesday"
 msgstr "Çarşamba"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:714
 #: addon/globalPlugins/freeradio/radioDialog.py:1303
-#: addon/globalPlugins/freeradio/radioDialog.py:5885
+#: addon/globalPlugins/freeradio/radioDialog.py:5927
 msgid "Thursday"
 msgstr "Perşembe"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:715
 #: addon/globalPlugins/freeradio/radioDialog.py:1304
-#: addon/globalPlugins/freeradio/radioDialog.py:5886
+#: addon/globalPlugins/freeradio/radioDialog.py:5928
 msgid "Friday"
 msgstr "Cuma"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:715
 #: addon/globalPlugins/freeradio/radioDialog.py:1304
-#: addon/globalPlugins/freeradio/radioDialog.py:5886
+#: addon/globalPlugins/freeradio/radioDialog.py:5928
 msgid "Saturday"
 msgstr "Cumartesi"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:715
 #: addon/globalPlugins/freeradio/radioDialog.py:1304
-#: addon/globalPlugins/freeradio/radioDialog.py:5886
+#: addon/globalPlugins/freeradio/radioDialog.py:5928
 msgid "Sunday"
 msgstr "Pazar"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:727
-#: addon/globalPlugins/freeradio/radioDialog.py:5899
+#: addon/globalPlugins/freeradio/radioDialog.py:5941
 msgid "Playback during recording:"
 msgstr "Kayıt sırasında oynatma:"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:731
-#: addon/globalPlugins/freeradio/radioDialog.py:5900
+#: addon/globalPlugins/freeradio/radioDialog.py:5942
 msgid "Record while &listening (play and record simultaneously)"
 msgstr "Dinlerken &kaydet (aynı anda çal ve kaydet)"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:736
-#: addon/globalPlugins/freeradio/radioDialog.py:5901
+#: addon/globalPlugins/freeradio/radioDialog.py:5943
 msgid "Record &only (no audio output)"
 msgstr "&Yalnızca kaydet (ses çıkışı yok)"
 
@@ -1189,14 +1196,14 @@ msgstr[1] "%d favori"
 #: addon/globalPlugins/freeradio/radioDialog.py:1315
 #: addon/globalPlugins/freeradio/radioDialog.py:1454
 #: addon/globalPlugins/freeradio/radioDialog.py:1501
-#: addon/globalPlugins/freeradio/recorder.py:1072
+#: addon/globalPlugins/freeradio/recorder.py:1077
 msgid "Record only"
 msgstr "yalnızca kaydet"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:1315
 #: addon/globalPlugins/freeradio/radioDialog.py:1454
 #: addon/globalPlugins/freeradio/radioDialog.py:1501
-#: addon/globalPlugins/freeradio/recorder.py:1072
+#: addon/globalPlugins/freeradio/recorder.py:1077
 msgid "Listen and record"
 msgstr "dinlerken kaydet"
 
@@ -1233,7 +1240,7 @@ msgstr "Kayıt mevcut değil"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:1392
 #: addon/globalPlugins/freeradio/radioDialog.py:3705
-#: addon/globalPlugins/freeradio/radioDialog.py:5958
+#: addon/globalPlugins/freeradio/radioDialog.py:6000
 msgid "Invalid time format. Use HH:MM"
 msgstr "Geçersiz saat biçimi. SS:DD kullanın"
 
@@ -1355,7 +1362,6 @@ msgid "Volume and effects"
 msgstr "Ses düzeyi ve efektler"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2381
-#| msgid "Could not change playback speed."
 msgid "Volume, effects, and playback speed"
 msgstr "Ses düzeyi, efektler ve oynatma hızı"
 
@@ -1610,7 +1616,7 @@ msgid "%(name)s: stream check failed — %(detail)s"
 msgstr "%(name)s: akış kontrolü başarısız — %(detail)s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2946
-#: addon/globalPlugins/freeradio/radioDialog.py:5775
+#: addon/globalPlugins/freeradio/radioDialog.py:5817
 msgid "&Test URL"
 msgstr "&URL'yi Test Et"
 
@@ -1784,7 +1790,7 @@ msgid "Search podcasts. Press enter to search"
 msgstr "Podcast'leri arayın. Aramak için enter tuşuna basın"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4128
-#: addon/globalPlugins/freeradio/radioDialog.py:5055
+#: addon/globalPlugins/freeradio/radioDialog.py:5063
 msgid "Search results:"
 msgstr "Arama sonuçları:"
 
@@ -1841,7 +1847,7 @@ msgid "Episode details"
 msgstr "Bölüm ayrıntıları"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4202
-#: addon/globalPlugins/freeradio/radioDialog.py:5009
+#: addon/globalPlugins/freeradio/radioDialog.py:5017
 msgid "&Download Episode"
 msgstr "Bölümü İn&dir"
 
@@ -1866,26 +1872,24 @@ msgid "Fetching podcast feed..."
 msgstr "Podcast akışı alınıyor..."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4337
-#: addon/globalPlugins/freeradio/radioDialog.py:4870
+#: addon/globalPlugins/freeradio/radioDialog.py:4878
 #, python-format
 msgid "Could not add feed: %s"
 msgstr "Akış eklenemedi: %s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4340
-#: addon/globalPlugins/freeradio/radioDialog.py:4872
+#: addon/globalPlugins/freeradio/radioDialog.py:4880
 #, python-format
 msgid "Feed added: %s"
 msgstr "Akış eklendi: %s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4376
 #, python-format
-#| msgid "Audio profile saved for %(station)s"
 msgid "Audio profile saved for %(feed)s"
 msgstr "ses profili %(feed)s için kaydedildi"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4385
 #, python-format
-#| msgid "Audio profile cleared for %(station)s"
 msgid "Audio profile cleared for %(feed)s"
 msgstr "%(feed)s için ses profili silindi"
 
@@ -1946,118 +1950,118 @@ msgid "Duration: %s"
 msgstr "Süre: %s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4624
-#: addon/globalPlugins/freeradio/radioDialog.py:5321
+#: addon/globalPlugins/freeradio/radioDialog.py:5357
 msgid "Paused"
 msgstr "Duraklatıldı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4682
+#: addon/globalPlugins/freeradio/radioDialog.py:4690
 #: addon/globalPlugins/freeradio/recordingMixin.py:52
 #, python-format
 msgid "File already exists: %s"
 msgstr "Dosya zaten mevcut: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4685
+#: addon/globalPlugins/freeradio/radioDialog.py:4693
 #: addon/globalPlugins/freeradio/recordingMixin.py:55
 #, python-format
 msgid "Downloading: %s"
 msgstr "İndiriliyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4691
-#: addon/globalPlugins/freeradio/radioDialog.py:5706
+#: addon/globalPlugins/freeradio/radioDialog.py:4699
+#: addon/globalPlugins/freeradio/radioDialog.py:5748
 #: addon/globalPlugins/freeradio/recordingMixin.py:60
 #, python-format
 msgid "Download complete: %s"
 msgstr "İndirme tamamlandı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4736
+#: addon/globalPlugins/freeradio/radioDialog.py:4744
 msgid "Searching for podcasts..."
 msgstr "Podcast'ler aranıyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4749
+#: addon/globalPlugins/freeradio/radioDialog.py:4757
 msgid "No podcasts found."
 msgstr "Hiçbir podcast bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4754
+#: addon/globalPlugins/freeradio/radioDialog.py:4762
 #, python-format
 msgid "%d podcasts found."
 msgstr "%d podcast' bulundu."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4774
-#: addon/globalPlugins/freeradio/radioDialog.py:4857
+#: addon/globalPlugins/freeradio/radioDialog.py:4782
+#: addon/globalPlugins/freeradio/radioDialog.py:4865
 msgid "This podcast has no feed URL."
 msgstr "Bu podcast'in akış URL'si yok."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4779
+#: addon/globalPlugins/freeradio/radioDialog.py:4787
 msgid "Loading episodes..."
 msgstr "Bölümler yükleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4794
+#: addon/globalPlugins/freeradio/radioDialog.py:4802
 msgid "No episodes found."
 msgstr "Bölüm bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4838
-#: addon/globalPlugins/freeradio/radioDialog.py:5227
+#: addon/globalPlugins/freeradio/radioDialog.py:4846
+#: addon/globalPlugins/freeradio/radioDialog.py:5263
 msgid "&Stop Preview"
 msgstr "&Önizlemeyi Durdur"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4838
-#: addon/globalPlugins/freeradio/radioDialog.py:5227
+#: addon/globalPlugins/freeradio/radioDialog.py:4846
+#: addon/globalPlugins/freeradio/radioDialog.py:5263
 msgid "&Preview"
 msgstr "&Önizle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4860
+#: addon/globalPlugins/freeradio/radioDialog.py:4868
 msgid "Adding feed..."
 msgstr "Akış ekleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4880
+#: addon/globalPlugins/freeradio/radioDialog.py:4888
 msgid "Already at first episode"
 msgstr "İlk bölüm"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4896
+#: addon/globalPlugins/freeradio/radioDialog.py:4904
 msgid "Already at last episode"
 msgstr "Son bölüm"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4907
+#: addon/globalPlugins/freeradio/radioDialog.py:4915
 msgid "Already at first feed"
 msgstr "İlk akış"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4930
+#: addon/globalPlugins/freeradio/radioDialog.py:4938
 msgid "Already at last feed"
 msgstr "Son akış"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4951
+#: addon/globalPlugins/freeradio/radioDialog.py:4959
 msgid "&Subscribe"
 msgstr "&Abone ol"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4969
+#: addon/globalPlugins/freeradio/radioDialog.py:4977
 msgid "&Refresh Feed"
 msgstr "Akışı Y&enile"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4972
+#: addon/globalPlugins/freeradio/radioDialog.py:4980
 msgid "Re&move Feed"
 msgstr "Akışı &Sil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4978
+#: addon/globalPlugins/freeradio/radioDialog.py:4986
 msgid "Save Audio Pr&ofile for This Podcast"
 msgstr "Ses Pr&ofilini bu Podcast için Kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4988
+#: addon/globalPlugins/freeradio/radioDialog.py:4996
 msgid "&Copy Feed URL"
 msgstr "&Akış URL'sini kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5006
+#: addon/globalPlugins/freeradio/radioDialog.py:5014
 msgid "&Play Episode"
 msgstr "Bölümü &Oynat"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5014
+#: addon/globalPlugins/freeradio/radioDialog.py:5022
 msgid "&Copy Episode URL"
 msgstr "&Bölüm URL'sini kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5028
+#: addon/globalPlugins/freeradio/radioDialog.py:5036
 msgid "Copied to clipboard"
 msgstr "Panoya kopyalandı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5048
+#: addon/globalPlugins/freeradio/radioDialog.py:5056
 msgid ""
 "Search GETEM audio books by title, author, narrator, subject, or publisher. "
 "Press enter to search"
@@ -2065,168 +2069,166 @@ msgstr ""
 "GETEM sesli kitaplarını başlığa, yazara, seslendirene, konuya veya yayıncıya "
 "göre arayın. Aramak için enter tuşuna basın"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5058
+#: addon/globalPlugins/freeradio/radioDialog.py:5066
 msgid "GETEM search results"
 msgstr "GETEM arama sonuçları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5068
+#: addon/globalPlugins/freeradio/radioDialog.py:5076
 msgid "My Library:"
 msgstr "Kitaplığım"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5070
+#: addon/globalPlugins/freeradio/radioDialog.py:5078
 msgid "Audio books library"
 msgstr "Sesli kitap Kitaplığı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5077
+#: addon/globalPlugins/freeradio/radioDialog.py:5085
 msgid "Audio book details"
 msgstr "Sesli kitap ayrıntıları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5129
+#: addon/globalPlugins/freeradio/radioDialog.py:5165
 #, python-format
 msgid "Author: %s"
 msgstr "Yazar: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5131
+#: addon/globalPlugins/freeradio/radioDialog.py:5167
 #, python-format
 msgid "Narrator: %s"
 msgstr "Seslendiren: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5133
+#: addon/globalPlugins/freeradio/radioDialog.py:5169
 #, python-format
 msgid "Publisher: %s"
 msgstr "Yayıncı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5135
+#: addon/globalPlugins/freeradio/radioDialog.py:5171
 #, python-format
 msgid "Type: %s"
 msgstr "Tür: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5137
+#: addon/globalPlugins/freeradio/radioDialog.py:5173
 #, python-format
 msgid "%d part"
 msgid_plural "%d parts"
 msgstr[0] "%d bölüm"
 msgstr[1] "%d parts"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5161
+#: addon/globalPlugins/freeradio/radioDialog.py:5197
 msgid "Searching GETEM..."
 msgstr "GETEM aranıyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5182
+#: addon/globalPlugins/freeradio/radioDialog.py:5218
 msgid "No audio books found."
 msgstr "Sesli kitap bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5186
+#: addon/globalPlugins/freeradio/radioDialog.py:5222
 #, python-format
 msgid "%d audio books found."
 msgstr "%d sesli kitap bulundu."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5205
+#: addon/globalPlugins/freeradio/radioDialog.py:5241
 msgid "This audio book is already in your library."
 msgstr "Bu sesli kitap zaten kitaplığınızda."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5208
+#: addon/globalPlugins/freeradio/radioDialog.py:5244
 #, python-format
 msgid "Added to library: %s"
 msgstr "Kitaplığa eklendi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5211
+#: addon/globalPlugins/freeradio/radioDialog.py:5247
 msgid "Could not add to library."
 msgstr "Kitaplığa eklenemedi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5222
+#: addon/globalPlugins/freeradio/radioDialog.py:5258
 msgid "&Add to Library"
 msgstr "Kitaplığa &Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5348
-#: addon/globalPlugins/freeradio/radioDialog.py:5383
-#: addon/globalPlugins/freeradio/radioDialog.py:5643
+#: addon/globalPlugins/freeradio/radioDialog.py:5384
+#: addon/globalPlugins/freeradio/radioDialog.py:5419
+#: addon/globalPlugins/freeradio/radioDialog.py:5685
 #, python-format
 msgid "Loading: %s"
 msgstr "Yükleniyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5418
-#: addon/globalPlugins/freeradio/radioDialog.py:5436
+#: addon/globalPlugins/freeradio/radioDialog.py:5460
+#: addon/globalPlugins/freeradio/radioDialog.py:5478
 msgid "Library is empty"
 msgstr "Kütüphane boş"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5422
+#: addon/globalPlugins/freeradio/radioDialog.py:5464
 msgid "Already at first book"
 msgstr "Zaten ilk kitapta"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5440
+#: addon/globalPlugins/freeradio/radioDialog.py:5482
 msgid "Already at last book"
 msgstr "Zaten son kitapta"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5470
+#: addon/globalPlugins/freeradio/radioDialog.py:5512
 msgid "Already at first part"
 msgstr "Zaten ilk bölümde"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5490
+#: addon/globalPlugins/freeradio/radioDialog.py:5532
 #, python-format
 msgid "Finished: %s"
 msgstr "Bitti: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5492
+#: addon/globalPlugins/freeradio/radioDialog.py:5534
 msgid "Already at last part"
 msgstr "Zaten son bölümde"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5530
+#: addon/globalPlugins/freeradio/radioDialog.py:5572
 msgid "&Play Media"
 msgstr "&Medyayı Oynat"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5535
+#: addon/globalPlugins/freeradio/radioDialog.py:5577
 msgid "&Download Book"
 msgstr "Kitabı &İndir"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5540
+#: addon/globalPlugins/freeradio/radioDialog.py:5582
 msgid "&Copy the URL"
 msgstr "&URL'yi kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5546
+#: addon/globalPlugins/freeradio/radioDialog.py:5588
 msgid "Save Audio Pr&ofile for This Book"
 msgstr "Ses Pr&ofilini bu Kitap için Kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5556
+#: addon/globalPlugins/freeradio/radioDialog.py:5598
 msgid "&Remove from the Library"
 msgstr "Kitaplıktan Kaldı&r"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5577
+#: addon/globalPlugins/freeradio/radioDialog.py:5619
 #, python-format
-#| msgid "Audio profile saved for %(station)s"
 msgid "Audio profile saved for %(book)s"
 msgstr "Ses profili %(book)s için kaydedildi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5590
+#: addon/globalPlugins/freeradio/radioDialog.py:5632
 #, python-format
-#| msgid "Audio profile cleared for %(station)s"
 msgid "Audio profile cleared for %(book)s"
 msgstr "%(book)s için ses profili silindi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5611
+#: addon/globalPlugins/freeradio/radioDialog.py:5653
 #, python-format
 msgid "Removed from library: %s"
 msgstr "Kitaplıktan kaldırıldı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5629
+#: addon/globalPlugins/freeradio/radioDialog.py:5671
 msgid "Could not find this audio book."
 msgstr "Bu sesli kitap bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5661
+#: addon/globalPlugins/freeradio/radioDialog.py:5703
 msgid "No audio parts found for this book."
 msgstr "Bu kitap için ses parçası bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5670
+#: addon/globalPlugins/freeradio/radioDialog.py:5712
 #, python-format
 msgid "Already downloading: %s"
 msgstr "Zaten indiriliyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5674
+#: addon/globalPlugins/freeradio/radioDialog.py:5716
 #, python-format
 msgid "Downloading book: %s"
 msgstr "Kitap indiriliyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5708
+#: addon/globalPlugins/freeradio/radioDialog.py:5750
 #, python-format
 msgid ""
 "Downloaded %(saved)d of %(total)d parts of %(book.title)s. Last error: "
@@ -2235,77 +2237,77 @@ msgstr ""
 "%(book.title)s kitabının %(total)d bölümünden %(saved)d tanesi indirildi. "
 "Son hata: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5719
+#: addon/globalPlugins/freeradio/radioDialog.py:5761
 #, python-format
 msgid "Lyrics — %s"
 msgstr "Şarkı sözleri — %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5725
+#: addon/globalPlugins/freeradio/radioDialog.py:5767
 #, python-format
 msgid "Lyrics for: %s"
 msgstr "Şarkı sözleri: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5734
+#: addon/globalPlugins/freeradio/radioDialog.py:5776
 msgid "Lyrics"
 msgstr "Şarkı sözleri"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5762
+#: addon/globalPlugins/freeradio/radioDialog.py:5804
 msgid "Add Custom Station"
 msgstr "Özel İstasyon Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5765
+#: addon/globalPlugins/freeradio/radioDialog.py:5807
 msgid "Station name:"
 msgstr "İstasyon adı:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5769
+#: addon/globalPlugins/freeradio/radioDialog.py:5811
 msgid "Stream URL:"
 msgstr "Yayın adresi:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5781
+#: addon/globalPlugins/freeradio/radioDialog.py:5823
 msgid "Add to &Radio Browser directory…"
 msgstr "&Radio Browser dizinine ekle…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5785
+#: addon/globalPlugins/freeradio/radioDialog.py:5827
 msgid "&Add"
 msgstr "&Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5807
-#: addon/globalPlugins/freeradio/radioDialog.py:5808
+#: addon/globalPlugins/freeradio/radioDialog.py:5849
+#: addon/globalPlugins/freeradio/radioDialog.py:5850
 msgid "Please enter a URL first."
 msgstr "Lütfen önce bir URL girin."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5811
+#: addon/globalPlugins/freeradio/radioDialog.py:5853
 msgid "Checking…"
 msgstr "Kontrol ediliyor…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5812
+#: addon/globalPlugins/freeradio/radioDialog.py:5854
 msgid "Checking stream URL, please wait…"
 msgstr "Akış URL'si kontrol ediliyor, lütfen bekleyin…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5825
+#: addon/globalPlugins/freeradio/radioDialog.py:5867
 msgid "✓ Stream reachable"
 msgstr "✓ Akışa erişilebiliyor"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5827
+#: addon/globalPlugins/freeradio/radioDialog.py:5869
 msgid "Stream is reachable."
 msgstr "Akışa erişilebiliyor."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5829
+#: addon/globalPlugins/freeradio/radioDialog.py:5871
 #, python-format
 msgid "✗ %s"
 msgstr "✗ %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5831
+#: addon/globalPlugins/freeradio/radioDialog.py:5873
 #, python-format
 msgid "Stream check failed: %s"
 msgstr "Akış kontrolü başarısız: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5848
+#: addon/globalPlugins/freeradio/radioDialog.py:5890
 #, python-format
 msgid "Edit Schedule — %s"
 msgstr "Programı Düzenle — %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5919
+#: addon/globalPlugins/freeradio/radioDialog.py:5961
 msgid "&Save"
 msgstr "K&aydet"
 
@@ -2976,223 +2978,450 @@ msgstr ""
 #: buildVars.py:26
 msgid ""
 "\n"
-"## Audio Books (GETEM)\n"
-"- Added a new **Audio Books** tab (`Alt+7`) powered by [GETEM](https://"
-"getem.boun.edu.tr/), Boğaziçi University's digital library for the visually "
-"impaired — the first to be supported audio book sources.\n"
-"- Search GETEM's catalogue by title, author, narrator, subject, or "
-"publisher; results are automatically filtered to audio-only formats (human/"
-"computer narration, audio description, radio drama, DAISY talking books, "
-"etc.).\n"
-"- Preview any search result before committing to it, or add it straight to a "
-"personal library.\n"
-"- Multi-part works are handled as a single library entry: playback "
-"automatically resumes from the last part and position you left off on, even "
-"across NVDA restarts.\n"
-"- Play audio books through the same BASS-backed player used for radio and "
-"podcasts, with full support for pause/resume, volume, time-shift, playback "
-"speed, and output device selection.\n"
-"- Download an entire book — all parts, correctly numbered and named — to "
-"your recordings folder for offline listening.\n"
-"- GETEM sign-in credentials are stored encrypted on disk (Windows Data "
-"Protection API) and entered once from FreeRadio's Settings panel.\n"
-"- Fixed duplicate/repeated audio in recordings and Time-Shift on HLS streams "
-"that rotate session tokens in their segment URLs.\n"
-"## Fixed:\n"
-"- Cleaned up leftover time-shift buffer files (`freeradio_timeshift_*.buf`) "
-"from previous sessions on startup. These are normally deleted when time-"
-"shift capture stops cleanly, but an abrupt shutdown (crash, power loss, "
-"Windows force-closing NVDA) would skip that step and leave the file in the "
-"temp folder — these could accumulate over time, especially with longer "
-"buffer durations. The add-on now clears out any matching leftover files each "
-"time it starts, before any new capture session begins.\n"
-"- Podcast playback speed reverting to normal (1.0x) after switching episodes "
-"or resuming from pause. The chosen speed is now resent to the audio engine "
-"every time a podcast stream is (re)started, so it stays in effect across "
-"episode changes, pause/resume, and station-transition effects (crossfade/"
-"tuning) instead of silently resetting.\n"
-"## Fixed\n"
-"- Fixed a bug where playing a podcast episode could cause a temporary buffer "
-"file (`freeradio_timeshift_*.buf` in the system temp folder) to grow to "
-"several gigabytes within minutes, potentially filling up the disk.\n"
-"  - The time-shift (rewind) capture — designed for continuous live radio "
-"streams — was also being started for on-demand podcast/audio book playback. "
-"Since those sources can be read far faster than real-time the buffer's time-"
-"based trimming couldn't keep up, and each time a chapter finished "
-"downloading it was mistaken for a dropped connection and re-downloaded into "
-"the same file instead of being cleaned up.\n"
-"  - The time-shift buffer is no longer started for podcasts or audio books "
-"at all — they already support proper rewind/fast-forward/resume through "
-"their own seekable file playback, so nothing is lost.\n"
-"  - Live radio time-shift/rewind behavior is unaffected.\n"
-"## Fixed\n"
-"- **Recording no longer stops when playback changes.** Instant and song-"
-"capture\n"
-"  recordings were tied to the main player's shared time-shift buffer as an\n"
-"  optimisation to avoid capturing a freshly-inserted ad on a brand-new\n"
-"  connection. That buffer is a single instance shared by the whole player, "
-"so\n"
-"  switching stations (or resuming after a long pause) silently cut off any\n"
-"  recording that was reading from it. Recordings now always open their own\n"
-"  independent connection, so switching stations, pausing/resuming, or\n"
-"  stopping playback no longer affects an active recording. The now-unused\n"
-"  buffer-tailing code path was removed.\n"
-"- **Scheduled recordings no longer report false success.** If a station's\n"
-"  stream failed to connect for an entire scheduled recording window, the\n"
-"  add-on still announced \"Recording started\" and, at the end, \"Recording\n"
-"  finished\" — with no file ever written. A scheduled recording that never\n"
-"  connects now reports a failure instead of a false \"finished\" "
-"notification.\n"
-"## Changed (internal, no functional impact)\n"
-"`__init__.py` has been split from a single ~4,200-line file into ten "
-"focused\n"
-"modules, each ~100–400 lines. `GlobalPlugin` itself is now under 300 lines\n"
-"containing only setup/teardown and script routing; everything else is a "
-"mixin\n"
-"NVDA's script discovery picks up through normal class inheritance, so all\n"
-"keyboard shortcuts and default gestures behave exactly as before.\n"
-"\n"
-"| File | Contents |\n"
-"--|---|\n"
-"| `settingsPanel.py` | The NVDA Settings → FreeRadio panel |\n"
-"| `timerManager.py` | Sleep/alarm timer scheduling |\n"
-"| `audioDeviceMixin.py` | Output device selection, audio mirroring |\n"
-"| `playbackCoreMixin.py` | Pause/resume, stop, next/prev station |\n"
-"| `timeshiftMixin.py` | Rewind/fast-forward, time-shift toggle |\n"
-"| `audioFxMixin.py` | Volume, EQ/bass/treble/vocal boost, crossfade, "
-"playback rate |\n"
-"| `recordingMixin.py` | Instant recording toggle, recordings folder, podcast "
-"download |\n"
-"| `trackInfoMixin.py` | \"What's playing\", station details, track info, ICY "
-"polling |\n"
-"| `miscTogglesMixin.py` | Notification mute, BASS backend, track-change "
-"announce/voice, liked songs |\n"
-"Fixed\n"
-"- Attribution: the GETEM catalog HTML parsing helpers (_clean_html_text, "
-"_absolute_url, _extract_select_options, _parse_catalog_results, and the "
-"\"Seslendiren:\" prefix cleanup) were developed with reference to Mehmet "
-"Aykurt's GETEM E-Kütüphane NVDA add-on (https://github.com/MehmetAykurt/"
-"getem). Attribution has been added to the source and this changelog; thanks "
-"to Mehmet for flagging this.\n"
-"- Recording: Instant recording and song capture are now blocked while a "
-"podcast or audiobook is playing. Users are prompted to download the episode/"
-"book via Ctrl+Win+V instead.\n"
-"- UI: Removed the redundant \"Instant Recording\" button from the Recording "
-"tab. The global shortcut ( Ctrl+Win+E ) remains the primary way to start/"
-"stop recordings.\n"
-"- UI: The Recording tab now sets focus to the station filter field when "
-"first opened, enabling immediate typing.\n"
+"## scheduled recording fixes\n"
+"**Fixed**\n"
+"- Recurring scheduled recordings would only fire once and never repeat "
+"correctly.\n"
+"  - Fixed a thread-safety race where the scheduler loop's per-second cleanup "
+"of the schedule list could silently drop a freshly re-queued recurring "
+"recording before it was ever saved or checked.\n"
+"  - Fixed date calculation for recurring schedules: the next occurrence was "
+"always computed a full week ahead before checking active days, so a schedule "
+"set to record every day (e.g. daily at 09:00) actually only re-fired once a "
+"week on the original weekday. It now correctly schedules the very next "
+"matching day.\n"
+"**Note**\n"
+"- Existing entries in `freeradio_schedules.json` created before this fix may "
+"still hold a `start_time` computed by the old logic (a week ahead). Recreate "
+"those schedules, or manually correct their `start_time`, to get correct "
+"daily firing going forward.\n"
+"## Fixes for chapter Auto-advance and playback speed\n"
+"**Bug Fix — Audio Book Chapter Auto-Advance Stopped When FreeRadio Window "
+"Was Closed**\n"
+"- Fixed an issue where an audio book would correctly move to its next "
+"chapter when it finished playing while the FreeRadio window was open on the "
+"Audio Books tab, but silently stopped at the end of a chapter instead of "
+"advancing if the window was closed or hidden.\n"
+"- Chapter auto-advance no longer depends on the FreeRadio dialog being open: "
+"it now runs independently in the background, using the finished chapter's "
+"own book/part information to look up the next chapter and start it "
+"directly.\n"
+"- Progress tracking (which chapter/part you're on) is now saved correctly "
+"even while advancing in the background.\n"
+"- When the FreeRadio window is reopened, its \"now playing\" state (used by "
+"F3/F4 chapter/book navigation) is refreshed from the player, so it correctly "
+"reflects a book that kept advancing while the window was closed.\n"
+"**Bug Fix — Playback Speed Leaking Between Audio Books/Podcasts**\n"
+"- Fixed an issue where saving an audio profile with a sped-up playback rate "
+"(e.g. 1.4x) for one book, then switching to another book with no saved "
+"profile, would leave the second book playing at the first book's speed "
+"instead of normal speed.\n"
+"- Playback speed now follows the same rule already used for volume/effects/"
+"EQ: if the book or podcast being played has a saved profile with a speed, "
+"that speed is applied; otherwise, speed resets to normal (1.0x) rather than "
+"carrying over from whatever was played previously.\n"
+"- Arabic localization update\n"
+"## startup resume fixes\n"
+"**Bug Fix — Audio Profile Not Applied on Startup Resume**\n"
+"- Fixed an issue where a saved audio profile (volume/effects/EQ/speed) for a "
+"podcast or audio book was applied correctly when starting playback from the "
+"dialog, but was ignored when the station resumed automatically on NVDA "
+"startup.\n"
+"- Playing a podcast episode now also records which feed it belongs to; "
+"playing an audio book chapter already recorded which book it belongs to.\n"
+"- On startup resume:\n"
+"  - For audio books, the saved book profile is now looked up and applied "
+"together with the rebuilt playback URL.\n"
+"  - For podcast episodes, the subscribed feed is looked up independently "
+"(without needing the dialog open) and its saved profile, if any, is applied "
+"the same way.\n"
+"- As a result, resumed playback on NVDA startup now respects the same "
+"volume, effects, EQ, and playback speed settings as playback started "
+"manually from the dialog.\n"
+"## Recording tab rearrangements and audio profiles for podcasts and audio "
+"books\n"
+"**Recording Tab**\n"
+"- Removed the \"Edit\" and \"Remove\" buttons; their functionality moved "
+"into the list's context menu (Applications key / Shift+F10).\n"
+"- Delete / Shift+Delete now removes the selected schedule directly.\n"
+"- Default mode is now \"Record only\".\n"
+"- After removing a schedule, the next item in the list (or the previous one, "
+"if it was the last) is automatically selected.\n"
+"**Podcast and Audio Book Tabs**\n"
+"- F3 / F4 / Shift+F3 / Shift+F4 now also move keyboard focus to the relevant "
+"list (previously they only changed the selection).\n"
+"- On the Audio Book tab, since there's no separate list item for chapters, "
+"changing chapters moves focus to the book's row in the library list "
+"instead.\n"
+"- Delete / Shift+Delete in the Audio Book library list now removes the "
+"selected book directly (previously only available via the context menu).\n"
+"**Audio Profiles — Podcast and Audio Book Support**\n"
+"- The audio profile feature (volume/effects/EQ) from Favorites has been "
+"extended to podcast feeds and audio book library entries:\n"
+"  - Podcasts: the profile is saved on the feed and applies to **all of its "
+"episodes**.\n"
+"  - Audio Books: the profile is saved on the book and applies to **all of "
+"its chapters**.\n"
+"- Profiles can now also include **playback speed** (for podcast/audiobook "
+"content only); a new \"Volume, effects, and playback speed\" option captures "
+"the current speed when saving.\n"
+"- Episodes/chapters without a saved profile keep whatever playback speed is "
+"currently active (sticky) rather than being forced back to normal speed.\n"
+"- Added \"Save Audio Profile\" / \"Clear Audio Profile\" items to the "
+"context menus (Podcast: subscriptions list; Audio Book: library list).\n"
+"- When unsubscribing from a podcast or removing a book from the library:\n"
+"  - The saved audio profile is automatically cleared.\n"
+"  - The resume (\"where you left off\") positions for all of that feed's "
+"episodes / that book's chapters are also cleared.\n"
 msgstr ""
 "\n"
-"## Sesli Kitaplar (GETEM)\n"
-"- Görme engelliler için Boğaziçi Üniversitesi'nin dijital kütüphanesi olan "
-"[GETEM](https://getem.boun.edu.tr/) ile desteklenen yeni bir **Sesli "
-"Kitaplar** sekmesi (`Alt+7`) eklendi - desteklenen sesli kitap kaynaklarının "
-"ilki.\n"
-"- GETEM'in katalogunda başlık, yazar, seslendiren, konu veya yayıncıya göre "
-"arama yapın; sonuçlar otomatik olarak sadece ses formatlarına (insan/"
-"bilgisayar sesi, sesli betimleme, radyo oyunu, DAISY sesli kitaplar vb.) "
-"filtrelenir.\n"
-"- Kitaplığa eklemeden önce herhangi bir arama sonucunu önizleyin ya da "
-"doğrudan ekleyin.\n"
-"- Çok parçalı eserler tek bir kitaplık girişi olarak işlenir: oynatma, "
-"bıraktığınız son bölümden ve konumdan otomatik olarak devam eder, NVDA ya da "
-"bilgisayar yeniden başlatıldığında da.\n"
-"- Duraklatma/devam ettirme, ses seviyesi, zaman kaydırma, oynatma hızı ve "
-"çıkış cihazı seçimi için tam destekle, radyo ve podcast'ler için kullanılan "
-"aynı BASS destekli oynatıcı aracılığıyla sesli kitapları çalın.\n"
-"- Kitabın tamamını çevrimdışı dinlemek için (tüm bölümleri, doğru "
-"numaralandırılmış ve adlandırılmış bir şekilde) kayıtlar klasörünüze "
-"indirin.\n"
-"- GETEM oturum açma kimlik bilgileri diskte (Windows Veri Koruma API'si) "
-"şifrelenmiş olarak saklanır ve FreeRadio'nun Ayarlar panelinden bir kez "
-"girilir.\n"
-"- Kayıtlardaki yinelenen/tekrarlanan ses ve HLS akışlarındaki, segment "
-"URL'lerindeki oturum belirteçlerini döndüren Zaman Kaydırma düzeltildi.\n"
-"## Düzeltildi:\n"
-"- Önceki oturumlardan kalan zaman kaydırma tampon dosyalarının "
-"(`freeradio_timeshift_*.buf`) başlangıçta temizlenmesi. Bunlar normalde "
-"zaman kaydırma kaydı düzgün bir şekilde durduğunda silinir, ancak ani bir "
-"kapanma (çökme, güç kaybı, Windows'un NVDA'yı zorla kapatması) bu adımı "
-"atlayarak dosyanın geçici klasörde kalmasına neden olabilir — bu dosyalar "
-"zamanla birikebilir, özellikle daha uzun tampon süreleri ile. Eklenti artık "
-"her başladığında, yeni bir kayıt oturumu başlamadan önce eşleşen kalan "
-"dosyaları temizler.\n"
-"- Podcast oynatma hızı, bölümler arasında geçiş yapıldığında veya "
-"duraklamadan yeniden başlatıldığında normale (1.0x) dönmüyor. Seçilen hız "
-"artık her seferinde bir podcast akışı (yeniden) başlatıldığında ses motoruna "
-"geri gönderiliyor, böylece bölüm değişiklikleri, duraklatma/yeniden başlatma "
-"ve istasyon geçiş efektleri (çaprazfade/tuning) boyunca etkili kalıyor, "
-"sessizce sıfırlanmıyor.\n"
-"## Düzeltildi\n"
-"- Bir podcast bölümünü oynatmanın, birkaç dakika içinde geçici bir tampon "
-"dosyasının (`freeradio_timeshift_*.buf` sistem geçici klasöründe) birkaç "
-"gigabayt büyümesine neden olabilecek bir hatayı düzeltti.\n"
-"  - Zaman kaydırma (geri sarma) kaydı — sürekli canlı radyo akışları için "
-"tasarlanmıştır — talep üzerine podcast/sesli kitap oynatımı için de "
-"başlatılıyordu. Bu kaynaklar gerçeğe göre çok daha hızlı okunabildiğinden, "
-"tamponun zamana dayalı kesilmesi ayak uyduramadı ve her seferinde bir bölüm "
-"indirildiğinde, kaybolmuş bir bağlantı olarak yanlış anlaşıldı ve "
-"temizlenmek yerine aynı dosyaya yeniden indirildi.\n"
-"  - Zaman kaydırma tamponu artık podcastler veya sesli kitaplar için "
-"başlatılmıyor — onlar zaten kendi erişilebilir dosya oynatma sistemleri ile "
-"uygun geri sarma/hızlandırma/duraklatma destekliyor, bu yüzden kaybolan bir "
-"şey yok.\n"
-"  - Canlı radyo zaman kaydırma/geri sarma davranışı etkilenmedi.\n"
-"## Düzeltildi\n"
-"- **Oynatma değiştiğinde kayıt artık durmuyor.** Anlık ve şarkı kaydı, yeni "
-"bir bağlantıda yeni bir reklamın yakalanmasını önlemek için, ana oynatıcı "
-"tarafından paylaşılan zaman kaydırma tamponuna bağlıydı. O tampon, tüm "
-"oynatıcı tarafından paylaşılan tek bir örnektir, bu nedenle istasyonlar "
-"arasında geçiş yapmak (veya uzun bir duraklamadan sonra yeniden başlatmak) "
-"sessizce tampondan okuma yapan herhangi bir kaydı kesiyordu. Kayıtlar artık "
-"her zaman kendi bağımsız bağlantılarını açıyor, bu nedenle istasyon "
-"değiştirme, duraklatma/yeni başlatma veya oynatmayı durdurma, aktif bir "
-"kaydı etkilemiyor. Artık kullanılmayan tamponu takip eden kod yolu "
-"kaldırıldı.\n"
-"- **Planlanan kayıtlar artık sahte başarı bildirmiyor.** Bir istasyonun "
-"akışı, tüm planlanan kayıt penceresi boyunca bağlanmayı başaramazsa, eklenti "
-"yine de \"Kayıt başladı\" ve sonunda \"Kayıt sona erdi\" diye duyuruyordu — "
-"asla bir dosya yazılmamıştı. Hiç bağlanmayan bir planlı kayıt artık sahte "
-"bir \"tamamlandı\" bildiriminden ziyade bir hata bildiriyor.\n"
-"## Değiştirildi (içsel, işlevsel etki yok)\n"
-"`__init__.py` tek bir ~4,200 satırlık dosyadan on odaklanmış modüle ayrıldı, "
-"her biri ~100-400 satır. `GlobalPlugin` artık yalnızca kurulum/yıkım ve "
-"betik yönlendirmesi içeren 300 satırın altındadır; diğer her şey, NVDA'nın "
-"betik keşfi tarafından normal sınıf mirası aracılığıyla alınan bir "
-"karışımdır, bu yüzden tüm klavye kısayolları ve varsayılan jestler tam "
-"olarak önceki gibi davranıyor.\n"
-"| Dosya | İçerik |\n"
-"--|---|\n"
-"| `settingsPanel.py` | NVDA Ayarları → FreeRadio paneli |\n"
-"| `timerManager.py` | Uyku/alarm zamanlayıcı programlama |\n"
-"| `audioDeviceMixin.py` | Çıkış cihazı seçimi, ses yansıtma |\n"
-"| `playbackCoreMixin.py` | Duraklatma/yeni başlatma, durdurma, bir sonraki/"
-"önceki istasyon |\n"
-"| `timeshiftMixin.py` | Geri sarma/hızlandırma, zaman kaydırma geçişi |\n"
-"| `audioFxMixin.py` | Ses seviyesi, EQ/bass/treble/vokal artırma, "
-"çaprazfade, oynatma hızı |\n"
-"| `recordingMixin.py` | Anlık kayıt geçişi, kayıtlar klasörü, podcast "
-"indirmesi |\n"
-"| `trackInfoMixin.py` | \"Ne çalıyor\", istasyon detayları, parça bilgisi, "
-"ICY anketleme |\n"
-"| `miscTogglesMixin.py` | Bildirim susturma, BASS arka plan, parça "
-"değişikliği duyurusu/sesi, beğenilen şarkılar |\n"
-"Eklendi\n"
-"- Atıf: GETEM kataloğu HTML ayrıştırma yardımcıları (_clean_html_text, "
-"_absolute_url, _extract_select_options, _parse_catalog_results ve "
-"'Seslendiren:' ön eki temizliği) Mehmet Aykurt'un GETEM E-Kütüphane NVDA "
-"eklentisine (https://github.com/MehmetAykurt/getem) atıfta bulunarak "
-"geliştirilmiştir. Atıf kaynağa ve bu değişiklik günlüğüne eklendi; bu durumu "
-"işaret ettiği için Mehmet'e teşekkürler.\n"
-"- Kayıt: Bir podcast veya sesli kitap oynatılırken anında kayıt ve şarkı "
-"kaydetme artık engelleniyor. Kullanıcılardan bunun yerine bölümü/kitabı "
-"Ctrl+Win+V yoluyla indirmeleri isteniyor.\n"
-"- Kullanıcı Arayüzü: Kayıt sekmesindeki gereksiz \"Anında Kayıt\" düğmesi "
-"kaldırıldı. Genel kısayol ( Ctrl+Win+E ) kayıtları başlatmanın/durdurmanın "
-"birincil yolu olmaya devam ediyor.\n"
-"- Kullanıcı Arayüzü: Kayıt sekmesi artık odağı ilk açıldığında istasyon "
-"filtre alanına ayarlıyor ve anında yazmaya olanak sağlıyor.\n"
+"## Planlı kayıt düzeltmeleri\n"
+"\n"
+"**Düzeltilenler**\n"
+"- Tekrar eden planlı kayıtlar yalnızca bir kez çalışıp bir daha "
+"tekrarlanmıyordu.\n"
+"  - Zamanlayıcı döngüsünün her saniye yaptığı liste temizliği, yeni sıraya "
+"eklenen bir tekrar kaydını daha kaydedilmeden ya da kontrol edilmeden "
+"sessizce kaybedebiliyordu; bu eşzamanlılık (thread-safety) sorunu "
+"giderildi.\n"
+"  - Tekrar eden kayıtlarda tarih hesaplaması düzeltildi: bir sonraki kayıt "
+"tarihi, aktif günler kontrol edilmeden önce her zaman tam bir hafta ileri "
+"hesaplanıyordu. Bu yüzden her gün kayıt yapacak şekilde ayarlanmış bir plan "
+"(örneğin her gün saat 09:00'da), aslında yalnızca haftada bir, ilk kurulduğu "
+"gün tekrar ediyordu. Artık bir sonraki uygun gün doğru şekilde "
+"hesaplanıyor.\n"
+"\n"
+"**Not**\n"
+"- Bu düzeltmeden önce `freeradio_schedules.json` dosyasında oluşturulmuş "
+"mevcut kayıtlar, hâlâ eski (hatalı) mantıkla hesaplanmış bir başlangıç "
+"tarihi (`start_time`) taşıyor olabilir (bir hafta ileriye atlanmış). Günlük "
+"kayıtların doğru şekilde çalışması için bu planların yeniden oluşturulması "
+"ya da başlangıç tarihlerinin elle düzeltilmesi gerekebilir.\n"
+"\n"
+"## Bölüm otomatik ilerleme ve oynatma hızı düzeltmeleri\n"
+"\n"
+"**Hata Düzeltmesi — FreeRadio penceresi kapatıldığında sesli kitap bölümü "
+"otomatik ilerlemesi duruyordu**\n"
+"- Sesli kitap, FreeRadio penceresi Sesli Kitaplar sekmesinde açıkken bir "
+"bölüm bittiğinde doğru şekilde bir sonraki bölüme geçiyordu; ancak pencere "
+"kapalı ya da gizliyse bölüm sonunda sessizce duruyor, ilerlemiyordu. Bu "
+"sorun giderildi.\n"
+"- Bölüm otomatik ilerlemesi artık FreeRadio penceresinin açık olmasına bağlı "
+"değil: arka planda bağımsız olarak çalışıyor, biten bölümün kitap/bölüm "
+"bilgisini kullanarak bir sonraki bölümü bulup doğrudan başlatıyor.\n"
+"- İlerleme takibi (hangi bölümde/kısımda olunduğu bilgisi) artık pencere "
+"kapalıyken arka planda ilerlerken de doğru şekilde kaydediliyor.\n"
+"- FreeRadio penceresi tekrar açıldığında, \"şu an çalıyor\" bilgisi (F3/F4 "
+"bölüm/kitap gezinmesinde kullanılan) oynatıcıdan yeniden alınıyor; böylece "
+"pencere kapalıyken ilerlemeye devam eden bir kitabın durumu doğru "
+"yansıtılıyor.\n"
+"\n"
+"**Hata Düzeltmesi — Oynatma hızı sesli kitaplar/podcast'ler arasında "
+"sızıyordu**\n"
+"- Bir kitap için hızlandırılmış oynatma hızıyla (örneğin 1.4x) bir ses "
+"profili kaydedip ardından kayıtlı profili olmayan başka bir kitaba "
+"geçildiğinde, ikinci kitabın normal hız yerine birinci kitabın hızında "
+"çalmaya devam etmesi sorunu giderildi.\n"
+"- Oynatma hızı artık ses düzeyi/efekt/ekolayzır (EQ) için zaten kullanılan "
+"kuralı izliyor: çalınan kitap veya podcast'in kayıtlı bir hız profili varsa "
+"o hız uygulanıyor; yoksa önceki içerikten kalan hız yerine normal hıza "
+"(1.0x) dönülüyor.\n"
+"- Arapça yerelleştirme güncellemesi.\n"
+"\n"
+"## Başlangıçta kaldığı yerden devam etme düzeltmeleri\n"
+"\n"
+"**Hata Düzeltmesi — Başlangıçta kaldığı yerden devam ederken ses profili "
+"uygulanmıyordu**\n"
+"- Bir podcast veya sesli kitap için kaydedilmiş ses profili (ses düzeyi/"
+"efekt/EQ/hız), oynatma iletişim kutusundan başlatıldığında doğru "
+"uygulanıyordu; ancak istasyon NVDA açılışında otomatik olarak devam "
+"ettiğinde bu profil dikkate alınmıyordu. Bu sorun giderildi.\n"
+"- Bir podcast bölümü çalındığında artık hangi yayına (feed) ait olduğu da "
+"kaydediliyor; sesli kitap bölümü çalındığında zaten hangi kitaba ait olduğu "
+"kaydediliyordu.\n"
+"- Başlangıçta kaldığı yerden devam ederken:\n"
+"  - Sesli kitaplar için, kayıtlı kitap profili artık yeniden oluşturulan "
+"oynatma adresiyle birlikte bulunup uygulanıyor.\n"
+"  - Podcast bölümleri için, abone olunan yayın iletişim kutusu açık olmadan "
+"bağımsız şekilde bulunuyor ve varsa kayıtlı profili aynı şekilde "
+"uygulanıyor.\n"
+"- Sonuç olarak, NVDA açılışında kaldığı yerden devam eden oynatma da, "
+"iletişim kutusundan elle başlatılan oynatmayla aynı ses düzeyi, efekt, EQ ve "
+"oynatma hızı ayarlarına uyuyor.\n"
+"\n"
+"## Kayıt sekmesi düzenlemeleri ve podcast/sesli kitaplar için ses "
+"profilleri\n"
+"\n"
+"**Kayıt Sekmesi**\n"
+"- \"Düzenle\" ve \"Kaldır\" düğmeleri kaldırıldı; işlevleri listenin bağlam "
+"menüsüne (Uygulamalar tuşu / Shift+F10) taşındı.\n"
+"- Delete / Shift+Delete artık seçili planı doğrudan kaldırıyor.\n"
+"- Varsayılan mod artık \"Yalnızca kayıt\".\n"
+"- Bir plan kaldırıldığında, listede bir sonraki öğe (kaldırılan son öğeyse "
+"bir önceki öğe) otomatik olarak seçiliyor.\n"
+"\n"
+"**Podcast ve Sesli Kitap Sekmeleri**\n"
+"- F3 / F4 / Shift+F3 / Shift+F4 artık klavye odağını da ilgili listeye "
+"taşıyor (önceden yalnızca seçimi değiştiriyordu).\n"
+"- Sesli Kitap sekmesinde, bölümler için ayrı bir liste öğesi olmadığından, "
+"bölüm değiştirmek artık odağı kitaplık listesindeki ilgili kitabın satırına "
+"taşıyor.\n"
+"- Sesli Kitap kitaplık listesinde Delete / Shift+Delete artık seçili kitabı "
+"doğrudan kaldırıyor (önceden yalnızca bağlam menüsünden yapılabiliyordu).\n"
+"\n"
+"**Ses Profilleri — Podcast ve Sesli Kitap Desteği**\n"
+"- Favoriler'deki ses profili özelliği (ses düzeyi/efekt/EQ) artık podcast "
+"yayınlarına ve sesli kitap kitaplık öğelerine de genişletildi:\n"
+"  - Podcast'ler: profil yayın (feed) üzerinde kaydediliyor ve o yayının "
+"**tüm bölümlerine** uygulanıyor.\n"
+"  - Sesli Kitaplar: profil kitap üzerinde kaydediliyor ve o kitabın **tüm "
+"bölümlerine** uygulanıyor.\n"
+"- Profiller artık **oynatma hızını** da içerebiliyor (yalnızca podcast/sesli "
+"kitap içerikleri için); profil kaydederken mevcut hızı da kaydeden yeni bir "
+"\"Ses düzeyi, efektler ve oynatma hızı\" seçeneği eklendi.\n"
+"- Kayıtlı profili olmayan bölümler/kısımlar, normal hıza zorla döndürülmek "
+"yerine o an aktif olan oynatma hızını korumaya devam ediyor (yapışkan hız).\n"
+"- Bağlam menülerine \"Ses Profilini Kaydet\" / \"Ses Profilini Temizle\" "
+"öğeleri eklendi (Podcast: abonelikler listesi; Sesli Kitap: kitaplık "
+"listesi).\n"
+"- Bir podcast'ten abonelik iptal edildiğinde ya da kitaplıktan bir kitap "
+"kaldırıldığında:\n"
+"  - Kayıtlı ses profili otomatik olarak temizleniyor.\n"
+"  - O yayının tüm bölümleri / o kitabın tüm kısımları için kaldığı yer "
+"(\"nerede bırakıldığı\") bilgileri de temizleniyor.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "## Audio Books (GETEM)\n"
+#~ "- Added a new **Audio Books** tab (`Alt+7`) powered by [GETEM](https://"
+#~ "getem.boun.edu.tr/), Boğaziçi University's digital library for the "
+#~ "visually impaired — the first to be supported audio book sources.\n"
+#~ "- Search GETEM's catalogue by title, author, narrator, subject, or "
+#~ "publisher; results are automatically filtered to audio-only formats "
+#~ "(human/computer narration, audio description, radio drama, DAISY talking "
+#~ "books, etc.).\n"
+#~ "- Preview any search result before committing to it, or add it straight "
+#~ "to a personal library.\n"
+#~ "- Multi-part works are handled as a single library entry: playback "
+#~ "automatically resumes from the last part and position you left off on, "
+#~ "even across NVDA restarts.\n"
+#~ "- Play audio books through the same BASS-backed player used for radio and "
+#~ "podcasts, with full support for pause/resume, volume, time-shift, "
+#~ "playback speed, and output device selection.\n"
+#~ "- Download an entire book — all parts, correctly numbered and named — to "
+#~ "your recordings folder for offline listening.\n"
+#~ "- GETEM sign-in credentials are stored encrypted on disk (Windows Data "
+#~ "Protection API) and entered once from FreeRadio's Settings panel.\n"
+#~ "- Fixed duplicate/repeated audio in recordings and Time-Shift on HLS "
+#~ "streams that rotate session tokens in their segment URLs.\n"
+#~ "## Fixed:\n"
+#~ "- Cleaned up leftover time-shift buffer files "
+#~ "(`freeradio_timeshift_*.buf`) from previous sessions on startup. These "
+#~ "are normally deleted when time-shift capture stops cleanly, but an abrupt "
+#~ "shutdown (crash, power loss, Windows force-closing NVDA) would skip that "
+#~ "step and leave the file in the temp folder — these could accumulate over "
+#~ "time, especially with longer buffer durations. The add-on now clears out "
+#~ "any matching leftover files each time it starts, before any new capture "
+#~ "session begins.\n"
+#~ "- Podcast playback speed reverting to normal (1.0x) after switching "
+#~ "episodes or resuming from pause. The chosen speed is now resent to the "
+#~ "audio engine every time a podcast stream is (re)started, so it stays in "
+#~ "effect across episode changes, pause/resume, and station-transition "
+#~ "effects (crossfade/tuning) instead of silently resetting.\n"
+#~ "## Fixed\n"
+#~ "- Fixed a bug where playing a podcast episode could cause a temporary "
+#~ "buffer file (`freeradio_timeshift_*.buf` in the system temp folder) to "
+#~ "grow to several gigabytes within minutes, potentially filling up the "
+#~ "disk.\n"
+#~ "  - The time-shift (rewind) capture — designed for continuous live radio "
+#~ "streams — was also being started for on-demand podcast/audio book "
+#~ "playback. Since those sources can be read far faster than real-time the "
+#~ "buffer's time-based trimming couldn't keep up, and each time a chapter "
+#~ "finished downloading it was mistaken for a dropped connection and re-"
+#~ "downloaded into the same file instead of being cleaned up.\n"
+#~ "  - The time-shift buffer is no longer started for podcasts or audio "
+#~ "books at all — they already support proper rewind/fast-forward/resume "
+#~ "through their own seekable file playback, so nothing is lost.\n"
+#~ "  - Live radio time-shift/rewind behavior is unaffected.\n"
+#~ "## Fixed\n"
+#~ "- **Recording no longer stops when playback changes.** Instant and song-"
+#~ "capture\n"
+#~ "  recordings were tied to the main player's shared time-shift buffer as "
+#~ "an\n"
+#~ "  optimisation to avoid capturing a freshly-inserted ad on a brand-new\n"
+#~ "  connection. That buffer is a single instance shared by the whole "
+#~ "player, so\n"
+#~ "  switching stations (or resuming after a long pause) silently cut off "
+#~ "any\n"
+#~ "  recording that was reading from it. Recordings now always open their "
+#~ "own\n"
+#~ "  independent connection, so switching stations, pausing/resuming, or\n"
+#~ "  stopping playback no longer affects an active recording. The now-"
+#~ "unused\n"
+#~ "  buffer-tailing code path was removed.\n"
+#~ "- **Scheduled recordings no longer report false success.** If a "
+#~ "station's\n"
+#~ "  stream failed to connect for an entire scheduled recording window, the\n"
+#~ "  add-on still announced \"Recording started\" and, at the end, "
+#~ "\"Recording\n"
+#~ "  finished\" — with no file ever written. A scheduled recording that "
+#~ "never\n"
+#~ "  connects now reports a failure instead of a false \"finished\" "
+#~ "notification.\n"
+#~ "## Changed (internal, no functional impact)\n"
+#~ "`__init__.py` has been split from a single ~4,200-line file into ten "
+#~ "focused\n"
+#~ "modules, each ~100–400 lines. `GlobalPlugin` itself is now under 300 "
+#~ "lines\n"
+#~ "containing only setup/teardown and script routing; everything else is a "
+#~ "mixin\n"
+#~ "NVDA's script discovery picks up through normal class inheritance, so "
+#~ "all\n"
+#~ "keyboard shortcuts and default gestures behave exactly as before.\n"
+#~ "\n"
+#~ "| File | Contents |\n"
+#~ "--|---|\n"
+#~ "| `settingsPanel.py` | The NVDA Settings → FreeRadio panel |\n"
+#~ "| `timerManager.py` | Sleep/alarm timer scheduling |\n"
+#~ "| `audioDeviceMixin.py` | Output device selection, audio mirroring |\n"
+#~ "| `playbackCoreMixin.py` | Pause/resume, stop, next/prev station |\n"
+#~ "| `timeshiftMixin.py` | Rewind/fast-forward, time-shift toggle |\n"
+#~ "| `audioFxMixin.py` | Volume, EQ/bass/treble/vocal boost, crossfade, "
+#~ "playback rate |\n"
+#~ "| `recordingMixin.py` | Instant recording toggle, recordings folder, "
+#~ "podcast download |\n"
+#~ "| `trackInfoMixin.py` | \"What's playing\", station details, track info, "
+#~ "ICY polling |\n"
+#~ "| `miscTogglesMixin.py` | Notification mute, BASS backend, track-change "
+#~ "announce/voice, liked songs |\n"
+#~ "Fixed\n"
+#~ "- Attribution: the GETEM catalog HTML parsing helpers (_clean_html_text, "
+#~ "_absolute_url, _extract_select_options, _parse_catalog_results, and the "
+#~ "\"Seslendiren:\" prefix cleanup) were developed with reference to Mehmet "
+#~ "Aykurt's GETEM E-Kütüphane NVDA add-on (https://github.com/MehmetAykurt/"
+#~ "getem). Attribution has been added to the source and this changelog; "
+#~ "thanks to Mehmet for flagging this.\n"
+#~ "- Recording: Instant recording and song capture are now blocked while a "
+#~ "podcast or audiobook is playing. Users are prompted to download the "
+#~ "episode/book via Ctrl+Win+V instead.\n"
+#~ "- UI: Removed the redundant \"Instant Recording\" button from the "
+#~ "Recording tab. The global shortcut ( Ctrl+Win+E ) remains the primary way "
+#~ "to start/stop recordings.\n"
+#~ "- UI: The Recording tab now sets focus to the station filter field when "
+#~ "first opened, enabling immediate typing.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "## Sesli Kitaplar (GETEM)\n"
+#~ "- Görme engelliler için Boğaziçi Üniversitesi'nin dijital kütüphanesi "
+#~ "olan [GETEM](https://getem.boun.edu.tr/) ile desteklenen yeni bir **Sesli "
+#~ "Kitaplar** sekmesi (`Alt+7`) eklendi - desteklenen sesli kitap "
+#~ "kaynaklarının ilki.\n"
+#~ "- GETEM'in katalogunda başlık, yazar, seslendiren, konu veya yayıncıya "
+#~ "göre arama yapın; sonuçlar otomatik olarak sadece ses formatlarına (insan/"
+#~ "bilgisayar sesi, sesli betimleme, radyo oyunu, DAISY sesli kitaplar vb.) "
+#~ "filtrelenir.\n"
+#~ "- Kitaplığa eklemeden önce herhangi bir arama sonucunu önizleyin ya da "
+#~ "doğrudan ekleyin.\n"
+#~ "- Çok parçalı eserler tek bir kitaplık girişi olarak işlenir: oynatma, "
+#~ "bıraktığınız son bölümden ve konumdan otomatik olarak devam eder, NVDA ya "
+#~ "da bilgisayar yeniden başlatıldığında da.\n"
+#~ "- Duraklatma/devam ettirme, ses seviyesi, zaman kaydırma, oynatma hızı ve "
+#~ "çıkış cihazı seçimi için tam destekle, radyo ve podcast'ler için "
+#~ "kullanılan aynı BASS destekli oynatıcı aracılığıyla sesli kitapları "
+#~ "çalın.\n"
+#~ "- Kitabın tamamını çevrimdışı dinlemek için (tüm bölümleri, doğru "
+#~ "numaralandırılmış ve adlandırılmış bir şekilde) kayıtlar klasörünüze "
+#~ "indirin.\n"
+#~ "- GETEM oturum açma kimlik bilgileri diskte (Windows Veri Koruma API'si) "
+#~ "şifrelenmiş olarak saklanır ve FreeRadio'nun Ayarlar panelinden bir kez "
+#~ "girilir.\n"
+#~ "- Kayıtlardaki yinelenen/tekrarlanan ses ve HLS akışlarındaki, segment "
+#~ "URL'lerindeki oturum belirteçlerini döndüren Zaman Kaydırma düzeltildi.\n"
+#~ "## Düzeltildi:\n"
+#~ "- Önceki oturumlardan kalan zaman kaydırma tampon dosyalarının "
+#~ "(`freeradio_timeshift_*.buf`) başlangıçta temizlenmesi. Bunlar normalde "
+#~ "zaman kaydırma kaydı düzgün bir şekilde durduğunda silinir, ancak ani bir "
+#~ "kapanma (çökme, güç kaybı, Windows'un NVDA'yı zorla kapatması) bu adımı "
+#~ "atlayarak dosyanın geçici klasörde kalmasına neden olabilir — bu dosyalar "
+#~ "zamanla birikebilir, özellikle daha uzun tampon süreleri ile. Eklenti "
+#~ "artık her başladığında, yeni bir kayıt oturumu başlamadan önce eşleşen "
+#~ "kalan dosyaları temizler.\n"
+#~ "- Podcast oynatma hızı, bölümler arasında geçiş yapıldığında veya "
+#~ "duraklamadan yeniden başlatıldığında normale (1.0x) dönmüyor. Seçilen hız "
+#~ "artık her seferinde bir podcast akışı (yeniden) başlatıldığında ses "
+#~ "motoruna geri gönderiliyor, böylece bölüm değişiklikleri, duraklatma/"
+#~ "yeniden başlatma ve istasyon geçiş efektleri (çaprazfade/tuning) boyunca "
+#~ "etkili kalıyor, sessizce sıfırlanmıyor.\n"
+#~ "## Düzeltildi\n"
+#~ "- Bir podcast bölümünü oynatmanın, birkaç dakika içinde geçici bir tampon "
+#~ "dosyasının (`freeradio_timeshift_*.buf` sistem geçici klasöründe) birkaç "
+#~ "gigabayt büyümesine neden olabilecek bir hatayı düzeltti.\n"
+#~ "  - Zaman kaydırma (geri sarma) kaydı — sürekli canlı radyo akışları için "
+#~ "tasarlanmıştır — talep üzerine podcast/sesli kitap oynatımı için de "
+#~ "başlatılıyordu. Bu kaynaklar gerçeğe göre çok daha hızlı "
+#~ "okunabildiğinden, tamponun zamana dayalı kesilmesi ayak uyduramadı ve her "
+#~ "seferinde bir bölüm indirildiğinde, kaybolmuş bir bağlantı olarak yanlış "
+#~ "anlaşıldı ve temizlenmek yerine aynı dosyaya yeniden indirildi.\n"
+#~ "  - Zaman kaydırma tamponu artık podcastler veya sesli kitaplar için "
+#~ "başlatılmıyor — onlar zaten kendi erişilebilir dosya oynatma sistemleri "
+#~ "ile uygun geri sarma/hızlandırma/duraklatma destekliyor, bu yüzden "
+#~ "kaybolan bir şey yok.\n"
+#~ "  - Canlı radyo zaman kaydırma/geri sarma davranışı etkilenmedi.\n"
+#~ "## Düzeltildi\n"
+#~ "- **Oynatma değiştiğinde kayıt artık durmuyor.** Anlık ve şarkı kaydı, "
+#~ "yeni bir bağlantıda yeni bir reklamın yakalanmasını önlemek için, ana "
+#~ "oynatıcı tarafından paylaşılan zaman kaydırma tamponuna bağlıydı. O "
+#~ "tampon, tüm oynatıcı tarafından paylaşılan tek bir örnektir, bu nedenle "
+#~ "istasyonlar arasında geçiş yapmak (veya uzun bir duraklamadan sonra "
+#~ "yeniden başlatmak) sessizce tampondan okuma yapan herhangi bir kaydı "
+#~ "kesiyordu. Kayıtlar artık her zaman kendi bağımsız bağlantılarını açıyor, "
+#~ "bu nedenle istasyon değiştirme, duraklatma/yeni başlatma veya oynatmayı "
+#~ "durdurma, aktif bir kaydı etkilemiyor. Artık kullanılmayan tamponu takip "
+#~ "eden kod yolu kaldırıldı.\n"
+#~ "- **Planlanan kayıtlar artık sahte başarı bildirmiyor.** Bir istasyonun "
+#~ "akışı, tüm planlanan kayıt penceresi boyunca bağlanmayı başaramazsa, "
+#~ "eklenti yine de \"Kayıt başladı\" ve sonunda \"Kayıt sona erdi\" diye "
+#~ "duyuruyordu — asla bir dosya yazılmamıştı. Hiç bağlanmayan bir planlı "
+#~ "kayıt artık sahte bir \"tamamlandı\" bildiriminden ziyade bir hata "
+#~ "bildiriyor.\n"
+#~ "## Değiştirildi (içsel, işlevsel etki yok)\n"
+#~ "`__init__.py` tek bir ~4,200 satırlık dosyadan on odaklanmış modüle "
+#~ "ayrıldı, her biri ~100-400 satır. `GlobalPlugin` artık yalnızca kurulum/"
+#~ "yıkım ve betik yönlendirmesi içeren 300 satırın altındadır; diğer her "
+#~ "şey, NVDA'nın betik keşfi tarafından normal sınıf mirası aracılığıyla "
+#~ "alınan bir karışımdır, bu yüzden tüm klavye kısayolları ve varsayılan "
+#~ "jestler tam olarak önceki gibi davranıyor.\n"
+#~ "| Dosya | İçerik |\n"
+#~ "--|---|\n"
+#~ "| `settingsPanel.py` | NVDA Ayarları → FreeRadio paneli |\n"
+#~ "| `timerManager.py` | Uyku/alarm zamanlayıcı programlama |\n"
+#~ "| `audioDeviceMixin.py` | Çıkış cihazı seçimi, ses yansıtma |\n"
+#~ "| `playbackCoreMixin.py` | Duraklatma/yeni başlatma, durdurma, bir "
+#~ "sonraki/önceki istasyon |\n"
+#~ "| `timeshiftMixin.py` | Geri sarma/hızlandırma, zaman kaydırma geçişi |\n"
+#~ "| `audioFxMixin.py` | Ses seviyesi, EQ/bass/treble/vokal artırma, "
+#~ "çaprazfade, oynatma hızı |\n"
+#~ "| `recordingMixin.py` | Anlık kayıt geçişi, kayıtlar klasörü, podcast "
+#~ "indirmesi |\n"
+#~ "| `trackInfoMixin.py` | \"Ne çalıyor\", istasyon detayları, parça "
+#~ "bilgisi, ICY anketleme |\n"
+#~ "| `miscTogglesMixin.py` | Bildirim susturma, BASS arka plan, parça "
+#~ "değişikliği duyurusu/sesi, beğenilen şarkılar |\n"
+#~ "Eklendi\n"
+#~ "- Atıf: GETEM kataloğu HTML ayrıştırma yardımcıları (_clean_html_text, "
+#~ "_absolute_url, _extract_select_options, _parse_catalog_results ve "
+#~ "'Seslendiren:' ön eki temizliği) Mehmet Aykurt'un GETEM E-Kütüphane NVDA "
+#~ "eklentisine (https://github.com/MehmetAykurt/getem) atıfta bulunarak "
+#~ "geliştirilmiştir. Atıf kaynağa ve bu değişiklik günlüğüne eklendi; bu "
+#~ "durumu işaret ettiği için Mehmet'e teşekkürler.\n"
+#~ "- Kayıt: Bir podcast veya sesli kitap oynatılırken anında kayıt ve şarkı "
+#~ "kaydetme artık engelleniyor. Kullanıcılardan bunun yerine bölümü/kitabı "
+#~ "Ctrl+Win+V yoluyla indirmeleri isteniyor.\n"
+#~ "- Kullanıcı Arayüzü: Kayıt sekmesindeki gereksiz \"Anında Kayıt\" düğmesi "
+#~ "kaldırıldı. Genel kısayol ( Ctrl+Win+E ) kayıtları başlatmanın/"
+#~ "durdurmanın birincil yolu olmaya devam ediyor.\n"
+#~ "- Kullanıcı Arayüzü: Kayıt sekmesi artık odağı ilk açıldığında istasyon "
+#~ "filtre alanına ayarlıyor ve anında yazmaya olanak sağlıyor.\n"
 
 # ── Kayıt sekmesi (radioDialog.py)
 # ───────────────────────────────────────────

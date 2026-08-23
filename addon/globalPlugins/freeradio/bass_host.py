@@ -92,6 +92,42 @@ _BASS_UNICODE             = 0x80000000  # flag for BASS_StreamCreateFile — fil
 # time-shift buffer file's growing tail (see timeshift_seek() below).
 _TIMESHIFT_TAIL_SAFETY_SECONDS = 2.0
 
+
+def _is_cert_verify_error(exc):
+	"""True if *exc* (or anything chained onto it via __cause__/__context__)
+	is specifically a TLS certificate verification failure, as opposed to
+	any other kind of connection failure (timeout, connection refused,
+	DNS, etc.) - used by _try_https_local_proxy() to decide whether
+	falling back to an unverified TLS context is actually appropriate.
+	Duplicated from recorder.py's identical helper rather than imported,
+	since this module runs as its own standalone subprocess (see main()
+	at the bottom of this file) rather than as part of the addon package."""
+	import ssl as _ssl
+	seen = set()
+	while exc is not None and id(exc) not in seen:
+		seen.add(id(exc))
+		if isinstance(exc, _ssl.SSLCertVerificationError):
+			return True
+		if isinstance(exc, _ssl.SSLError) and "CERTIFICATE_VERIFY_FAILED" in str(exc):
+			return True
+		exc = exc.__cause__ or exc.__context__
+	return False
+
+
+# Hosts that have shown they need certificate verification disabled - both
+# for BASS's own native SSL layer (_BASS_CONFIG_NET_SSL_VERIFY) and for the
+# Python-side HTTPS Icecast proxy (_try_https_local_proxy). This subprocess
+# stays alive for as long as FreeRadio is playing/switching stations (see
+# the comment on BASSHost in radioPlayer.py), so a host only needs to prove
+# it has a broken certificate once per NVDA session/process lifetime -
+# after that, both the BASS-native path and the local-proxy path skip
+# straight to the unverified attempt for it instead of re-probing with a
+# doomed verified one first every single time that station is (re)opened.
+# Every other host is still verified, always; a host only lands here after
+# actually failing verification for real - this is purely a "skip the
+# redundant probe" cache, not a trust decision.
+_ssl_verify_bypass_hosts = set()
+
 # basshls.dll config constants
 _BASS_CONFIG_HLS_BANDWIDTH = 0x10400  # master playlist'te bitrate selection
 _BASS_CONFIG_HLS_DELAY     = 0x10401  # live stream delay (seconds); default 30
@@ -330,7 +366,14 @@ class BassHost:
         dll.BASS_SetConfig(_BASS_CONFIG_NET_READTIMEOUT, 12000) # ms
         dll.BASS_SetConfig(_BASS_CONFIG_NET_PREBUF, 0)
         dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL, 1)
-        dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 0)
+        # Certificate verification defaults to ON. Some stream servers
+        # present expired/invalid certificates yet still serve audio fine,
+        # so a station that fails to open specifically with BASS_ERROR_SSL
+        # gets one retry with this momentarily switched to 0 - see
+        # _stream_create_url_with_ssl_fallback(). Left permanently off here
+        # would mean every station, including properly-configured ones, is
+        # exposed to a man-in-the-middle substituting the stream.
+        dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 1)
         dll.BASS_SetConfig(_BASS_CONFIG_NET_PLAYLIST, 1)
 
         # Plugin list: only existing ones are loaded
@@ -445,7 +488,11 @@ class BassHost:
                 self._bass_fx_dll = None
 
         self._dll = dll
-        dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 0)
+        # See the comment on the earlier BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, ...)
+        # call above - this one just re-asserts the same "verify by
+        # default" setting after the plugin-loading block above, in case
+        # anything in it touched global BASS config.
+        dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 1)
         dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL, 1)
         # BASS_ChannelGetPosition returns a QWORD; ctypes defaults unconfigured
         # functions to a 32-bit c_int return, which would silently truncate
@@ -628,6 +675,68 @@ class BassHost:
             _debug_log("BASS_StreamCreateFile failed for local file, err=%d: %s" % (err, path))
         return stream
 
+    def _stream_create_url_with_ssl_fallback(self, is_https, host, create_fn):
+        """Call create_fn() - a zero-arg callable that performs one
+        BASS_StreamCreateURL/BASS_HLS_StreamCreateURL attempt and returns
+        the resulting stream handle (0/None on failure).
+
+        If *host* is already known (via _ssl_verify_bypass_hosts) to need
+        unverified certificates, skips straight to an unverified attempt -
+        this is what keeps a station whose broken certificate was already
+        discovered earlier this session from paying for a doomed verified
+        attempt (and its own connect/handshake time) on every single
+        replay; only the first time a given host is seen pays that cost.
+
+        Otherwise, tries with certificate verification left at whatever
+        load() set it to (verify ON by default). If that attempt fails
+        specifically with BASS_ERROR_SSL on an https:// URL, retries once
+        with verification switched off just for that retry, then restores
+        it, and remembers the host so future calls skip straight to the
+        unverified attempt - this is what lets stations with broken/
+        expired/self-signed certificates keep working (see the comment on
+        BASS_CONFIG_NET_SSL_VERIFY in load()) without leaving certificate
+        verification off for every other, properly-configured station too.
+
+        Not used for plain http:// URLs, where SSL verification doesn't
+        apply in the first place."""
+        if is_https and host and host in _ssl_verify_bypass_hosts:
+            try:
+                self._dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 0)
+            except Exception:
+                return create_fn()
+            try:
+                return create_fn()
+            finally:
+                try:
+                    self._dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 1)
+                except Exception:
+                    pass
+
+        stream = create_fn()
+        if stream or not is_https:
+            return stream
+        try:
+            err = self._dll.BASS_ErrorGetCode()
+        except Exception:
+            return stream
+        if err != _BASS_ERROR_SSL:
+            return stream
+        _debug_log("stream failed with BASS_ERROR_SSL; retrying without certificate verification")
+        if host:
+            _ssl_verify_bypass_hosts.add(host)
+        try:
+            self._dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 0)
+        except Exception:
+            return stream
+        try:
+            stream = create_fn()
+        finally:
+            try:
+                self._dll.BASS_SetConfig(_BASS_CONFIG_NET_SSL_VERIFY, 1)
+            except Exception:
+                pass
+        return stream
+
     def _try_create_url(self, url, seekable=False):
         # Reset up front — only the seekable/tempo-wrap path below sets this
         # back to True, so a stale value from a previous podcast session
@@ -645,14 +754,26 @@ class BassHost:
         is_hls = url_lower.endswith(".m3u8")
         is_aac_ext = url_lower.endswith(".aac")
         looks_like_aac = is_aac_ext or "aac" in url_lower
+        # Computed up front (used by both the HLS block below and the
+        # is_https/is_http block further down) so the SSL-fallback wrapper
+        # can be used here too.
+        is_https = url_lower.startswith("https://")
+        try:
+            import urllib.parse as _urllib_parse
+            ssl_host = _urllib_parse.urlsplit(url).hostname
+        except Exception:
+            ssl_host = None
 
         # HLS
         if is_hls and self._dll_hls:
-            stream = self._dll_hls.BASS_HLS_StreamCreateURL(
-                url.encode("utf-8"),
-                ctypes.c_uint32(_BASS_STREAM_BLOCK),
-                ctypes.c_void_p(0),
-                ctypes.c_void_p(0),
+            stream = self._stream_create_url_with_ssl_fallback(
+                is_https, ssl_host,
+                lambda: self._dll_hls.BASS_HLS_StreamCreateURL(
+                    url.encode("utf-8"),
+                    ctypes.c_uint32(_BASS_STREAM_BLOCK),
+                    ctypes.c_void_p(0),
+                    ctypes.c_void_p(0),
+                ),
             )
             if stream:
                 return stream
@@ -660,17 +781,19 @@ class BassHost:
             # Can play intermittently with BASS_HLS; Try with BASS_StreamCreateURL.
             _akamai_hosts = ("akamaized.net", "akamaihd.net", "akamai.net")
             if any(h in url_lower for h in _akamai_hosts):
-                stream = self._dll.BASS_StreamCreateURL(
-                    url.encode("utf-8"),
-                    ctypes.c_uint32(0), ctypes.c_uint32(_BASS_STREAM_BLOCK),
-                    ctypes.c_void_p(0), ctypes.c_void_p(0),
+                stream = self._stream_create_url_with_ssl_fallback(
+                    is_https, ssl_host,
+                    lambda: self._dll.BASS_StreamCreateURL(
+                        url.encode("utf-8"),
+                        ctypes.c_uint32(0), ctypes.c_uint32(_BASS_STREAM_BLOCK),
+                        ctypes.c_void_p(0), ctypes.c_void_p(0),
+                    ),
                 )
                 if stream:
                     return stream
             if is_hls and not self._dll_hls and url_lower.startswith("https"):
                 return 0
 
-        is_https = url_lower.startswith("https://")
         is_http  = url_lower.startswith("http://")
 
         # HTTPS Icecast workaround — bypass BASS's SSL layer entirely.
@@ -700,12 +823,15 @@ class BassHost:
                 # wrap step fails for any reason, fall back to a normal
                 # (non-decode) stream instead of leaving playback broken.
                 use_tempo = bool(self._bass_fx_dll)
-                stream = self._dll.BASS_StreamCreateURL(
-                    url.encode("utf-8"),
-                    ctypes.c_uint32(0),
-                    ctypes.c_uint32(_BASS_STREAM_DECODE if use_tempo else 0),
-                    ctypes.c_void_p(0),
-                    ctypes.c_void_p(0),
+                stream = self._stream_create_url_with_ssl_fallback(
+                    is_https, ssl_host,
+                    lambda: self._dll.BASS_StreamCreateURL(
+                        url.encode("utf-8"),
+                        ctypes.c_uint32(0),
+                        ctypes.c_uint32(_BASS_STREAM_DECODE if use_tempo else 0),
+                        ctypes.c_void_p(0),
+                        ctypes.c_void_p(0),
+                    ),
                 )
                 if stream and use_tempo:
                     tempo_stream = self._bass_fx_dll.BASS_FX_TempoCreate(
@@ -732,9 +858,12 @@ class BassHost:
                         except Exception:
                             pass
                         self._tempo_active = False
-                        stream = self._dll.BASS_StreamCreateURL(
-                            url.encode("utf-8"), ctypes.c_uint32(0), ctypes.c_uint32(0),
-                            ctypes.c_void_p(0), ctypes.c_void_p(0),
+                        stream = self._stream_create_url_with_ssl_fallback(
+                            is_https, ssl_host,
+                            lambda: self._dll.BASS_StreamCreateURL(
+                                url.encode("utf-8"), ctypes.c_uint32(0), ctypes.c_uint32(0),
+                                ctypes.c_void_p(0), ctypes.c_void_p(0),
+                            ),
                         )
                 else:
                     self._tempo_active = False
@@ -751,10 +880,13 @@ class BassHost:
             else:
                 # Live radio: try BLOCK first, then 0 as fallback
                 for _flags in (_BASS_STREAM_BLOCK, 0):
-                    stream = self._dll.BASS_StreamCreateURL(
-                        url.encode("utf-8"),
-                        ctypes.c_uint32(0), ctypes.c_uint32(_flags),
-                        ctypes.c_void_p(0), ctypes.c_void_p(0),
+                    stream = self._stream_create_url_with_ssl_fallback(
+                        is_https, ssl_host,
+                        lambda: self._dll.BASS_StreamCreateURL(
+                            url.encode("utf-8"),
+                            ctypes.c_uint32(0), ctypes.c_uint32(_flags),
+                            ctypes.c_void_p(0), ctypes.c_void_p(0),
+                        ),
                     )
                     if stream:
                         return stream
@@ -881,8 +1013,6 @@ class BassHost:
         CHUNK           = 8192 # bytes per forwarding iteration
 
         ssl_ctx = _ssl.create_default_context()
-        ssl_ctx.check_hostname = False
-        ssl_ctx.verify_mode    = _ssl.CERT_NONE
 
         # --- Step 1: establish the remote HTTPS connection first ---
         # We block here (in the background play thread) until the server
@@ -899,6 +1029,16 @@ class BassHost:
         # the host genuinely having no IPv4 address), we fall back to the
         # original urllib path, which handles redirects/odd encodings more
         # robustly but may hit the slow dual-stack behaviour again.
+        #
+        # Certificate verification is left ON by default (ssl_ctx above) -
+        # some stream servers present expired/invalid certificates yet
+        # still serve audio fine, so a connection that fails specifically
+        # on the certificate gets exactly one retry with a second,
+        # unverified context (built lazily below, only if actually needed)
+        # rather than every station being exposed to a man-in-the-middle
+        # substituting the stream. A host that's already known (this
+        # session) to need that fallback skips the doomed verified attempt
+        # entirely - see _ssl_verify_bypass_hosts.
         t_remote_start = time.time()
         url_parts  = urllib.parse.urlsplit(url)
         req_headers = {
@@ -907,21 +1047,63 @@ class BassHost:
             "Accept":      "*/*",
         }
         remote_resp = None
+        insecure_ctx = None
 
-        try:
-            remote_resp = self._connect_https_ipv4(
-                url_parts, req_headers, ssl_ctx, timeout=8)
-        except Exception as e:
-            pass
+        def _get_insecure_ctx():
+            nonlocal insecure_ctx
+            if insecure_ctx is None:
+                insecure_ctx = _ssl.create_default_context()
+                insecure_ctx.check_hostname = False
+                insecure_ctx.verify_mode    = _ssl.CERT_NONE
+            return insecure_ctx
+
+        skip_verified = bool(url_parts.hostname) and url_parts.hostname in _ssl_verify_bypass_hosts
+
+        if not skip_verified:
+            try:
+                remote_resp = self._connect_https_ipv4(
+                    url_parts, req_headers, ssl_ctx, timeout=8)
+            except Exception as e:
+                if _is_cert_verify_error(e):
+                    if url_parts.hostname:
+                        _ssl_verify_bypass_hosts.add(url_parts.hostname)
+                    try:
+                        remote_resp = self._connect_https_ipv4(
+                            url_parts, req_headers, _get_insecure_ctx(), timeout=8)
+                    except Exception:
+                        pass
+        else:
+            try:
+                remote_resp = self._connect_https_ipv4(
+                    url_parts, req_headers, _get_insecure_ctx(), timeout=8)
+            except Exception:
+                pass
 
         if remote_resp is None:
             t_fallback_start = time.time()
-            try:
-                req = urllib.request.Request(url, headers=req_headers)
-                remote_resp = urllib.request.urlopen(
-                    req, timeout=CONNECT_TIMEOUT, context=ssl_ctx)
-            except Exception as e:
-                return 0
+            if skip_verified:
+                try:
+                    req = urllib.request.Request(url, headers=req_headers)
+                    remote_resp = urllib.request.urlopen(
+                        req, timeout=CONNECT_TIMEOUT, context=_get_insecure_ctx())
+                except Exception:
+                    return 0
+            else:
+                try:
+                    req = urllib.request.Request(url, headers=req_headers)
+                    remote_resp = urllib.request.urlopen(
+                        req, timeout=CONNECT_TIMEOUT, context=ssl_ctx)
+                except Exception as e:
+                    if not _is_cert_verify_error(e):
+                        return 0
+                    if url_parts.hostname:
+                        _ssl_verify_bypass_hosts.add(url_parts.hostname)
+                    try:
+                        req = urllib.request.Request(url, headers=req_headers)
+                        remote_resp = urllib.request.urlopen(
+                            req, timeout=CONNECT_TIMEOUT, context=_get_insecure_ctx())
+                    except Exception:
+                        return 0
 
         ct = (remote_resp.headers.get("content-type") or "").lower()
         if not ("audio/" in ct or "application/ogg" in ct or "video/" in ct):

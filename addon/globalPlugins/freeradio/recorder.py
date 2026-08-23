@@ -32,20 +32,101 @@ _CHUNK      = 65536   # 64 KB read chunk
 # does not validate certificates as strictly as Python's default-verifying
 # urlopen does, which is why live playback works on these stations while a
 # plain urlopen() call raises SSL: CERTIFICATE_VERIFY_FAILED. Since this is
-# just audio content (not sensitive data), certificate verification is
-# relaxed for every stream/playlist/segment fetch below - in recorder.py and
-# in timeshift.py, which reuses this helper. This context only takes effect
-# for https:// requests; it has no effect on plain http:// connections.
-_INSECURE_SSL_CONTEXT = ssl.create_default_context()
+# just audio content (not sensitive data), _urlopen() below tries a normal,
+# fully-verified connection first and only relaxes verification for a
+# request that specifically failed on its certificate - not for one that
+# failed for any other reason (timeout, connection refused, DNS, etc.),
+# where relaxing verification wouldn't help anyway. This keeps every other,
+# properly-configured server protected against a man-in-the-middle
+# substituting the stream, while still letting these particular stations
+# work. Used in recorder.py and in timeshift.py, which reuses this helper.
+# This only takes effect for https:// requests; it has no effect on plain
+# http:// connections.
+_VERIFIED_SSL_CONTEXT  = ssl.create_default_context()
+_INSECURE_SSL_CONTEXT  = ssl.create_default_context()
 _INSECURE_SSL_CONTEXT.check_hostname = False
-_INSECURE_SSL_CONTEXT.verify_mode = ssl.CERT_NONE
+_INSECURE_SSL_CONTEXT.verify_mode    = ssl.CERT_NONE
+
+# Hosts observed to fail with a certificate verification error at least
+# once this session. A recording re-fetches from the same host constantly
+# (once per HLS segment, or every reconnect on a dropped ICY connection),
+# so without this, EVERY one of those requests would pay for a doomed
+# verified attempt before falling back - on a host already known to need
+# it, that's pure added latency on every single segment, which is exactly
+# the kind of delay that turns into buffering/dropped segments on a
+# recording. Once a host has shown it needs the fallback, later requests
+# to it go straight to _INSECURE_SSL_CONTEXT; only the first request to
+# a given host per session pays the verified-then-retry cost. This is
+# purely a "skip the redundant probe" cache, not a trust decision - every
+# other host is still verified, always, and a host only lands here after
+# actually failing verification for real.
+_ssl_verify_bypass_hosts = set()
+_ssl_verify_bypass_lock  = threading.Lock()
+
+
+def _is_cert_verify_error(exc):
+	"""True if *exc* (or anything chained onto it via __cause__/__context__,
+	e.g. a urllib.error.URLError wrapping an ssl.SSLCertVerificationError)
+	is specifically a TLS certificate verification failure, as opposed to
+	any other kind of connection failure. Used to decide whether retrying
+	without certificate verification is actually appropriate - it isn't,
+	for a plain timeout or refused connection, and retrying in that case
+	would just delay an unavoidable failure."""
+	seen = set()
+	while exc is not None and id(exc) not in seen:
+		seen.add(id(exc))
+		if isinstance(exc, ssl.SSLCertVerificationError):
+			return True
+		if isinstance(exc, ssl.SSLError) and "CERTIFICATE_VERIFY_FAILED" in str(exc):
+			return True
+		exc = exc.__cause__ or exc.__context__
+	return False
+
+
+def _request_host(req):
+	"""Best-effort hostname extraction from whatever _urlopen() was given
+	(a urllib.request.Request or a plain URL string) - used only as a
+	cache key for _ssl_verify_bypass_hosts, so a failure to extract one
+	just means no caching for that call, not an error."""
+	try:
+		url = req.full_url
+	except AttributeError:
+		url = req
+	try:
+		from urllib.parse import urlparse
+		return urlparse(url).hostname
+	except Exception:
+		return None
 
 
 def _urlopen(req, timeout):
-	"""urllib.request.urlopen() with relaxed TLS certificate verification.
+	"""urllib.request.urlopen() that verifies TLS certificates by default,
+	and only falls back to relaxed verification for a request that
+	specifically failed with a certificate error - see the comment above
+	_VERIFIED_SSL_CONTEXT for why some stream servers need that at all.
 	Use this instead of calling urllib.request.urlopen() directly anywhere
 	a stream, playlist, or segment is fetched."""
-	return urllib.request.urlopen(req, timeout=timeout, context=_INSECURE_SSL_CONTEXT)
+	host = _request_host(req)
+	if host is not None:
+		with _ssl_verify_bypass_lock:
+			already_bypassed = host in _ssl_verify_bypass_hosts
+		if already_bypassed:
+			return urllib.request.urlopen(req, timeout=timeout, context=_INSECURE_SSL_CONTEXT)
+
+	try:
+		return urllib.request.urlopen(req, timeout=timeout, context=_VERIFIED_SSL_CONTEXT)
+	except Exception as e:
+		if not _is_cert_verify_error(e):
+			raise
+		if host is not None:
+			with _ssl_verify_bypass_lock:
+				_ssl_verify_bypass_hosts.add(host)
+		log.info(
+			"FreeRadio: %s presented an invalid/untrusted TLS certificate; "
+			"retrying without certificate verification (host will be "
+			"remembered for the rest of this session)", host or req,
+		)
+		return urllib.request.urlopen(req, timeout=timeout, context=_INSECURE_SSL_CONTEXT)
 
 
 def _parse_hls_media_segments(lines, base_url):

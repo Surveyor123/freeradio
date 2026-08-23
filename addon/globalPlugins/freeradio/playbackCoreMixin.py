@@ -559,18 +559,27 @@ class PlaybackCoreMixin:
 			except Exception:
 				pass
 
-		self._pending_url     = url
-		self._pending_station = station
 		self._icy_last_title  = None        # None = station just changed; suppress first read
-		wx.CallAfter(self._start_playing, url, name, url_resolved)
+		# station is passed as an explicit argument (not stashed on self and
+		# read back later) so a second _play_station() call racing in
+		# before this one's deferred _start_playing() runs can't clobber
+		# it - each call gets its own independently-captured url/station
+		# pair, however close together they happen or however wx.CallAfter
+		# ends up ordering them. Previously these went through
+		# self._pending_url/self._pending_station, which a fast-arriving
+		# second call (e.g. a duplicate/near-simultaneous GETEM chapter
+		# auto-advance) could overwrite before the first call's
+		# _start_playing() had a chance to read them - the audio that
+		# actually started playing would then get tagged with a
+		# *different* chapter's metadata than the one actually streaming.
+		wx.CallAfter(self._start_playing, url, name, url_resolved, station)
 		if announce:
 			if not _notifications_muted():
 				wx.CallAfter(ui.message, name)
 
-	def _start_playing(self, url, name, url_resolved=""):
-		station = getattr(self, "_pending_station", {})
+	def _start_playing(self, url, name, url_resolved="", station=None):
 		try:
-			self._player.play(url, name, url_resolved=url_resolved, station=station)
+			self._player.play(url, name, url_resolved=url_resolved, station=station or {})
 		except RuntimeError as e:
 			if "wmp_not_available" in str(e):
 				ui.message(_(

@@ -442,81 +442,115 @@ class TimeShiftBuffer:
 
 	def _connect_https_icy_socket(self, url):
 		"""Connect to HTTPS stream using raw socket + TLS + ICY protocol.
-		This bypasses urllib completely and mimics how _open_icy works but with SSL.
+		This bypasses urllib completely and mimics how _open_icy works but
+		with SSL. If *host* is already known (this NVDA session - see
+		recorder._ssl_verify_bypass_hosts, shared with recorder.py since
+		both run in the same process) to need unverified certificates,
+		skips straight to an unverified handshake; otherwise tries with
+		full certificate verification first, and only falls back to an
+		unverified TLS handshake if that specific attempt fails on the
+		certificate itself (not e.g. connection refused or a timeout,
+		which an unverified context wouldn't fix anyway) - see the comment
+		on _VERIFIED_SSL_CONTEXT in recorder.py for why some stream
+		servers need that fallback at all.
 		"""
+		from urllib.parse import urlparse
+
+		parsed = urlparse(url)
+		host = parsed.hostname
+		port = parsed.port or 443
+		path = parsed.path or "/"
+		if parsed.query:
+			path += "?" + parsed.query
+
+		_debug_log("HTTPS socket connecting to %s:%d" % (host, port))
+
+		if host and host in _recorder_mod._ssl_verify_bypass_hosts:
+			insecure_context = ssl.create_default_context()
+			insecure_context.check_hostname = False
+			insecure_context.verify_mode = ssl.CERT_NONE
+			return self._do_https_icy_handshake(host, port, path, insecure_context)
+
 		try:
-			from urllib.parse import urlparse
-			
-			parsed = urlparse(url)
-			host = parsed.hostname
-			port = parsed.port or 443
-			path = parsed.path or "/"
-			if parsed.query:
-				path += "?" + parsed.query
-
-			_debug_log("HTTPS socket connecting to %s:%d" % (host, port))
-
-			# Create socket and wrap with TLS
-			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			sock.settimeout(20)
-			sock.connect((host, port))
-
-			# Wrap with SSL
-			ssl_context = ssl.create_default_context()
-			ssl_context.check_hostname = False
-			ssl_context.verify_mode = ssl.CERT_NONE
-			ssl_sock = ssl_context.wrap_socket(sock, server_hostname=host)
-
-			# Send ICY request
-			request = (
-				"GET %s HTTP/1.0\r\n"
-				"Host: %s\r\n"
-				"User-Agent: Winamp/5.9.1.1002\r\n"
-				"Icy-MetaData: 1\r\n"
-				"Accept: */*\r\n"
-				"Connection: close\r\n"
-				"\r\n"
-			) % (path, host)
-			
-			ssl_sock.sendall(request.encode())
-
-			# Read response headers
-			response = b""
-			while True:
-				chunk = ssl_sock.recv(4096)
-				if not chunk:
-					raise Exception("No response from server")
-				response += chunk
-				if b"\r\n\r\n" in response or b"\n\n" in response:
-					break
-
-			# Parse headers
-			headers = {}
-			header_part = response.split(b"\r\n\r\n", 1)[0] if b"\r\n\r\n" in response else response.split(b"\n\n", 1)[0]
-			for line in header_part.split(b"\r\n"):
-				if b":" in line:
-					key, value = line.split(b":", 1)
-					headers[key.decode().strip().lower()] = value.decode().strip()
-
-			# Extract ICY metadata interval
-			metaint_str = headers.get("icy-metaint", "")
-			if metaint_str:
-				try:
-					self._icy_metaint = int(metaint_str)
-					self._icy_bytes_until_meta = self._icy_metaint
-					_debug_log("ICY metaint detected: %d bytes between metadata" % self._icy_metaint)
-				except ValueError:
-					pass
-
-			# Extract prefix (audio data before first metadata)
-			prefix = response.split(b"\r\n\r\n", 1)[1] if b"\r\n\r\n" in response else response.split(b"\n\n", 1)[1]
-
-			_debug_log("HTTPS socket connected successfully to %s" % url)
-			return ssl_sock, headers, prefix
-
+			return self._do_https_icy_handshake(host, port, path, ssl.create_default_context())
 		except Exception as e:
-			_debug_log("HTTPS socket connection failed: %s" % e)
-			raise
+			if not _recorder_mod._is_cert_verify_error(e):
+				_debug_log("HTTPS socket connection failed: %s" % e)
+				raise
+			if host:
+				with _recorder_mod._ssl_verify_bypass_lock:
+					_recorder_mod._ssl_verify_bypass_hosts.add(host)
+			_debug_log(
+				"%s presented an invalid/untrusted TLS certificate; "
+				"retrying without certificate verification" % host
+			)
+			insecure_context = ssl.create_default_context()
+			insecure_context.check_hostname = False
+			insecure_context.verify_mode = ssl.CERT_NONE
+			try:
+				return self._do_https_icy_handshake(host, port, path, insecure_context)
+			except Exception as e2:
+				_debug_log("HTTPS socket connection failed: %s" % e2)
+				raise
+
+	def _do_https_icy_handshake(self, host, port, path, ssl_context):
+		"""One attempt at the raw socket + TLS + ICY handshake for
+		_connect_https_icy_socket() - always opens a fresh TCP connection,
+		since a socket whose TLS handshake just failed can't be reused for
+		a retry with a different ssl_context."""
+		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		sock.settimeout(20)
+		sock.connect((host, port))
+
+		# Wrap with SSL
+		ssl_sock = ssl_context.wrap_socket(sock, server_hostname=host)
+
+		# Send ICY request
+		request = (
+			"GET %s HTTP/1.0\r\n"
+			"Host: %s\r\n"
+			"User-Agent: Winamp/5.9.1.1002\r\n"
+			"Icy-MetaData: 1\r\n"
+			"Accept: */*\r\n"
+			"Connection: close\r\n"
+			"\r\n"
+		) % (path, host)
+
+		ssl_sock.sendall(request.encode())
+
+		# Read response headers
+		response = b""
+		while True:
+			chunk = ssl_sock.recv(4096)
+			if not chunk:
+				raise Exception("No response from server")
+			response += chunk
+			if b"\r\n\r\n" in response or b"\n\n" in response:
+				break
+
+		# Parse headers
+		headers = {}
+		header_part = response.split(b"\r\n\r\n", 1)[0] if b"\r\n\r\n" in response else response.split(b"\n\n", 1)[0]
+		for line in header_part.split(b"\r\n"):
+			if b":" in line:
+				key, value = line.split(b":", 1)
+				headers[key.decode().strip().lower()] = value.decode().strip()
+
+		# Extract ICY metadata interval
+		metaint_str = headers.get("icy-metaint", "")
+		if metaint_str:
+			try:
+				self._icy_metaint = int(metaint_str)
+				self._icy_bytes_until_meta = self._icy_metaint
+				_debug_log("ICY metaint detected: %d bytes between metadata" % self._icy_metaint)
+			except ValueError:
+				pass
+
+		# Extract prefix (audio data before first metadata)
+		prefix = response.split(b"\r\n\r\n", 1)[1] if b"\r\n\r\n" in response else response.split(b"\n\n", 1)[1]
+
+		_debug_log("HTTPS socket connected successfully to %s:%d" % (host, port))
+		return ssl_sock, headers, prefix
 
 	def _run_once(self, my_gen):
 		"""Capture loop: connects to the stream and appends raw bytes to the buffer."""

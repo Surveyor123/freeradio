@@ -47,6 +47,8 @@ Tous les raccourcis peuvent être réassignés depuis le Menu NVDA → Préfére
 | `Ctrl+Win+↑` | Augmenter le volume | Augmente le volume de 5 ; maximum 200. |
 | `Ctrl+Win+↓` | Diminuer le volume | Diminue le volume de 5 ; minimum 0. |
 | `Ctrl+Win+V` | Ajouter aux favoris | Ajoute la station en cours de lecture à la liste des favoris. Annonce si la station est déjà dans la liste. |
+| `Ctrl+Win+Shift+K` | Augmenter la vitesse de lecture | Augmente la vitesse de lecture d'un épisode de podcast de 0.1x (préservation de la hauteur). Gamme: 0.5x à 2.0x. Nécessite le `bass_fx.dll` pour le placer dans le dossier de l'extension. |
+| `Ctrl+Win+Shift+J` | Diminuer la vitesse de lecture | Diminue la vitesse de lecture d'un épisode de podcast de 0.1x. Nécessite le `bass_fx.dll`. |
 | `Ctrl+Win+I` | Informations sur la Station | Annonce le nom de la station en cours de lecture. Appuyez deux fois pour afficher des détails tels que le pays, le genre et le bitrate dans un dialogue. Appuyez trois fois pour copier les informations de la piste actuelle (métadonnées ICY) dans le presse-papiers si disponible ; si aucune métadonnée n'est présente, démarre la reconnaissance musicale Shazam à la place. Appuyez quatre fois pour forcer la reconnaissance musicale en cas de métadonnées ICY erronées. |
 | `Ctrl+Win+M` | Miroir audio | Mettre en miroir le flux actuel vers un périphérique de sortie audio supplémentaire simultanément. Appuyez à nouveau pour arrêter la mise en miroir. |
 | `Ctrl+Win+E` | Enregistrement instantané | Appuyez une fois pour commencer à enregistrer la station actuelle ; appuyez à nouveau pour arrêter. Appuyez **deux fois** pour démarrer un **enregistrement d'un morceau**: le fichier porte le nom de la piste actuelle et l'enregistrement s'arrête automatiquement lorsque la piste change. Appuyez à nouveau deux fois pendant qu'un enregistrement d'un morceau est actif pour l'arrêter plus tôt. La lecture continue sans interruption dans tous les modes d'enregistrement. Uniquement disponible pour les stations qui diffusent des métadonnées ICY. |
@@ -64,9 +66,11 @@ Les raccourcis suivant/précédent parcourent uniquement la liste des favoris ; 
 
 FreeRadio ajoute également un sous-menu **FreeRadio** au menu Outils NVDA. De là, vous pouvez ouvrir directement le Navigateur de Stations et les Paramètres de FreeRadio.
 
-La fenêtre ouverte avec `Ctrl+Win+R` contient six onglets : Toutes les stations, Favoris, Enregistrement, Minuterie, Morceaux aimés et Podcasts. Vous pouvez naviguer entre les onglets avec `Ctrl+Tab` ou en utilisant `Alt+1` à `Alt+6`.
+La fenêtre ouverte avec `Ctrl+Win+R` contient sept onglets : Toutes les stations, Favoris, Enregistrement, Minuterie, Morceaux aimés, Podcasts et Livres audio. Vous pouvez naviguer entre les onglets avec `Ctrl+Tab` ou en utilisant `Alt+1` à `Alt+7`.
 
 Lorsque l'onglet Toutes les stations s'ouvre, le top 1 000 des stations les plus votées sont automatiquement chargées à partir de Radio Browser. La sélection d'un pays dans la liste déroulante met à jour la liste pour montrer les stations de ce pays. Taper dans le champ de recherche effectue instantanément une recherche complète dans toute la base de données de Radio Browser simultanément par nom, pays et genre.
+
+Lors de la recherche, les résultats de Radio Browser sont complétés par les stations de TuneIn et iHeartRadio (si disponibles). Ces sources externes sont recherchées en arrière-plan et leurs résultats sont automatiquement fusionnés dans la liste, vous donnant accès à encore plus de stations sans aucune action supplémentaire.
 
 La liste déroulante **Périphérique de sortie** en bas de la fenêtre du navigateur (en dehors des onglets) répertorie tous les périphériques de sortie audio reconnus par BASS. La sélection d'un périphérique redirige immédiatement la sortie audio vers celui-ci et enregistre le choix de manière permanente ; le même périphérique est utilisé automatiquement lors de la session suivante. Si le périphérique sélectionné n'est pas connecté, l'extension revient automatiquement au valeur système par défaut. Appuyez sur `F11` pour ouvrir un sélecteur de périphérique à la demande plus simple depuis n'importe où dans le Navigateur de stations. Le sélecteur ne s'affiche pas automatiquement et s'ouvre uniquement lorsque le BASS détecte plusieurs périphériques de sortie physiques. Lorsqu'un seul est disponible, aucune sélection n'est nécessaire et FreeRadio utilise la sortie par défaut du système. Cette fonctionnalité n'est fonctionnelle que lorsque le BASS backend est actif.
 
@@ -123,7 +127,7 @@ Les touches suivantes fonctionnent uniquement lorsque la fenêtre Navigateur de 
 | `Ctrl+←` | Épisode précédent | Lorsque l'onglet Podcasts est actif, passe à l'épisode précédent et le joue (identique à `←` pendant que la liste des épisodes est focalisée). |
 | `Entrée` | Lecture | Lorsqu'une liste de stations ou d'épisodes est  focalisée, commence à jouer immédiatement l'élément sélectionné. Passe à la station sélectionnée même si une autre station est déjà en cours de lecture. |
 | `Espace` | Lecture / Pause | Met en pause si une station est en cours de lecture ; sinon, commence la lecture de l'élément sélectionné. |
-| `Ctrl+Tab` | Onglet suivant | Passe à l'onglet suivant (Toutes les stations → Favoris → Enregistrement → Minuterie → Morceaux aimés → Podcasts). |
+| `Ctrl+Tab` | Onglet suivant | Passe à l'onglet suivant (Toutes les stations → Favoris → Enregistrement → Minuterie → Morceaux aimés → Podcasts → Livres audio). |
 | `Ctrl+Shift+Tab` | Onglet précédent | Passe à l'onglet précédent. |
 | `Echap` | Cacher | Cache la fenêtre ; l'extension continue de jouer en arrière-plan. |
 
@@ -163,6 +167,7 @@ Chaque raccourci reflète cocher ou décocher dans l'entrée correspondante dans
 | `Alt+4` | Minuterie | Passe à l'onglet Minuterie. |
 | `Alt+5` | Morceaux aimés | Passe à l'onglet Morceaux aimés. |
 | `Alt+6` | Podcasts | Passe à l'onglet Podcasts. |
+| `Alt+7` | Livres audio | Passe à l'onglet Livres audio. |
 | `Alt+K` | Fermer | Ferme la fenêtre ; l'extension continue de jouer en arrière-plan. |
 
 ## Favoris
@@ -265,15 +270,21 @@ Le paramètre **Format de sortie d'enregistrement** contrôle la manière dont l
 
 **Enregistrement planifié:** Ouvrez l'onglet Enregistrement dans le navigateur. Sélectionnez une station parmi vos favoris, entrez l'heure de début en format HH:MM et la durée en minutes, sélectionnez un ou plusieurs jours actifs, puis choisissez le mode de récurrence et le mode d'enregistrement:
 
+Un champ **Filtrer** au-dessus de la liste des stations vous permet d'affiner la liste des favoris en temps réel, afin que vous puissiez trouver rapidement la station que vous souhaitez planifier.
+
 **Jours actifs:** Cochez un ou plusieurs jours de la semaine. En mode Enregistrer seulement, une entrée distincte est créée pour chaque jour sélectionné, placée à la prochaine occurrence de ce jour. En mode Récurrence, l'enregistrement se répète uniquement pour les jours cochés. Si aucun jour n'est sélectionné, l'enregistrement n'est pas limité à des jours spécifiques.
 
 **Mode de récurrence:**
 - **Enregistrer une fois** — crée un enregistrement unique pour chaque jour sélectionné. Chaque entrée est placée à la prochaine occurrence de ce jour; si l'heure d'aujourd'hui est déjà dépassée, l'entrée est automatiquement reportée à la semaine suivante.
 - **Répéter chaque semaine** — se répète chaque semaine les jours actifs sélectionnés jusqu'à sa suppression de la liste de planification.
 
+**Enregistrer l'enregistrement dans:** Pour chaque enregistrement planifié, vous pouvez choisir de l'enregistrer dans le dossier d'enregistrements par défaut ou dans un dossier personnalisé. Utilisez le bouton **Parcourir...** pour sélectionner un dossier de manière interactive. Si le dossier choisi devient indisponible, l'enregistrement revient au dossier par défaut et vous en êtes averti.
+
 **Mode d'enregistrement:**
 - **Enregistrer pendant l'écoute** — joue et enregistre simultanément. Un backend de lecture est démarré en utilisant l'ordre de priorité BASS → VLC → PotPlayer → Windows Media Player.
 - **Enregistrer seulement** — enregistre silencieusement en arrière-plan sans aucune sortie audio; le moteur d'enregistrement se connecte directement au flux.
+
+Une fois une planification ajouté, il apparaît dans la liste ci-dessous. Utilisez le bouton **Supprimer la sélection** pour supprimer une planification ou **Modifier la sélection** pour modifier son heure, sa durée, sa récurrence, ses jours actifs, son mode d'enregistrement ou son dossier de sortie.
 
 NVDA annonce quand un enregistrement commence et quand il se termine. Si NVDA est redémarré alors qu'un enregistrement planifié est actif, l'enregistrement reprend automatiquement au démarrage.
 
@@ -322,6 +333,8 @@ Dans le cas rare où la liste de lecture d'une station ne peut pas du tout être
 ## Minuterie
 
 Ouvrez l'onglet Minuterie dans le navigateur de stations (`Alt+4`). Deux types de minuterie peuvent être ajoutés:
+
+Lors du choix d'une station pour une minuterie d'alarme, un champ **Filtrer** au-dessus de la liste des stations vous permet d'affiner la liste des favoris en temps réel.
 
 **Alarme — démarrer la radio:** Commence automatiquement la lecture d'une station sélectionnée parmi vos favoris à l'heure spécifiée. Choisissez une station et entrez l'heure en format HH:MM.
 
@@ -416,11 +429,73 @@ Au-dessus de la liste des épisodes se trouve un champ  **Filtrer**. Au fur et �
 
 Les épisodes de podcast sont lus à l'aide du **BASS backend** (le même moteur que celui utilisé pour les flux radio). Étant donné que les épisodes sont téléchargés progressivement et peuvent être recherchés, vous pouvez utiliser les raccourcis du décalage temporel: reculer/avancer (`Ctrl+Win+J`/`Ctrl+Win+K`) pendant la lecture d'un podcast pour reculer ou avancer **5 secondes** à la fois (au lieu du retour en arrière de 15 secondes utilisé pour la   radio en direct). La position est enregistrée automatiquement afin que vous puissiez la reprendre plus tard.
 
+**Vitesse de lecture:** Vous pouvez régler la vitesse de lecture des épisodes du podcast en utilisant `Ctrl+Win+Shift+K` (plus rapide) et `Ctrl+Win+Shift+J` (plus lent). La vitesse change par incréments de 0.1x, allant de 0.5x à 2.0x, avec la hauteur préservée. Cela nécessite que la bibliothèque facultative `bass_fx.dll` soit placée dans le dossier de l'extension. Si la bibliothèque est manquante, NVDA vous informera que la fonctionnalité n'est pas disponible.
+
+> **Note:** `bass_fx.dll` n'est pas fourni avec FreeRadio par défaut. Vous pouvez le télécharger depuis la [page BASS FX](https://www.un4seen.com/bass-fx.html) et placez-le dans le dossier  de l'extension `bass/x64` (pour NVDA 64 bits) ou `bass` (pour NVDA 32 bits) pour activer cette fonctionnalité.
+
 Si le BASS backend est désactivé (ou échoue), la lecture du podcast revient à la même chaîne de lecteurs externes (VLC → PotPlayer → WMP) utilisée pour la radio, mais **la fonctionnalité de recherche et de reprise ne fonctionnera pas** dans ce cas — l'épisode sera lu depuis le début à chaque fois. Pour une expérience de podcast complète, laissez le BASS backend activé.
 
 ### Stockage des Données du Podcast
 
 Vos abonnements sont stockés dans `freeradio_podcasts.json` dans le dossier de configuration utilisateur NVDA. Les positions des épisodes sont stockées séparément dans `podcast_positions.json` au même emplacement. Les deux fichiers sont au format JSON simple et peuvent être sauvegardés ou transférés vers un autre ordinateur.
+
+## Livres audio (GETEM)
+
+FreeRadio comprend un lecteur de livres audio pour [GETEM](https://getem.boun.edu.tr/), la bibliothèque numérique gérée par le Centre Universitaire Boğaziçi pour les personnes malvoyantes. Vous pouvez rechercher dans son catalogue, prévisualiser et ajouter des livres à une bibliothèque personnelle, lire des œuvres en plusieurs parties avec reprise automatique et télécharger des livres pour une écoute hors ligne, le tout entièrement accessible.
+
+GETEM est la première source supportée par cette fonctionnalité. L'onglet Livres audio est conçu de manière à ce que d'autres bibliothèques ou catalogues puissent être ajoutés à l'avenir ; pour l'instant, GETEM est le seul disponible.
+
+> **Remarque:** L'écoute nécessite un abonnement gratuit à GETEM. La navigation dans le catalogue ne nécessite pas de compte, mais la résolution et la lecture de l'audio d'un livre le nécessitent — consultez la section [Se Connecter](#signing-in) ci-dessous.
+
+### Accéder à l'Onglet Livres audio
+
+Ouvrez le navigateur de stations avec `Ctrl+Win+R` et passez à l'onglet **Livres audio** en utilisant `Ctrl+Tab` o `Alt+7`. L'onglet comporte trois zones principales:
+
+1. **Recherche** — un champ de texte pour rechercher dans le catalogue GETEM, avec une liste de résultats qui apparaît une fois la recherche effectuée.
+2. **Bibliothèque** — la liste des livres que vous avez ajoutés, où vous les lisez, les téléchargez et les gérez.
+3. **Détails** — une boîte en lecture seule indiquant le titre, l'auteur, le narrateur, l'éditeur, le format, le nombre de parties, la description et l'URL du catalogue du livre sélectionné, dans l'une ou l'autre liste.
+
+### Se connecter
+
+GETEM nécessite d'être membre enregistré pour le flux de diffusion ou télécharger l'audio d'un livre, même si le catalogue lui-même peut être consulté librement. Entrez votre nom d'utilisateur et votre mot de passe GETEM une fois dans **NVDA Menu → Préférences → Paramètres → FreeRadio**; ils sont stockés cryptés sur le disque (via l'API Windows Data Protection, liée à votre compte utilisateur Windows) et réutilisés automatiquement par la suite. Si vous essayez de lire ou de télécharger un livre avant de saisir vos informations d'identification, FreeRadio vous demande de les ajouter d'abord dans les paramètres.
+
+### Recherche de Livres audio
+
+Tapez un terme de recherche — titre, auteur, narrateur, sujet ou éditeur — dans le champ de recherche et appuyez sur `Entrée`. FreeRadio recherche tous ces champs en même temps et fusionne les résultats, puisque le formulaire de recherche de GETEM ne prend en charge que le rétrécissement de tous ces champs plutôt qu'une seule recherche sur chacun d'entre eux. Seules les œuvres réellement disponibles sous forme audio (narration humaine ou informatique, audiodescription, fiction radiophonique, livres parlants DAISY, etc.) sont présentées ; le braille, les gros caractères et les autres formats non audio sont automatiquement filtrés. NVDA annonce combien de livres audio ont été trouvés.
+
+La sélection d'un résultat affiche ses détails  — auteur, narrateur, éditeur, format et nombre de parties — dans la zone de détails ci-dessous.
+
+**Aperçu:** Sélectionnez un résultat et appuyez sur `Espace`, ouvrez son menu contextuel (touche Applications / `Shift+F10`, ou clic droit) et choisissez  **Aperçu**, pour commencer à le lire depuis sa première partie sans l'ajouter à votre bibliothèque. Pendant qu'un livre est en cours de prévisualisation, le même menu contextuel affiche  **Arrêter l'aperçu** à sa place — choisissez-le ou appuyez à nouveau sur  `Espace`, pour arrêter. La prévisualisation d'un livre n'enregistre pas votre position d'écoute, car celle-ci n'est suivie que pour les livres déjà présents dans votre bibliothèque.
+
+**Ajout à votre bibliothèque:** Sélectionnez un résultat et appuyez sur `Entrée`, ou utilisez son menu contextuel et choisissez **Ajouter à la bibliothèque**, pour l'ajouter. FreeRadio vous indique si le livre est déjà là.
+
+### Votre Bibliothèque
+
+Les livres que vous avez ajoutés apparaissent dans la liste **Bibliothèque**, indiquant le titre, l'auteur et le format. En sélectionner un affiche ses détails ci-dessous.
+
+- Appuyez sur `Entrée` ou `Espace` pour lire le livre sélectionné. Si rien n'est chargé, `Espace` le démarre; si quelque chose est déjà en cours de lecture, `Espace` le met en pause à la place, correspondant au reste du lecteur.
+- Utilisez `F3` / `F4` dans l'onglet Livres audio pour passer au **livre** précédent/suivant de votre bibliothèque et commencer à le lire. `Ctrl+←` / `Ctrl+→` font de même pendant que la liste des bibliothèques est focalisée.
+- Utilisez `Shift+F3` / `Shift+F4` pour vous déplacer entre les **parties** du livre en cours de lecture à la place — à l'inverse de l'onglet Podcasts, où  F3/F4 se déplacent entre les épisodes et Shift+F3/F4 se déplacent entre les flux. En effet, un livre est une entrée de bibliothèque unique même lorsqu'il comporte plusieurs parties, de sorte que la navigation plus fine des "parties" se trouve ici sur les touches modifiées par Shift.
+
+**Menu contextuel pour les entrées de bibliothèque:** Cliquez avec le bouton droit sur un livre, ou sélectionnez-le et appuyez sur la touche Applications / `Shift+F10`, pour ouvrir un menu avec:
+- **Lire le média** — démarre la lecture, comme avec  `Entrée`.
+- **Télécharger le livre** — télécharge chaque partie du livre ; consultez la section [Téléchargement de Livres audio](#downloading-audio-books) ci-dessous.
+- **Copier l'URL** — copie l'URL de la page du catalogue GETEM du livre dans le presse-papiers.
+- **Supprimer de la bibliothèque** — supprime le livre de votre bibliothèque.
+
+### Lecture et Reprise
+
+Une œuvre en plusieurs parties est traitée comme un élément unique dans le lecteur, et non comme une ligne par partie  — de la même manière qu'un épisode de podcast est un élément unique, quelle que soit la manière dont il est diffusé. FreeRadio se souvient de la dernière partie que vous avez écoutée et y reprend automatiquement la prochaine fois que vous lisez ce livre, même lors d'un redémarrage de NVDA.
+
+La lecture est diffusée via un petit relais local plutôt que de télécharger d'abord la totalité de la partie, de sorte que l'écoute commence dès l'arrivée des premiers octets — le même comportement de démarrage immédiat que celui utilisé par les podcasts. Tous les contrôles habituels du lecteur (pause, volume, décalage temporel, vitesse de lecture, périphérique de sortie, etc.) fonctionnent sur un livre audio exactement comme elles le feraient sur une station ou un épisode de podcast.
+
+### Téléchargement de Livres audio
+
+Sélectionnez un livre dans votre bibliothèque et choisissez **Télécharger le livre** dans son menu contextuel pour enregistrer chaque partie dans son propre dossier (nommé d'après le livre) dans votre dossier d'enregistrements (`Documents\FreeRadio Recordings\` par défaut). Les fichiers sont numérotés afin que les parties soient toujours triées dans l'ordre d'écoute, quel que soit le nom que GETEM lui-même leur donne. NVDA annonce combien de parties ont été enregistrées une fois le téléchargement terminé ; si une partie échoue, la dernière erreur est signalée à côté du décompte.
+
+### Stockage de Données de Livres audio
+
+Votre bibliothèque GETEM (les livres ajoutés et leur progression d'écoute) est stockée dans `freeradio_getem_library.json` dans le dossier de configuration utilisateur de NVDA. Vos informations d'identification GETEM cryptées sont stockées séparément dans `freeradio_getem_credentials.bin` au même emplacement et ne peuvent être déchiffrées que par le même compte d'utilisateur Windows qui les a enregistrées.
 
 ## Morceaux aimés
 
@@ -430,7 +505,7 @@ Sur les stations qui diffusent des métadonnées ICY, le titre de la piste et l'
 
 ## Onglet Morceaux aimés
 
-L'onglet **Morceaux aimés** dans le navigateur de stations affiche toutes les pistes enregistrées dans `likedSongs.txt`. La liste est automatiquement rechargée depuis le fichier à chaque ouverture de l'onglet.
+L'onglet **Morceaux aimés** dans le navigateur de stations affiche toutes les pistes enregistrées dans `likedSongs.txt`. La liste est automatiquement rechargée depuis le fichier à chaque ouverture de l'onglet. Cliquez avec le bouton droit sur un morceau, ou sélectionnez-le et appuyez sur la touche Applications / `Shift+F10`, pour ouvrir un menu contextuel avec les mêmes actions décrites ci-dessous.
 
 Un champ **Filtrer** au-dessus de la liste vous permet de réduire les pistes affichées en temps réel. Saisissez n'importe quelle partie d'un titre d'un morceau ou du nom d'un artiste et la liste se met à jour instantanément à chaque frappe. NVDA annonce le nombre de résultats correspondants après chaque modification. Appuyez sur la flèche `Bas` depuis le champ Filtrer pour déplacer le focus directement vers la liste.
 
@@ -462,6 +537,8 @@ Les options suivantes peuvent être configurées à partir de NVDA Menu → Pré
 
 | Option | Description |
 |---|---|
+| Désactiver le BASS backend | Lorsqu'elle est activée, FreeRadio n'utilisera pas le moteur BASS fourni et s'appuiera plutôt sur  VLC, PotPlayer, ou Windows Media Player. Redémarrez NVDA pour que cette modification prenne effet. |
+| Voix de changement de piste | Choisissez si les changements de piste annoncés automatiquement sont prononcés à l'aide du synthétiseur NVDA ou d'une voix SAPI5. |
 | Périphérique de sortie audio (BASS backend) | Définit  le périphérique de sortie audio pour la lecture de la radio. La liste comprend tous les périphériques sur le système BASS-compatible plus une option "valeur système par défaut". Les modifications sont appliquées immédiatement lors de l'enregistrement ; si le périphérique sélectionné est déconnecté, l'extension revient automatiquement au valeur système par défaut et annonce le changement. Actif uniquement lorsque le BASS backend est utilisé. |
 | Mode de rafraîchissement du périphérique audio (BASS backend) | Contrôle la manière dont FreeRadio actualise les numéros de périphérique de sortie de BASS. Le mode **Fiable** (par défaut) sonde les appareils en direct et suit les modifications Bluetooth/USB avec plus de précision, mais peut ralentir légèrement les modifications des appareils. Le mode **Rapide** utilise la liste actuelle des périphériques de BASS et est plus rapide, mais les numéros de périphériques peuvent rester obsolètes jusqu'au redémarrage de BASS ou de NVDA. |
 | Volume | Définit le volume au démarrage de l'extension (0–200). Modifications apportées pendant la lecture avec `Ctrl+Win+↑` / `Ctrl+Win+↓` se reflètent également ici. |
@@ -475,6 +552,7 @@ Les options suivantes peuvent être configurées à partir de NVDA Menu → Pré
 | Activer la mémoire tampon de décalage temporel (retour en arrière sur la radio en direct, ~10 minutes) | Active ou désactive les contrôles de rembobinage (`Ctrl+Win+J`/`Ctrl+Win+K`) et augmente la capture en arrière-plan de ~45 secondes à ~10 minutes. Une petite capture en arrière-plan de la station en cours de lecture s'exécute toujours, même lorsqu'elle est désactivée — consultez la note dans la section **Décalage temporel (retour en arrière sur la radio en direct)** ci-dessous. Peut également être basculée instantanément avec `Ctrl+Win+T`. Nécessite le BASS backend. Désactivée par défaut — consultez la section **Décalage temporel (retour en arrière sur la radio en direct)** ci-dessous pour plus de détails. |
 | Enregistrer les morceaux aimés dans un fichier texte | Lorsqu'il est activé, les informations de piste sont copiées dans le presse-papiers en appuyant sur `Ctrl+Win+I` trois fois est également ajouté à `Documents\FreeRadio Recordings\likedSongs.txt`. Si aucune métadonnée ICY n'est disponible, le résultat de la reconnaissance Shazam est enregistré dans le même fichier. Désactivé par défaut. |
 | Lorsque Ctrl+Win+P est appuyé sans lecture active | Détermine ce qui se passe lorsque ce raccourci est appuyé et que rien n'est joué: démarrer la dernière station ou ouvrir la liste des favoris. |
+| Durée de la mémoire tampon de décalage temporel | Définit la longueur maximale du tampon de rembobinage. Les options vont de  10 minutes à 5 heures. Les tampons plus longs consomment plus d'espace disque temporaire. |
 | Lorsque Ctrl+Win+P est appuyé deux fois | Sélectionne ce qui se passe lorsque le raccourci est appuyé deux fois de suite rapidement: ne rien faire, ouvrir la liste des favoris, ouvrir l'onglet d'enregistrement ou ouvrir l'onglet minuterie. Lorsque "Ne rien faire " est sélectionné, la première pulsation répond instantanément sans délai. |
 | Lorsque Ctrl+Win+P est appuyé trois fois | Sélectionne ce qui se passe lorsque le raccourci est appuyé trois fois de suite rapidement: ne rien faire, ouvrir la liste des favoris, ouvrir la recherche de stations, ouvrir l'onglet d'enregistrement ou ouvrir l'onglet minuterie. |
 | Rechercher automatiquement les mises à jour au démarrage | Lorsqu'elle est activée, une vérification de mise à jour en arrière-plan s'exécute à chaque démarrage de NVDA; vous êtes averti si une nouvelle version est trouvée. Lorsqu'il est désactivé, les contrôles automatiques s'arrêtent mais les contrôles manuels restent disponibles. |

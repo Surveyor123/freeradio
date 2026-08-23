@@ -47,6 +47,8 @@ Todos los atajos se pueden reasignar desde el Menú NVDA → Preferencias → Ge
 | `Ctrl+Win+↑` | Aumentar el volumen | Aumenta el volumen de 5 ; máximo 100. |
 | `Ctrl+Win+↓` | Disminuir el volumen | Disminuye el volumen de 5 ; mínimo 0. |
 | `Ctrl+Win+V` | Añadir a favoritos | Añade la estación que se está reproduciendo actualmente a la lista de favoritos. Anuncia si la emisora ya está en la lista. |
+| `Ctrl+Win+Shift+K` | Aumentar la velocidad de reproducción | Aumenta la velocidad de reproducción de un episodio de podcast de 0.1x (preservación de la altura). Rango: 0.5x a 2.0x. Requiere el `bass_fx.dll` para colocarlo en la carpeta del complemento. |
+| `Ctrl+Win+Shift+J` | Disminuir la velocidad de reproducción | Disminuye la velocidad de reproducción de un episodio de podcast de 0.1x. Requiere el `bass_fx.dll`. |
 | `Ctrl+Win+I` | Información de la Estación | Anuncia el nombre de la estación que se está reproduciendo actualmente. Pulsa dos veces para mostrar los detalles como el país, el género y el bitrate en un diálogo. Pulsa tres veces para copiar la información de la pista actual (metadatos ICY) al portapapeles si está disponible; Si no hay metadatos presentes, inicia el reconocimiento de música de Shazam en su lugar. Pulsa cuatro veces para forzar el reconocimiento de música en caso de metadatos ICY incorrectos. |
 | `Ctrl+Win+M` | Espejo de audio | Poner en espejo el flujo actual hacia un dispositivo de salida de audio adicional simultáneamente. Pulsa nuevamente para detener la puesta en espejo. |
 | `Ctrl+Win+E` | Grabación instantánea | Pulsa una vez para comenzar a grabar la estación actual; pulsa nuevamente para detener. Pulsa **dos veces** para comenzar una **grabación de la canción**: El archivo lleva el nombre de la pista actual y la grabación se detiene automáticamente cuando cambia la pista. Pulsa nuevamente dos veces mientras la grabación de una canción está activa para detenerla antes de tiempo. La reproducción continúa sin interrupción en todos los modos de grabación. Solo disponible para estaciones que transmiten metadatos ICY. |
@@ -64,9 +66,11 @@ Los atajos siguientes/anteriores sólo recorren la lista de favoritos; No funcio
 
 FreeRadio también añade un subMenú **FreeRadio** en el Menú Herramientas de NVDA. Desde allí puede abrir directamente el Navegador de Estaciones y los Ajustes de FreeRadio.
 
-La ventana abierta con `Ctrl+Win+R` contiene seis pestañas: Todas las estaciones, Favoritos, Grabación, Temporizador, Canciones favoritas y Podcasts. Puedes navegar entre las pestañas con `Ctrl+Tab` o usando `Alt+1` hasta `Alt+6`.
+La ventana abierta con `Ctrl+Win+R` contiene siete pestañas: Todas las estaciones, Favoritos, Grabación, Temporizador, Canciones favoritas, Podcasts y Audiolibros. Puedes navegar entre las pestañas con `Ctrl+Tab` o usando `Alt+1` hasta `Alt+7`.
 
 Cuando se abre la pestaña Todas las estaciones, las 1000 estaciones más votadas se cargan automáticamente desde Radio Browser. Al seleccionar un país de la lista desplegable, se actualiza la lista para mostrar estaciones de ese país. Al escribir en el cuadro de búsqueda se realiza instantáneamente una búsqueda completa en toda la base de datos de Radio Browser simultáneamente por nombre, país y género.
+
+Al buscar, los resultados de Radio Browser se complementan con estaciones de TuneIn e iHeartRadio (cuando estén disponibles). Estas fuentes externas se buscan en segundo plano y sus resultados se combinan en la lista automáticamente, lo que le brinda acceso a aún más estaciones sin ninguna acción adicional.
 
 La lista desplegable **Dispositivo de salida** en la parte inferior de la ventana del navegador (fuera de las pestañas) enumera todos los dispositivos de salida de audio reconocidos por BASS. Al seleccionar un dispositivo, se redirige inmediatamente la salida de audio a él y se guarda la elección de forma permanente; el mismo dispositivo se utiliza automáticamente en la siguiente sesión. Si el dispositivo seleccionado no está conectado, el complemento vuelve automáticamente al valor predeterminado del sistema. Pulse `F11` para abrir un selector de dispositivos bajo demanda más simple desde cualquier lugar del Navegador de estaciones. El selector no se muestra automáticamente y se abre solo cuando el BASS detecta más de un dispositivo de salida físico. Cuando solo hay uno disponible, no es necesario realizar ninguna selección y FreeRadio utiliza la salida predeterminada del sistema. Esta característica sólo es funcional cuando el BASS backend está activo.
 
@@ -123,7 +127,7 @@ Las siguientes teclas solo funcionan cuando la ventana del Navegador de Estacion
 | `Ctrl+←` | Episodio anterior | Cuando la pestaña Podcasts está activa, salta al episodio anterior y lo reproduce (igual que `←` mientras la lista de episodios está enfocada). |
 | `Intro` | Reproducir | Cuando una lista de estaciones o episodios está enfocada, inmediatamente comienza a reproducir el elemento seleccionado. Cambia a la estación seleccionada incluso si ya se está reproduciendo otra estación. |
 | `Espacio` | Reproducir/Pausar | Se detiene si se está reproduciendo una estación; de lo contrario, comienza a reproducir el elemento seleccionado. |
-| `Ctrl+Tab` | Pestaña siguiente | Pasa a la siguiente pestaña (Todas las estaciones → Favoritos → Grabación → Temporizador → Canciones favoritas → Podcasts). |
+| `Ctrl+Tab` | Pestaña siguiente | Pasa a la siguiente pestaña (Todas las estaciones → Favoritos → Grabación → Temporizador → Canciones favoritas → Podcasts → Audiolibros). |
 | `Ctrl+Shift+Tab` | Pestaña anterior | Pasa a la pestaña anterior. |
 | `Escape` | Ocultar | Oculta la ventana; el complemento continúa reproduciéndose en segundo plano. |
 
@@ -163,6 +167,7 @@ Cada atajo refleja marcado o desmarcado en la entrada correspondiente en la list
 | `Alt+4` | Temporizador | Cambia a la pestaña Temporizador. |
 | `Alt+5` | Canciones favoritas | Cambia a la pestaña Canciones favoritas. |
 | `Alt+6` | Podcasts | Cambia a la pestaña Podcasts. |
+| `Alt+7` | Audiolibros | Cambia a la pestaña Audiolibros. |
 | `Alt+K` | Cerrar | Cierra la ventana; el complemento continúa reproduciéndose en segundo plano. |
 
 ## Favoritos
@@ -265,15 +270,21 @@ La configuración **Formato de salida de grabación** controla cómo se guardan 
 
 **Grabación programada:** Abra la pestaña Grabación en el navegador. Seleccione una estación de sus favoritos, ingrese la hora de inicio en formato HH:MM y la duración en minutos, seleccione uno o más días activos y, luego elige el modo de recurrencia y el modo de grabación:
 
+Un campo **Filtrar** encima de la lista de estaciones le permite limitar la lista de favoritos en tiempo real, para que pueda encontrar rápidamente la estación que desea programar.
+
 **Días activos:** Marque uno o más días de la semana. En el modo de Solo grabación, se crea una entrada separada para cada día seleccionado, colocada en la próxima ocurrencia de ese día. En el modo de Recurrencia, la grabación se repite únicamente en los días marcados. Si no se selecciona ningún día, la grabación no se restringe a días concretos.
 
 **Modo de recurrencia:**
 - **Grabar una vez** — crea una grabación única para cada día seleccionado. Cada entrada se coloca en la próxima ocurrencia de ese día; si la hora de hoy ya pasó, la entrada se traslada automáticamente a la semana siguiente.
 - **Repetir semanalmente** — se repite cada semana en los días activos seleccionados hasta que se elimine de la lista de programación.
 
+**Guarde la grabación en:** Para cada grabación programada, puede optar por guardarla en la carpeta de grabaciones predeterminada o en una carpeta personalizada. Utilice el botón **Examinar...** para seleccionar una carpeta de forma interactiva. Si la carpeta elegida deja de estar disponible, la grabación vuelve a la carpeta predeterminada y se le notifica.
+
 **Modo de grabación:**
 - **Grabar mientras escuchas** — reproduce y graba simultáneamente. Se inicia un backend de reproducción usando el orden de prioridad BASS → VLC → PotPlayer → Windows Media Player.
 - **Solo grabación** — Graba silenciosamente en segundo plano sin ninguna salida de audio; El motor de grabación se conecta directamente al flujo de  transmisión.
+
+Una vez que se añade una programación, aparece en la lista de abajo. Utilice el botón **Eliminar seleccionado** para eliminar una programación o **Editar seleccionado** para modificar su hora, duración, recurrencia, días activos, modo de grabación o carpeta de salida.
 
 NVDA anuncia cuándo comienza y cuándo termina una grabación. Si NVDA se reinicia mientras hay una grabación programada activa, la grabación se reanuda automáticamente al iniciar.
 
@@ -322,6 +333,8 @@ En el raro caso de que la lista de reproducción de una emisora no pueda leerse 
 ## Temporizador
 
 Abra la pestaña Temporizador en el navegador de estaciones (`Alt+4`). Se pueden añadir dos tipos de temporizador:
+
+Al elegir una estación para un temporizador de alarma, un campo **Filtrar** encima de la lista de estaciones le permite limitar la lista de favoritos en tiempo real.
 
 **Alarma — iniciar la radio:** Comienza a reproducir automáticamente una estación seleccionada de sus favoritos a la hora especificada. Elija una estación e ingrese la hora en formato HH:MM.
 
@@ -416,11 +429,73 @@ Encima de la lista de episodios hay un campo  **Filtrar**. A medida que escribe,
 
 Los episodios de podcast se reproducen utilizando el **BASS backend** (el mismo motor que se utiliza para los flujos de radio). Debido a que los episodios se descargan progresivamente y se pueden buscar, puedes usar los atajos del desplazamiento temporal: rebobinar/avanzar (`Ctrl+Win+J`/`Ctrl+Win+K`) mientras reproduce un podcast para retroceder o avanzar **5 segundos** a la vez (en lugar  de rebobinar 15 segundos que se usa para la radio en directo). La posición se guarda automáticamente para que puedas retomarla más tarde.
 
+**Velocidad de reproducción:** Puede ajustar la velocidad de reproducción de los episodios del podcast usando `Ctrl+Win+Shift+K` (más rápido) y `Ctrl+Win+Shift+J` (más lento). La velocidad cambia por incrementos de 0.1x, desde 0.5x hasta 2.0x, con la altura preservada. Esto requiere que la biblioteca opcional `bass_fx.dll` se coloque en la carpeta del complemento. Si falta la biblioteca, NVDA te informará que la función no está disponible.
+
+> **Nota:** `bass_fx.dll` no está incluido con FreeRadio por defecto. Puedes descargarlo desde la [página BASS FX](https://www.un4seen.com/bass-fx.html) y colóquelo en la carpeta del complemento `bass/x64` (para NVDA de 64 bits) o `bass` (para NVDA de 32 bits) para habilitar esta característica.
+
 Si el BASS backend está deshabilitado (o falla), La reproducción de podcast vuelve a la misma cadena de reproductores externos (VLC → PotPlayer → WMP) utilizados para la radio, pero **la función de búsqueda y reanudación no funcionará** en ese caso — el episodio se reproducirá desde el principio cada vez. Para disfrutar de una experiencia de podcast completa, mantenga el BASS backend habilitado.
 
 ### Almacenamiento de Datos del Podcast
 
 Tus suscripciones se almacenan en `freeradio_podcasts.json` en la carpeta de configuración de usuario de NVDA. Las posiciones de los episodios se almacenan por separado en `podcast_positions.json` en la misma ubicación. Ambos archivos son JSON simples y se puede realizar una copia de seguridad o transferirlos a otra computadora.
+
+## Audiolibros (GETEM)
+
+FreeRadio incluye un reproductor de audiolibros para [GETEM](https://getem.boun.edu.tr/), la biblioteca digital dirigida por el Centro Universitario Boğaziçi para personas con discapacidad visual. Puede buscar en su catálogo, obtener una vista previa y agregar libros a una biblioteca personal, reproducir obras de varias partes con resumen automático y descargar libros para escucharlos sin conexión, todo totalmente accesible.
+
+GETEM es la primera fuente soportada por esta característica. La pestaña Audiolibros está diseñada para que se puedan añadir más bibliotecas o catálogos en el futuro; por ahora, GETEM es el único disponible.
+
+> **Nota:** Escuchar requiere una membresía gratuita de GETEM. Para explorar el catálogo no se necesita una cuenta, pero para resolver y reproducir el audio de un libro sí — consulta la sección [Iniciar Sesión](#signing-in) más abajo.
+
+### Acceso a la Pestaña Audiolibros
+
+Abra el navegador de estaciones con `Ctrl+Win+R` y cambie a la pestaña  **Audiolibros** usando `Ctrl+Tab` o `Alt+7`. La pestaña tiene tres áreas principales:
+
+1. **Buscar** — un campo de texto para buscar en el catálogo de  GETEM, con una lista de resultados que aparece una vez que se ejecuta una búsqueda.
+2. **Biblioteca** — la lista de libros que ha añadido, donde puede reproducirlos, descargarlos y administrarlos.
+3. **Detalles** — un cuadro de solo lectura que muestra el título, autor, narrador, editorial, formato, número de partes, descripción y URL del catálogo del libro seleccionado, en cualquiera de las listas.
+
+### Iniciar Sesión
+
+GETEM requiere ser miembro registrado para  el flujo de transmisión o descargar el audio real de un libro, aunque el catálogo en sí se puede buscar libremente. Ingresa tu nombre de usuario y contraseña de GETEM una vez en  **Menú NVDA → Preferencias → Opciones → FreeRadio**; se almacenan cifrados en el disco (a través de la API de protección de datos de Windows, vinculados a su cuenta de usuario de Windows) y luego se reutilizan automáticamente. Si intenta reproducir o descargar un libro antes de ingresar las credenciales, FreeRadio le indica que las agregue primero  en las Opciones.
+
+### Búsqueda de Audiolibros
+
+Escriba un término de búsqueda – título, autor, narrador, tema o editorial – en el campo de búsqueda y pulse `Intro`. FreeRadio busca todos estos campos a la vez y combina los resultados,ya que el propio formulario de búsqueda de GETEM solo admite la reducción de todos ellos juntos en lugar de una única búsqueda en cualquiera de ellos. Sólo se muestran obras que realmente están disponibles en formato de audio (narración humana o por computadora, descripción de audio, radiodrama, libros hablados de DAISY, etc.); braille, letra grande y otros formatos que no son de audio se filtran automáticamente. NVDA anuncia cuántos audiolibros se encontraron.
+
+Al seleccionar un resultado, se muestran sus detalles — autor, narrador, editor, formato y recuento de partes — en el cuadro de detalles debajo.
+
+**Vista previa:** Seleccione un resultado y  pulse `Espacio`, o abra su menú contextual (tecla Aplicaciones / `Shift+F10`, o haga clic derecho) y elija **Vista previa**, para comenzar a reproducirlo desde su primera parte sin añadirlo a su biblioteca. Mientras se obtiene la vista previa de un libro, el mismo menú contextual muestra **Detener vista previa** en su lugar — selecciónelo o pulse `Espacio` nuevamente para detenerlo. La vista previa de un libro no guarda su posición de escucha, ya que solo se realiza un seguimiento de los libros que ya están en su biblioteca.
+
+**Añadir a su biblioteca:** Seleccione un resultado y  pulse `Intro`, o use su menú contextual y elija **Añadir a la biblioteca**, para  añadirlo. FreeRadio te dice si el libro ya está ahí.
+
+### Tu Biblioteca
+
+Los libros que ha añadido aparecen en la lista **Biblioteca**, mostrando el título, el autor y el formato. Al seleccionar uno se muestran sus detalles debajo.
+
+- Pulse `Intro` o `Espacio` para reproducir el libro seleccionado. Si no se carga nada, `Espacio` lo inicia; si ya se está reproduciendo algo, `Espacio` lo pausa en cambio, coincide con el resto del reproductor.
+- Utilice `F3` / `F4` en la pestaña Audiolibros para pasar al **libro** anterior/siguiente de su biblioteca y comenzar a reproducirlo. `Ctrl+←` / `Ctrl+→` hacen lo mismo mientras la lista de bibliotecas está enfocada.
+- Utilice `Shift+F3` / `Shift+F4` para moverse entre **partes** del libro que se reproduce actualmente — al revés de la pestaña Podcasts, donde F3/F4 se mueve entre episodios y Shift+F3/F4 se mueve entre feeds. Esto se debe a que un libro es una sola entrada de biblioteca incluso cuando tiene varias partes, por lo que la navegación más detallada por "partes" se encuentra aquí en las teclas modificadas por Shift.
+
+**Menú contextual para entradas de la biblioteca:** Haga clic con el botón derecho en un libro o selecciónelo y pulse la tecla Aplicaciones / `Shift+F10`, para abrir un menú con:
+- **Reproducir medios** — comienza a reproducir, igual que `Intro`.
+- **Descargar libro** — descarga cada parte del libro; consulta la sección [Descarga de Audiolibros](#downloading-audio-books) más abajo.
+- **Copiar la URL** — copia la URL de la página del catálogo GETEM del libro al portapapeles.
+- **Eliminar de la biblioteca** — elimina el libro de tu biblioteca.
+
+### Reproducción y Reanudación
+
+Un trabajo de varias partes se trata como un elemento único en el reproductor, no como una fila por parte — de la misma manera que un episodio de podcast es un elemento único independientemente de cómo se entregue. FreeRadio recuerda qué parte escuchaste por última vez y la reanuda automáticamente la próxima vez que reproduzcas ese libro, incluso después de reiniciar NVDA.
+
+La reproducción se transmite a través de un pequeño relé local en lugar de descargar primero la parte completa, por lo que la escucha comienza tan pronto como llegan los primeros bytes — el mismo comportamiento de inicio inmediato que utilizan los podcasts. Todos los controles habituales del reproductor (pausa, volumen, desplazamiento temporal , velocidad de reproducción, dispositivo de salida, etc.) funcionan en un audiolibro exactamente como lo harían en una estación o episodio de podcast.
+
+### Descarga de Audiolibros
+
+Seleccione un libro en su biblioteca y elija **Descargar libro** en su menú contextual para guardar cada parte en su propia carpeta (que lleva el nombre del libro) dentro de su carpeta de grabaciones (`Documentos\FreeRadio Recordings\` por defecto). Los archivos están numerados para que las partes siempre vuelvan a ordenarse en orden de escucha, independientemente de cómo las llame  en GETEM. NVDA anuncia cuántas partes se guardaron una vez finalizada la descarga; Si una  parte falla, el último error se informa junto con el recuento.
+
+### Almacenamiento de Datos de Audiolibros
+
+Tu biblioteca GETEM (libros añadidos y su progreso de escucha) se almacena en `freeradio_getem_library.json` en la carpeta de configuración de usuario de NVDA. Sus credenciales GETEM cifradas se almacenan por separado en `freeradio_getem_credentials.bin` en la misma ubicación, y solo pueden ser descifradas por la misma cuenta de usuario de Windows que las guardó.
 
 ## Canciones favoritas
 
@@ -430,7 +505,7 @@ En las estaciones que transmiten metadatos ICY, el título de la pista y el arti
 
 ## Pestaña de Canciones favoritas
 
-La pestaña **Canciones favoritas** en el navegador de estaciones se muestran todas las pistas guardadas en `likedSongs.txt`. La lista se recarga automáticamente desde el archivo cada vez que se abre la pestaña.
+La pestaña **Canciones favoritas** en el navegador de estaciones se muestran todas las pistas guardadas en `likedSongs.txt`. La lista se recarga automáticamente desde el archivo cada vez que se abre la pestaña. Haga clic derecho en una canción, o selecciónela y pulse la tecla Aplicaciones / `Shift+F10`, para abrir un menú contextual con las mismas acciones que se describen a continuación.
 
 Un campo **Filtrar** encima de la lista permite limitar las pistas mostradas en tiempo real. Escribe cualquier parte del título de una canción o nombre del artista y la lista se actualiza instantáneamente a cada pulsación. NVDA anuncia el número de resultados coincidentes tras cada cambio. Pulsa la flecha `Abajo` desde el campo Filtrar para mover el foco directamente a la lista.
 
@@ -462,6 +537,8 @@ Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencia
 
 | Opción | Descripción |
 |---|---|
+| Deshabilitar el BASS backend | Cuando esté habilitado, FreeRadio no utilizará el motor BASS incluido y, en su lugar, dependerá de VLC, PotPlayer, o Windows Media Player. Reinicia NVDA para que este cambio surta efecto. |
+| Voz de cambio de pista | Elige si los cambios de pista anunciados automáticamente se verbalizan usando el sintetizador NVDA o una voz SAPI5 seleccionada. |
 | Dispositivo de salida de audio (BASS backend) | Establece el dispositivo de salida de audio para la reproducción de la radio. La lista incluye todos los dispositivos del sistema BASS-compatible más una opción "valor predeterminado del sistema". Los cambios se aplican inmediatamente después de guardarlos; Si el dispositivo seleccionado se desconecta, el complemento vuelve automáticamente al valor predeterminado del sistema y anuncia el cambio. Activo solo cuando se utiliza el BASS backend. |
 | Modo de actualización del dispositivo de audio  (BASS backend) | Controla cómo FreeRadio actualiza los números de dispositivos de salida de BASS. El modo **Confiable** (predeterminado) analiza los dispositivos en vivo y rastrea los cambios de Bluetooth/USB con mayor precisión, pero puede hacer que los cambios del dispositivo sean un poco más lentos. El modo **Rápido** utiliza la lista actual de dispositivos de BASS y es más rápido, pero los números de dispositivos pueden permanecer obsoletos hasta que se reinicie el BASS o NVDA. |
 | Volumen | Establece el volumen cuando se inicia el complemento (0–200). Los cambios realizados durante la reproducción con `Ctrl+Win+↑` / `Ctrl+Win+↓` también se reflejan aquí. |
@@ -475,6 +552,7 @@ Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencia
 | Activar búfer de desplazamiento temporal (rebobinar radio en directo, ~10 minutos) | Activa o desactiva los controles de rebobinado `Ctrl+Win+J`/`Ctrl+Win+K`) y aumenta la captura en segundo plano de ~45 segundos a ~10 minutos. Una pequeña captura en segundo plano de la emisora ​​en reproducción siempre se ejecuta, incluso cuando está deshabilitada — consulta la nota en la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación. También se puede alternar al instante con `Ctrl+Win+T`. Requiere el BASS backend. Deshabilitado por defecto — consulta la sección **Desplazamiento temporal (rebobinar radio en directo)** a continuación para obtener más detalles. |
 | Guardar las canciones favoritas en un archivo de texto | Cuando está habilitado, la información de la pista se copia al portapapeles pulsando `Ctrl+Win+I` tres veces y también se añade a `Documentos\FreeRadio Recordings\likedSongs.txt`. Si no hay metadatos ICY disponibles, el resultado del reconocimiento de Shazam se guarda en el mismo archivo. Deshabilitado por defecto. |
 | Cuando Ctrl+Win+P se pulsa sin reproducción activa | Determina qué sucede cuando se pulsa este atajo y no hay nada  en reproducción: iniciar la última estación o abrir la lista de favoritos. |
+| Duración del búfer de desplazamiento temporal | Establece la longitud máxima del búfer de rebobinado. Las opciones van desde 10 minutos hasta 5 horas. Los buffers más largos consumen más espacio temporal en el disco. |
 | Cuando Ctrl+Win+P se pulsa dos veces | Selecciona lo que sucede cuando se pulsa el atajo dos veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir la pestaña de grabación o abrir la pestaña del temporizador. Cuando "No hacer nada" es seleccionado, la primera pulsación responde instantáneamente sin demora. |
 | Cuando Ctrl+Win+P se pulsa tres veces | Selecciona lo que sucede cuando se pulsa el atajo tres veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir búsqueda de emisoras, abrir la pestaña de grabación o abrir la pestaña del temporizador. |
 | Buscar actualizaciones automáticamente al iniciar | Cuando está habilitado, una verificación de actualización en segundo plano se ejecuta cada vez que se inicia NVDA; se le notificará si se encuentra una nueva versión. Cuando está deshabilitado, los controles automáticos se detienen pero los controles manuales permanecen disponibles. |

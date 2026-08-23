@@ -1050,19 +1050,24 @@ class ScheduledRecording:
 	def next_occurrence(self):
 		"""Compute and return the next start_time for a recurring entry.
 
-		Advances from the current start_time by one week, then keeps
-		stepping forward one day at a time until a day that is in
-		active_days (if any restriction is set).
+		Walks forward day-by-day starting from the day right after
+		start_time, stopping at the first day that is in active_days.
+		An empty/None active_days means every day is active, per this
+		class's docstring, so it stops at the very next calendar day.
+
+		This must NOT jump a full week ahead before checking active_days:
+		doing so meant an entry with every weekday marked active (meant
+		to record daily) only ever re-fired once a week, on the original
+		weekday, because "start_time + 1 week" always already satisfies
+		"any day is active" - every day in between (e.g. every day but
+		the original weekday) was silently skipped.
 
 		Returns a new datetime or None when no valid day is found within
 		the next 7 days.
 		"""
-		candidate = self.start_time + datetime.timedelta(weeks=1)
-		if not self.active_days:
-			return candidate
-		# Walk forward up to 7 days to find an allowed weekday.
+		candidate = self.start_time + datetime.timedelta(days=1)
 		for _ in range(7):
-			if candidate.weekday() in self.active_days:
+			if not self.active_days or candidate.weekday() in self.active_days:
 				return candidate
 			candidate += datetime.timedelta(days=1)
 		return None
@@ -1324,6 +1329,17 @@ class Recorder:
 		self._ffmpeg_path      = ffmpeg_path or _default_ffmpeg_path(dll_dir)
 		self._active_scheduled = set()  # currently running scheduled recordings
 		self._active_scheduled_lock = threading.Lock()
+		# Guards every read-then-write of self._scheduled (list membership,
+		# reassignment, append/sort). Without this, the scheduler loop's
+		# once-a-second "self._scheduled = [r for r in self._scheduled if
+		# not r.fired]" reassignment can race with _run_scheduled()'s
+		# recurrence requeue append: if the reassignment's snapshot is taken
+		# before the requeue's append lands on the (about to be orphaned)
+		# old list object, the newly chained occurrence silently vanishes -
+		# the first firing works, but the re-queued next one never gets a
+		# chance to fire. RLock so a locked caller (e.g. add_schedule) can
+		# still call _persist_schedules(), which also takes this lock.
+		self._scheduled_lock = threading.RLock()
 		if self._scheduled:
 			self._ensure_scheduler()
 
@@ -1379,13 +1395,17 @@ class Recorder:
 				if id(r) not in seen:
 					active.append(r)
 					seen.add(id(r))
-		_save_schedules(self._scheduled + active)
+		with self._scheduled_lock:
+			pending = list(self._scheduled)
+		_save_schedules(pending + active)
 
 	def _overlaps(self, start, duration_minutes):
 		"""Return plans that overlap with the given range."""
 		end = start + datetime.timedelta(minutes=duration_minutes)
 		result = []
-		for rec in self._scheduled:
+		with self._scheduled_lock:
+			schedules = list(self._scheduled)
+		for rec in schedules:
 			if rec.fired:
 				continue
 			rec_end = rec.start_time + datetime.timedelta(minutes=rec.duration_minutes)
@@ -1545,19 +1565,22 @@ class Recorder:
 			max_occurrences=max_occurrences,
 			output_folder=output_folder,
 		)
-		self._scheduled.append(rec)
-		self._scheduled.sort(key=lambda r: r.start_time)
-		self._persist_schedules()
+		with self._scheduled_lock:
+			self._scheduled.append(rec)
+			self._scheduled.sort(key=lambda r: r.start_time)
+			self._persist_schedules()
 		self._ensure_scheduler()
 		return rec, conflict_names
 
 	def remove_schedule(self, rec):
-		if rec in self._scheduled:
-			self._scheduled.remove(rec)
-			self._persist_schedules()
+		with self._scheduled_lock:
+			if rec in self._scheduled:
+				self._scheduled.remove(rec)
+				self._persist_schedules()
 
 	def get_schedules(self):
-		return list(self._scheduled)
+		with self._scheduled_lock:
+			return list(self._scheduled)
 
 	def get_active_scheduled(self):
 		"""Return a list of ScheduledRecording objects currently being recorded."""
@@ -1591,21 +1614,29 @@ class Recorder:
 		while not self._stop_scheduler.is_set():
 			now = datetime.datetime.now()
 			fired = []
-			for rec in list(self._scheduled):
-				if not rec.fired and now >= rec.start_time:
-					rec.fired = True
-					fired.append(rec)
-					threading.Thread(
-						target=self._run_scheduled,
-						args=(rec,),
-						daemon=True,
-					).start()
+			# Marking rec.fired, starting the worker thread, and removing
+			# fired entries from the pending list must all happen while
+			# holding _scheduled_lock, as one atomic step - otherwise this
+			# same reassignment can race with a recurrence requeue running
+			# concurrently in _run_scheduled() and silently drop the newly
+			# chained next-occurrence entry (see _scheduled_lock comment
+			# in __init__).
+			with self._scheduled_lock:
+				for rec in list(self._scheduled):
+					if not rec.fired and now >= rec.start_time:
+						rec.fired = True
+						fired.append(rec)
+						threading.Thread(
+							target=self._run_scheduled,
+							args=(rec,),
+							daemon=True,
+						).start()
 
-			# Remove fired entries from the pending list.
-			self._scheduled = [r for r in self._scheduled if not r.fired]
+				# Remove fired entries from the pending list.
+				self._scheduled = [r for r in self._scheduled if not r.fired]
 
-			if fired:
-				self._persist_schedules(extra_active=fired)
+				if fired:
+					self._persist_schedules(extra_active=fired)
 			time.sleep(1)
 
 	def _run_scheduled(self, rec):
@@ -1715,9 +1746,15 @@ class Recorder:
 					occurrences_done = rec.occurrences_done,
 					output_folder    = rec.output_folder,
 				)
-				self._scheduled.append(next_rec)
-				self._scheduled.sort(key=lambda r: r.start_time)
-				self._persist_schedules()
+				# Locked so this append/sort/persist can never interleave
+				# with the scheduler loop's per-second self._scheduled
+				# reassignment (that race is what was silently dropping
+				# the requeued next occurrence - see _scheduled_lock
+				# comment in __init__).
+				with self._scheduled_lock:
+					self._scheduled.append(next_rec)
+					self._scheduled.sort(key=lambda r: r.start_time)
+					self._persist_schedules()
 				log.info(
 					"FreeRadio Recorder: recurring entry re-queued — "
 					"'%s' next at %s",
@@ -1736,6 +1773,8 @@ class Recorder:
 		if self._writer:
 			self._writer.stop()
 			self._writer = None
-		for rec in self._scheduled:
+		with self._scheduled_lock:
+			schedules = list(self._scheduled)
+		for rec in schedules:
 			if hasattr(rec, "_writer") and rec._writer:
 				rec._writer.stop()

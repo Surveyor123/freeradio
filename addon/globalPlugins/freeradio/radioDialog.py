@@ -485,7 +485,8 @@ class RadioDialog(wx.Dialog):
 
 	def focus_tab(self, tab_index):
 		"""Switch to the specified tab and focus on the first focusable item.
-		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs.
+		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs,
+		5=Podcasts, 6=Audio Books.
 
 		Called from _open_dialog() via wx.CallLater(0).
 		Guards against a corrupted notebook as a safety net.
@@ -504,6 +505,44 @@ class RadioDialog(wx.Dialog):
 			if child.AcceptsFocus() and child.IsEnabled() and child.IsShown():
 				child.SetFocus()
 				return
+
+	def focus_podcasts(self):
+		"""Switch to the Podcasts tab and give the subscription list focus.
+
+		Called from _open_dialog() via wx.CallLater(0) - see script_openPodcasts
+		(Ctrl+Windows+O) in __init__.py. Guards against a corrupted notebook
+		as a safety net."""
+		if not self:
+			return
+		try:
+			if self._notebook.GetPageCount() == 0:
+				return
+			self._notebook.SetSelection(5)  # Podcasts tab index
+		except Exception:
+			return
+		feeds = self._podcast_manager.get_feeds()
+		if feeds and self._podcast_list.GetSelection() == wx.NOT_FOUND:
+			self._podcast_list.SetSelection(0)
+		self._podcast_list.SetFocus()
+
+	def focus_audiobooks(self):
+		"""Switch to the Audio Books tab and give the library list focus.
+
+		Called from _open_dialog() via wx.CallLater(0) - see script_openLibrary
+		(Ctrl+Windows+L) in __init__.py. Guards against a corrupted notebook
+		as a safety net."""
+		if not self:
+			return
+		try:
+			if self._notebook.GetPageCount() == 0:
+				return
+			self._notebook.SetSelection(6)  # Audio Books tab index
+		except Exception:
+			return
+		books = self._getem_library.get_books()
+		if books and self._getem_library_ctrl.GetSelection() == wx.NOT_FOUND:
+			self._getem_library_ctrl.SetSelection(0)
+		self._getem_library_ctrl.SetFocus()
 
 	def _build_fav_tab(self):
 		sizer = wx.BoxSizer(wx.VERTICAL)

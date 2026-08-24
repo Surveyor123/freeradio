@@ -700,6 +700,24 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 
 
 	@script(
+		description=_("Open FreeRadio audio book library"),
+		category=_("FreeRadio"),
+		gesture="kb:control+windows+l",
+	)
+	def script_openLibrary(self, gesture):
+		wx.CallAfter(self._open_dialog_on_audiobooks)
+
+
+	@script(
+		description=_("Open FreeRadio podcast subscriptions"),
+		category=_("FreeRadio"),
+		gesture="kb:control+windows+o",
+	)
+	def script_openPodcasts(self, gesture):
+		wx.CallAfter(self._open_dialog_on_podcasts)
+
+
+	@script(
 		description=_("Add currently playing station to favourites, download the whole audio book if one is playing, or download the episode if a podcast is playing"),
 		category=_("FreeRadio"),
 		gesture="kb:control+windows+v",
@@ -812,9 +830,13 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		  None          : no tab switch; focus stays wherever the dialog left it.
 		  "favorites"   : switch to the Favourites tab (index 1).
 		  "search"      : switch to the All Stations tab and focus the search box.
-		  0..4 (int)    : switch to the tab at that index.
+		  "podcasts"    : switch to the Podcasts tab (index 5) and focus the
+		                  subscription list.
+		  "audiobooks"  : switch to the Audio Books tab (index 6) and focus
+		                  the library list.
+		  0..6 (int)    : switch to the tab at that index.
 		                  0=All Stations, 1=Favourites, 2=Recording,
-		                  3=Timer, 4=Liked Songs.
+		                  3=Timer, 4=Liked Songs, 5=Podcasts, 6=Audio Books.
 
 		All tab switching is done here — after Show() and Raise() — so that the
 		notebook HWND is guaranteed to be fully realized before SetSelection is
@@ -899,6 +921,10 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 					self._dialog.focus_favorites()
 				elif focus == "search":
 					self._dialog.focus_search()
+				elif focus == "podcasts":
+					self._dialog.focus_podcasts()
+				elif focus == "audiobooks":
+					self._dialog.focus_audiobooks()
 				elif isinstance(focus, int):
 					self._dialog.focus_tab(focus)
 			except Exception:
@@ -913,9 +939,17 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		"""Open the dialog and switch to the All Stations tab / search box."""
 		self._open_dialog(focus="search")
 
+	def _open_dialog_on_podcasts(self):
+		"""Open the dialog and switch to the Podcasts tab, focused on the subscription list."""
+		self._open_dialog(focus="podcasts")
+
+	def _open_dialog_on_audiobooks(self):
+		"""Open the dialog and switch to the Audio Books tab, focused on the library list."""
+		self._open_dialog(focus="audiobooks")
+
 	def _open_dialog_on_tab(self, tab_index):
 		"""Open the dialog and switch to the given tab.
-		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs.
+		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs, 5=Podcasts, 6=Audio Books.
 		"""
 		self._open_dialog(focus=tab_index)
 

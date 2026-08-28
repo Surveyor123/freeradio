@@ -2406,19 +2406,35 @@ class RadioDialog(wx.Dialog):
 		touch a given field (e.g. "Volume only") leaves whatever was
 		already saved for the others untouched.
 
+		Each entry in *combos* pairs a translated label with the set of
+		fields it saves ("volume", "effects", and/or "speed"). "speed" is
+		only offered when *allow_speed* is True, since regular station
+		favourites don't support a saved playback speed - only podcasts
+		and GETEM audio books do.
+
 		Returns the new profile dict, or None if the user cancelled.
 		"""
-		choices = [
+		combos = [
 			# Translators: Option in audio profile save dialog: save volume level only
-			_("Volume only"),
+			(_("Volume only"), {"volume"}),
 			# Translators: Option in audio profile save dialog: save effects (FX/EQ) only
-			_("Effects only"),
+			(_("Effects only"), {"effects"}),
 			# Translators: Option in audio profile save dialog: save both volume and effects
-			_("Volume and effects"),
+			(_("Volume and effects"), {"volume", "effects"}),
 		]
 		if allow_speed:
-			# Translators: Option in audio profile save dialog: save volume, effects, and the current playback speed
-			choices.append(_("Volume, effects, and playback speed"))
+			combos.extend([
+				# Translators: Option in audio profile save dialog: save volume level and the current playback speed
+				(_("Volume and playback speed"), {"volume", "speed"}),
+				# Translators: Option in audio profile save dialog: save effects (FX/EQ) and the current playback speed
+				(_("Effects and playback speed"), {"effects", "speed"}),
+				# Translators: Option in audio profile save dialog: save the current playback speed only
+				(_("Playback speed only"), {"speed"}),
+				# Translators: Option in audio profile save dialog: save volume, effects, and the current playback speed
+				(_("Volume, effects, and playback speed"), {"volume", "effects", "speed"}),
+			])
+
+		choices = [label for label, _fields in combos]
 
 		dlg = wx.SingleChoiceDialog(
 			self,
@@ -2428,7 +2444,7 @@ class RadioDialog(wx.Dialog):
 			_("Save Audio Profile"),
 			choices,
 		)
-		# Pre-select the most complete option as the default.
+		# Pre-select the most complete option (last one) as the default.
 		dlg.SetSelection(len(choices) - 1)
 		result = dlg.ShowModal()
 		sel = dlg.GetSelection()
@@ -2436,6 +2452,8 @@ class RadioDialog(wx.Dialog):
 
 		if result != wx.ID_OK:
 			return None
+
+		fields = combos[sel][1]
 
 		# Read current UI/player values.
 		vol = self._vol_spin.GetValue()
@@ -2447,29 +2465,18 @@ class RadioDialog(wx.Dialog):
 		for band, _label, _default in self._eq_bands:
 			eq_gains[band] = self._eq_spins[band].GetValue()
 
-		# Build the profile dict based on the user's choice.
-		existing = existing or {}
-		if sel == 0:
-			# Volume only: keep any existing effects/speed, replace volume.
-			profile = dict(existing)
+		# Build the profile dict: only the fields covered by the chosen
+		# combo are (re)written; anything else keeps whatever was already
+		# saved in *existing* (e.g. picking "Playback speed only" for a
+		# podcast that already had a volume/effects profile leaves those
+		# untouched).
+		profile = dict(existing or {})
+		if "volume" in fields:
 			profile["volume"] = vol
-		elif sel == 1:
-			# Effects only: keep any existing volume/speed, replace fx/eq_gains.
-			profile = dict(existing)
+		if "effects" in fields:
 			profile["fx"] = fx_str
 			profile["eq_gains"] = eq_gains
-		elif sel == 2:
-			# Volume and effects: keep any existing speed, replace the rest.
-			profile = dict(existing)
-			profile["volume"] = vol
-			profile["fx"] = fx_str
-			profile["eq_gains"] = eq_gains
-		else:
-			# Volume, effects and speed: replace everything.
-			profile = dict(existing)
-			profile["volume"] = vol
-			profile["fx"] = fx_str
-			profile["eq_gains"] = eq_gains
+		if "speed" in fields:
 			profile["speed"] = self._player.get_playback_rate()
 		return profile
 
@@ -5056,6 +5063,24 @@ class RadioDialog(wx.Dialog):
 
 		item_download = menu.Append(wx.ID_ANY, _("&Download Episode"))
 		self.Bind(wx.EVT_MENU, self._on_episode_download, item_download)
+
+		menu.AppendSeparator()
+
+		# Audio profile commands, mirrored from the feed's own context menu
+		# (_show_feed_context_menu()) so they're reachable without switching
+		# back to the podcast list. These always act on the podcast-wide
+		# profile (applies to every episode) - not a per-episode one, since
+		# episodes don't have their own audio profiles.
+		feed = self._get_selected_podcast_feed()
+
+		# Translators: Context menu item - saves an audio profile (volume/effects/speed) that applies to every episode of this podcast
+		item_save_profile = menu.Append(wx.ID_ANY, _("Save Audio Pr&ofile for This Podcast"))
+		self.Bind(wx.EVT_MENU, self._on_save_feed_audio_profile, item_save_profile)
+
+		# Translators: Context menu item - removes the saved audio profile from this podcast
+		item_clear_profile = menu.Append(wx.ID_ANY, _("Clear Audio Prof&ile"))
+		item_clear_profile.Enable(bool(feed and feed.audio_profile))
+		self.Bind(wx.EVT_MENU, self._on_clear_feed_audio_profile, item_clear_profile)
 
 		menu.AppendSeparator()
 

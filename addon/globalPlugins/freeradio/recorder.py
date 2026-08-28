@@ -19,6 +19,33 @@ import uuid
 
 log = logging.getLogger(__name__)
 
+_ES_CONTINUOUS = 0x80000000
+_ES_SYSTEM_REQUIRED = 0x00000001
+
+
+def _set_scheduled_recording_power_request(active):
+	"""Prevent idle sleep while a scheduled recording worker is active.
+
+	The request belongs to the calling thread, so the same worker that enables
+	it must clear it in a ``finally`` block.  This deliberately prevents only
+	automatic idle sleep; it does not override an explicit Sleep command or a
+	lid-close action chosen by the user.
+	"""
+	if os.name != "nt":
+		return False
+	try:
+		import ctypes
+		flags = _ES_CONTINUOUS | (_ES_SYSTEM_REQUIRED if active else 0)
+		result = ctypes.windll.kernel32.SetThreadExecutionState(flags)
+		if not result:
+			log.warning(
+				"FreeRadio Recorder: Windows rejected the scheduled-recording power request"
+			)
+		return bool(result)
+	except Exception as e:
+		log.warning("FreeRadio Recorder: could not update the Windows power request: %s", e)
+		return False
+
 # Primary User-Agent (works with ICY and most stations)
 _USER_AGENT_PRIMARY = "FreeRadio-NVDA/1.0"
 # Fallback User-Agent (used for servers like SomaFM that expect a browser-like UA)
@@ -1066,6 +1093,68 @@ def _resolve_playlist(url):
 _DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 
 
+def _is_active_schedule_day(value, active_days):
+	"""Return whether *value* falls on one of the configured weekdays."""
+	return not active_days or value.weekday() in active_days
+
+
+def _next_active_start(start, active_days):
+	"""Return the first matching wall-clock occurrence after *start*."""
+	candidate = start + datetime.timedelta(days=1)
+	for _ in range(7):
+		if _is_active_schedule_day(candidate, active_days):
+			return candidate
+		candidate += datetime.timedelta(days=1)
+	return None
+
+
+def _normalise_recurring_occurrence(start, duration_minutes, active_days, now, max_days=3660):
+	"""Return the occurrence that should be pending at *now*.
+
+	The returned start is either the currently active occurrence or the first
+	future occurrence on an allowed weekday.  It is derived from the schedule's
+	wall-clock time rather than its persisted date, which also repairs dates
+	that older FreeRadio versions incorrectly moved a full week ahead.
+
+	The second return value counts fully missed occurrences between the stored
+	start and the returned start.  Legacy fixed-count schedules use that value
+	to preserve their occurrence limit.
+	"""
+	active_days = active_days or []
+	valid_days = {day for day in active_days if isinstance(day, int) and 0 <= day <= 6}
+	if active_days and not valid_days:
+		return None, 0
+	days = valid_days if active_days else set()
+	duration = datetime.timedelta(minutes=duration_minutes)
+	candidate = now.replace(
+		hour=start.hour,
+		minute=start.minute,
+		second=start.second,
+		microsecond=start.microsecond,
+	)
+	if not _is_active_schedule_day(candidate, days) or now >= candidate + duration:
+		if candidate <= now:
+			candidate += datetime.timedelta(days=1)
+		for _ in range(7):
+			if _is_active_schedule_day(candidate, days):
+				break
+			candidate += datetime.timedelta(days=1)
+		else:
+			return None, 0
+
+	skipped = 0
+	cursor = start
+	for _ in range(max_days):
+		if cursor >= candidate:
+			break
+		if _is_active_schedule_day(cursor, days) and cursor + duration <= now:
+			skipped += 1
+		cursor += datetime.timedelta(days=1)
+	else:
+		return None, skipped
+	return candidate, skipped
+
+
 class ScheduledRecording:
 	"""Represents one scheduled (possibly recurring) recording entry.
 
@@ -1103,11 +1192,10 @@ class ScheduledRecording:
 		self.active_days       = active_days or []  # [] means all days
 		self.max_occurrences   = max_occurrences  # 0 = unlimited (for "indefinite")
 		self.occurrences_done  = occurrences_done
-		# Transient crash-recovery field — never persisted.  When set, the
-		# scheduler should record for this many minutes instead of
-		# duration_minutes, without altering the canonical start_time /
-		# duration_minutes the user entered (see _load_schedules).
-		self.catchup_duration_minutes = None
+		# Transient crash/sleep-recovery field — never persisted.  When set,
+		# the scheduler records only until the original end of this occurrence
+		# instead of starting the full duration late.
+		self.catchup_duration_seconds = None
 
 	# ------------------------------------------------------------------
 	# Recurrence helpers
@@ -1146,12 +1234,7 @@ class ScheduledRecording:
 		Returns a new datetime or None when no valid day is found within
 		the next 7 days.
 		"""
-		candidate = self.start_time + datetime.timedelta(days=1)
-		for _ in range(7):
-			if not self.active_days or candidate.weekday() in self.active_days:
-				return candidate
-			candidate += datetime.timedelta(days=1)
-		return None
+		return _next_active_start(self.start_time, self.active_days)
 
 	def __str__(self):
 		ts   = self.start_time.strftime("%d.%m.%Y %H:%M")
@@ -1221,76 +1304,45 @@ def _save_schedules(schedules):
 	try:
 		path = _schedules_path()
 		os.makedirs(os.path.dirname(path), exist_ok=True)
-		with open(path, "w", encoding="utf-8") as f:
-			json.dump(data, f, ensure_ascii=False, indent=2)
+		temp_path = "%s.%s.tmp" % (path, uuid.uuid4().hex)
+		try:
+			with open(temp_path, "w", encoding="utf-8") as f:
+				json.dump(data, f, ensure_ascii=False, indent=2)
+			os.replace(temp_path, path)
+		finally:
+			if os.path.exists(temp_path):
+				os.remove(temp_path)
 	except Exception as e:
 		log.warning("FreeRadio Recorder: could not save schedules: %s", e)
 
 
 def _roll_forward_occurrence(start, active_days, now, max_steps=520):
-	"""Advance `start` week-by-week (respecting active_days) until it is
-	strictly in the future relative to `now`.
+	"""Advance *start* occurrence-by-occurrence until it is after *now*.
 
-	Used when a recurring entry was missed entirely (NVDA was not running
-	for the whole scheduled window), so the original entry is not lost —
-	it is simply moved on to its next valid future occurrence, exactly as
-	if each missed firing had happened and re-queued normally.
-
-	Returns (new_start, steps_skipped) or (None, steps_skipped) if no
-	valid day could be found (e.g. nonsensical active_days).
+	Kept as a small compatibility helper for callers that only care about
+	start times.  Schedule recovery itself uses
+	``_normalise_recurring_occurrence`` so an occurrence whose window is
+	currently open can be resumed rather than skipped.
 	"""
 	candidate = start
 	steps = 0
 	while candidate <= now and steps < max_steps:
-		candidate = candidate + datetime.timedelta(weeks=1)
-		if active_days:
-			found = False
-			for _ in range(7):
-				if candidate.weekday() in active_days:
-					found = True
-					break
-				candidate += datetime.timedelta(days=1)
-			if not found:
-				return None, steps
+		candidate = _next_active_start(candidate, active_days)
+		if candidate is None:
+			return None, steps
 		steps += 1
 	if candidate <= now:
 		return None, steps
 	return candidate, steps
 
 
-def _load_schedules():
-	"""Load scheduled recordings from JSON.
+def _load_schedules(now=None):
+	"""Load, recover and migrate scheduled recordings from JSON.
 
-	Two special cases compared to the original implementation:
-
-	1. Crash recovery — if a recurring or one-shot entry should currently
-	   be active (its start_time has passed but the deadline has not yet
-	   been reached), a *catch-up* recording is started immediately for
-	   the remaining duration.  Crucially, the entry's canonical
-	   start_time and duration_minutes — the values the user originally
-	   entered — are left untouched.  Only the transient
-	   catchup_duration_minutes field is set, which the scheduler uses
-	   solely to decide how long to actually record this one time.  This
-	   means:
-	     - The schedule list keeps showing the original entry (e.g.
-	       20:00, 10 min) rather than a value rewritten to match the late
-	       start (e.g. 20:04, 6 min).
-	     - When a recurring entry is caught up this way, the normal
-	       requeue logic in the scheduler computes the *next* occurrence
-	       from the original, unmodified start_time, so the weekly
-	       schedule itself is never shifted and no extra entry is added.
-
-	2. Entirely-missed recurring entries — if the whole scheduled window
-	   has already passed (NVDA wasn't running at all during it), a
-	   recurring entry is rolled forward to its next valid future
-	   occurrence instead of being silently dropped.  Indefinitely
-	   repeating entries are therefore only ever removed when the user
-	   deletes them.  One-off ("once") entries that were missed entirely
-	   are still dropped, since there is nothing left to catch up.
-
-	3. Recurrence fields — "recurrence", "active_days", "max_occurrences",
-	   and "occurrences_done" are read back from the JSON.  Missing keys
-	   (legacy files) fall back to "once" / [] / 0 / 0.
+	Recurring entries are normalised to the currently active occurrence or
+	the first future occurrence on an allowed weekday.  This repairs dates
+	persisted by older builds that jumped a full week ahead.  If NVDA starts
+	inside a recording window, only the remaining seconds are recorded.
 	"""
 	import json
 	try:
@@ -1299,68 +1351,59 @@ def _load_schedules():
 			return []
 		with open(path, "r", encoding="utf-8") as f:
 			data = json.load(f)
-		now = datetime.datetime.now()
+		now = now or datetime.datetime.now()
 		result = []
+		needs_save = False
 		for item in data:
 			try:
 				start            = datetime.datetime.fromisoformat(item["start_time"])
 				duration_minutes = item["duration_minutes"]
 				recurrence       = item.get("recurrence", "once")
-				active_days      = item.get("active_days", [])
+				active_days      = item.get("active_days", []) or []
 				max_occurrences  = item.get("max_occurrences", 0)
 				occurrences_done = item.get("occurrences_done", 0)
 				output_folder    = item.get("output_folder", "")
 				is_recurring     = recurrence in ("weekly", "indefinite")
 
-				catchup_minutes = None
-				deadline = start + datetime.timedelta(minutes=duration_minutes)
-
-				if start <= now:
-					remaining_minutes = None
-					if now < deadline:
-						remaining_minutes = int((deadline - now).total_seconds() / 60)
-
-					if remaining_minutes and remaining_minutes >= 1:
-						# --- Crash recovery: still within the recording window ---
-						# Leave start_time/duration_minutes exactly as the user
-						# entered them; only flag how long the catch-up
-						# recording should actually run for.
-						catchup_minutes = remaining_minutes
-						log.info(
-							"FreeRadio Recorder: crash recovery — resuming '%s' "
-							"with %d minutes remaining (original schedule kept)",
+				catchup_seconds = None
+				original_start = start
+				if is_recurring:
+					start, skipped = _normalise_recurring_occurrence(
+						start, duration_minutes, active_days, now,
+					)
+					if start is None:
+						log.warning(
+							"FreeRadio Recorder: could not find a valid occurrence for '%s'; dropping entry",
 							item.get("station", {}).get("name", "?"),
-							remaining_minutes,
 						)
-					elif is_recurring:
-						# --- Entirely missed (or <1 min left) ---
-						# Roll the recurring entry forward to its next valid
-						# future occurrence rather than losing it.
-						new_start, steps = _roll_forward_occurrence(start, active_days, now)
-						if new_start is None:
-							log.warning(
-								"FreeRadio Recorder: could not find a future "
-								"occurrence for '%s'; dropping entry",
-								item.get("station", {}).get("name", "?"),
-							)
+						needs_save = True
+						continue
+					if recurrence == "weekly":
+						occurrences_done += skipped
+						if max_occurrences > 0 and occurrences_done >= max_occurrences:
+							needs_save = True
 							continue
-						occurrences_done += steps
-						if recurrence == "weekly" and max_occurrences > 0 and occurrences_done >= max_occurrences:
-							# All fixed occurrences already elapsed while NVDA
-							# wasn't running.
-							continue
-						start = new_start
+					if start != original_start:
+						needs_save = True
 						log.info(
-							"FreeRadio Recorder: '%s' was missed entirely while "
-							"NVDA was not running; rolled forward to %s",
+							"FreeRadio Recorder: normalised recurring schedule '%s' to %s",
 							item.get("station", {}).get("name", "?"),
 							start.strftime("%d.%m.%Y %H:%M"),
 						)
-					else:
-						# One-off ("once") entry that is now entirely in the
-						# past, or has less than a minute left — nothing
-						# worth catching up; drop it.
-						continue
+				elif start + datetime.timedelta(minutes=duration_minutes) <= now:
+					# A one-shot entry whose complete window elapsed cannot be
+					# recovered and should not remain in the persisted list.
+					needs_save = True
+					continue
+
+				deadline = start + datetime.timedelta(minutes=duration_minutes)
+				if start <= now < deadline:
+					catchup_seconds = (deadline - now).total_seconds()
+					log.info(
+						"FreeRadio Recorder: recovering '%s' with %.1f seconds remaining",
+						item.get("station", {}).get("name", "?"),
+						catchup_seconds,
+					)
 
 				rec = ScheduledRecording(
 					station          = item["station"],
@@ -1374,10 +1417,12 @@ def _load_schedules():
 					occurrences_done = occurrences_done,
 					output_folder    = output_folder,
 				)
-				rec.catchup_duration_minutes = catchup_minutes
+				rec.catchup_duration_seconds = catchup_seconds
 				result.append(rec)
 			except Exception as e:
 				log.warning("FreeRadio Recorder: skipping bad schedule entry: %s", e)
+		if needs_save:
+			_save_schedules(result)
 		return result
 	except Exception as e:
 		log.warning("FreeRadio Recorder: could not load schedules: %s", e)
@@ -1418,9 +1463,11 @@ class Recorder:
 		# before the requeue's append lands on the (about to be orphaned)
 		# old list object, the newly chained occurrence silently vanishes -
 		# the first firing works, but the re-queued next one never gets a
-		# chance to fire. RLock so a locked caller (e.g. add_schedule) can
-		# still call _persist_schedules(), which also takes this lock.
+		# chance to fire.
 		self._scheduled_lock = threading.RLock()
+		# Serialises complete snapshot-and-save operations.  Without this,
+		# overlapping recordings can write the same JSON file concurrently.
+		self._schedule_persist_lock = threading.Lock()
 		if self._scheduled:
 			self._ensure_scheduler()
 
@@ -1468,17 +1515,18 @@ class Recorder:
 		registered themselves in self._active_scheduled (avoids a race
 		between the scheduler loop and _run_scheduled).
 		"""
-		with self._active_scheduled_lock:
-			active = list(self._active_scheduled)
-		if extra_active:
-			seen = {id(r) for r in active}
-			for r in extra_active:
-				if id(r) not in seen:
-					active.append(r)
-					seen.add(id(r))
-		with self._scheduled_lock:
-			pending = list(self._scheduled)
-		_save_schedules(pending + active)
+		with self._schedule_persist_lock:
+			with self._active_scheduled_lock:
+				active = list(self._active_scheduled)
+			if extra_active:
+				seen = {id(r) for r in active}
+				for r in extra_active:
+					if id(r) not in seen:
+						active.append(r)
+						seen.add(id(r))
+			with self._scheduled_lock:
+				pending = list(self._scheduled)
+			_save_schedules(pending + active)
 
 	def _overlaps(self, start, duration_minutes):
 		"""Return plans that overlap with the given range."""
@@ -1649,15 +1697,18 @@ class Recorder:
 		with self._scheduled_lock:
 			self._scheduled.append(rec)
 			self._scheduled.sort(key=lambda r: r.start_time)
-			self._persist_schedules()
+		self._persist_schedules()
 		self._ensure_scheduler()
 		return rec, conflict_names
 
 	def remove_schedule(self, rec):
+		removed = False
 		with self._scheduled_lock:
 			if rec in self._scheduled:
 				self._scheduled.remove(rec)
-				self._persist_schedules()
+				removed = True
+		if removed:
+			self._persist_schedules()
 
 	def get_schedules(self):
 		with self._scheduled_lock:
@@ -1691,36 +1742,98 @@ class Recorder:
 		self._scheduler_thread.start()
 
 	def _scheduler_loop(self):
-		import time
 		while not self._stop_scheduler.is_set():
-			now = datetime.datetime.now()
-			fired = []
-			# Marking rec.fired, starting the worker thread, and removing
-			# fired entries from the pending list must all happen while
-			# holding _scheduled_lock, as one atomic step - otherwise this
-			# same reassignment can race with a recurrence requeue running
-			# concurrently in _run_scheduled() and silently drop the newly
-			# chained next-occurrence entry (see _scheduled_lock comment
-			# in __init__).
-			with self._scheduled_lock:
-				for rec in list(self._scheduled):
-					if not rec.fired and now >= rec.start_time:
-						rec.fired = True
-						fired.append(rec)
-						threading.Thread(
-							target=self._run_scheduled,
-							args=(rec,),
-							daemon=True,
-						).start()
+			self._scheduler_tick()
+			self._stop_scheduler.wait(1.0)
 
-				# Remove fired entries from the pending list.
-				self._scheduled = [r for r in self._scheduled if not r.fired]
+	def _start_scheduled_worker(self, rec):
+		threading.Thread(
+			target=self._run_scheduled,
+			args=(rec,),
+			daemon=True,
+		).start()
 
-				if fired:
-					self._persist_schedules(extra_active=fired)
-			time.sleep(1)
+	def _scheduler_tick(self, now=None):
+		"""Dispatch due entries and roll fully missed entries forward.
+
+		A delayed tick can happen after Modern Standby.  If the original
+		recording window is still open, the worker receives only the remaining
+		seconds.  If the complete window elapsed, no misleading full-length
+		recording is started late; recurring entries move to their next valid
+		day and one-shot entries are removed.
+		"""
+		now = now or datetime.datetime.now()
+		fired = []
+		changed = False
+		with self._scheduled_lock:
+			pending = []
+			for rec in self._scheduled:
+				if rec.fired:
+					changed = True
+					continue
+				if now < rec.start_time:
+					pending.append(rec)
+					continue
+
+				remaining_seconds = (
+					rec.start_time
+					+ datetime.timedelta(minutes=rec.duration_minutes)
+					- now
+				).total_seconds()
+				if remaining_seconds > 0:
+					rec.fired = True
+					rec.catchup_duration_seconds = remaining_seconds
+					fired.append(rec)
+					changed = True
+					continue
+
+				changed = True
+				if not rec.is_recurring():
+					log.warning(
+						"FreeRadio Recorder: one-shot schedule for '%s' was missed while NVDA was suspended",
+						rec.station.get("name", "?"),
+					)
+					continue
+
+				new_start, skipped = _normalise_recurring_occurrence(
+					rec.start_time,
+					rec.duration_minutes,
+					rec.active_days,
+					now,
+				)
+				if rec.recurrence == "weekly":
+					rec.occurrences_done += skipped
+				if new_start is None or not rec.has_more_occurrences():
+					log.warning(
+						"FreeRadio Recorder: missed recurring schedule for '%s' has no future occurrence",
+						rec.station.get("name", "?"),
+					)
+					continue
+				rec.start_time = new_start
+				rec.catchup_duration_seconds = None
+				pending.append(rec)
+				log.warning(
+					"FreeRadio Recorder: missed occurrence for '%s'; next at %s",
+					rec.station.get("name", "?"),
+					new_start.strftime("%d.%m.%Y %H:%M"),
+				)
+			self._scheduled = pending
+
+		if changed:
+			self._persist_schedules(extra_active=fired)
+		for rec in fired:
+			self._start_scheduled_worker(rec)
+		return fired
 
 	def _run_scheduled(self, rec):
+		power_request = _set_scheduled_recording_power_request(True)
+		try:
+			self._run_scheduled_body(rec)
+		finally:
+			if power_request:
+				_set_scheduled_recording_power_request(False)
+
+	def _run_scheduled_body(self, rec):
 		"""Run a scheduled recording: Python writes the stream, optionally plays via main player."""
 		import time
 
@@ -1763,7 +1876,10 @@ class Recorder:
 		if hasattr(self, "_notify_start") and self._notify_start:
 			self._notify_start(rec)
 
-		deadline = time.time() + (rec.catchup_duration_minutes or rec.duration_minutes) * 60
+		run_seconds = rec.catchup_duration_seconds
+		if run_seconds is None:
+			run_seconds = rec.duration_minutes * 60
+		deadline = time.time() + run_seconds
 		while time.time() < deadline:
 			if getattr(rec, "_force_stop", False):
 				break
@@ -1835,7 +1951,7 @@ class Recorder:
 				with self._scheduled_lock:
 					self._scheduled.append(next_rec)
 					self._scheduled.sort(key=lambda r: r.start_time)
-					self._persist_schedules()
+				self._persist_schedules()
 				log.info(
 					"FreeRadio Recorder: recurring entry re-queued — "
 					"'%s' next at %s",

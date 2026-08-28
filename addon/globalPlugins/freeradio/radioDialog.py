@@ -1593,19 +1593,20 @@ class RadioDialog(wx.Dialog):
 		)
 		if dlg.ShowModal() == wx.ID_OK:
 			updated = dlg.get_values()
-			# Apply changes to the existing ScheduledRecording in-place
-			rec.start_time       = updated["start_time"]
-			rec.duration_minutes = updated["duration_minutes"]
-			rec.recurrence       = updated["recurrence"]
-			rec.active_days      = updated["active_days"]
-			rec.max_occurrences  = updated["max_occurrences"]
-			rec.record_only      = updated["record_only"]
-			rec.output_folder    = updated["output_folder"]
-			rec.fired            = False   # reset so scheduler picks it up again
-			# Re-sort and persist
-			self._recorder._scheduled.sort(key=lambda r: r.start_time)
-			from . import recorder as _rec_mod
-			_rec_mod._save_schedules(self._recorder._scheduled)
+			# Apply, re-sort and snapshot atomically with respect to the
+			# scheduler thread.  Persist only after releasing the schedule lock
+			# to keep the lock order consistent with Recorder._persist_schedules().
+			with self._recorder._scheduled_lock:
+				rec.start_time       = updated["start_time"]
+				rec.duration_minutes = updated["duration_minutes"]
+				rec.recurrence       = updated["recurrence"]
+				rec.active_days      = updated["active_days"]
+				rec.max_occurrences  = updated["max_occurrences"]
+				rec.record_only      = updated["record_only"]
+				rec.output_folder    = updated["output_folder"]
+				rec.fired            = False   # reset so scheduler picks it up again
+				self._recorder._scheduled.sort(key=lambda r: r.start_time)
+			self._recorder._persist_schedules()
 			self._refresh_sched_list()
 			ui.message(_("Schedule updated"))
 		dlg.Destroy()

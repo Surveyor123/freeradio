@@ -1,6 +1,19 @@
 # FreeRadio — NVDA Eklentisi
 
-FreeRadio, ekran okuyucu NVDA için geliştirilmiş bir internet radyo eklentisidir. Temel amacı, kullanıcıların binlerce internet radyo istasyonuna ve podcast'e kolayca erişebilmesini sağlamaktır. Tüm arayüz ve işlevler NVDA ile tam erişilebilirlik gözetilerek tasarlanmıştır.
+FreeRadio, ekran okuyucu NVDA için geliştirilmiş, tüm özellikleriyle donanımlı bir internet radyo, podcast ve sesli kitap eklentisidir. İnternet radyo istasyonlarını dinlemenin basit bir yolu olarak başlayan bu proje, zamanla eksiksiz ve tam erişilebilir bir dinleme merkezine dönüştü — her ekran, iletişim kutusu ve denetim, hiçbir noktada fare gerektirmeyecek şekilde, en baştan klavye ve ekran okuyucu kullanımı gözetilerek tasarlanmıştır.
+
+## FreeRadio Neler Yapabilir
+
+- **İnternet radyosu** — [Radio Browser](https://www.radio-browser.info/) dizinindeki 50.000'i aşkın istasyona göz atın ve arama yapın; sonuçlar TuneIn ve iHeartRadio ile desteklenir. İstasyonları favorilere ekleyin, yeniden sıralayın ve Windows'ta herhangi bir yerden genel bir klavye kısayoluyla doğrudan çalmaya başlayın — bkz. [Radio Browser Dizini](#radio-browser-dizini) ve [Favoriler](#favoriler).
+- **Podcastler** — Herhangi bir RSS/Atom akışına abone olun veya Apple'ın podcast dizininde arama yaparak abone olmadan önce bölümleri önizleyin. Oynatma konumu otomatik olarak kaydedilir ve kaldığınız yerden devam eder — bkz. [Podcastler](#podcastler).
+- **Sesli kitaplar** — Boğaziçi Üniversitesi'nin görme engelliler için dijital kütüphanesi [GETEM](https://getem.boun.edu.tr/)'den kitap arayın, akışla dinleyin veya indirin; çok bölümlü eserlerde otomatik devam etme özelliği vardır — bkz. [Sesli Kitaplar (GETEM)](#sesli-kitaplar-getem).
+- **Kayıt** — Çalan içeriği anında kaydedin, bir şarkıyı başladığında ve bittiğinde otomatik olarak tek başına yakalayın veya tek seferlik ya da tekrarlanan kayıtlar planlayın — tüm bunlar oynatmayı kesintiye uğratmadan gerçekleşir — bkz. [Kayıt](#kayıt).
+- **Zaman kaydırma (canlı radyoyu geri sarma)** — Canlı bir istasyonu bir DVR gibi duraklatın ve geri sarın, ardından istediğinizde canlıya tekrar yetişin — bkz. [Zaman Kaydırma (Canlı Radyoyu Geri Sarma)](#zaman-kaydırma-canlı-radyoyu-geri-sarma).
+- **Müzik tanıma ve beğenilen şarkılar** — Metadata bulunmayan parçaları Shazam tabanlı tanıma ile belirleyin, beğendiğiniz şarkıları bir metin dosyasına kaydedin ve sözlerini bulun — bkz. [Müzik Tanıma](#müzik-tanıma) ve [Beğenilen Şarkılar](#beğenilen-şarkılar).
+- **Ses profilleri ve efektler** — İstasyon, podcast veya sesli kitap başına ayrı ses seviyesi, efekt, EQ ve oynatma hızı ayarları kaydedin; BASS arka ucu üzerinden gerçek zamanlı efektler (Chorus, Reverb, EQ artırmaları ve daha fazlası) uygulayın — bkz. [İstasyon Ses Profili](#i̇stasyon-ses-profili).
+- **Ses yansıtma** — Aynı akışı, hoparlör ve kulaklık gibi iki ses çıkış aygıtına eş zamanlı olarak gönderin — bkz. [Ses Yansıtma](#ses-yansıtma).
+- **Zamanlayıcılar** — Favori bir istasyonun belirli bir saatte çalmaya başlamasını veya oynatmanın durmasını planlayın — bkz. [Zamanlayıcı](#zamanlayıcı).
+- **Derinlemesine klavye ve braille erişimi** — Her özelliğe tamamen klavyeden ulaşılabilir; Windows'ta her yerden çalışan genel kısayollar, tek tek favori istasyonlar için doğrudan kısayollar ve FreeRadio'nun tüm sesli bildirimleri için isteğe bağlı braille çıkışı bulunur.
 
 ## Radio Browser Dizini
 
@@ -40,6 +53,8 @@ Tüm kısayollar NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio
 | Kısayol | İşlev | Açıklama |
 |---|---|---|
 | `Ctrl+Win+R` | İstasyon tarayıcısını aç | Tarayıcı penceresi kapalıysa açar, açıksa öne getirir. |
+| `Ctrl+Win+O` | Podcastler sekmesini aç | İstasyon tarayıcısını (kapalıysa) açar veya öne getirir ve doğrudan **Podcastler** sekmesine geçer. |
+| `Ctrl+Win+L` | Sesli Kitaplar sekmesini aç | İstasyon tarayıcısını (kapalıysa) açar veya öne getirir ve doğrudan **Sesli Kitaplar** sekmesine geçer. |
 | `Ctrl+Win+P` | Duraklat / devam et | Çalan istasyon varsa duraklatır; duraklatılmışsa devam ettirir. Hiçbir şey çalmıyorsa ayarınıza bağlı olarak son istasyonu başlatır veya favoriler listesini açar. Hızlıca iki kez basıldığında seçtiğiniz bir sekmeye doğrudan atlar. Üç kez basıldığında ayarınıza bağlı olarak ayrı bir işlemi tetikleyebilir. |
 | `Ctrl+Win+S` | Durdur | Çalan istasyonu tamamen durdurur ve oynatıcıyı sıfırlar. |
 | `Ctrl+Win+→` | Sonraki favori | Favoriler listesindeki bir sonraki istasyona geçer. Liste sonuna gelindiğinde başa döner. |
@@ -391,6 +406,7 @@ Birkaç akış eklediğinizde bunlar **Abonelikler** listesinde görünür. Her 
 
 **Akışlar için bağlam menüsü:** Bir akışa sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açabilirsiniz:
 - **Akışı Yenile** — yeni bölümleri şimdi getirir.
+- **Bu Podcast İçin Ses Profili Kaydet** / **Ses Profilini Temizle** — bkz. [Podcast Ses Profili](#podcast-ses-profili).
 - **Akışı Kaldır** — aboneliği siler.
 - **Akış URL'sini Kopyala** — akış URL'sini panoya kopyalar.
 
@@ -415,6 +431,7 @@ Abonelikler listesinde bir akış seçin; bölümleri aşağıdaki **Bölümler*
 **Bölümler için bağlam menüsü:** Bir bölüme sağ tıklayarak ya da onu seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açabilirsiniz:
 - **Bölümü Çal** — çalmaya başlar.
 - **Bölümü İndir** — bölüm dosyasını kayıt klasörünüze indirir.
+- **Bu Podcast İçin Ses Profili Kaydet** / **Ses Profilini Temizle** — akışın kendi bağlam menüsündekiyle aynı komutlardır; Abonelikler listesine geri dönmenize gerek kalmasın diye burada da bulunur. Yine de her zaman tüm podcast için tek bir profil kaydeder, yalnızca bu bölüm için ayrı bir profil değil — bkz. [Podcast Ses Profili](#podcast-ses-profili).
 - **Bölüm URL'sini Kopyala** — doğrudan ses URL'sini panoya kopyalar.
 
 ### Bölümleri İndirme
@@ -434,6 +451,25 @@ Podcast bölümleri, **BASS arka ucu** kullanılarak çalınır (radyo akışlar
 > **Not:** `bass_fx.dll` varsayılan olarak FreeRadio ile birlikte gelmez. Bu özelliği etkinleştirmek için [BASS FX sayfasından](https://www.un4seen.com/bass-fx.html) indirip eklentinin `bass/x64` (64-bit NVDA için) veya `bass` (32-bit NVDA için) klasörüne yerleştirebilirsiniz.
 
 BASS arka ucu devre dışıysa (veya başarısız olursa) podcast çalma, radyo için kullanılan aynı harici oynatıcı zincirine (VLC → PotPlayer → WMP) düşer, ancak bu durumda **atlama ve devam etme işlevi çalışmaz** — bölüm her seferinde baştan çalar. Tam podcast deneyimi için BASS arka ucunu etkin tutun.
+
+**Devam ettirme ses efekti:** Bir bölüm kaydedilmiş konumundan devam ederken FreeRadio, kaydedilen noktaya atlarken ayrı bir kanalda kısa bir kaset yükleme sesi çalar; böylece bu sırada bölümün kendi sesi 0:00'dan itibaren duyulur şekilde çalmaz. Bu, BASS arka ucu aktif olduğunda otomatik olarak gerçekleşir ve **İstasyon geçiş efekti** ayarından bağımsızdır — o ayar yalnızca canlı radyo istasyonları arasında geçişi etkiler, podcast veya sesli kitapların devam ettirilmesini değil.
+
+### Podcast Ses Profili
+
+Abonelikler listesinde bir podcaste ya da onun herhangi bir bölümüne sağ tıklayıp **Bu Podcast İçin Ses Profili Kaydet**'i seçerek mevcut ses seviyesini, efektleri, EQ kazançlarını ve/veya oynatma hızını o podcaste özgü bir profil olarak kaydedebilirsiniz. O podcastin herhangi bir bölümü çaldığında kaydedilen ayarlar otomatik olarak uygulanır; global varsayılanların yerine geçer. Komut hem akışın hem de bölümün bağlam menüsünden erişilebilir olduğundan, Abonelikler listesine geri dönmeden ulaşabilirsiniz — her iki durumda da her zaman tüm podcast için tek bir profil kaydedilir, bölüm başına ayrı bir profil değil.
+
+Bir iletişim kutusu tam olarak neyin kaydedileceğini seçmenizi sağlar:
+- **Yalnızca ses seviyesi**
+- **Yalnızca efektler**
+- **Ses seviyesi ve efektler**
+- **Ses seviyesi ve oynatma hızı**
+- **Efektler ve oynatma hızı**
+- **Yalnızca oynatma hızı**
+- **Ses seviyesi, efektler ve oynatma hızı**
+
+Yalnızca seçtiğiniz parçalar profile yazılır; dışarıda bıraktığınız her şey daha önce kaydedilmiş haliyle kalır. Örneğin, ses seviyesi/efekt profili zaten kayıtlı bir podcastte **Yalnızca oynatma hızı**'nı seçmek yalnızca hızı günceller, geri kalanına dokunmaz.
+
+**Ses Profilini Temizle**, her iki bağlam menüsünden de podcastin kayıtlı profilini kaldırır. Yalnızca podcastin o an kayıtlı bir profili varsa etkindir.
 
 ### Podcast Veri Depolama
 
@@ -481,13 +517,24 @@ Eklediğiniz kitaplar, başlık, yazar ve biçimi gösteren **Kitaplık** listes
 - **Medyayı Oynat** — oynatmaya başlar, `Enter` ile aynı.
 - **Kitabı İndir** — kitabın her bölümünü indirir; aşağıdaki [Sesli Kitapları İndirme](#sesli-kitapları-i̇ndirme) bölümüne bakın.
 - **URL'yi Kopyala** — kitabın GETEM katalog sayfası URL'sini panoya kopyalar.
+- **Bu Kitap İçin Ses Profili Kaydet** / **Ses Profilini Temizle** — bkz. aşağıdaki [Sesli Kitap Ses Profili](#sesli-kitap-ses-profili).
 - **Kitaplıktan Kaldır** — kitabı kitaplığınızdan siler.
 
 ### Oynatma ve Devam Etme
 
 Çok bölümlü bir eser, oynatıcıda tek bir öğe olarak ele alınır — nasıl sunulursa sunulsun, bir podcast bölümünün tek bir öğe olması gibi. FreeRadio en son hangi bölümü dinlediğinizi hatırlar ve o kitabı bir dahaki sefere oynattığınızda oradan otomatik olarak devam eder, NVDA'yı yeniden başlatsanız bile.
 
+Bir bölüm bittiğinde FreeRadio, aynı kitabın bir sonraki bölümünü otomatik olarak başlatır — elle seçmenize gerek yoktur. Bu, o sırada İstasyon Tarayıcısı penceresi kapalı olsa bile gerçekleşir; Kitaplık listesinde gösterilen "şu an çalıyor" bölümü, pencere bir dahaki sefere açıldığında otomatik olarak güncellenir.
+
 Oynatma, bölümün tamamını önce indirmek yerine küçük bir yerel aktarıcı üzerinden akar, böylece dinleme ilk baytlar gelir gelmez başlar — podcastlerin kullandığı aynı anında başlama davranışı. Tüm olağan oynatıcı kontrolleri (duraklat, ses seviyesi, zaman kaydırma, oynatma hızı, çıkış aygıtı vb.) bir sesli kitapta, bir istasyon veya podcast bölümünde olduğu gibi çalışır.
+
+Podcastlerde olduğu gibi, bir kitabı kayıtlı konumundan devam ettirmek de FreeRadio kaydedilen noktaya atlarken kısa bir kaset yükleme sesi çalar — bkz. [Podcast Oynatma Ayrıntıları](#podcast-oynatma-ayrıntıları) bölümündeki **Devam ettirme ses efekti** notu.
+
+### Sesli Kitap Ses Profili
+
+Kitaplık listenizde bir kitaba sağ tıklayıp **Bu Kitap İçin Ses Profili Kaydet**'i seçerek mevcut ses seviyesini, efektleri, EQ kazançlarını ve/veya oynatma hızını o kitaba özgü bir profil olarak kaydedebilirsiniz. Kitap (veya onun herhangi bir bölümü) çaldığında kaydedilen ayarlar otomatik olarak uygulanır; global varsayılanların yerine geçer. Bu, yukarıdaki [Podcast Ses Profili](#podcast-ses-profili) ile tamamen aynı şekilde çalışır; aynı kayıt seçenekleri (herhangi bir kombinasyonda ses seviyesi, efektler ve/veya oynatma hızı) ve aynı kısmi güncelleme davranışı geçerlidir.
+
+**Ses Profilini Temizle**, kitabın kayıtlı profilini kaldırır; yalnızca kitabın o an kayıtlı bir profili varsa etkindir.
 
 ### Sesli Kitapları İndirme
 
@@ -545,7 +592,7 @@ NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki
 | Ses seviyesi | Eklentinin başlangıç ses seviyesini belirler (0–200). Çalma sırasında `Ctrl+Win+↑` / `Ctrl+Win+↓` ile değiştirilen değer buraya da yansır. |
 | Ses efektleri | NVDA başladığında veya bir istasyon çalmaya başladığında hangi efektlerin (Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb ve üç EQ artırma seçeneği) aktif olacağını belirler. İstasyon Tarayıcısı'ndaki Efektler listesiyle eşleşecek şekilde birden fazla efekt aynı anda işaretlenebilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
 | EQ kazancı (Bas / Tiz / Vokal) | Her EQ bandının kazanç düzeyini dB cinsinden belirler (−15 ile +15 arasında). İlgili EQ efekti etkinleştirildiğinde bu değerler uygulanır ve genel olarak kaydedilir. İstasyona özel geçersiz kılmalar Favoriler sekmesindeki **Ses Profilini Kaydet** düğmesiyle yapılabilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
-| İstasyon geçiş efekti (BASS arka ucu) | İstasyonlar arasında geçiş yapılırken uygulanacak davranışı belirler. **Anlık kesme** (varsayılan) yeni istasyon başlamadan önce eskisini hemen durdurur. **Kısa geçiş efekti (1 saniye)** ve **Normal geçiş efekti (2 saniye)** seçeneklerinde yeni istasyon hiç boşluk olmadan hemen başlar; yeni akışın aktif olduğu onaylandıktan sonra eski istasyonun sesi arka planda kademeli olarak azaltılarak kesilir. **İstasyon ayarlama sesi efekti** eski istasyonu hemen durdurur ve yeni istasyon başlamadan önce bir istasyon ayarlama sesi efekti çalar. Anlık kesme seçiliyken herhangi bir performans etkisi yoktur. Yalnızca BASS arka ucu aktifken geçerlidir. |
+| İstasyon geçiş efekti (BASS arka ucu) | **Canlı radyo istasyonları** arasında geçiş yapılırken uygulanacak davranışı belirler. **Anlık kesme** (varsayılan) yeni istasyon başlamadan önce eskisini hemen durdurur. **Kısa geçiş efekti (1 saniye)** ve **Normal geçiş efekti (2 saniye)** seçeneklerinde yeni istasyon hiç boşluk olmadan hemen başlar; yeni akışın aktif olduğu onaylandıktan sonra eski istasyonun sesi arka planda kademeli olarak azaltılarak kesilir. **İstasyon ayarlama sesi efekti** eski istasyonu hemen durdurur ve yeni istasyon başlamadan önce bir istasyon ayarlama sesi efekti çalar. Anlık kesme seçiliyken herhangi bir performans etkisi yoktur. Yalnızca BASS arka ucu aktifken geçerlidir. Podcast veya sesli kitaplar için geçerli değildir — bunların devam ettirilmesi bu ayardan bağımsız olarak her zaman kendi kısa kaset sesini çalar; bkz. [Podcast Oynatma Ayrıntıları](#podcast-oynatma-ayrıntıları). |
 | NVDA başlangıcında son istasyonu devam ettir | Açıksa NVDA her başlatıldığında en son çalınan istasyon otomatik olarak yeniden başlar. |
 | Parça değişimlerini otomatik seslendir (ICY metadata) | Açıksa çalan istasyon ICY metadata yayınlıyorken parça her değiştiğinde NVDA yeni parça adını otomatik olarak okur. İstasyon değiştiğinde de ilk parça bilgisi anında seslendirilir. Varsayılan olarak kapalıdır. |
 | Bildirimleri sessize al | Açıksa NVDA; istasyon değişikliklerini, oynatma durumu değişikliklerini (çal, duraklat, durdur) ve kayıt olaylarını (başladı, durdu, bitti) anons etmez. Hata mesajları, favori geri bildirimleri, müzik tanıma sonuçları ve güncelleme bildirimleri bu kapsamın dışındadır. Atanmamış bir girdi hareketi aracılığıyla anlık olarak da değiştirilebilir. Varsayılan olarak kapalıdır. |
@@ -616,4 +663,4 @@ FreeRadio, yeni sürüm olup olmadığını GitHub üzerinden otomatik olarak ko
 
 ## Lisans
 
-GPL v2
+GPL v2

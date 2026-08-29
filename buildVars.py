@@ -16,59 +16,32 @@ addon_info = AddonInfo(
 	
 	# Add-on description
 	# Translators: Long description to be shown for this add-on
-	addon_description=_("""FreeRadio is an internet radio add-on for NVDA that provides seamless access to thousands of stations via the Radio Browser open directory. It features a fully accessible station browser with search, country filter, favourites management, and per-station audio profiles. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log. All controls and shortcuts are designed for NVDA accessibility."""),
+	addon_description=_("""FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that provides seamless access to thousands of internet radio stations via the Radio Browser open directory, RSS/Atom podcast feeds, and the GETEM digital library for the visually impaired. It features a fully accessible station browser with search, country filter, favourites management, and per-station, per-podcast, and per-audio-book audio profiles. Podcast episodes and audio book chapters resume automatically from where you left off, with adjustable pitch-preserving playback speed. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, time-shift rewind of live radio, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log with lyrics lookup. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.23.2",
+	addon_version="2026.23.3",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-## scheduled recording fixes
+**Security**
+- Certificate verification for streaming connections (live playback, recording, and time-shift) is now enabled by default, closing a gap where every station's stream could previously be intercepted or substituted without warning. Stations with known broken/expired certificates automatically fall back to an unverified connection so they keep working — nothing else changes for those stations, and only they pay a small extra delay the first time they're opened each session.
 **Fixed**
-- Recurring scheduled recordings would only fire once and never repeat correctly.
-  - Fixed a thread-safety race where the scheduler loop's per-second cleanup of the schedule list could silently drop a freshly re-queued recurring recording before it was ever saved or checked.
-  - Fixed date calculation for recurring schedules: the next occurrence was always computed a full week ahead before checking active days, so a schedule set to record every day (e.g. daily at 09:00) actually only re-fired once a week on the original weekday. It now correctly schedules the very next matching day.
-**Note**
-- Existing entries in `freeradio_schedules.json` created before this fix may still hold a `start_time` computed by the old logic (a week ahead). Recreate those schedules, or manually correct their `start_time`, to get correct daily firing going forward.
-## Fixes for chapter Auto-advance and playback speed
-**Bug Fix — Audio Book Chapter Auto-Advance Stopped When FreeRadio Window Was Closed**
-- Fixed an issue where an audio book would correctly move to its next chapter when it finished playing while the FreeRadio window was open on the Audio Books tab, but silently stopped at the end of a chapter instead of advancing if the window was closed or hidden.
-- Chapter auto-advance no longer depends on the FreeRadio dialog being open: it now runs independently in the background, using the finished chapter's own book/part information to look up the next chapter and start it directly.
-- Progress tracking (which chapter/part you're on) is now saved correctly even while advancing in the background.
-- When the FreeRadio window is reopened, its "now playing" state (used by F3/F4 chapter/book navigation) is refreshed from the player, so it correctly reflects a book that kept advancing while the window was closed.
-**Bug Fix — Playback Speed Leaking Between Audio Books/Podcasts**
-- Fixed an issue where saving an audio profile with a sped-up playback rate (e.g. 1.4x) for one book, then switching to another book with no saved profile, would leave the second book playing at the first book's speed instead of normal speed.
-- Playback speed now follows the same rule already used for volume/effects/EQ: if the book or podcast being played has a saved profile with a speed, that speed is applied; otherwise, speed resets to normal (1.0x) rather than carrying over from whatever was played previously.
-- Arabic localization update
-## startup resume fixes
-**Bug Fix — Audio Profile Not Applied on Startup Resume**
-- Fixed an issue where a saved audio profile (volume/effects/EQ/speed) for a podcast or audio book was applied correctly when starting playback from the dialog, but was ignored when the station resumed automatically on NVDA startup.
-- Playing a podcast episode now also records which feed it belongs to; playing an audio book chapter already recorded which book it belongs to.
-- On startup resume:
-  - For audio books, the saved book profile is now looked up and applied together with the rebuilt playback URL.
-  - For podcast episodes, the subscribed feed is looked up independently (without needing the dialog open) and its saved profile, if any, is applied the same way.
-- As a result, resumed playback on NVDA startup now respects the same volume, effects, EQ, and playback speed settings as playback started manually from the dialog.
-## Recording tab rearrangements and audio profiles for podcasts and audio books
-**Recording Tab**
-- Removed the "Edit" and "Remove" buttons; their functionality moved into the list's context menu (Applications key / Shift+F10).
-- Delete / Shift+Delete now removes the selected schedule directly.
-- Default mode is now "Record only".
-- After removing a schedule, the next item in the list (or the previous one, if it was the last) is automatically selected.
-**Podcast and Audio Book Tabs**
-- F3 / F4 / Shift+F3 / Shift+F4 now also move keyboard focus to the relevant list (previously they only changed the selection).
-- On the Audio Book tab, since there's no separate list item for chapters, changing chapters moves focus to the book's row in the library list instead.
-- Delete / Shift+Delete in the Audio Book library list now removes the selected book directly (previously only available via the context menu).
-**Audio Profiles — Podcast and Audio Book Support**
-- The audio profile feature (volume/effects/EQ) from Favorites has been extended to podcast feeds and audio book library entries:
-  - Podcasts: the profile is saved on the feed and applies to **all of its episodes**.
-  - Audio Books: the profile is saved on the book and applies to **all of its chapters**.
-- Profiles can now also include **playback speed** (for podcast/audiobook content only); a new "Volume, effects, and playback speed" option captures the current speed when saving.
-- Episodes/chapters without a saved profile keep whatever playback speed is currently active (sticky) rather than being forced back to normal speed.
-- Added "Save Audio Profile" / "Clear Audio Profile" items to the context menus (Podcast: subscriptions list; Audio Book: library list).
-- When unsubscribing from a podcast or removing a book from the library:
-  - The saved audio profile is automatically cleared.
-  - The resume ("where you left off") positions for all of that feed's episodes / that book's chapters are also cleared.
+- **Audio books:** Fixed a rare timing issue where, right as one chapter finished and the next was about to start automatically, playback could occasionally jump backward to an already-heard chapter instead of continuing forward. Most noticeable during long unattended listening sessions.
+- **Scheduled recordings:** Recurring recordings now recover much more reliably after your PC wakes from sleep or when NVDA was closed for a while:
+  - A missed recurring recording on a multi-day schedule (e.g. Mon/Wed/Fri) no longer skips ahead by a full week — it correctly finds the next eligible day.
+  - Old, incorrectly saved schedule dates from earlier versions are automatically fixed on load — no need to recreate them.
+  - If a recording's start was delayed (e.g. by sleep), it now records only the time actually remaining in its original window, instead of starting a full-length recording late.
+  - Schedule data is now saved more safely, preventing rare cases of a damaged or incomplete schedule file.
+  - While a scheduled recording is in progress, Windows is prevented from going into idle sleep automatically.
+**Added**
+- New keyboard shortcuts for quick access:
+  - `Ctrl+Windows+L` — jumps straight to the Audio Books tab (focus on your library).
+  - `Ctrl+Windows+O` — jumps straight to the Podcasts tab (focus on your subscriptions).
+  - Both open the FreeRadio window if it's closed, or bring it to the front if it's already open.
+- More audio profile options when saving a profile for a podcast or audiobook: **Volume and playback speed**, **Effects and playback speed**, and **Playback speed only**, alongside the existing Volume only / Effects only / Volume and effects / Volume, effects, and playback speed choices.
+- The **Save Audio Profile for This Podcast** and **Clear Audio Profile** commands are now also available from the episode context menu, so you don't need to switch back to the podcast list to reach them. They still apply to the whole podcast, not to a single episode.
+
 """),
 	
 	# Author(s)

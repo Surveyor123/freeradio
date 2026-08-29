@@ -63,6 +63,17 @@ _TUNER_POLL_INTERVAL = 0.25  # seconds between end-of-clip checks while looping
 # always from the beginning. None until first discovered.
 _TUNER_LENGTH_SECONDS = None
 
+# Podcast/audio book resume-wait effect — plays a short local sound effect
+# (casette.mp3, bundled alongside this file) on a small separate engine
+# while the real episode/chapter stream connects and seeks back to its
+# saved position, instead of letting the episode's own audio play
+# audibly from 0:00 in the meantime. See RadioPlayer._launch_bass().
+_CASETTE_MP3_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "casette.mp3")
+
+# Cached duration of casette.mp3, in seconds - same purpose as
+# _TUNER_LENGTH_SECONDS above, just for the resume-wait clip.
+_CASETTE_LENGTH_SECONDS = None
+
 _BASS_ERROR_SSL	  = 41
 _BASS_ERROR_FILEFORM = 40
 _BASS_ERROR_TIMEOUT  = 38
@@ -1319,11 +1330,13 @@ class RadioPlayer:
 			saved_pos = self.get_podcast_position(station.get("url") or url)
 
 		# If we're about to try resuming a podcast, open the real stream
-		# muted and play tuner.mp3 (looped) on a small separate engine
+		# muted and play casette.mp3 (looped) on a small separate engine
 		# meanwhile, instead of letting the episode's own audio play
 		# audibly from 0:00 while we wait for BASS to accept the seek back
-		# to saved_pos. Same tuner.mp3/loop-watcher used for station tuning
-		# transitions; see set_tuning_effect_enabled().
+		# to saved_pos. Uses the same loop-watcher as station tuning
+		# transitions (_tuning_loop_watcher), just pointed at the
+		# casette.mp3 clip instead of tuner.mp3 - see
+		# set_tuning_effect_enabled() and _play_casette_clip().
 		resume_wait_engine = None
 		resume_wait_stop   = None
 		if is_podcast and saved_pos > 1.0 and not self._disable_bass:
@@ -1331,12 +1344,13 @@ class RadioPlayer:
 				dll_dir = os.path.dirname(os.path.abspath(__file__))
 				candidate = _BassEngine(dll_dir, output_device=self._output_device_index)
 				if candidate.load():
-					candidate.play_timeshift_file(_TUNER_MP3_PATH, self._volume / 100.0)
+					self._play_casette_clip(candidate)
 					resume_wait_engine = candidate
 					resume_wait_stop   = threading.Event()
 					threading.Thread(
 						target=self._tuning_loop_watcher,
 						args=(resume_wait_engine, resume_wait_stop, self._play_gen),
+						kwargs={"clip_fn": self._play_casette_clip},
 						daemon=True, name="FreeRadio-podcast-resume-tuner"
 					).start()
 			except Exception:
@@ -1601,7 +1615,7 @@ class RadioPlayer:
 		return self._tuning_effect_enabled
 
 	def _play_tuner_clip(self, engine):
-		"""Open tuner.mp3 on engine for the tuning transition effect.
+		"""Open tuner.mp3 on engine for the station tuning transition effect.
 
 		Starts from a random position once the clip's duration is known, so
 		each station switch (and each loop restart while waiting) sounds
@@ -1624,6 +1638,29 @@ class RadioPlayer:
 				pass
 		return ok
 
+	def _play_casette_clip(self, engine):
+		"""Open casette.mp3 on engine for the podcast/audio book
+		resume-wait effect (see _launch_bass()).
+
+		Mirrors _play_tuner_clip() exactly, just for the separate
+		casette.mp3 clip and its own cached duration
+		(_CASETTE_LENGTH_SECONDS), so the two effects don't share - or
+		fight over - the same "discovered length" cache.
+		"""
+		global _CASETTE_LENGTH_SECONDS
+		start = 0.0
+		if _CASETTE_LENGTH_SECONDS and _CASETTE_LENGTH_SECONDS > 1.0:
+			start = random.uniform(0.0, max(0.0, _CASETTE_LENGTH_SECONDS - 1.0))
+		ok = engine.play_timeshift_file(_CASETTE_MP3_PATH, self._volume / 100.0, start_seconds=start)
+		if ok and not _CASETTE_LENGTH_SECONDS:
+			try:
+				_pos, length = engine.timeshift_status()
+				if length > 0:
+					_CASETTE_LENGTH_SECONDS = length
+			except Exception:
+				pass
+		return ok
+
 	def _abort_tuning_transition(self):
 		"""Immediately stop any in-progress tuning-effect engine and its
 		loop-watcher thread. Must be called from a context where it is safe
@@ -1641,10 +1678,18 @@ class RadioPlayer:
 			except Exception:
 				pass
 
-	def _tuning_loop_watcher(self, engine, stop_evt, gen):
-		"""While a tuning transition is in progress, replay tuner.mp3 from
-		the start whenever it reaches its end, so the effect keeps playing
-		for as long as the new station takes to connect."""
+	def _tuning_loop_watcher(self, engine, stop_evt, gen, clip_fn=None):
+		"""While a tuning/resume-wait effect is in progress, replay its clip
+		from the start whenever it reaches its end, so the effect keeps
+		playing for as long as the new station/episode takes to connect.
+
+		*clip_fn* is a callable(engine) -> bool that (re)starts the clip;
+		defaults to _play_tuner_clip() for the station tuning transition.
+		The podcast/audio book resume-wait path (_launch_bass()) passes
+		_play_casette_clip instead, so the same watcher loop is reused for
+		both effects without either one hearing the other's clip."""
+		if clip_fn is None:
+			clip_fn = self._play_tuner_clip
 		while not stop_evt.is_set() and self._play_gen == gen:
 			time.sleep(_TUNER_POLL_INTERVAL)
 			if stop_evt.is_set() or self._play_gen != gen:
@@ -1657,7 +1702,7 @@ class RadioPlayer:
 				if stop_evt.is_set() or self._play_gen != gen:
 					return
 				try:
-					self._play_tuner_clip(engine)
+					clip_fn(engine)
 				except Exception:
 					return
 
@@ -1724,10 +1769,20 @@ class RadioPlayer:
 				self._abort_tuning_transition()
 
 				# Old engine switches over to the tuning sound effect right
-				# away, instead of continuing to play the old station.
+				# away, instead of continuing to play the old station. If
+				# we're switching INTO a podcast/audio book (Enter on an
+				# episode/chapter, not the pause/resume path - that one
+				# skips do_tuning entirely because _is_playing is already
+				# False by then), use the casette.mp3 resume-wait clip here
+				# too instead of the station-tuning tuner.mp3, so Enter and
+				# pause/resume sound consistent. See _play_casette_clip()
+				# and the matching resume-wait logic in _launch_bass().
+				target_is_podcast = bool(station and "podcast" in (station or {}).get("tags", ""))
+				transition_clip_fn = self._play_casette_clip if target_is_podcast else self._play_tuner_clip
+
 				tuner_engine = self._bass_engine
 				try:
-					self._play_tuner_clip(tuner_engine)
+					transition_clip_fn(tuner_engine)
 				except Exception:
 					pass
 
@@ -1737,6 +1792,7 @@ class RadioPlayer:
 				threading.Thread(
 					target=self._tuning_loop_watcher,
 					args=(tuner_engine, stop_evt, my_gen),
+					kwargs={"clip_fn": transition_clip_fn},
 					daemon=True, name="FreeRadio-tuning-loop"
 				).start()
 

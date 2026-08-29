@@ -1,0 +1,110 @@
+--- /mnt/user-data/uploads/README23_0.md	2026-08-29 07:43:54.208381000 +0000
++++ /mnt/user-data/uploads/README23_3.md	2026-08-29 07:43:54.210925000 +0000
+@@ -1,6 +1,19 @@
+ # FreeRadio — NVDA Add-on
+ 
+-FreeRadio is an internet radio add-on for the NVDA screen reader. Its primary goal is to give users easy access to thousands of internet radio stations and podcasts. The entire interface and all features have been designed with full accessibility for NVDA in mind.
++FreeRadio is a full-featured internet radio, podcast, and audio-book add-on for the NVDA screen reader. What began as a simple way to stream internet radio stations has grown into a complete, fully accessible listening hub — every screen, dialog, and control is designed from the ground up for keyboard and screen-reader use, with no mouse required at any point.
++
++## What FreeRadio Can Do
++
++- **Internet radio** — Browse and search over 50,000 stations from the [Radio Browser](https://www.radio-browser.info/) directory, with results supplemented by TuneIn and iHeartRadio. Save favourites, reorder them, and jump straight to any of them with a global keyboard shortcut from anywhere in Windows — see [Radio Browser Directory](#radio-browser-directory) and [Favourites](#favourites).
++- **Podcasts** — Subscribe to any RSS/Atom feed, or search Apple's podcast directory and preview episodes before subscribing. Playback position is saved automatically and resumes where you left off — see [Podcasts](#podcasts).
++- **Audio books** — Search and stream or download books from [GETEM](https://getem.boun.edu.tr/), Boğaziçi University's digital library for the visually impaired, with automatic resume across multi-part works — see [Audio Books (GETEM)](#audio-books-getem).
++- **Recording** — Record what's playing instantly, capture a single song automatically when it starts and stops, or schedule one-off and recurring recordings — all without interrupting playback — see [Recording](#recording).
++- **Time-shift (rewind live radio)** — Pause and rewind a live station like a DVR, then catch back up to live whenever you want — see [Time-Shift (Rewind Live Radio)](#time-shift-rewind-live-radio).
++- **Music recognition and liked songs** — Identify tracks with no metadata using Shazam-based recognition, save liked songs to a text file, and look up their lyrics — see [Music Recognition](#music-recognition) and [Liked Songs](#liked-songs).
++- **Audio profiles and effects** — Save separate volume, effects, EQ, and playback-speed settings per station, per podcast, or per audio book, and apply real-time effects (Chorus, Reverb, EQ boosts, and more) through the BASS backend — see [Station Audio Profile](#station-audio-profile).
++- **Audio mirroring** — Send the same stream to two audio output devices at once, such as speakers and headphones simultaneously — see [Audio Mirror](#audio-mirror).
++- **Timers** — Schedule a favourite station to start playing, or schedule playback to stop, at a specific time — see [Timer](#timer).
++- **Deep keyboard and braille access** — Every feature is reachable entirely from the keyboard, with global shortcuts that work from anywhere in Windows, direct hotkeys for individual favourite stations, and optional braille output for all of FreeRadio's spoken notifications.
+ 
+ ## Radio Browser Directory
+ 
+@@ -40,6 +53,8 @@
+ | Shortcut | Function | Description |
+ |---|---|---|
+ | `Ctrl+Win+R` | Open station browser | Opens the browser window if closed, or brings it to the foreground if already open. |
++| `Ctrl+Win+O` | Open Podcasts tab | Opens the station browser (if closed) or brings it to the foreground, and switches directly to the **Podcasts** tab. |
++| `Ctrl+Win+L` | Open Audio Books tab | Opens the station browser (if closed) or brings it to the foreground, and switches directly to the **Audio Books** tab. |
+ | `Ctrl+Win+P` | Pause / resume | Pauses the current station if playing; resumes if paused. If nothing is playing, starts the last station or opens the favourites list depending on your setting. Pressing twice in quick succession jumps directly to a tab of your choice. Pressing three times can trigger a separate action depending on your setting. |
+ | `Ctrl+Win+S` | Stop | Fully stops the current station and resets the player. |
+ | `Ctrl+Win+→` | Next favourite | Moves to the next station in the favourites list. Wraps around to the beginning at the end of the list. |
+@@ -392,6 +407,7 @@
+ 
+ **Context menu for feeds:** Right‑click a feed, or select it and press the Applications key / `Shift+F10`, to open a menu with:
+ - **Refresh Feed** — fetch new episodes now.
++- **Save Audio Profile for This Podcast** / **Clear Audio Profile** — see [Podcast Audio Profile](#podcast-audio-profile).
+ - **Remove Feed** — delete the subscription.
+ - **Copy Feed URL** — copy the feed URL to the clipboard.
+ 
+@@ -416,6 +432,7 @@
+ **Context menu for episodes:** Right‑click an episode, or select it and press the Applications key / `Shift+F10`, to open a menu with:
+ - **Play Episode** — start playback.
+ - **Download Episode** — download the episode file to your recordings folder.
++- **Save Audio Profile for This Podcast** / **Clear Audio Profile** — same commands as the feed's own context menu, included here for convenience so you don't have to switch back to the Subscriptions list. They still save one profile for the whole podcast, not a separate one for this episode — see [Podcast Audio Profile](#podcast-audio-profile).
+ - **Copy Episode URL** — copy the direct audio URL to the clipboard.
+ 
+ ### Downloading Episodes
+@@ -436,6 +453,25 @@
+ 
+ If the BASS backend is disabled (or fails), podcast playback falls back to the same chain of external players (VLC → PotPlayer → WMP) used for radio, but **seek and resume functionality will not work** in that case — the episode will play from the beginning each time. For the full podcast experience, keep the BASS backend enabled.
+ 
++**Resume sound effect:** Whenever an episode resumes from a saved position, FreeRadio briefly plays a soft cassette-loading sound effect on a separate channel while it seeks back to your saved spot, instead of letting the episode's own audio play audibly from 0:00 in the meantime. This happens automatically whenever the BASS backend is active and is independent of the **Station switch transition** setting — that setting only affects switching between live radio stations, not resuming podcasts or audio books.
++
++### Podcast Audio Profile
++
++Right‑click a podcast in the Subscriptions list, or right‑click any of its episodes, and choose **Save Audio Profile for This Podcast** to save the current volume, effects, EQ gains and/or playback speed as a profile tied to that podcast. Whenever any episode of that podcast plays, the saved settings are applied automatically, overriding the global defaults. Because the command is available from both the feed context menu and the episode context menu, you can reach it without switching back to the Subscriptions list — either way, it always saves one profile for the whole podcast, not a separate one per episode.
++
++A dialog lets you choose exactly what to save:
++- **Volume only**
++- **Effects only**
++- **Volume and effects**
++- **Volume and playback speed**
++- **Effects and playback speed**
++- **Playback speed only**
++- **Volume, effects, and playback speed**
++
++Only the pieces you pick are written to the profile; anything left out keeps whatever was already saved for it. For example, choosing **Playback speed only** on a podcast that already has a saved volume/effects profile updates just the speed and leaves the rest untouched.
++
++**Clear Audio Profile** removes the saved profile from the podcast, from either context menu. It is only enabled when the podcast currently has a saved profile.
++
+ ### Podcast Data Storage
+ 
+ Your subscriptions are stored in `freeradio_podcasts.json` in the NVDA user configuration folder. Episode positions are stored separately in `podcast_positions.json` in the same location. Both files are plain JSON and can be backed up or transferred to another computer.
+@@ -482,14 +518,25 @@
+ - **Play Media** — start playing, same as `Enter`.
+ - **Download Book** — download every part of the book; see [Downloading Audio Books](#downloading-audio-books) below.
+ - **Copy the URL** — copy the book's GETEM catalogue page URL to the clipboard.
++- **Save Audio Profile for This Book** / **Clear Audio Profile** — see [Audio Book Audio Profile](#audio-book-audio-profile) below.
+ - **Remove from the Library** — delete the book from your library.
+ 
+ ### Playback and Resuming
+ 
+-A multi-part work is treated as a single item in the player, not one row per part — the same way a podcast episode is a single item regardless of how it's delivered. FreeRadio remembers which part you last listened to and resumes there automatically the next time you play that book, even across an NVDA restart.
++A multi-part work is treated as a single item in the player, not one row per part — the same way a podcast episode is a single item regardless of how it's delivered. FreeRadio remembers which part you last listened to and resumes there automatically the next time you play that book, even across an NVDA restart.
++
++When one part finishes, FreeRadio automatically starts the next part of the same book — you don't need to select it manually. This happens even if the Station Browser window is closed at the time; the "now playing" part shown in the Library list is resynced automatically the next time the window is opened.
+ 
+ Playback streams through a small local relay rather than downloading the whole part first, so listening starts as soon as the first bytes arrive — the same immediate-start behaviour podcasts use. All the usual player controls (pause, volume, time-shift, playback speed, output device, etc.) work on an audio book exactly as they would on a station or podcast episode.
+ 
++Like podcasts, resuming a book from its saved position plays a brief cassette-loading sound effect while FreeRadio seeks to your saved spot — see the **Resume sound effect** note in [Podcast Playback Details](#podcast-playback-details).
++
++### Audio Book Audio Profile
++
++Right‑click a book in your Library list and choose **Save Audio Profile for This Book** to save the current volume, effects, EQ gains and/or playback speed as a profile tied to that book. Whenever the book (or any of its parts) plays, the saved settings are applied automatically, overriding the global defaults. This works exactly the same way as [Podcast Audio Profile](#podcast-audio-profile) above, including the same set of save options (volume, effects, and/or playback speed, in any combination) and the same partial-update behaviour.
++
++**Clear Audio Profile** removes the saved profile from the book; it is only enabled when the book currently has a saved profile.
++
+ ### Downloading Audio Books
+ 
+ Select a book in your library and choose **Download Book** from its context menu to save every part to its own folder (named after the book) inside your recordings folder (`Documents\FreeRadio Recordings\` by default). Files are numbered so the parts always sort back into listening order, regardless of what GETEM itself calls them. NVDA announces how many parts were saved once the download finishes; if a part fails, the last error is reported alongside the count.
+@@ -546,7 +593,7 @@
+ | Volume | Sets the add-on's starting volume (0–200). Changes made during playback with `Ctrl+Win+↑` / `Ctrl+Win+↓` are also reflected here. |
+ | Audio effects | Sets which effects (Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, and the three EQ boosts) are active when NVDA starts or a station begins playing. Multiple effects can be checked at once, matching the Effects list in the Station Browser. Only active when the BASS backend is in use. |
+ | EQ gain (Bass / Treble / Vocal) | Sets the gain level in dB for each EQ band (−15 to +15). These values apply when the corresponding EQ effect is active and are saved globally. Per-station overrides can be stored using the **Save Audio Profile** button in the Favourites tab. Only active when the BASS backend is in use. |
+-| Station switch transition (BASS backend) | Controls the transition behaviour when switching between stations. **Instant cut** (default) stops the previous station immediately before the new one starts. **Short crossfade (1 second)** and **Normal crossfade (2 seconds)** start the new station immediately with no gap, then gradually fade out the previous station in the background once the new stream is confirmed active. **Station tuning sound effect** stops the previous station immediately and plays a station tuner sound effect before the new one starts. Has no effect and no performance impact when set to Instant cut. Only available when the BASS backend is in use. |
++| Station switch transition (BASS backend) | Controls the transition behaviour when switching between **live radio stations**. **Instant cut** (default) stops the previous station immediately before the new one starts. **Short crossfade (1 second)** and **Normal crossfade (2 seconds)** start the new station immediately with no gap, then gradually fade out the previous station in the background once the new stream is confirmed active. **Station tuning sound effect** stops the previous station immediately and plays a station tuner sound effect before the new one starts. Has no effect and no performance impact when set to Instant cut. Only available when the BASS backend is in use. Does not apply to podcasts or audio books — resuming those always plays its own brief cassette sound effect regardless of this setting; see [Podcast Playback Details](#podcast-playback-details). |
+ | Resume last station on NVDA startup | When enabled, the last played station automatically restarts every time NVDA starts. |
+ | Auto-announce track changes (ICY metadata) | When enabled, NVDA automatically reads the new track name each time it changes on a station that broadcasts ICY metadata. The first track is also announced immediately when switching to a new station. Disabled by default. |
+ | Mute notifications | When enabled, NVDA does not announce station changes, playback state changes (play, pause, stop), or recording events (started, stopped, finished). Error messages, favourites feedback, music recognition results, and update notifications are not affected. Can also be toggled on the fly via an unassigned input gesture. Disabled by default. |

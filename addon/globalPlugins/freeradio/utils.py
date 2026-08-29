@@ -384,11 +384,25 @@ def matches_query(station: dict, query: str) -> bool:
 	# Normalise both the query and the haystack: fold Turkish characters to ASCII
 	# equivalents and convert to lower case.
 	tokens = normalize_for_search(query).split()
+
+	# bitrate is numeric (e.g. 128, 320) and often 0/missing when the station
+	# doesn't report one - only add it to the haystack when it's a real,
+	# positive value, so an empty/unknown bitrate never contributes a
+	# spurious "0" token that could accidentally match unrelated searches.
+	bitrate = station.get("bitrate", 0)
+	try:
+		bitrate = int(bitrate)
+	except (TypeError, ValueError):
+		bitrate = 0
+
 	haystack = " ".join([
 		station.get("name", ""),
 		station.get("countrycode", ""),
 		country_name(station.get("countrycode", "")),
 		station.get("tags", ""),
+		station.get("language", ""),
+		station.get("codec", ""),
+		str(bitrate) if bitrate > 0 else "",
 	])
 	haystack = normalize_for_search(haystack)
 

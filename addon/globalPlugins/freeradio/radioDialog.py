@@ -20,6 +20,7 @@ import winsound
 import gui
 from . import podcast
 from . import getem
+from . import librivox
 import urllib.parse
 import urllib.request
 from gui import nvdaControls
@@ -207,6 +208,106 @@ def check_stream_url(url, timeout=8):
 		return False, str(e)
 
 
+def _html_to_text(text):
+	"""Strip HTML tags and decode entities from an RSS/Atom description.
+
+	podcast.py stores <description>/<atom:summary> as-is, which is
+	commonly raw HTML ("<p>...</p>", "&amp;", etc.) - not something a
+	screen reader should read literally. Deliberately simple (no
+	external HTML parser dependency): drop tags, decode entities,
+	collapse the blank lines that tends to leave behind.
+
+	Module-level (rather than a RadioDialog method) since it never
+	touched self to begin with, and trackInfoMixin.py's station-details
+	dialog needs to reuse it too - see _format_audiobook_lines()/
+	_format_podcast_episode_lines() below.
+	"""
+	if not text:
+		return text
+	text = re.sub(r"<[^>]+>", " ", text)
+	text = unescape(text)
+	text = re.sub(r"[ \t]+", " ", text)
+	text = re.sub(r"\n\s*\n+", "\n\n", text)
+	return text.strip()
+
+
+def _format_audiobook_lines(source_label="", author="", narrator="", publisher="",
+		format_label="", chapter_count=0, description=""):
+	"""Shared line-builder for GETEM/LibriVox audiobook metadata: Source/
+	Author/Narrator/Publisher/Type/part-count/description, in that
+	order, one per line (blank fields omitted). Reused by
+	RadioDialog._format_getem_details() (the Audio Books tab's details
+	box) and trackInfoMixin._build_audiobook_details() (the station-
+	details dialog's "Audio book details" row), so both show identical,
+	identically-translated text for the same underlying book instead of
+	each maintaining its own copy of these strings. Does NOT include the
+	book's title or detail_url - callers that want those (both current
+	callers do) add them themselves, since where those two lines belong
+	relative to the rest differs slightly between the two dialogs."""
+	lines = []
+	if source_label:
+		lines.append(_("Source: %s") % source_label)
+	if author:
+		lines.append(_("Author: %s") % author)
+	if narrator:
+		lines.append(_("Narrator: %s") % narrator)
+	if publisher:
+		lines.append(_("Publisher: %s") % publisher)
+	if format_label:
+		lines.append(_("Type: %s") % format_label)
+	if chapter_count:
+		lines.append(ngettext("%d part", "%d parts", chapter_count) % chapter_count)
+	if description:
+		text = _html_to_text(description)
+		if text:
+			lines.append("")
+			lines.append(text)
+	return lines
+
+
+def _format_podcast_episode_lines(author="", published="", duration="", description=""):
+	"""Shared line-builder for podcast episode metadata: By/Published/
+	Duration/description, in that order (blank fields omitted). Reused
+	by RadioDialog._format_episode_details() (the Podcasts tab's episode
+	details box) and trackInfoMixin._build_podcast_details() (the
+	station-details dialog's "Episode details" row) for the same reason
+	_format_audiobook_lines() above is shared between their audiobook
+	equivalents. *author* is the podcast's (feed's) author, not
+	per-episode - _format_episode_details() doesn't pass one today since
+	PodcastEpisode has no author of its own, but the station-details
+	dialog does (station_dict carries "podcast_author" - see
+	RadioDialog._on_episode_play()), and "By: %s" is the exact string
+	_format_feed_details() already uses for that same value, so reusing
+	it here needs no new translatable string either."""
+	lines = []
+	if author:
+		lines.append(_("By: %s") % author)
+	if published:
+		lines.append(_("Published: %s") % published)
+	if duration:
+		lines.append(_("Duration: %s") % duration)
+	if description:
+		text = _html_to_text(description)
+		if text:
+			lines.append("")
+			lines.append(text)
+	return lines
+
+
+def _enabled_audiobook_sources():
+	"""Which audio book sources (currently "getem"/"librivox") the user has
+	enabled in Settings - see FreeRadioSettingsPanel's "Audio book
+	sources" checklist, which is what edits config.conf["freeradio"]
+	["audiobook_sources"]. Returns a set of the enabled keys - both are
+	enabled by default (the confspec default is "getem,librivox"), so an
+	upgrade from a version before this option existed searches exactly as
+	before. An empty set is a legitimate result (the user unchecked
+	everything), not a fallback case - _on_getem_search() handles that by
+	simply finding nothing rather than searching everything."""
+	raw = config.conf["freeradio"].get("audiobook_sources", "getem,librivox")
+	return {s.strip() for s in raw.split(",") if s.strip()}
+
+
 class RadioDialog(wx.Dialog):
 	"""Station browser with Favourites and All Stations tabs.
 
@@ -233,6 +334,7 @@ class RadioDialog(wx.Dialog):
 		self._plugin        = plugin
 		self._podcast_manager = podcast.PodcastManager()
 		self._getem_library   = getem.GetemLibrary()
+		self._librivox_library = librivox.LibrivoxLibrary()
 		self._all_stations    = []
 		self._extra_stations  = []   # additional stations from country selection
 		self._search_stations = []   # Stations from API text search
@@ -539,7 +641,7 @@ class RadioDialog(wx.Dialog):
 			self._notebook.SetSelection(6)  # Audio Books tab index
 		except Exception:
 			return
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		if books and self._getem_library_ctrl.GetSelection() == wx.NOT_FOUND:
 			self._getem_library_ctrl.SetSelection(0)
 		self._getem_library_ctrl.SetFocus()
@@ -4443,7 +4545,7 @@ class RadioDialog(wx.Dialog):
 		count = len(feed.episodes)
 		lines.append(ngettext("%d episode", "%d episodes", count) % count)
 		if feed.description:
-			description = self._html_to_text(feed.description)
+			description = _html_to_text(feed.description)
 			if description:
 				lines.append("")
 				lines.append(description)
@@ -4595,40 +4697,27 @@ class RadioDialog(wx.Dialog):
 
 		published is a datetime (or None) on PodcastEpisode - interpolated
 		the same way display_label() already does elsewhere in this file,
-		rather than assuming a particular strftime format.
+		rather than assuming a particular strftime format. The By/
+		Published/Duration/description lines are built by the shared
+		_format_podcast_episode_lines() - see its docstring.
 		"""
 		if ep is None:
 			return ""
 		lines = [ep.title]
-		if ep.published:
-			lines.append(_("Published: %s") % ep.published)
-		if ep.duration:
-			lines.append(_("Duration: %s") % ep.duration)
-		if ep.description:
-			description = self._html_to_text(ep.description)
-			if description:
-				lines.append("")
-				lines.append(description)
+		lines.extend(_format_podcast_episode_lines(
+			published=str(ep.published) if ep.published else "",
+			duration=ep.duration,
+			description=ep.description,
+		))
 		lines.append("")
 		lines.append(ep.url)
 		return "\n".join(lines)
 
 	def _html_to_text(self, text):
-		"""Strip HTML tags and decode entities from an RSS/Atom description.
-
-		podcast.py stores <description>/<atom:summary> as-is, which is
-		commonly raw HTML ("<p>...</p>", "&amp;", etc.) - not something a
-		screen reader should read literally. Deliberately simple (no
-		external HTML parser dependency): drop tags, decode entities,
-		collapse the blank lines that tends to leave behind.
-		"""
-		if not text:
-			return text
-		text = re.sub(r"<[^>]+>", " ", text)
-		text = unescape(text)
-		text = re.sub(r"[ \t]+", " ", text)
-		text = re.sub(r"\n\s*\n+", "\n\n", text)
-		return text.strip()
+		"""Kept as a thin wrapper - see the module-level _html_to_text()
+		this delegates to, which is what new code (including
+		trackInfoMixin.py) should call directly."""
+		return _html_to_text(text)
 
 	def refresh_episode_progress(self, url):
 		"""Refresh a single episode row's [Listened]/duration display right
@@ -4718,8 +4807,22 @@ class RadioDialog(wx.Dialog):
 			# _rebuild_getem_resume_url() does for audio books (see
 			# GlobalPlugin._resume_last_station()).
 			station_dict["podcast_feed_url"] = feed.url
+			if feed.author:
+				station_dict["podcast_author"] = feed.author
 			if feed.audio_profile:
 				station_dict["station_audio"] = feed.audio_profile
+			# The feed (podcast) title is included here for the same
+			# reason as RadioDialog._format_getem_now_playing_name() -
+			# PodcastEpisode.to_dict() only knows its own episode title
+			# (an episode has no reference back to its feed), but this
+			# "name" is what playbackCoreMixin._play_station() announces
+			# as "what's playing" and shows in Ctrl+Win+I's station info,
+			# and a bare episode title on its own doesn't say which
+			# podcast it's from.
+			if episode.title and episode.title != feed.title:
+				station_dict["name"] = "%s — %s" % (feed.title, episode.title)
+			else:
+				station_dict["name"] = feed.title
 		self._play_callback(station_dict, [station_dict], 0, announce=announce)
 
 	def _on_episode_download(self, event):
@@ -4818,6 +4921,8 @@ class RadioDialog(wx.Dialog):
 		idx = self._podcast_results.GetSelection()
 		self._podcast_preview_list.Clear()
 		self._podcast_preview_episodes = []
+		self._podcast_preview_feed_title = ""
+		self._podcast_preview_feed = None
 		if idx == wx.NOT_FOUND:
 			return
 		results = getattr(self, "_podcast_search_results", [])
@@ -4846,9 +4951,19 @@ class RadioDialog(wx.Dialog):
 		self._podcast_preview_list.Clear()
 		if error or not feed or not feed.episodes:
 			self._podcast_preview_episodes = []
+			self._podcast_preview_feed_title = ""
+			self._podcast_preview_feed = None
 			self._podcast_preview_list.Append(_("No episodes found."))
 			return
 		self._podcast_preview_episodes = feed.episodes
+		# Kept alongside the episodes so _on_podcast_preview_toggle() can
+		# include the feed's title/url/author in the played station_dict,
+		# the same way _on_episode_play() does for a subscribed feed - see
+		# there for why. Stored as the whole *feed* object (rather than
+		# separate title/url/author attributes) now that more than just
+		# the title is needed.
+		self._podcast_preview_feed = feed
+		self._podcast_preview_feed_title = feed.title
 		for ep in feed.episodes:
 			self._podcast_preview_list.Append(ep.display_label())
 
@@ -4877,6 +4992,19 @@ class RadioDialog(wx.Dialog):
 			return
 
 		station_dict = episode.to_dict()
+		feed = getattr(self, "_podcast_preview_feed", None)
+		feed_title = getattr(self, "_podcast_preview_feed_title", "") or ""
+		if feed_title and episode.title and episode.title != feed_title:
+			station_dict["name"] = "%s — %s" % (feed_title, episode.title)
+		elif feed_title:
+			station_dict["name"] = feed_title
+		if feed:
+			# Same fields _on_episode_play() attaches for a subscribed
+			# feed, so the station-details dialog shows a "Podcast" link
+			# and author here too, not just once the user has subscribed.
+			station_dict["podcast_feed_url"] = feed.url
+			if feed.author:
+				station_dict["podcast_author"] = feed.author
 		self._play_callback(station_dict, [station_dict], 0, announce=True)
 
 	def _show_podcast_preview_context_menu(self):
@@ -5101,8 +5229,60 @@ class RadioDialog(wx.Dialog):
 			ui.message(_("Copied to clipboard"))
 
 	# ------------------------------------------------------------------ #
-	# Audio Books Tab (GETEM e-library)
+	# Audio Books Tab (unified GETEM + LibriVox library)
 	# ------------------------------------------------------------------ #
+
+	# Every _on_getem_*/_play_getem_*/etc. method below goes through these
+	# two instead of hardcoding the `getem` module or `self._getem_library`,
+	# which is what lets the same set of methods (names kept as `_getem_*`
+	# for historical/git-blame continuity, even though they now serve
+	# either source) drive GETEM or LibriVox interchangeably. getem.py and
+	# librivox.py deliberately expose matching function names/signatures
+	# (resolve_media, get_stream_url, download_chapter_to, download_target,
+	# book_download_dir, download_book_chapter_target) and
+	# GetemBook/LibrivoxBook share the same attributes and
+	# to_dict()/to_library_dict()/from_dict() shape, so no source-specific
+	# branching is needed anywhere except the search call itself
+	# (search_getem vs search_librivox - see _on_getem_search()), since the
+	# two APIs' search entry points genuinely differ (GETEM needs a login
+	# session; LibriVox doesn't).
+	#
+	# There is no "Source" dropdown: the Library list and search results
+	# are a single merged list drawn from both self._getem_library and
+	# self._librivox_library, with each row's source shown only as a label
+	# (see _audiobook_source_label_for()/_format_getem_result_label()).
+	# Every book object stays a plain GetemBook or LibrivoxBook instance
+	# either way, so which underlying module/library a given book belongs
+	# to is always resolved from the book itself via isinstance() -
+	# _audiobook_module_for()/_audiobook_library_for() below - rather than
+	# from any "currently selected" state.
+	def _audiobook_module_for(self, book):
+		"""Which of getem/librivox produced *book* - LibrivoxBook is a
+		distinct class from GetemBook (see librivox.py's module docstring
+		for why they're attribute-compatible but still separate classes),
+		so this is a plain isinstance check."""
+		return librivox if isinstance(book, librivox.LibrivoxBook) else getem
+
+	def _audiobook_library_for(self, book):
+		"""Which of self._getem_library/self._librivox_library *book*
+		belongs to - the library-side equivalent of
+		_audiobook_module_for()."""
+		return self._librivox_library if isinstance(book, librivox.LibrivoxBook) else self._getem_library
+
+	def _audiobook_source_label_for(self, book):
+		return _("LibriVox") if isinstance(book, librivox.LibrivoxBook) else _("GETEM")
+
+	def _merged_library_books(self):
+		"""Every saved audio book across both GETEM and LibriVox, combined
+		into one list and sorted by title so the Library list reads as one
+		shelf rather than two concatenated ones."""
+		books = self._getem_library.get_books() + self._librivox_library.get_books()
+		books.sort(key=lambda b: (b.title or "").casefold())
+		return books
+
+	def _audiobook_search_field_label(self):
+		# Translators: Accessible name of the audio book search field - searches both GETEM and LibriVox at once
+		return _("Search audio books by title, author, narrator, subject, or publisher. Press enter to search")
 
 	def _build_audiobooks_tab(self):
 		"""Audio book search and library tab. Search UI is modeled on the
@@ -5110,6 +5290,13 @@ class RadioDialog(wx.Dialog):
 		only appears once a search has actually been run, and adding an
 		item to the library is done from the results list's context menu
 		rather than a dedicated button - see _show_getem_result_context_menu().
+
+		Both supported catalogs (GETEM and LibriVox) are searched
+		together and shown in one merged results list and one merged
+		Library list - see _merged_library_books()/_on_getem_search() -
+		with each row's source shown only as a label
+		(_audiobook_source_label_for()), rather than through a "Source"
+		dropdown that would otherwise need switching back and forth.
 		"""
 		panel = self._getem_panel
 		sizer = wx.BoxSizer(wx.VERTICAL)
@@ -5118,7 +5305,7 @@ class RadioDialog(wx.Dialog):
 		search_sizer = wx.BoxSizer(wx.HORIZONTAL)
 		search_sizer.Add(wx.StaticText(panel, label=_("Search:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
 		self._getem_search = wx.TextCtrl(panel)
-		self._getem_search.SetName(_("Search GETEM audio books by title, author, narrator, subject, or publisher. Press enter to search"))
+		self._getem_search.SetName(self._audiobook_search_field_label())
 		search_sizer.Add(self._getem_search, 1, wx.EXPAND)
 		sizer.Add(search_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -5128,7 +5315,7 @@ class RadioDialog(wx.Dialog):
 		self._getem_results_label = wx.StaticText(panel, label=_("Search results:"))
 		sizer.Add(self._getem_results_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 		self._getem_results = wx.ListBox(panel, style=wx.LB_SINGLE)
-		self._getem_results.SetName(_("GETEM search results"))
+		self._getem_results.SetName(_("Audio book search results"))
 		self._getem_results.SetMinSize((-1, 100))
 		sizer.Add(self._getem_results, 0, wx.EXPAND | wx.ALL, 8)
 		self._getem_search_sizer = sizer
@@ -5165,23 +5352,62 @@ class RadioDialog(wx.Dialog):
 		self._refresh_getem_library_list()
 		self._sync_getem_now_playing_from_player()
 
+	def refresh_getem_libraries_from_disk(self):
+		"""Reload both audio-book libraries from disk.
+
+		self._getem_library/self._librivox_library are created once when
+		this dialog is built and normally kept in memory for the dialog's
+		whole lifetime - every mark_progress()/add_book()/etc. call goes
+		through these same instances, so they always reflect the truth
+		while the dialog is open and driving playback itself.
+
+		The exception is while this dialog is closed/hidden: a playing
+		GETEM/LibriVox chapter can keep auto-advancing on its own via
+		GlobalPlugin._advance_getem_chapter_headless(), which has no
+		dialog instance to reach into and so marks progress through its
+		own, freshly-instantiated library object instead. That write
+		lands correctly on disk but never reaches these in-memory copies,
+		so a book's last_chapter_index here can go stale while the dialog
+		is hidden - and _play_getem_book() would then silently resume an
+		earlier part than was actually last played the next time the user
+		reopens the dialog and plays that book from the library list
+		(F3/F4's _getem_now_playing state doesn't have this problem - see
+		_sync_getem_now_playing_from_player() - because it's rebuilt from
+		the player's own live station dict, not from these library
+		objects).
+
+		Called from GlobalPlugin._open_dialog() every time the dialog is
+		(re)shown, right alongside that same _sync_getem_now_playing_from_player()
+		resync and for the same underlying reason."""
+		self._getem_library = getem.GetemLibrary()
+		self._librivox_library = librivox.LibrivoxLibrary()
+
 	def _sync_getem_now_playing_from_player(self):
-		"""If a GETEM audio book chapter is already playing by the time this
-		tab is first built - e.g. it was resumed automatically on NVDA
-		startup, see GlobalPlugin._resume_last_station()/
+		"""If an audio book chapter (GETEM or LibriVox) is already playing
+		by the time this tab is first built - e.g. it was resumed within
+		this session, or (for GETEM specifically - see the note below)
+		automatically on NVDA startup via GlobalPlugin._resume_last_station()/
 		_rebuild_getem_resume_url() in playbackCoreMixin.py - then
 		_getem_now_playing wouldn't otherwise get set until the user
 		manually starts something from this tab, leaving F3/F4 book/chapter
 		navigation (_play_prev/next_getem_book/chapter) with nothing to
 		work from even though something is audibly playing. Reconstructs
-		it from the player's own current station dict instead."""
+		it from the player's own current station dict instead, checking
+		both libraries since the dict alone (see LibrivoxBook.to_dict()/
+		GetemBook.to_dict()) doesn't say which source a book came from.
+
+		NOTE: _rebuild_getem_resume_url() in playbackCoreMixin.py only
+		knows about GETEM's own config.conf keys today, so resuming a
+		LibriVox book specifically across an NVDA *restart* needs that
+		file updated too - this method already handles the LibriVox case
+		correctly for anything resumed earlier in the *same* session."""
 		current = self._player.get_current_station() or {}
 		if "audiobook" not in current.get("tags", ""):
 			return
 		detail_url = current.get("getem_detail_url")
 		if not detail_url:
 			return
-		book = self._getem_library.get_book_by_key(detail_url)
+		book = self._getem_library.get_book_by_key(detail_url) or self._librivox_library.get_book_by_key(detail_url)
 		if not book or not book.chapters:
 			return
 		try:
@@ -5211,36 +5437,41 @@ class RadioDialog(wx.Dialog):
 			pass
 
 	def _format_getem_result_label(self, book):
-		"""Listbox label for a GetemBook: title, author, and its format
-		(the user-facing "type" of the source - human/computer narration,
-		audio description, radio theatre, etc.)."""
+		"""Listbox label for a GetemBook/LibrivoxBook: title, author, its
+		format (the user-facing "type" of the source - human/computer
+		narration, audio description, radio theatre, etc.), and which
+		source it came from - shown here since the Library and search
+		results lists are now merged across both sources (see
+		_merged_library_books())."""
 		parts = [book.title]
 		if book.author:
 			parts.append(book.author)
 		label = " — ".join(parts)
 		if book.format_label:
 			label += f" ({book.format_label})"
+		label += " — %s" % self._audiobook_source_label_for(book)
 		return label
 
 	def _format_getem_details(self, book):
+		"""Build the text shown in the read-only "Audio book details" field
+		for the given book (or "" if none is selected). The Source/Author/
+		Narrator/Publisher/Type/part-count/description lines are built by
+		the shared _format_audiobook_lines() - see its docstring - so this
+		stays in sync with the same fields shown in the station-details
+		dialog (trackInfoMixin._build_audiobook_details()) for whichever
+		book/chapter is actually playing."""
 		if book is None:
 			return ""
 		lines = [book.title]
-		if book.author:
-			lines.append(_("Author: %s") % book.author)
-		if book.narrator:
-			lines.append(_("Narrator: %s") % book.narrator)
-		if book.publisher:
-			lines.append(_("Publisher: %s") % book.publisher)
-		if book.format_label:
-			lines.append(_("Type: %s") % book.format_label)
-		if book.chapters:
-			lines.append(ngettext("%d part", "%d parts", len(book.chapters)) % len(book.chapters))
-		if book.description:
-			description = self._html_to_text(book.description)
-			if description:
-				lines.append("")
-				lines.append(description)
+		lines.extend(_format_audiobook_lines(
+			source_label=self._audiobook_source_label_for(book),
+			author=book.author,
+			narrator=book.narrator,
+			publisher=book.publisher,
+			format_label=book.format_label,
+			chapter_count=len(book.chapters),
+			description=book.description,
+		))
 		lines.append("")
 		lines.append(book.detail_url)
 		return "\n".join(lines)
@@ -5257,15 +5488,80 @@ class RadioDialog(wx.Dialog):
 			ui.message(_("Please enter a search term."))
 			return
 
+		enabled_sources = _enabled_audiobook_sources()
+		if not enabled_sources:
+			ui.message(_(
+				"No audio book sources are enabled. Enable at least one "
+				"in FreeRadio settings."
+			))
+			return
+
 		self._set_getem_results_visible(True)
 		self._getem_search.Disable()
-		ui.message(_("Searching GETEM..."))
 
 		self._getem_search_id = getattr(self, "_getem_search_id", 0) + 1
 		search_id = self._getem_search_id
 
+		# A pasted book link - e.g. an archive.org "details" URL for a
+		# LibriVox recording, or a GETEM catalog page URL - is resolved
+		# directly to that one book instead of being treated as a keyword
+		# search, and fed through the same _on_getem_search_done() path as
+		# an ordinary search result (as a one-item list), so "Add to
+		# Library"/"Preview" on it work exactly the same way. See
+		# librivox.looks_like_book_url()/get_book_by_url() and (once
+		# added) their GETEM equivalents. Gated on enabled_sources the
+		# same as the keyword-search path below, so disabling a source in
+		# Settings also stops a pasted link for it from being resolved.
+		is_librivox_url = "librivox" in enabled_sources and librivox.looks_like_book_url(query)
+		is_getem_url = (
+			"getem" in enabled_sources
+			and hasattr(getem, "looks_like_book_url")
+			and getem.looks_like_book_url(query)
+		)
+		if is_librivox_url or is_getem_url:
+			ui.message(_("Loading..."))
+
+			def _do_url_lookup():
+				if is_librivox_url:
+					book, error = librivox.get_book_by_url(query)
+				else:
+					book, error = getem.get_book_by_url(query)
+				books = [book] if book else []
+				wx.CallAfter(self._on_getem_search_done, books, error, search_id)
+
+			threading.Thread(target=_do_url_lookup, daemon=True).start()
+			return
+
+		ui.message(_("Searching..."))
+
 		def _do_search():
-			books, error = getem.search_getem(query)
+			# search_getem()/search_librivox() are the one genuine
+			# source-specific call in this tab (see the note near
+			# _audiobook_module_for() above) - GETEM's search needs an
+			# authenticated session, LibriVox's doesn't, so the two aren't
+			# unified under one function name. Both are searched every time
+			# a source is enabled now that there's no "Source" dropdown to
+			# pick just one - results are merged into a single list, each
+			# row still tagged with its own source via
+			# _format_getem_result_label(). Only a source the user has
+			# checked in Settings (see _enabled_audiobook_sources()) is
+			# searched at all.
+			if "getem" in enabled_sources:
+				getem_books, getem_error = getem.search_getem(query)
+			else:
+				getem_books, getem_error = [], None
+			if "librivox" in enabled_sources:
+				librivox_books, librivox_error = librivox.search_librivox(query)
+			else:
+				librivox_books, librivox_error = [], None
+			books = list(getem_books or []) + list(librivox_books or [])
+			# Only surface an error message if NEITHER source returned any
+			# results - a real result from one source is shown even if the
+			# other one genuinely failed, rather than hiding a working
+			# result behind the other source's error.
+			error = None
+			if not books:
+				error = getem_error or librivox_error
 			wx.CallAfter(self._on_getem_search_done, books, error, search_id)
 
 		threading.Thread(target=_do_search, daemon=True).start()
@@ -5302,10 +5598,11 @@ class RadioDialog(wx.Dialog):
 		if idx == wx.NOT_FOUND or idx >= len(results):
 			return
 		book = results[idx]
-		if self._getem_library.is_in_library(book):
+		library = self._audiobook_library_for(book)
+		if library.is_in_library(book):
 			ui.message(_("This audio book is already in your library."))
 			return
-		if self._getem_library.add_book(book):
+		if library.add_book(book):
 			ui.message(_("Added to library: %s") % book.title)
 			self._refresh_getem_library_list()
 		else:
@@ -5370,16 +5667,17 @@ class RadioDialog(wx.Dialog):
 		self._play_getem_book(book)
 
 	def _refresh_getem_library_list(self):
-		"""Populate the library listbox, preserving whichever book is
+		"""Populate the library listbox from the merged GETEM + LibriVox
+		library (see _merged_library_books()), preserving whichever book is
 		selected at the moment this runs (mirrors _refresh_podcast_list())."""
 		prev_key = None
 		idx = self._getem_library_ctrl.GetSelection()
-		books_before = self._getem_library.get_books()
+		books_before = self._merged_library_books()
 		if idx != wx.NOT_FOUND and idx < len(books_before):
 			prev_key = books_before[idx].identity_key()
 
 		self._getem_library_ctrl.Clear()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		for book in books:
 			self._getem_library_ctrl.Append(self._format_getem_result_label(book))
 
@@ -5398,7 +5696,7 @@ class RadioDialog(wx.Dialog):
 
 	def _on_getem_library_selected(self, event):
 		idx = self._getem_library_ctrl.GetSelection()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		book = books[idx] if idx != wx.NOT_FOUND and idx < len(books) else None
 		self._getem_details.ChangeValue(self._format_getem_details(book))
 
@@ -5427,7 +5725,7 @@ class RadioDialog(wx.Dialog):
 
 	def _on_getem_play(self, event):
 		idx = self._getem_library_ctrl.GetSelection()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		if idx == wx.NOT_FOUND or idx >= len(books):
 			return
 		self._play_getem_book(books[idx])
@@ -5435,21 +5733,24 @@ class RadioDialog(wx.Dialog):
 	def _play_getem_book(self, book):
 		"""Resolves (if needed) and starts playing *book*, resuming from
 		whichever part it was last left off on (book.last_chapter_index -
-		see getem.GetemLibrary.mark_progress()). Every part of a
-		multi-part work is fed to the player as the same played item - see
-		getem.GetemBook.to_dict() and _start_getem_chapter() - so it gets
-		the same resume/seek/speed-change handling a podcast episode does,
+		see getem.GetemLibrary.mark_progress()/librivox.LibrivoxLibrary
+		.mark_progress()). Every part of a multi-part work is fed to the
+		player as the same played item - see GetemBook.to_dict()/
+		LibrivoxBook.to_dict() and _start_getem_chapter() - so it gets the
+		same resume/seek/speed-change handling a podcast episode does,
 		without a separate per-part row anywhere in the UI: the book is
-		one source, not one row per part."""
+		one source, not one row per part. Works against whichever source
+		*book* actually came from - see _audiobook_module_for()."""
 		if book.chapters:
 			start_idx = min(max(book.last_chapter_index, 0), len(book.chapters) - 1)
 			self._start_getem_chapter(book, start_idx)
 			return
 
 		ui.message(_("Loading: %s") % book.title)
+		module = self._audiobook_module_for(book)
 
 		def _do_resolve():
-			resolved_book, error = getem.resolve_media(book)
+			resolved_book, error = module.resolve_media(book)
 			wx.CallAfter(self._on_getem_media_resolved, resolved_book, error)
 
 		threading.Thread(target=_do_resolve, daemon=True).start()
@@ -5458,39 +5759,65 @@ class RadioDialog(wx.Dialog):
 		if error:
 			ui.message(error)
 			return
-		if self._getem_library.is_in_library(book):
+		library = self._audiobook_library_for(book)
+		if library.is_in_library(book):
 			# Persist the now-resolved chapter list so this work doesn't
-			# need re-resolving (and re-logging-in) the next time it's played.
-			self._getem_library.save()
+			# need re-resolving (and, for GETEM, re-logging-in) the next
+			# time it's played.
+			library.save()
 		start_idx = min(max(book.last_chapter_index, 0), len(book.chapters) - 1) if book.chapters else 0
 		self._start_getem_chapter(book, start_idx)
 
+	def _format_getem_now_playing_name(self, book, chapter):
+		""""What's playing" label for a GETEM/LibriVox chapter -
+		playbackCoreMixin._play_station() announces this and shows it in
+		Ctrl+Win+I's station info, so it needs the book title, not just
+		the chapter/part name: a bare label like "Part 3" (or a LibriVox
+		chapter title with no book context at all) means nothing on its
+		own. Avoids a duplicated "Title — Title" for a single-file GETEM
+		work, where getem._label_chapters() already sets the chapter's
+		own title to the book's title."""
+		if chapter["title"] and chapter["title"] != book.title:
+			return "%s — %s" % (book.title, chapter["title"])
+		return book.title
+
 	def _start_getem_chapter(self, book, chapter_index):
-		"""Plays the given part by pointing the player at the local GETEM
-		streaming proxy (see getem.get_stream_url()) rather than
-		downloading the whole chapter first - playback starts as soon as
-		the first bytes come back, the same as a normal podcast episode.
-		A remote GETEM URL can't be handed to the player directly: it only
+		"""Plays the given part. For GETEM, this points the player at the
+		local streaming proxy (see getem.get_stream_url()) rather than
+		downloading the whole chapter first, since a remote GETEM URL only
 		works with our Python session's login cookie, which the audio
 		backend (BASS, in its own subprocess) has no way to send when it
-		opens a URL on its own - the proxy is what supplies that cookie
-		on its behalf."""
+		opens a URL on its own - the proxy is what supplies that cookie on
+		its behalf. LibriVox needs no such proxy (its chapter URLs are
+		already public - see librivox.get_stream_url()), but the call is
+		made through the same module.get_stream_url() either way so this
+		method doesn't need to know which source it's dealing with."""
 		if chapter_index < 0 or chapter_index >= len(book.chapters):
 			return
+		library = self._audiobook_library_for(book)
+		module = self._audiobook_module_for(book)
 		self._getem_now_playing = (book, chapter_index)
-		self._getem_library.mark_progress(book, chapter_index)
+		library.mark_progress(book, chapter_index)
 		chapter = book.chapters[chapter_index]
 
 		ui.message(_("Loading: %s") % chapter["title"])
 
-		stream_url = getem.get_stream_url(chapter["url"], referer=book.detail_url)
+		stream_url = module.get_stream_url(chapter["url"], referer=book.detail_url)
 		station_dict = book.to_dict()
 		# Apply the book-wide audio profile (volume/effects/EQ and,
 		# optionally, playback speed) if one was saved - see
 		# _on_save_getem_audio_profile() and playbackCoreMixin._play_station().
 		if book.audio_profile:
 			station_dict["station_audio"] = book.audio_profile
-		station_dict["name"] = chapter["title"]
+		# The book title is included here (not just the chapter/part name)
+		# since this "name" is what playbackCoreMixin._play_station()
+		# announces as "what's playing" and saves as
+		# config.conf["freeradio"]["last_station_name"] - a bare chapter
+		# label like "Part 3" (or, for a single-file GETEM work,
+		# getem._label_chapters() already sets chapter["title"] to the
+		# book's own title, in which case there's nothing to add here)
+		# means nothing on its own without which book it belongs to.
+		station_dict["name"] = self._format_getem_now_playing_name(book, chapter)
 		station_dict["url"] = stream_url
 		station_dict["url_resolved"] = stream_url
 		# Carried through to config.conf["freeradio"]["last_station_getem_chapter_index"]
@@ -5498,7 +5825,18 @@ class RadioDialog(wx.Dialog):
 		# station" on the next NVDA startup know which part to rebuild a
 		# fresh proxy URL for (see GlobalPlugin._rebuild_getem_resume_url()),
 		# since the proxy URL saved this session won't still be valid then.
+		# NOTE: that rebuild path is GETEM-specific today (see
+		# _sync_getem_now_playing_from_player() above) - restart-resume for
+		# a LibriVox book needs playbackCoreMixin.py updated too, though a
+		# LibriVox chapter URL being a plain public link means it may not
+		# even need a "rebuild" step once that's done.
 		station_dict["getem_chapter_index"] = chapter_index
+		# The chapter/part title itself, separate from station_dict["name"]
+		# (which is prefixed with the book title for "what's playing"
+		# announcements - see _format_getem_now_playing_name() above).
+		# trackInfoMixin._build_station_details() shows this as its own
+		# "Chapter" row for audiobooks.
+		station_dict["audiobook_chapter_title"] = chapter.get("title", "")
 		self._play_callback(station_dict, [station_dict], 0, announce=True)
 
 	def _getem_current_book_index(self, books):
@@ -5519,8 +5857,9 @@ class RadioDialog(wx.Dialog):
 		it was last left off - the book-level equivalent of
 		_play_prev_getem_chapter(), and the primary F3 action on this tab
 		since a book (not a part) is the source the listener thinks in
-		terms of - see GetemBook.last_chapter_index."""
-		books = self._getem_library.get_books()
+		terms of - see GetemBook.last_chapter_index. Operates on whichever
+		source *book* actually came from - see _merged_library_books()."""
+		books = self._merged_library_books()
 		if not books:
 			ui.message(_("Library is empty"))
 			return
@@ -5537,8 +5876,10 @@ class RadioDialog(wx.Dialog):
 	def _play_next_getem_book(self):
 		"""Plays the next audio book in the library, resuming wherever it
 		was last left off - the book-level equivalent of
-		_play_next_getem_chapter(), and the primary F4 action on this tab."""
-		books = self._getem_library.get_books()
+		_play_next_getem_chapter(), and the primary F4 action on this tab.
+		Operates on whichever source is currently selected - see
+		_merged_library_books()."""
+		books = self._merged_library_books()
 		if not books:
 			ui.message(_("Library is empty"))
 			return
@@ -5557,7 +5898,7 @@ class RadioDialog(wx.Dialog):
 		there is no separate per-part/chapter widget, so this is the
 		"related item" F3/F4/Shift+F3/Shift+F4 move focus to on this tab
 		when only the chapter (not the book) changed."""
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		try:
 			row = next(i for i, b in enumerate(books) if b.identity_key() == book.identity_key())
 		except StopIteration:
@@ -5625,9 +5966,11 @@ class RadioDialog(wx.Dialog):
 
 	def _show_getem_library_context_menu(self):
 		"""Context menu for the selected item in the library list: play,
-		copy the URL, save/clear its audio profile, or remove from the library."""
+		copy the URL, save/clear its audio profile, or remove from the
+		library. Operates on whichever source *book* actually came from -
+		see _audiobook_library_for()/_audiobook_module_for()."""
 		idx = self._getem_library_ctrl.GetSelection()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		if idx == wx.NOT_FOUND or idx >= len(books):
 			return
 		book = books[idx]
@@ -5670,48 +6013,54 @@ class RadioDialog(wx.Dialog):
 		"""Save an audio profile (volume/effects/EQ, and optionally
 		playback speed) that applies to every part/chapter of the selected
 		audio book - see playbackCoreMixin._play_station() and
-		_start_getem_chapter()."""
+		_start_getem_chapter(). Operates on whichever source *book*
+		actually came from - see _audiobook_library_for()."""
 		idx = self._getem_library_ctrl.GetSelection()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		if idx == wx.NOT_FOUND or idx >= len(books):
 			return
 		book = books[idx]
+		library = self._audiobook_library_for(book)
 		profile = self._prompt_and_build_audio_profile(book.audio_profile, allow_speed=True)
 		if profile is None:
 			return
 		book.audio_profile = profile
-		self._getem_library.save()
+		library.save()
 		ui.message(_("Audio profile saved for %(book)s") % {"book": book.title})
 
 	def _on_clear_getem_audio_profile(self, event):
 		"""Remove the saved audio profile from the selected audio book."""
 		idx = self._getem_library_ctrl.GetSelection()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		if idx == wx.NOT_FOUND or idx >= len(books):
 			return
 		book = books[idx]
+		library = self._audiobook_library_for(book)
 		if not book.audio_profile:
 			return
 		book.audio_profile = None
-		self._getem_library.save()
+		library.save()
 		ui.message(_("Audio profile cleared for %(book)s") % {"book": book.title})
 
 	def _on_getem_remove_from_library(self, event):
 		idx = self._getem_library_ctrl.GetSelection()
-		books = self._getem_library.get_books()
+		books = self._merged_library_books()
 		if idx == wx.NOT_FOUND or idx >= len(books):
 			return
 		book = books[idx]
-		if self._getem_library.remove_book(book):
+		library = self._audiobook_library_for(book)
+		module = self._audiobook_module_for(book)
+		if library.remove_book(book):
 			# The book's own audio profile is discarded automatically along
-			# with the rest of the GetemBook object above. Its per-chapter
+			# with the rest of the book object above. Its per-chapter
 			# resume positions live separately, in RadioPlayer's own store
-			# (keyed by each chapter's proxy stream URL - see
-			# getem.get_stream_url()), and are cleaned up here so they
-			# don't linger for a book the user can no longer see or resume.
+			# (keyed by each chapter's stream URL - see
+			# getem.get_stream_url()/librivox.get_stream_url()), and are
+			# cleaned up here so they don't linger for a book the user can
+			# no longer see or resume.
 			if book.chapters and self._player:
 				urls = [
-					getem.get_stream_url(ch["url"], referer=book.detail_url)
+					module.get_stream_url(ch["url"], referer=book.detail_url)
 					for ch in book.chapters if ch.get("url")
 				]
 				self._player.clear_podcast_positions(urls)
@@ -5719,19 +6068,19 @@ class RadioDialog(wx.Dialog):
 			self._refresh_getem_library_list()
 
 	def download_getem_book_by_detail_url(self, detail_url):
-		"""Downloads every part of the GETEM audio book identified by
-		*detail_url* into its own folder under the recordings directory -
-		reached from GlobalPlugin._download_current_getem_book() in
-		__init__.py, the Ctrl+Win+V action while one of its parts is
+		"""Downloads every part of the audio book (GETEM or LibriVox)
+		identified by *detail_url* into its own folder under the recordings
+		directory - reached from GlobalPlugin._download_current_getem_book()
+		in __init__.py, the Ctrl+Win+V action while one of its parts is
 		playing (see script_addToFavorites()). Looks first at whichever
 		book is currently loaded (self._getem_now_playing already has its
-		resolved chapter list), then falls back to the library, so this
+		resolved chapter list), then falls back to either library, so this
 		works whether or not the currently-playing book was ever added to
-		it."""
+		one."""
 		playing = getattr(self, "_getem_now_playing", None)
 		book = playing[0] if playing and playing[0].detail_url == detail_url else None
 		if book is None:
-			book = self._getem_library.get_book_by_key(detail_url)
+			book = self._getem_library.get_book_by_key(detail_url) or self._librivox_library.get_book_by_key(detail_url)
 		if book is None:
 			ui.message(_("Could not find this audio book."))
 			return
@@ -5739,18 +6088,20 @@ class RadioDialog(wx.Dialog):
 
 	def _download_getem_book(self, book):
 		"""Saves a permanent, user-visible copy of every part of *book* into
-		its own folder named after the book (see getem.book_download_dir()) -
-		the "Download Book" library context-menu action and its Ctrl+Win+V
-		equivalent. Distinct from a single-part download: resolves the full
-		chapter list first if it isn't already known."""
+		its own folder named after the book (see getem.book_download_dir()/
+		librivox.book_download_dir()) - the "Download Book" library
+		context-menu action and its Ctrl+Win+V equivalent. Distinct from a
+		single-part download: resolves the full chapter list first if it
+		isn't already known."""
 		if book.chapters:
 			self._start_getem_book_download(book)
 			return
 
 		ui.message(_("Loading: %s") % book.title)
+		module = self._audiobook_module_for(book)
 
 		def _do_resolve():
-			resolved_book, error = getem.resolve_media(book)
+			resolved_book, error = module.resolve_media(book)
 			wx.CallAfter(self._on_getem_book_download_resolve_done, resolved_book, error)
 
 		threading.Thread(target=_do_resolve, daemon=True).start()
@@ -5759,8 +6110,9 @@ class RadioDialog(wx.Dialog):
 		if error:
 			ui.message(error)
 			return
-		if self._getem_library.is_in_library(book):
-			self._getem_library.save()
+		library = self._audiobook_library_for(book)
+		if library.is_in_library(book):
+			library.save()
 		self._start_getem_book_download(book)
 
 	def _start_getem_book_download(self, book):
@@ -5779,9 +6131,10 @@ class RadioDialog(wx.Dialog):
 		self._getem_book_download_active = key
 
 		ui.message(_("Downloading book: %s") % book.title)
+		module = self._audiobook_module_for(book)
 
 		def _do_download():
-			out_dir = getem.book_download_dir(book)
+			out_dir = module.book_download_dir(book)
 			try:
 				os.makedirs(out_dir, exist_ok=True)
 			except Exception as e:
@@ -5791,12 +6144,12 @@ class RadioDialog(wx.Dialog):
 			saved = 0
 			last_error = None
 			for i, chapter in enumerate(book.chapters):
-				out_path = getem.download_book_chapter_target(book, chapter, i)
+				out_path = module.download_book_chapter_target(book, chapter, i)
 				if os.path.exists(out_path):
 					saved += 1
 					continue
 				try:
-					getem.download_chapter_to(chapter["url"], out_path, referer=book.detail_url)
+					module.download_chapter_to(chapter["url"], out_path, referer=book.detail_url)
 					saved += 1
 				except FileExistsError:
 					saved += 1

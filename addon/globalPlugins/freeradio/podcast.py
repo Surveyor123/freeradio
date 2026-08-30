@@ -108,7 +108,13 @@ class PodcastEpisode:
 		self.number = None
 
 	def to_dict(self):
-		"""Convert to a dictionary compatible with radioPlayer station format."""
+		"""Convert to a dictionary compatible with radioPlayer station format.
+
+		Includes "description" so the station-details dialog
+		(trackInfoMixin._build_podcast_details()) can show the same
+		episode description text the Podcasts tab's episode-details box
+		shows (via RadioDialog._format_episode_details()) for whichever
+		episode is actually playing."""
 		return {
 			"name": self.title,
 			"url": self.url,
@@ -118,6 +124,7 @@ class PodcastEpisode:
 			"tags": "podcast",
 			"episode_published": self.published.isoformat() if self.published else "",
 			"episode_duration": self.duration,
+			"description": self.description,
 		}
 
 	def _progress_prefix_and_suffix(self, position, listened):

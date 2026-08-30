@@ -633,11 +633,34 @@ class TrackInfoMixin:
 			_notify(_("Paused: %s") % name)
 
 	def _build_station_details(self):
-		"""Return station information (including stream URL) as a list of (label, value) rows."""
-		from .utils import country_name as _country_name
+		"""Return information about whatever is currently playing as a list
+		of (label, value) rows, tailored to what kind of source it is:
+		a plain radio station (radio-browser fields - country, bitrate,
+		stream URL, ...), a podcast episode, or an audiobook chapter (GETEM
+		or LibriVox). Podcasts and audiobooks carry none of the
+		radio-browser fields (country/language/bitrate/codec/homepage/
+		votes) and showing "Stream URL" for them is actively misleading -
+		for a podcast it's just the one episode's file, and for an
+		audiobook (GETEM especially) it can be a temporary local streaming
+		proxy address that won't mean anything to the user or work once
+		copied elsewhere - so each kind gets its own field set instead of
+		reusing the radio-station rows with the inapplicable ones dropped."""
 		s = self._player.get_current_station()
 		if not s:
 			return []
+
+		tags = s.get("tags", "").strip()
+		tag_set = {t.strip() for t in tags.split(",") if t.strip()}
+
+		if "audiobook" in tag_set:
+			return self._build_audiobook_details(s)
+		if "podcast" in tag_set:
+			return self._build_podcast_details(s)
+		return self._build_radio_station_details(s)
+
+	def _build_radio_station_details(self, s):
+		"""Details rows for a plain radio-browser station."""
+		from .utils import country_name as _country_name
 
 		rows = []
 
@@ -701,6 +724,117 @@ class TrackInfoMixin:
 
 		return rows
 
+	def _build_podcast_details(self, s):
+		"""Details rows for a podcast episode. Replaces the radio-station
+		fields with ones that actually apply: the podcast (feed) it's
+		from, plus an "Episode details" block that reuses the exact same
+		By/Published/Duration/description text and strings the Podcasts
+		tab's episode-details box shows (via
+		RadioDialog._format_episode_details()) - see
+		radioDialog._format_podcast_episode_lines() - rather than
+		re-inventing separate, newly-translated fields for the same
+		information. Also shows the episode's own audio URL (labelled as
+		such rather than the generic "Stream URL", since there's only
+		ever the one URL here, not a resolved-vs-fallback pair the way a
+		radio station can have)."""
+		from .radioDialog import _format_podcast_episode_lines
+
+		rows = []
+
+		name = s.get("name", "").strip()
+		if name:
+			rows.append((_("Episode"), name))
+
+		feed_url = s.get("podcast_feed_url", "").strip()
+		if feed_url:
+			rows.append((_("Podcast"), feed_url))
+
+		published = s.get("episode_published", "").strip()
+		lines = _format_podcast_episode_lines(
+			author=s.get("podcast_author", "").strip(),
+			published=self._format_episode_date(published) if published else "",
+			duration=s.get("episode_duration", "").strip(),
+			description=s.get("description", "").strip(),
+		)
+		if lines:
+			rows.append((_("Episode details"), "\n".join(lines)))
+
+		episode_url = s.get("url_resolved", "").strip() or s.get("url", "").strip()
+		if episode_url:
+			rows.append((_("Episode URL"), episode_url))
+
+		return rows
+
+	def _build_audiobook_details(self, s):
+		"""Details rows for a GETEM/LibriVox audiobook chapter. Shows
+		which chapter this is, then an "Audio book details" block that
+		reuses the exact same Source/Author/Narrator/Publisher/Type/
+		description text and strings the Audio Books tab's details box
+		shows (via RadioDialog._format_getem_details()) - see
+		radioDialog._format_audiobook_lines() - rather than re-inventing
+		separate, newly-translated fields for the same information.
+		Crucially, the "link" shown here is the book's own detail page
+		(getem_detail_url) rather than the chapter's audio URL: for GETEM
+		that URL is a temporary local streaming-proxy address (see
+		getem.get_stream_url()) that's meaningless once copied out of the
+		dialog, and even for LibriVox (a plain public archive.org file
+		link) it points at one chapter, not the book the user actually
+		thinks of themselves as listening to."""
+		from .radioDialog import _format_audiobook_lines
+
+		rows = []
+
+		name = s.get("name", "").strip()
+		if name:
+			rows.append((_("Book"), name))
+
+		chapter_title = s.get("audiobook_chapter_title", "").strip()
+		chapter_index = s.get("getem_chapter_index")
+		chapter_count = s.get("audiobook_chapter_count") or 0
+		if chapter_title:
+			if isinstance(chapter_index, int) and chapter_count:
+				rows.append((
+					_("Chapter"),
+					"%s (%d/%d)" % (chapter_title, chapter_index + 1, chapter_count),
+				))
+			else:
+				rows.append((_("Chapter"), chapter_title))
+
+		lines = _format_audiobook_lines(
+			source_label=s.get("audiobook_source", "").strip(),
+			author=s.get("author", "").strip(),
+			narrator=s.get("narrator", "").strip(),
+			publisher=s.get("publisher", "").strip(),
+			format_label=s.get("audiobook_format", "").strip(),
+			chapter_count=chapter_count,
+			description=s.get("description", "").strip(),
+		)
+		if lines:
+			rows.append((_("Audio book details"), "\n".join(lines)))
+
+		book_url = s.get("getem_detail_url", "").strip()
+		if book_url:
+			rows.append((_("Book link"), book_url))
+
+		return rows
+
+	@staticmethod
+	def _format_episode_date(iso_string):
+		"""Best-effort human-readable rendering of a
+		PodcastEpisode.to_dict() "episode_published" ISO timestamp,
+		matching the plain str(datetime) formatting
+		RadioDialog._format_episode_details() already uses for the same
+		value (via PodcastEpisode.published, a datetime there rather than
+		the isoformat() string station_dict carries) so both dialogs show
+		the date the same way. Falls back to the raw string if it can't
+		be parsed, since showing something is better than dropping the
+		row."""
+		import datetime
+		try:
+			return str(datetime.datetime.fromisoformat(iso_string))
+		except ValueError:
+			return iso_string
+
 	def _show_station_details_dialog(self):
 		"""Show station details in an accessible dialog window."""
 		rows = self._build_station_details()
@@ -763,9 +897,16 @@ class TrackInfoMixin:
 		if first_ctrl:
 			wx.CallAfter(first_ctrl.SetFocus)
 
-		# If track info is not yet available, fetch it in the background and insert into dialog
+		# If track info is not yet available, fetch it in the background and
+		# insert into dialog. Only applies to plain radio stations - ICY
+		# metadata (and the "Station"/"Now playing" rows this inserts
+		# next to) doesn't exist for podcasts or audiobooks, and probing
+		# for it there would just be a wasted background fetch against a
+		# podcast episode URL or a temporary GETEM streaming-proxy address.
+		current_station = self._player.get_current_station() or {}
+		current_tags = {t.strip() for t in current_station.get("tags", "").split(",") if t.strip()}
 		now_playing_label = _("Now playing")
-		if now_playing_label not in field_ctrls:
+		if not (current_tags & {"podcast", "audiobook"}) and now_playing_label not in field_ctrls:
 			def _fetch_icy_and_update():
 				from . import radioPlayer as _rp
 				icy = self._player.get_icy_title()

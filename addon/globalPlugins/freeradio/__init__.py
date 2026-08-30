@@ -263,6 +263,12 @@ def _init_config():
 		"hotkey_p_triple":  "string(default='none')",
 		"ffmpeg_path":       "string(default='')",
 		"audio_fx":          "string(default='none')",
+		# Comma-separated subset of {"getem","librivox"} - which audio book
+		# sources are actually searched from the Audio Books tab (see
+		# radioDialog._enabled_audiobook_sources()). Both enabled by
+		# default; FreeRadioSettingsPanel's "Audio book sources" checklist
+		# is what edits this, in settingsPanel.py.
+		"audiobook_sources": "string(default='getem,librivox')",
 		"audio_device":      "integer(default=-1)",
 		"audio_device_name": "string(default='')",
 		"audio_device_refresh_mode": "string(default='reliable')",
@@ -899,7 +905,19 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		# state from the player so F3/F4 book/chapter navigation and the
 		# library list's "now playing" indicator reflect the actual
 		# current chapter rather than whatever was showing when the
-		# dialog was last open.
+		# dialog was last open. The libraries themselves need reloading
+		# from disk first, for the same reason - see
+		# RadioDialog.refresh_getem_libraries_from_disk()'s docstring:
+		# without this, _play_getem_book() could resume a book from an
+		# earlier part than the one it actually auto-advanced to while
+		# hidden (last_chapter_index goes stale, since the background
+		# auto-advance persists through its own separate library object
+		# instead of this dialog's).
+		try:
+			self._dialog.refresh_getem_libraries_from_disk()
+			self._dialog._refresh_getem_library_list()
+		except Exception:
+			pass
 		try:
 			self._dialog._sync_getem_now_playing_from_player()
 		except Exception:

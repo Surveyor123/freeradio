@@ -12,7 +12,7 @@ import threading
 import config
 import globalPluginHandler
 import gui
-from gui import guiHelper
+from gui import guiHelper, nvdaControls
 import ui
 import wx
 
@@ -163,7 +163,7 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		self._fx_keys = _fx_keys
 		self._fx_choice = sHelper.addLabeledControl(
 			_("Audio &effects:"),
-			wx.CheckListBox,
+			nvdaControls.CustomCheckListBox,
 			choices=_fx_display,
 		)
 		_saved_fx = config.conf["freeradio"].get("audio_fx", "none")
@@ -435,6 +435,34 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		sHelper.addItem(rec_dir_sizer, flag=wx.EXPAND)
 		sHelper.addItem(_default_hint)
 		rec_dir_browse.Bind(wx.EVT_BUTTON, self._on_browse_recordings_dir)
+
+		# --- Audio book sources ---
+		# A plain checklist, not per-source settings screens - as more
+		# sources are added later, they just join _AUDIOBOOK_SOURCE_KEYS/
+		# _AUDIOBOOK_SOURCE_DISPLAY below and this list grows with them,
+		# no other code here needs to change. Mirrors the "Audio effects"
+		# nvdaControls.CustomCheckListBox pattern above (self._fx_choice) - same
+		# comma-separated-keys-in-one-string storage shape, just a
+		# different config key. Both sources enabled by default (see the
+		# "audiobook_sources" confspec default in __init__.py); the
+		# actual filtering happens in
+		# radioDialog._enabled_audiobook_sources()/_on_getem_search().
+		_AUDIOBOOK_SOURCE_KEYS = ["getem", "librivox"]
+		# Reuses the exact same bare "GETEM"/"LibriVox" strings
+		# RadioDialog._audiobook_source_label_for() already shows next to
+		# each book in the Audio Books tab, rather than introducing new,
+		# differently-worded translations for the same two names.
+		_AUDIOBOOK_SOURCE_DISPLAY = [_("GETEM"), _("LibriVox")]
+		self._audiobook_source_keys = _AUDIOBOOK_SOURCE_KEYS
+		self._audiobook_sources_choice = sHelper.addLabeledControl(
+			_("Audio book &sources:"),
+			nvdaControls.CustomCheckListBox,
+			choices=_AUDIOBOOK_SOURCE_DISPLAY,
+		)
+		_saved_audiobook_sources = config.conf["freeradio"].get("audiobook_sources", "getem,librivox")
+		_active_audiobook_sources = {s.strip() for s in _saved_audiobook_sources.split(",") if s.strip()}
+		for i, key in enumerate(_AUDIOBOOK_SOURCE_KEYS):
+			self._audiobook_sources_choice.Check(i, key in _active_audiobook_sources)
 
 		# --- GETEM audio books account ---
 		# Credentials are not part of config.conf (which is stored as
@@ -849,6 +877,23 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			config.conf["freeradio"]["audio_fx"] = "none"
 		
 		config.conf["freeradio"]["recordings_dir"] = self._recordings_dir.GetValue().strip()
+
+		# Audio book sources: which of GETEM/LibriVox the Audio Books tab's
+		# search actually queries - see
+		# radioDialog._enabled_audiobook_sources(). Unlike audio_fx above,
+		# an empty selection is saved as-is (an empty string) rather than
+		# falling back to a sentinel/default - the user unchecking both is
+		# a legitimate ("search nothing") choice, and _on_getem_search()
+		# handles that case with its own message.
+		try:
+			checked = self._audiobook_sources_choice.GetCheckedItems()
+			active_sources = [
+				self._audiobook_source_keys[i] for i in checked
+				if 0 <= i < len(self._audiobook_source_keys)
+			]
+			config.conf["freeradio"]["audiobook_sources"] = ",".join(active_sources)
+		except (AttributeError, IndexError):
+			pass
 
 		# GETEM credentials: stored encrypted, outside of config.conf - see
 		# getem.save_credentials(). Both fields empty clears any saved

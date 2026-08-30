@@ -385,7 +385,23 @@ class GetemBook:
 		audio_profile, if any) - the caller attaches that itself right
 		before playing (see _start_getem_chapter()), same as
 		PodcastEpisode.to_dict()/RadioDialog._on_episode_play() do for
-		podcast feed profiles."""
+		podcast feed profiles.
+
+		Includes author/narrator/publisher/format_label, the book's total
+		part count, its description, and a fixed "audiobook_source" label
+		so the station-details dialog
+		(trackInfoMixin._build_audiobook_details()) can show the same
+		Source/Author/Narrator/Publisher/Type/description fields the
+		Audio Books tab shows via RadioDialog._format_getem_details() -
+		and the book's own detail_url as its "link" - instead of the
+		generic radio-station fields that don't apply here.
+		"audiobook_source" is the exact same bare "GETEM" string
+		RadioDialog._audiobook_source_label_for() already produces (kept
+		in sync manually since getem.py has no reason to import
+		radioDialog.py), so no new translatable string is introduced for
+		it. _start_getem_chapter() is the sole caller and always runs
+		after chapters are resolved, so len(self.chapters) is accurate
+		at this point."""
 		return {
 			"name": self.title,
 			"url": "",
@@ -394,6 +410,13 @@ class GetemBook:
 			"countrycode": "",
 			"tags": "podcast,audiobook",
 			"getem_detail_url": self.detail_url,
+			"author": self.author,
+			"narrator": self.narrator,
+			"publisher": self.publisher,
+			"audiobook_format": self.format_label,
+			"audiobook_chapter_count": len(self.chapters),
+			"description": self.description,
+			"audiobook_source": _("GETEM"),
 		}
 
 	def to_library_dict(self):
@@ -615,22 +638,15 @@ _CHAPTER_ROW_RE = re.compile(
 )
 
 
-def resolve_media(book, session=None):
-	"""Fetches *book*'s GETEM detail page (logging in first if needed) and
-	fills in its .chapters with every playable audio part found there, in
-	page order. Multi-part works simply end up with several chapters on
-	the same GetemBook - there is deliberately no separate UI concept of a
-	chapter list beyond this. Returns (book, error_message)."""
-	session = session or get_session()
-	ok, error = ensure_logged_in(session)
-	if not ok:
-		return book, error
-
-	try:
-		detail_html = session.fetch(book.detail_url, timeout=REQUEST_TIMEOUT)
-	except Exception as e:
-		return book, str(e)
-
+def _parse_chapters_from_detail_html(detail_html):
+	"""The actual chapter-extraction logic for a GETEM work's detail page
+	HTML - shared between resolve_media() (which fetches the page itself
+	for a book already known from search results) and get_book_by_url()
+	(which already has the page fetched, since scraping title/author for
+	a book found via a pasted URL needs that same page - see the note
+	there). Returns [(title_or_empty, url), ...] in page order; the
+	caller is responsible for the final "unnamed part" numbering - see
+	_label_chapters()."""
 	chapters = []
 	seen = set()
 
@@ -666,21 +682,181 @@ def resolve_media(book, session=None):
 				seen.add(url)
 				chapters.append((_clean_html_text(link_text), url))
 
-	if not chapters:
-		return book, _(
-			"No playable audio file was found on this work's GETEM page. "
-			"It may require manual download from the site."
-		)
+	return chapters
 
+
+def _label_chapters(book, chapters):
+	"""Turns [(title_or_empty, url), ...] (as returned by
+	_parse_chapters_from_detail_html()) into the final
+	[{"title": ..., "url": ...}, ...] shape stored on book.chapters,
+	numbering unnamed parts against *book*.title - shared by
+	resolve_media()/get_book_by_url()."""
 	total = len(chapters)
-	book.chapters = [
+	return [
 		{
 			"title": title or (book.title if total == 1 else _("{0} - Part {1}").format(book.title, i + 1)),
 			"url": url,
 		}
 		for i, (title, url) in enumerate(chapters)
 	]
+
+
+def resolve_media(book, session=None):
+	"""Fetches *book*'s GETEM detail page (logging in first if needed) and
+	fills in its .chapters with every playable audio part found there, in
+	page order. Multi-part works simply end up with several chapters on
+	the same GetemBook - there is deliberately no separate UI concept of a
+	chapter list beyond this. Returns (book, error_message)."""
+	session = session or get_session()
+	ok, error = ensure_logged_in(session)
+	if not ok:
+		return book, error
+
+	try:
+		detail_html = session.fetch(book.detail_url, timeout=REQUEST_TIMEOUT)
+	except Exception as e:
+		return book, str(e)
+
+	chapters = _parse_chapters_from_detail_html(detail_html)
+	if not chapters:
+		return book, _(
+			"No playable audio file was found on this work's GETEM page. "
+			"It may require manual download from the site."
+		)
+
+	book.chapters = _label_chapters(book, chapters)
 	return book, None
+
+
+# --------------------------------------------------------------------- #
+# Direct book-URL lookup (paste a GETEM work link instead of searching)
+# --------------------------------------------------------------------- #
+
+GETEM_NODE_URL_RE = re.compile(
+	r"^https?://(?:www\.)?getem\.boun\.edu\.tr/(?:\?q=)?node/(\d+)", re.IGNORECASE)
+
+
+def looks_like_book_url(text):
+	"""Whether *text* (typically whatever was typed into the Audio Books
+	search field) looks like a GETEM work URL rather than a keyword
+	search - see get_book_by_url()/RadioDialog._on_getem_search()."""
+	return bool(GETEM_NODE_URL_RE.match((text or "").strip()))
+
+
+def _normalize_detail_url(url):
+	match = GETEM_NODE_URL_RE.match((url or "").strip())
+	if not match:
+		return None
+	# Always the canonical "?q=node/<id>" form regardless of how the link
+	# was written (e.g. a path-alias-style "/node/<id>" URL also matches
+	# GETEM_NODE_URL_RE above) - detail_url doubles as the library's
+	# identity key (see GetemBook.identity_key()), so this keeps the same
+	# work from ending up under two different keys depending on which
+	# form of its URL happened to get pasted.
+	return GETEM_BASE_URL + "/?q=node/" + match.group(1)
+
+
+def _extract_node_title(html_text):
+	"""Best-effort extraction of a GETEM node/detail page's own title -
+	tried against the page's first <h1> heading (Drupal's default node
+	template wraps the title in <h1 id="page-title" class="title">...</h1>
+	or similar), falling back to the <title> tag (keeping only the part
+	before a common " | SiteName" suffix, if the theme adds one) since
+	every page has one even if the heading markup differs. See the note
+	in get_book_by_url() about this not being verified against a live
+	GETEM detail page."""
+	h1_match = re.search(r"<h1[^>]*>(.*?)</h1>", html_text, re.IGNORECASE | re.DOTALL)
+	if h1_match:
+		title = _clean_html_text(h1_match.group(1))
+		if title:
+			return title
+	title_match = re.search(r"<title>(.*?)</title>", html_text, re.IGNORECASE | re.DOTALL)
+	if title_match:
+		title = re.split(r"\s*\|\s*", _clean_html_text(title_match.group(1)))[0].strip()
+		if title:
+			return title
+	return ""
+
+
+def _extract_node_field_text(html_text, field_class):
+	"""Pulls the visible text out of one of GETEM's node/detail page
+	"field-name-..." field wrappers (Drupal's default field-display
+	markup) - the detail-page equivalent of _extract_field_text() above,
+	which is written for catalog *listing* rows instead (different
+	markup - "views-field-..." wrappers - so it can't be reused here
+	as-is). Strips the field's own label (e.g. "Yazar:"), if the theme
+	renders one inside the same wrapper. See the note in
+	get_book_by_url() about this not being verified against a live GETEM
+	detail page - if a field comes back empty here, the book is still
+	fully usable (its chapters resolve through the separately-verified
+	_parse_chapters_from_detail_html()); only that one detail is missing
+	from what would otherwise come from a catalog search result."""
+	match = re.search(
+		r'class="[^"]*' + re.escape(field_class) + r'[^"]*"[^>]*>(.*?)</div>\s*</div>',
+		html_text, re.DOTALL | re.IGNORECASE,
+	)
+	if not match:
+		return ""
+	text = re.sub(
+		r'<div[^>]*class="[^"]*field-label[^"]*"[^>]*>.*?</div>',
+		"", match.group(1), flags=re.DOTALL | re.IGNORECASE,
+	)
+	return _clean_html_text(text)
+
+
+def get_book_by_url(url, session=None):
+	"""Resolves a book directly from a GETEM work URL - e.g. one pasted
+	from a browser's address bar, or copied via this tab's own "Copy the
+	URL" context menu action - instead of having to search for it by
+	title/author/etc. again. Requires being logged in, same as
+	resolve_media() (see the note above _CHAPTER_ROW_RE on why even
+	viewing a work's detail page needs it); title/author/narrator/
+	publisher/description are scraped from that very same page fetch, so
+	this needs no extra request beyond what resolve_media() would already
+	make to play this book. Its chapters are extracted with the exact
+	same, already-verified code resolve_media() uses
+	(_parse_chapters_from_detail_html()/_label_chapters()) - only the
+	metadata scraping below (_extract_node_title()/
+	_extract_node_field_text()) is new, and unverified against a live
+	GETEM detail page (see the note on those two). Returns
+	(book_or_None, error_message)."""
+	detail_url = _normalize_detail_url(url)
+	if not detail_url:
+		return None, _("This doesn't look like a GETEM work link.")
+
+	session = session or get_session()
+	ok, error = ensure_logged_in(session)
+	if not ok:
+		return None, error
+
+	try:
+		detail_html = session.fetch(detail_url, timeout=REQUEST_TIMEOUT)
+	except Exception as e:
+		return None, str(e)
+
+	narrator = _extract_node_field_text(detail_html, "field-name-field-seslendiren")
+	narrator = re.sub(r"^(?:Seslendiren:\s*)+", "", narrator, flags=re.IGNORECASE).strip()
+
+	book = GetemBook(
+		title=_extract_node_title(detail_html) or _("Unknown"),
+		detail_url=detail_url,
+		author=_extract_node_field_text(detail_html, "field-name-field-yazar"),
+		narrator=narrator,
+		format_label=_extract_node_field_text(detail_html, "field-name-field-formati"),
+		description=_extract_node_field_text(detail_html, "field-name-body"),
+		publisher=_extract_node_field_text(detail_html, "field-name-field-yayinevi"),
+	)
+
+	chapters = _parse_chapters_from_detail_html(detail_html)
+	if not chapters:
+		return book, _(
+			"No playable audio file was found on this work's GETEM page. "
+			"It may require manual download from the site."
+		)
+	book.chapters = _label_chapters(book, chapters)
+	return book, None
+
+
 
 
 def _chapter_cache_dir():

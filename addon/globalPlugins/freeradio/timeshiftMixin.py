@@ -21,7 +21,7 @@ _tr = globals()["_"]
 _ = _tr
 del _tr
 
-from . import _notify
+from . import _notify, _format_duration
 
 log = logging.getLogger(__name__)
 
@@ -29,6 +29,29 @@ log = logging.getLogger(__name__)
 class TimeshiftMixin:
 	"""Rewind/fast-forward the time-shift buffer (or seek within a podcast
 	file), and toggle the time-shift buffer on/off."""
+
+	def _announce_seek_position(self):
+		"""Elapsed/remaining position after a podcast or audiobook seek, or
+		None if the current position isn't available for some reason
+		(caller should fall back to a generic message in that case).
+
+		Used instead of a fixed "5 seconds forward/back" message: the
+		listener already knows how big a seek they just did (it's always
+		the same 5 seconds), what they actually want to know is *where
+		that landed them* in the episode/chapter. Reuses the exact same
+		"%(elapsed)s elapsed, %(remaining)s remaining" string
+		TrackInfoMixin.script_whatsPlaying() (Ctrl+Win+I) already uses
+		for this identical piece of information, so no new translatable
+		string is introduced for it."""
+		ok, pos, length = self._player.get_playback_position()
+		if not ok:
+			return None
+		if length > 0:
+			return _("%(elapsed)s elapsed, %(remaining)s remaining") % {
+				"elapsed": _format_duration(pos),
+				"remaining": _format_duration(max(0.0, length - pos)),
+			}
+		return _("%(elapsed)s elapsed") % {"elapsed": _format_duration(pos)}
 
 	@script(
 		description=_("Time-shift: rewind 15 seconds (enters time-shift mode if not already active)"),
@@ -41,7 +64,7 @@ class TimeshiftMixin:
 		if station and "podcast" in station.get("tags", ""):
 			ok, pos = self._player.seek_relative(-5)
 			if ok:
-				_notify(_("Rewound 5 seconds"))
+				_notify(self._announce_seek_position() or _("Rewound 5 seconds"))
 			else:
 				_notify(_("Could not seek"))
 			return
@@ -79,7 +102,7 @@ class TimeshiftMixin:
 		if station and "podcast" in station.get("tags", ""):
 			ok, pos = self._player.seek_relative(5)
 			if ok:
-				_notify(_("Forwarded 5 seconds"))
+				_notify(self._announce_seek_position() or _("Forwarded 5 seconds"))
 			else:
 				_notify(_("Could not seek"))
 			return

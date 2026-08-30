@@ -28,6 +28,7 @@ del _tr
 
 from . import _notify, _notifications_muted
 from . import getem
+from . import librivox
 from . import podcast
 from .settingsPanel import FreeRadioSettingsPanel
 
@@ -264,9 +265,10 @@ class PlaybackCoreMixin:
 		self._play_station(station, announce)
 
 	def _rebuild_getem_resume_url(self, detail_url, chapter_index):
-		"""Re-registers the given GETEM chapter with a freshly (re)started
-		local streaming proxy and returns (url, audio_profile), or
-		(None, None) if that isn't possible.
+		"""Re-registers the given audio-book chapter (GETEM or LibriVox)
+		with a freshly (re)started local streaming proxy where one is
+		needed, and returns a full station_dict for it - or None if that
+		isn't possible.
 
 		GETEM chapter audio is never played directly - it's relayed
 		through a local proxy (see getem._ensure_proxy_server()) whose
@@ -279,42 +281,75 @@ class PlaybackCoreMixin:
 		looked up independently here since, on this NVDA-startup resume
 		path, no RadioDialog exists yet to already have one loaded (see
 		GlobalPlugin._download_current_getem_book() for the contrasting
-		case where the dialog is guaranteed to exist). The book's own
-		audio_profile (if any) is returned alongside the URL so
-		_resume_last_station() can apply it too - see
-		playbackCoreMixin._play_station().
+		case where the dialog is guaranteed to exist). LibriVox needs no
+		such rebuilding (its chapter URLs are plain public links - see
+		librivox.get_stream_url()), but is resolved through the exact same
+		module.get_stream_url() call so this method doesn't need to know
+		in advance which source *detail_url* belongs to - it just tries
+		each library in turn.
 
-		Returns (None, None) if the book isn't in the library (e.g. it was
+		Returns the same shape of station_dict RadioDialog._start_getem_chapter()
+		builds (via book.to_dict(), plus name/url/getem_chapter_index/
+		audiobook_chapter_title/station_audio) rather than just a bare
+		(url, audio_profile) pair - a resumed book previously lost every
+		field trackInfoMixin._build_audiobook_details() needs (author,
+		narrator, publisher, description, ...), so the station-details
+		dialog showed an incomplete "Audio book details" block until the
+		same book/chapter was replayed from the Audio Books tab.
+
+		Returns None if the book isn't in either library (e.g. it was
 		removed) or its chapter list was never resolved, in which case the
 		caller should not attempt to resume playback."""
 		if not detail_url:
-			return None, None
+			return None
 		try:
 			chapter_index = int(chapter_index)
 		except (TypeError, ValueError):
 			chapter_index = 0
-		try:
-			library = getem.GetemLibrary()
-		except Exception:
-			return None, None
-		book = library.get_book_by_key(detail_url)
+
+		book, module = None, None
+		for candidate_module, library_cls in ((getem, getem.GetemLibrary), (librivox, librivox.LibrivoxLibrary)):
+			try:
+				library = library_cls()
+			except Exception:
+				continue
+			found = library.get_book_by_key(detail_url)
+			if found:
+				book, module = found, candidate_module
+				break
 		if not book or not book.chapters:
-			return None, None
+			return None
 		if not (0 <= chapter_index < len(book.chapters)):
 			chapter_index = 0
-		chapter_url = book.chapters[chapter_index].get("url")
+		chapter = book.chapters[chapter_index]
+		chapter_url = chapter.get("url")
 		if not chapter_url:
-			return None, None
+			return None
 		try:
-			url = getem.get_stream_url(chapter_url, referer=book.detail_url)
+			stream_url = module.get_stream_url(chapter_url, referer=book.detail_url)
 		except Exception:
-			return None, None
-		return url, book.audio_profile
+			return None
+
+		chapter_title = chapter.get("title", book.title)
+		station_dict = book.to_dict()
+		if book.audio_profile:
+			station_dict["station_audio"] = book.audio_profile
+		# Same "book — chapter" naming as RadioDialog._start_getem_chapter()/
+		# _advance_getem_chapter_headless() below, for the same reason.
+		if chapter_title and chapter_title != book.title:
+			station_dict["name"] = "%s — %s" % (book.title, chapter_title)
+		else:
+			station_dict["name"] = book.title
+		station_dict["url"] = stream_url
+		station_dict["url_resolved"] = stream_url
+		station_dict["getem_chapter_index"] = chapter_index
+		station_dict["audiobook_chapter_title"] = chapter_title
+		return station_dict
 
 	def _advance_getem_chapter_headless(self, station):
-		"""Auto-advance a GETEM audio book to its next part when the current
-		part finishes on its own while the FreeRadio dialog isn't open (or
-		isn't shown) to do it itself via
+		"""Auto-advance an audio book (GETEM or LibriVox) to its next part
+		when the current part finishes on its own while the FreeRadio
+		dialog isn't open (or isn't shown) to do it itself via
 		RadioDialog._on_playback_finished()/_play_next_getem_chapter() -
 		see GlobalPlugin._on_podcast_finished_ui() in __init__.py.
 
@@ -325,9 +360,11 @@ class PlaybackCoreMixin:
 		tracking, but without touching any dialog UI (list selection/
 		focus/"now playing" state), using only the finished station's own
 		"getem_detail_url"/"getem_chapter_index" fields plus a fresh,
-		dialog-independent GetemLibrary() lookup - the same pattern
-		_rebuild_getem_resume_url() uses for the NVDA-startup-resume case.
-		If the dialog is later opened while this is playing,
+		dialog-independent library lookup - the same pattern
+		_rebuild_getem_resume_url() uses for the NVDA-startup-resume case,
+		including trying both libraries since the finished station's own
+		dict doesn't say which source it came from. If the dialog is later
+		opened while this is playing,
 		RadioDialog._sync_getem_now_playing_from_player() picks its state
 		back up from the player, same as it does after a startup resume."""
 		if not station or "audiobook" not in station.get("tags", ""):
@@ -339,11 +376,17 @@ class PlaybackCoreMixin:
 			chapter_index = int(station.get("getem_chapter_index", 0))
 		except (TypeError, ValueError):
 			chapter_index = 0
-		try:
-			library = getem.GetemLibrary()
-		except Exception:
-			return
-		book = library.get_book_by_key(detail_url)
+
+		book, module, library = None, None, None
+		for candidate_module, library_cls in ((getem, getem.GetemLibrary), (librivox, librivox.LibrivoxLibrary)):
+			try:
+				candidate_library = library_cls()
+			except Exception:
+				continue
+			found = candidate_library.get_book_by_key(detail_url)
+			if found:
+				book, module, library = found, candidate_module, candidate_library
+				break
 		if not book or not book.chapters:
 			return
 		next_index = chapter_index + 1
@@ -354,19 +397,32 @@ class PlaybackCoreMixin:
 		if not chapter_url:
 			return
 		try:
-			stream_url = getem.get_stream_url(chapter_url, referer=book.detail_url)
+			stream_url = module.get_stream_url(chapter_url, referer=book.detail_url)
 		except Exception:
 			return
 
 		library.mark_progress(book, next_index)
 
+		chapter_title = book.chapters[next_index].get("title", book.title)
 		station_dict = book.to_dict()
 		if book.audio_profile:
 			station_dict["station_audio"] = book.audio_profile
-		station_dict["name"] = book.chapters[next_index].get("title", book.title)
+		# Book title included alongside the chapter/part title for the
+		# same reason as RadioDialog._format_getem_now_playing_name() -
+		# this is what gets announced as "what's playing" and shown in
+		# Ctrl+Win+I's station info, and a bare chapter label on its own
+		# doesn't say which book it belongs to.
+		if chapter_title and chapter_title != book.title:
+			station_dict["name"] = "%s — %s" % (book.title, chapter_title)
+		else:
+			station_dict["name"] = book.title
 		station_dict["url"] = stream_url
 		station_dict["url_resolved"] = stream_url
 		station_dict["getem_chapter_index"] = next_index
+		# Kept in sync with RadioDialog._start_getem_chapter() /
+		# _rebuild_getem_resume_url() above, which both set this too - see
+		# trackInfoMixin._build_audiobook_details()'s "Chapter" row.
+		station_dict["audiobook_chapter_title"] = chapter_title
 		self._play_station(station_dict)
 
 	def _resume_last_station(self):
@@ -419,37 +475,52 @@ class PlaybackCoreMixin:
 		# GETEM audio books need their proxy URL rebuilt fresh every
 		# session - see _rebuild_getem_resume_url(). Bail out rather than
 		# handing the player a dead URL from the previous session, which
-		# would just fail silently a moment later.
+		# would just fail silently a moment later. The rebuilt dict comes
+		# straight from the book's own to_dict() (author/narrator/
+		# publisher/description/... all included), so it fully replaces
+		# the minimal placeholder built above rather than just patching a
+		# couple of URL fields onto it - see _rebuild_getem_resume_url()'s
+		# docstring for why the placeholder alone left the station-details
+		# dialog showing an incomplete "Audio book details" block.
 		if "audiobook" in tags:
 			detail_url = config.conf["freeradio"].get("last_station_getem_detail_url", "").strip()
 			chapter_index = config.conf["freeradio"].get("last_station_getem_chapter_index", 0)
-			fresh_url, audio_profile = self._rebuild_getem_resume_url(detail_url, chapter_index)
-			if not fresh_url:
+			rebuilt = self._rebuild_getem_resume_url(detail_url, chapter_index)
+			if not rebuilt:
 				ui.message(_(
 					"Could not resume the last audio book - it may have been "
 					"removed from your library."
 				))
 				return
-			station["url"] = fresh_url
-			station["url_resolved"] = fresh_url
-			station["getem_detail_url"] = detail_url
-			if audio_profile:
-				station["station_audio"] = audio_profile
+			station = rebuilt
 		elif "podcast" in tags:
 			# Likewise, re-apply the subscribed feed's saved audio profile
 			# (if any) - see _on_episode_play()/_play_station(). Unlike the
 			# audiobook case, the episode URL itself is still perfectly
 			# playable on its own, so a missing/removed feed just means no
-			# profile to apply rather than a reason to give up resuming.
+			# profile (or author) to add rather than a reason to give up
+			# resuming.
 			feed_url = config.conf["freeradio"].get("last_station_podcast_feed_url", "").strip()
 			if feed_url:
 				try:
 					feed = podcast.PodcastManager().get_feed_by_url(feed_url)
 				except Exception:
 					feed = None
-				if feed and feed.audio_profile:
-					station["station_audio"] = feed.audio_profile
+				if feed:
 					station.setdefault("podcast_feed_url", feed_url)
+					if feed.audio_profile:
+						station["station_audio"] = feed.audio_profile
+					# PodcastFeed.to_dict() persists title/author/description
+					# to disk independently of its episodes list (episodes
+					# themselves are never persisted - see
+					# PodcastManager.load()), so the feed author survives a
+					# restart and can be restored here even though the
+					# episode's own description cannot be (that would need a
+					# network feed refresh, which startup resume
+					# deliberately doesn't do) - see
+					# trackInfoMixin._build_podcast_details().
+					if feed.author:
+						station["podcast_author"] = feed.author
 
 		self._play_station(station)
 

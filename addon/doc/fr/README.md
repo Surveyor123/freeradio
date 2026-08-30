@@ -1,6 +1,19 @@
 # FreeRadio — NVDA Add-on
 
-FreeRadio est une extension de radio Internet pour le lecteur d'écran NVDA. Son objectif principal est de permettre aux utilisateurs d'accéder facilement à des milliers de stations de radio Internet et podcasts. L'ensemble de l'interface et toutes les fonctionnalités ont été conçues en gardant à l'esprit une accessibilité totale pour NVDA.
+FreeRadio est une extension complète pour le lecteur d'écran NVDA, comprenant radio Internet, podcasts et livres audio. Ce qui a commencé comme un simple moyen d'écouter des stations de radio Internet en streaming est devenu une plateforme d'écoute complète et entièrement accessible : chaque écran, dialogue et commande est conçu dès le départ pour une utilisation au clavier et avec un lecteur d'écran, sans qu'une souris soit nécessaire à aucun moment.
+
+## Ce Que FreeRadio Peut Faire
+
+- **Radio Internet** — Parcourez et recherchez plus de 50 000 stations à partir de l'annuaire [Radio Browser](https://www.radio-browser.info/), Résultats complétés par TuneIn et iHeartRadio. Enregistrez vos favoris, réorganisez-les et accédez-y directement grâce à un raccourci clavier global depuis n'importe où dans Windows — consultez les sections [L'Annuaire de Radio Browser](#radio-browser-directory) et [Favoris](#favourites).
+- **Podcasts** — Abonnez-vous à un flux RSS/Atom ou parcourez l'annuaire de podcasts d'Apple et écoutez des extraits avant de vous abonner. La position de lecture est enregistrée automatiquement et reprend là où vous vous étiez arrêté — consultez la section [Podcasts](#podcasts).
+- **Livres audio** — Recherchez, lisez en streaming ou téléchargez des livres à partir de la bibliothèque numérique [GETEM](https://getem.boun.edu.tr/), de l'Université Boğaziçi pour les personnes malvoyantes, avec reprise automatique pour les œuvres en plusieurs parties — consultez la section [Livres audio (GETEM)](#audio-books-getem).
+- **Enregistrement** — Enregistrez instantanément ce qui est diffusé, capturez automatiquement un morceau au début et à la fin de sa lecture, ou planifiez des enregistrements ponctuels ou récurrents, le tout sans interrompre la lecture — consultez la section [Enregistrement](#recording).
+- **Décalage temporel (retour en arrière sur la radio en direct)** — Mettez en pause et revenez en arrière sur une chaîne en direct comme avec un enregistreur numérique, puis reprenez le direct quand vous le souhaitez — consultez la section [Décalage temporel (retour en arrière sur la radio en direct)](#time-shift-rewind-live-radio).
+- **Reconnaissance musicale et morceaux aimés** — Identifiez les morceaux sans métadonnées à l'aide de Shazam basée sur la reconnaissance, enregistrez les morceaux aimés dans un fichier texte et consultez leurs paroles — consultez les sections [Reconnaissance Musicale](#music-recognition) et [Morceaux aimés](#liked-songs).
+- **Profils audio et effets** — Enregistrez des réglages distincts de volume, d'effets, d'égalisation et de vitesse de lecture pour chaque station, podcast ou livre audio, et appliquez des effets en temps réel (Chœur, Réverbération, EQ boosts, et plus encore) à travers du BASS backend — consultez la section [Profil Audio de la Station](#station-audio-profile).
+- **Miroir audio** — Diffuser le même flux audio simultanément vers deux périphériques de sortie, tels que des haut-parleurs et écouteurs — consultez la section [Miroir Audio](#audio-mirror).
+- **Minuteries** — Planifiez le démarrage d'une station favorite ou l'arrêt de la lecture à une heure précise — consultez la section [Minuterie](#timer).
+- **Accès au clavier étendu et au braille** — Toutes les fonctionnalités sont accessibles entièrement au clavier, grâce à des raccourcis globaux fonctionnant partout sous Windows, des touches de raccourci directes pour vos stations favorites et une sortie braille optionnelle pour toutes les notifications vocales de FreeRadio.
 
 ## L'Annuaire de Radio Browser
 
@@ -40,6 +53,8 @@ Tous les raccourcis peuvent être réassignés depuis le Menu NVDA → Préfére
 | Raccourci | Fonction | Description |
 |---|---|---|
 | `Ctrl+Win+R` | Ouvrir le navigateur de stations | Ouvre la fenêtre du navigateur si elle est fermée, ou la met au premier plan si elle est déjà ouverte. |
+| `Ctrl+Win+O` | Ouvrir l'onglet Podcasts | Ouvre le navigateur de stations (s'il est fermé) ou le met au premier plan, et bascule directement vers l'onglet **Podcasts**. |
+| `Ctrl+Win+L` | Ouvrir l'onglet Livres audio | Ouvre le navigateur de stations (s'il est fermé) ou le met au premier plan, et bascule directement vers l'onglet **Livres audio**. |
 | `Ctrl+Win+P` | Mettre en pause / reprendre | Met en pause la station actuelle si elle est en cours de lecture ; reprend en cas de pause. Si rien ne joue, démarre la dernière station ou ouvre la liste des favoris en fonction de votre réglage. En appuyant deux fois de suite, vous accédez directement à un onglet de votre choix. Appuyer trois fois peut déclencher une action distincte en fonction de votre réglage. |
 | `Ctrl+Win+S` | Arrêter | Arrête complètement la station actuelle et réinitialise le lecteur. |
 | `Ctrl+Win+→` | Suivant favori | Passe à la station suivante dans la liste des favoris. Revient  au début et à la fin de la liste. |
@@ -391,6 +406,7 @@ Une fois que vous avez ajouté des flux, ils apparaissent dans la liste **Abonne
 
 **Menu contextuel pour les flux:** Cliquez avec le bouton droit sur un flux, ou sélectionnez-le et appuyez sur la touche Applications / `Shift+F10`, pour ouvrir un menu avec:
 - **Actualiser le flux** — récupérez de nouveaux épisodes maintenant.
+- **Enregistrer le profil audio de ce podcast** / **Effacer le profil audio** — consultez la section [Profil Audio du Podcast](#podcast-audio-profile).
 - **Supprimer le flux** — supprimez l'abonnement.
 - **Copier l'URL du flux** — copiez l'URL du flux dans le presse-papiers.
 
@@ -415,6 +431,7 @@ Sélectionnez un flux dans la liste des abonnements ; ses épisodes apparaissent
 **Menu contextuel pour les épisodes:** Cliquez avec le bouton droit sur un épisode, ou sélectionnez-le et appuyez sur la touche Applications / `Shift+F10`, pour ouvrir un menu avec:
 - **Lire l'épisode** — démarrez la lecture.
 - **Télécharger l'épisode** — téléchargez le fichier de l'épisode dans votre dossier d'enregistrements.
+- **Enregistrer le profil audio pour ce podcast** / **Effacer le profil audio** — les mêmes commandes que celles du menu contextuel du flux sont incluses ici par commodité afin que vous n'ayez pas à revenir à la liste des abonnements. Ils conservent toujours un seul profil pour l'ensemble du podcast, et non un profil distinct pour cet épisode — consultez la section [Profil Audio du Podcast](#podcast-audio-profile).
 - **Copier l'URL de l'épisode** — copiez l'URL audio directe dans le presse-papiers.
 
 ### Téléchargement d'Épisodes
@@ -434,6 +451,25 @@ Les épisodes de podcast sont lus à l'aide du **BASS backend** (le même moteur
 > **Note:** `bass_fx.dll` n'est pas fourni avec FreeRadio par défaut. Vous pouvez le télécharger depuis la [page BASS FX](https://www.un4seen.com/bass-fx.html) et placez-le dans le dossier  de l'extension `bass/x64` (pour NVDA 64 bits) ou `bass` (pour NVDA 32 bits) pour activer cette fonctionnalité.
 
 Si le BASS backend est désactivé (ou échoue), la lecture du podcast revient à la même chaîne de lecteurs externes (VLC → PotPlayer → WMP) utilisée pour la radio, mais **la fonctionnalité de recherche et de reprise ne fonctionnera pas** dans ce cas — l'épisode sera lu depuis le début à chaque fois. Pour une expérience de podcast complète, laissez le BASS backend activé.
+
+**Reprise de l'effet sonore:** Lorsqu'un épisode reprend à partir d'une position enregistrée, FreeRadio diffuse brièvement un léger bruitage de chargement de cassette sur un canal séparé pendant qu'il retrouve votre point de lecture, au lieu de laisser l'audio de l'épisode se poursuivre normalement depuis 0:00. Ce comportement est automatique lorsque le BASS backend est actif et est indépendant du paramètre **Transition de changement de station** — ce paramètre uniquement affecte le passage entre les stations de radio en direct, et non la reprise des podcasts ou des livres audio.
+
+### Profil Audio du Podcast
+
+Faites un clic droit sur un podcast dans la Liste des abonnements, ou cliquez avec le bouton droit sur n'importe lequel de ses épisodes, et choisissez **Enregistrer le profil audio de ce podcast** pour sauvegarder le volume actuel, effets, gains EQ et/ou la vitesse de lecture en tant que profil lié à ce podcast. À chaque fois qu'un épisode de ce podcast est diffusé, les paramètres enregistrés sont appliqués automatiquement, remplaçant les valeurs par défaut globales. Comme la commande est disponible à la fois dans le menu contextuel du flux et dans le menu contextuel de l'épisode, vous pouvez y accéder sans revenir à la Liste des abonnements — dans tous les cas, conservez toujours un seul profil pour l'ensemble du podcast, et non un profil distinct pour chaque épisode.
+
+Une boîte de dialogue vous permet de choisir précisément ce que vous souhaitez enregistrer:
+- **Volume uniquement**
+- **Effets uniquement**
+- **Volume et effets**
+- **Volume et vitesse de lecture**
+- **Effets et vitesse de lecture**
+- **Vitesse de lecture uniquement**
+- **Volume, effets et vitesse de lecture**
+
+Seuls les éléments que vous sélectionnez sont enregistrés dans le profil ; tout ce qui est laissé de côté conserve les données déjà enregistrées. Par exemple, en choisissant **Vitesse de lecture uniquement** sur un podcast qui possède déjà un profil de volume/effets enregistré, seule la vitesse est mise à jour, le reste restant inchangé.
+
+**Effacer le profil audio** supprime le profil enregistré du podcast, depuis l'un ou l'autre menu contextuel. Cette option est activée uniquement si le podcast possède déjà un profil enregistré.
 
 ### Stockage des Données du Podcast
 
@@ -481,13 +517,24 @@ Les livres que vous avez ajoutés apparaissent dans la liste **Bibliothèque**, 
 - **Lire le média** — démarre la lecture, comme avec  `Entrée`.
 - **Télécharger le livre** — télécharge chaque partie du livre ; consultez la section [Téléchargement de Livres audio](#downloading-audio-books) ci-dessous.
 - **Copier l'URL** — copie l'URL de la page du catalogue GETEM du livre dans le presse-papiers.
+- **Enregistrer le profil audio de ce livre** / **Effacer le profil audio** — consultez la section [Profil audio du Livre audio](#audio-book-audio-profile) ci-dessous.
 - **Supprimer de la bibliothèque** — supprime le livre de votre bibliothèque.
 
 ### Lecture et Reprise
 
 Une œuvre en plusieurs parties est traitée comme un élément unique dans le lecteur, et non comme une ligne par partie  — de la même manière qu'un épisode de podcast est un élément unique, quelle que soit la manière dont il est diffusé. FreeRadio se souvient de la dernière partie que vous avez écoutée et y reprend automatiquement la prochaine fois que vous lisez ce livre, même lors d'un redémarrage de NVDA.
 
+Lorsque chaque partie est terminée, FreeRadio lance automatiquement la partie suivante du même livre — vous n'avez pas besoin de le sélectionner manuellement. Cela se produit même si la fenêtre du navigateur de stations est fermée à ce moment-là ; la partie "Maintenant en cours de lecture" apparaîtra dans la liste de la bibliothèque et sera resynchronisé automatiquement la prochaine fois que la fenêtre sera ouverte.
+
 La lecture est diffusée via un petit relais local plutôt que de télécharger d'abord la totalité de la partie, de sorte que l'écoute commence dès l'arrivée des premiers octets — le même comportement de démarrage immédiat que celui utilisé par les podcasts. Tous les contrôles habituels du lecteur (pause, volume, décalage temporel, vitesse de lecture, périphérique de sortie, etc.) fonctionnent sur un livre audio exactement comme elles le feraient sur une station ou un épisode de podcast.
+
+Comme pour les podcasts, la reprise d'un livre audio à partir de sa position de lecture est accompagnée d'un bref bruitage de chargement de cassette pendant que FreeRadio recherche l'endroit où vous vous êtes arrêté — consultez la note **Reprise de l'effet sonore** dans la section [Détails de la Lecture du Podcast](#podcast-playback-details).
+
+### Profil audio du Livre audio
+
+Faites un clic droit sur un livre dans votre liste de bibliothèque et choisissez **Enregistrer le profil audio de ce livre** pour sauvegarder le volume actuel, effets, gains EQ et/ou la vitesse de lecture en tant que profil lié à ce livre. Chaque fois que le livre (ou l'une de ses parties) est joué, les paramètres enregistrés sont appliqués automatiquement, remplaçant les valeurs par défaut globales. Cela fonctionne exactement de la même manière que le [Profil Audio du Podcast](#podcast-audio-profile) ci-dessus, y compris le même ensemble d'options d'enregistrement (volume, effets et/ou vitesse de lecture, dans n'importe quelle combinaison) et le même comportement de mise à jour partielle.
+
+**Effacer le profil audio** supprime le profil enregistré du livre ; cette option n'st activée que si le livre contient déjà un profil enregistré.
 
 ### Téléchargement de Livres audio
 
@@ -544,7 +591,7 @@ Les options suivantes peuvent être configurées à partir de NVDA Menu → Pré
 | Volume | Définit le volume au démarrage de l'extension (0–200). Modifications apportées pendant la lecture avec `Ctrl+Win+↑` / `Ctrl+Win+↓` se reflètent également ici. |
 | Effet audio par défaut | Définit l'effet audio appliqué au démarrage de NVDA ou une station commence à jouer. L'effet sélectionné correspond à la liste des effets dans le navigateur de stations. Actif uniquement lorsque le BASS backend est utilisé. |
 | Gain EQ (Bass / Treble / Vocal) | Définit le niveau de gain en dB pour chaque bande EQ (−15 à +15). Ces valeurs s'appliquent lorsque l'effet EQ correspondant est actif et sont enregistrées globalement. Les remplacements par station peuvent être stockés à l'aide du bouton **Enregistrer le profil audio** dans l'onglet Favoris. Actif uniquement lorsque le BASS backend est utilisé. |
-| Transition de changement de station (BASS backend) | Contrôle le comportement de transition lors de la commutation entre les stations. **Coupe instantanée ** (par défaut) arrête la station précédente juste avant le début de la nouvelle. **Fondu enchaîné court (1 seconde)** et **Fondu enchaîné normal (2 secondes)** démarre immédiatement la nouvelle station sans interruption, puis faites disparaître progressivement la station précédente en arrière-plan une fois que le nouveau flux est confirmé actif. **Effet sonore de syntonisation de station** arrête immédiatement la station précédente et diffuse un effet sonore de syntoniseur de station avant que la nouvelle ne démarre. N'a aucun effet et aucun impact sur les performances lorsqu'il est réglé sur Coupe instantanée. Uniquement disponible lorsque le BASS backend est en cours d'utilisation. |
+| Transition de changement de station (BASS backend) | Contrôle le comportement de transition lors de la commutation entre les **stations de radio en direct**. **Coupe instantanée ** (par défaut) arrête la station précédente juste avant le début de la nouvelle. **Fondu enchaîné court (1 seconde)** et **Fondu enchaîné normal (2 secondes)** démarre immédiatement la nouvelle station sans interruption, puis faites disparaître progressivement la station précédente en arrière-plan une fois que le nouveau flux est confirmé actif. **Effet sonore de syntonisation de station** arrête immédiatement la station précédente et diffuse un effet sonore de syntoniseur de station avant que la nouvelle ne démarre. N'a aucun effet et aucun impact sur les performances lorsqu'il est réglé sur Coupe instantanée. Uniquement disponible lorsque le BASS backend est en cours d'utilisation. Ne s'applique pas aux podcasts ni aux livres audio — leur reprise déclenche toujours la lecture d'un bref effet sonore de cassette, quel que soit ce réglage ; consultez la section [Détails de la Lecture du Podcast](#podcast-playback-details). |
 | Reprendre la dernière station au démarrage de NVDA | Lorsqu'elle est activée, la dernière station écoutée redémarre automatiquement à chaque démarrage de NVDA. |
 | Annoncer automatiquement les changements de piste (métadonnées ICY) | Lorsqu'il est activé, NVDA lit automatiquement le nouveau nom de la piste à chaque fois qu'il change sur une station qui diffuse des métadonnées ICY. Le premier morceau est également annoncé immédiatement lors du passage à une nouvelle station. Désactivé par défaut. |
 | Notifications muettes | Lorsqu'il est activé, NVDA n'annonce pas les changements de station, changements d'état de lecture (lecture, pause, arrêt) ou événements d'enregistrement (démarré, arrêté, terminé). Les messages d'erreur, les commentaires sur les favoris, les résultats de la reconnaissance musicale et les notifications de mise à jour ne sont pas affectés. Peut également être activé à la volée via un geste de commande non assigné. Désactivé par défaut. |

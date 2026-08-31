@@ -22,6 +22,7 @@
 import ctypes
 import hashlib
 import html
+import html.parser
 import http.cookiejar
 import http.server
 import json
@@ -214,57 +215,175 @@ def clear_credentials():
 # --------------------------------------------------------------------- #
 # HTML helpers
 #
-# The parsing approach in this section (_clean_html_text, _absolute_url,
-# _extract_select_options, and the catalog-row splitting/field extraction
-# in _parse_catalog_results below) was developed with reference to Mehmet
-# Aykurt's GETEM E-Kutuphane NVDA add-on, which parses the same site:
-# https://github.com/MehmetAykurt/getem
+# GETEM's search-results/select-options markup used to be scraped with
+# hand-rolled regexes over the raw HTML (adapted from Mehmet Aykurt's
+# GETEM E-Kutuphane NVDA add-on, which parses the same site the same
+# way: https://github.com/MehmetAykurt/getem). Regexes like that break
+# the moment GETEM reorders an attribute, adds a wrapper element, or
+# nests a "field-content" span inside a div instead of a span - none of
+# which changes what the page means, just its exact markup. The helpers
+# below instead build a small real (if minimal) DOM out of the response
+# - a stack-based html.parser.HTMLParser subclass - and then query it by
+# tag/class the way a browser would, which tolerates all of that; row
+# boundaries in particular are now real subtrees rather than "everything
+# from this marker to the next", so a field missing from one row can no
+# longer pick up text that actually belongs to the row after it.
 # --------------------------------------------------------------------- #
 
+class _HtmlNode:
+	"""One element in the minimal DOM _HtmlDomBuilder builds (also used,
+	with tag "#root", for the document root). Text is kept as plain
+	strings among a node's children, interleaved with child elements in
+	document order."""
+
+	__slots__ = ("tag", "attrs", "children")
+
+	def __init__(self, tag, attrs):
+		self.tag = tag
+		self.attrs = dict(attrs)
+		self.children = []
+
+	def has_class(self, class_name):
+		return class_name in (self.attrs.get("class") or "").split()
+
+	def text(self):
+		"""All text under this node, in document order, tags stripped."""
+		parts = []
+		for child in self.children:
+			parts.append(child if isinstance(child, str) else child.text())
+		return "".join(parts)
+
+	def text_excluding(self, class_name):
+		"""Same as text(), but skips the text of any descendant subtree
+		whose root element carries *class_name* - used to pull a field's
+		value without its own caption/label element, without having to
+		assume exactly how deeply that label sits nested inside the
+		field wrapper."""
+		parts = []
+		for child in self.children:
+			if isinstance(child, str):
+				parts.append(child)
+			elif child.has_class(class_name):
+				continue
+			else:
+				parts.append(child.text_excluding(class_name))
+		return "".join(parts)
+
+	def iter_elements(self):
+		"""Depth-first iterator over every descendant element (not the
+		text nodes interleaved among them)."""
+		for child in self.children:
+			if isinstance(child, _HtmlNode):
+				yield child
+				yield from child.iter_elements()
+
+	def find(self, tag=None, class_name=None):
+		for el in self.iter_elements():
+			if (tag is None or el.tag == tag) and (class_name is None or el.has_class(class_name)):
+				return el
+		return None
+
+	def find_all(self, tag=None, class_name=None):
+		return [
+			el for el in self.iter_elements()
+			if (tag is None or el.tag == tag) and (class_name is None or el.has_class(class_name))
+		]
+
+
+# Tags that never carry their own closing tag. handle_starttag() below
+# must not push a stack frame for these, or a document that (correctly)
+# never closes an <img>/<br>/<input> would otherwise attach every
+# subsequent element as its child instead of as its sibling.
+_VOID_TAGS = frozenset((
+	"area", "base", "br", "col", "embed", "hr", "img", "input",
+	"link", "meta", "param", "source", "track", "wbr",
+))
+
+
+class _HtmlDomBuilder(html.parser.HTMLParser):
+	"""Builds a tree of _HtmlNode out of arbitrary, possibly-malformed
+	HTML. Unlike a regex pass over the raw markup, a stray or mismatched
+	tag can't derail everything that follows it: handle_endtag() below
+	closes back to the nearest matching open tag if one exists on the
+	stack, and is otherwise simply ignored rather than closing the wrong
+	element."""
+
+	def __init__(self):
+		super().__init__(convert_charrefs=True)
+		self.root = _HtmlNode("#root", {})
+		self._stack = [self.root]
+
+	def handle_starttag(self, tag, attrs):
+		node = _HtmlNode(tag, attrs)
+		self._stack[-1].children.append(node)
+		if tag not in _VOID_TAGS:
+			self._stack.append(node)
+
+	def handle_startendtag(self, tag, attrs):
+		self._stack[-1].children.append(_HtmlNode(tag, attrs))
+
+	def handle_endtag(self, tag):
+		for depth in range(len(self._stack) - 1, 0, -1):
+			if self._stack[depth].tag == tag:
+				del self._stack[depth:]
+				return
+		# No matching open tag on the stack - broken markup; ignored
+		# rather than closing (and so truncating) the wrong element.
+
+	def handle_data(self, data):
+		if data:
+			self._stack[-1].children.append(data)
+
+
+def _parse_html(html_text):
+	builder = _HtmlDomBuilder()
+	try:
+		builder.feed(html_text or "")
+	except Exception as e:
+		log.warning("FreeRadio GETEM: HTML parsing failed: %s", e)
+	return builder.root
+
+
 def _clean_html_text(text):
+	"""Plain text out of an HTML fragment: tags stripped, entities
+	decoded, whitespace collapsed. Also a no-op-but-safe pass on text
+	that was never HTML to begin with, since callers throughout this
+	module use it on both."""
 	if text is None:
 		return ""
-	text = str(text)
-	text = text.replace("<br>", " ").replace("<br/>", " ").replace("<br />", " ")
-	text = re.sub(r"<[^>]+>", "", text)
-	text = html.unescape(text)
+	text = _parse_html(str(text)).text()
 	text = re.sub(r"\s+", " ", text)
 	return text.strip()
 
 
 def _absolute_url(link):
+	"""Resolves a possibly-relative GETEM link against GETEM_BASE_URL.
+	Delegates to urllib.parse.urljoin instead of a handful of
+	startswith() checks, so protocol-relative ("//getem.boun.edu.tr/...")
+	and query-only ("?q=...") links resolve correctly too, not just the
+	"/path" and "path" cases those checks covered."""
 	link = (link or "").strip()
 	if not link:
 		return ""
-	if link.startswith("http://") or link.startswith("https://"):
-		return link
-	if link.startswith("/"):
-		return GETEM_BASE_URL + link
-	return GETEM_BASE_URL + "/" + link
+	return urllib.parse.urljoin(GETEM_BASE_URL + "/", link)
 
 
 def _extract_select_options(html_text, select_id):
 	"""Returns [(label, value), ...] for the <option>s of the <select
 	id="select_id"> found in *html_text* (GETEM's own search form uses
-	this to publish its current filter choices - see get_audio_format_options()).
-	Extraction approach (locate by id, slice to </select>, regex the
-	<option> tags) follows Mehmet Aykurt's GETEM add-on - see the module
-	header above."""
-	options = []
-	marker = 'id="' + select_id + '"'
-	start = html_text.find(marker)
-	if start == -1:
-		return options
-	end = html_text.find("</select>", start)
-	if end == -1:
-		return options
-	block = html_text[start:end]
-	for value, label in re.findall(
-		r'<option\s+[^>]*value=["\']([^"\']*)["\'][^>]*>(.*?)</option>',
-		block, re.DOTALL | re.IGNORECASE,
-	):
-		options.append((_clean_html_text(label), html.unescape(value)))
-	return options
+	this to publish its current filter choices - see
+	get_audio_format_options())."""
+	root = _parse_html(html_text)
+	select_node = next(
+		(el for el in root.iter_elements() if el.tag == "select" and el.attrs.get("id") == select_id),
+		None,
+	)
+	if select_node is None:
+		return []
+	return [
+		(_clean_html_text(option.text()), option.attrs.get("value", ""))
+		for option in select_node.find_all("option")
+	]
 
 
 def _extract_hidden_field(html_text, field_name):
@@ -275,50 +394,51 @@ def _extract_hidden_field(html_text, field_name):
 	return html.unescape(match.group(1)) if match else None
 
 
-def _extract_field_text(row_html, field_class):
-	"""Pulls the visible text out of one of GETEM's "views-field-..." result
-	columns within a single search-result row's HTML."""
-	match = re.search(
-		r'class="[^"]*' + re.escape(field_class) + r'[^"]*"[^>]*>\s*'
-		r'<[^>]+class="field-content"[^>]*>(.*?)</(?:div|span)>',
-		row_html, re.DOTALL | re.IGNORECASE,
-	)
-	if not match:
+def _extract_field_row_text(row_node, field_class):
+	"""Pulls the visible text out of one of GETEM's "views-field-..."
+	result columns within a single parsed search-result row. Falls back
+	to the field element's own text when it has no separate
+	"field-content" wrapper, so a future markup tweak that drops that
+	wrapper produces a slightly-less-trimmed value instead of silently
+	blanking the field."""
+	field_node = row_node.find(class_name=field_class)
+	if field_node is None:
 		return ""
-	return _clean_html_text(match.group(1))
+	content_node = field_node.find(class_name="field-content") or field_node
+	return _clean_html_text(content_node.text())
 
 
 def _parse_catalog_results(html_text):
 	"""Parses GETEM's catalog search-results HTML (a Drupal Views listing)
-	into a list of GetemBook, same general shape as one search-result "row"
-	on the site. Row-splitting/field-extraction approach, and the
-	"Seslendiren:" prefix cleanup below, follow Mehmet Aykurt's GETEM
-	add-on - see the module header above."""
+	into a list of GetemBook, one per "views-row" element. Each row is
+	handled as its own properly-nested subtree - found via real element
+	nesting rather than by splitting the raw HTML on a literal
+	'<div class="views-row' marker and searching forward from there - so
+	a field missing from one row can no longer pick up text belonging to
+	the row after it, and an unrelated element elsewhere on the page that
+	happens to contain that marker string can no longer be mistaken for
+	a row."""
 	books = []
-	rows = html_text.split('<div class="views-row')
-	for row in rows[1:]:
-		link_match = re.search(
-			r'<div class="views-field views-field-title">\s*'
-			r'<span class="field-content"><a href="([^"]*)">(.*?)</a>',
-			row, re.DOTALL | re.IGNORECASE,
-		)
-		if not link_match:
+	for row in _parse_html(html_text).find_all(class_name="views-row"):
+		title_field = row.find(class_name="views-field-title")
+		link_node = title_field.find("a") if title_field is not None else None
+		if link_node is None:
 			continue
 
-		detail_url = _absolute_url(link_match.group(1))
-		title = _clean_html_text(link_match.group(2)) or _("Unknown")
+		detail_url = _absolute_url(link_node.attrs.get("href", ""))
+		title = _clean_html_text(link_node.text()) or _("Unknown")
 
-		narrator = _extract_field_text(row, "views-field-field-seslendiren")
+		narrator = _extract_field_row_text(row, "views-field-field-seslendiren")
 		narrator = re.sub(r"^(?:Seslendiren:\s*)+", "", narrator, flags=re.IGNORECASE).strip()
 
 		books.append(GetemBook(
 			title=title,
 			detail_url=detail_url,
-			author=_extract_field_text(row, "views-field-field-yazar"),
+			author=_extract_field_row_text(row, "views-field-field-yazar"),
 			narrator=narrator,
-			format_label=_extract_field_text(row, "views-field-field-formati"),
-			description=_extract_field_text(row, "views-field-body"),
-			publisher=_extract_field_text(row, "views-field-field-yayinevi"),
+			format_label=_extract_field_row_text(row, "views-field-field-formati"),
+			description=_extract_field_row_text(row, "views-field-body"),
+			publisher=_extract_field_row_text(row, "views-field-field-yayinevi"),
 		))
 	return books
 
@@ -631,13 +751,12 @@ def search_getem(query, session=None, limit=RESULTS_PER_QUERY):
 # an HTML page embedding GETEM's own jPlayer widget, not the raw audio
 # (confirmed against a real response - it starts with a <script src=".../
 # jquery.jplayer.min.js"> tag). The download.php link right next to it is
-# the actual raw file endpoint, so that's what's captured here.
-_CHAPTER_ROW_RE = re.compile(
-	r'<h3>\s*<a\s+href=["\']([^"\']+)["\']>(.*?)</a>\s*</h3>',
-	re.IGNORECASE | re.DOTALL,
-)
-
-
+# the actual raw file endpoint, so that's what's captured here: every
+# <h3> element's first <a> child, same as before, just found through the
+# parsed DOM (root.find_all("h3")) instead of a regex requiring the <a>
+# to sit immediately after "<h3>" with nothing but whitespace between
+# them - a GETEM theme update that adds so much as a wrapping <span>
+# around that link would have silently broken the old regex.
 def _parse_chapters_from_detail_html(detail_html):
 	"""The actual chapter-extraction logic for a GETEM work's detail page
 	HTML - shared between resolve_media() (which fetches the page itself
@@ -646,41 +765,55 @@ def _parse_chapters_from_detail_html(detail_html):
 	a book found via a pasted URL needs that same page - see the note
 	there). Returns [(title_or_empty, url), ...] in page order; the
 	caller is responsible for the final "unnamed part" numbering - see
-	_label_chapters()."""
+	_label_chapters().
+
+	Attribute values (href/src) come back already entity-decoded here -
+	html.parser.HTMLParser does that itself while building the DOM - so,
+	unlike the previous regex-based version, nothing here has to
+	remember to call html.unescape() on them before resolving."""
+	root = _parse_html(detail_html)
 	chapters = []
 	seen = set()
 
-	# Primary: GETEM's own per-part download.php links - see
-	# _CHAPTER_ROW_RE above.
-	for href, title in _CHAPTER_ROW_RE.findall(detail_html):
+	# Primary: GETEM's own per-part download.php links - see the note
+	# above.
+	for h3_node in root.find_all("h3"):
+		link_node = h3_node.find("a")
+		if link_node is None:
+			continue
+		href = link_node.attrs.get("href", "")
 		if not any(ext in href.lower() for ext in AUDIO_FILE_EXTENSIONS):
 			continue
-		url = _absolute_url(html.unescape(href))
+		url = _absolute_url(href)
 		if url and url not in seen:
 			seen.add(url)
-			chapters.append((_clean_html_text(title), url))
+			chapters.append((_clean_html_text(link_node.text()), url))
 
 	# Fallback: a plain <audio>/<source> element, or a link whose URL
 	# (path OR query string - GETEM's own download.php links only carry
 	# the extension in their query string, e.g. "download.php?...&file=
 	# 001-Name.mp3") ends in a known audio extension. Covers content types
-	# whose page doesn't use the "Dinle" player links above.
+	# whose page doesn't use the "Dinle" player links above. <audio> and
+	# <source> are walked together, in document order, rather than as two
+	# separate passes, so an interleaved audio/source sequence still
+	# yields chapters in the order the page actually presents them.
 	if not chapters:
-		for src in re.findall(r'<(?:audio|source)\s+[^>]*src=["\']([^"\']+)["\']', detail_html, re.IGNORECASE):
-			url = _absolute_url(html.unescape(src))
+		for media_node in root.iter_elements():
+			if media_node.tag not in ("audio", "source"):
+				continue
+			url = _absolute_url(media_node.attrs.get("src", ""))
 			if url and url not in seen:
 				seen.add(url)
 				chapters.append(("", url))
 
-		for href, link_text in re.findall(
-			r'<a\s+[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>', detail_html, re.IGNORECASE | re.DOTALL
-		):
+		for link_node in root.find_all("a"):
+			href = link_node.attrs.get("href", "")
 			if not any(ext in href.lower() for ext in AUDIO_FILE_EXTENSIONS):
 				continue
-			url = _absolute_url(html.unescape(href))
+			url = _absolute_url(href)
 			if url and url not in seen:
 				seen.add(url)
-				chapters.append((_clean_html_text(link_text), url))
+				chapters.append((_clean_html_text(link_node.text()), url))
 
 	return chapters
 
@@ -765,14 +898,15 @@ def _extract_node_title(html_text):
 	every page has one even if the heading markup differs. See the note
 	in get_book_by_url() about this not being verified against a live
 	GETEM detail page."""
-	h1_match = re.search(r"<h1[^>]*>(.*?)</h1>", html_text, re.IGNORECASE | re.DOTALL)
-	if h1_match:
-		title = _clean_html_text(h1_match.group(1))
+	root = _parse_html(html_text)
+	h1_node = root.find("h1")
+	if h1_node is not None:
+		title = _clean_html_text(h1_node.text())
 		if title:
 			return title
-	title_match = re.search(r"<title>(.*?)</title>", html_text, re.IGNORECASE | re.DOTALL)
-	if title_match:
-		title = re.split(r"\s*\|\s*", _clean_html_text(title_match.group(1)))[0].strip()
+	title_node = root.find("title")
+	if title_node is not None:
+		title = re.split(r"\s*\|\s*", _clean_html_text(title_node.text()))[0].strip()
 		if title:
 			return title
 	return ""
@@ -781,27 +915,25 @@ def _extract_node_title(html_text):
 def _extract_node_field_text(html_text, field_class):
 	"""Pulls the visible text out of one of GETEM's node/detail page
 	"field-name-..." field wrappers (Drupal's default field-display
-	markup) - the detail-page equivalent of _extract_field_text() above,
-	which is written for catalog *listing* rows instead (different
+	markup) - the detail-page equivalent of _extract_field_row_text()
+	above, which is written for catalog *listing* rows instead (different
 	markup - "views-field-..." wrappers - so it can't be reused here
 	as-is). Strips the field's own label (e.g. "Yazar:"), if the theme
-	renders one inside the same wrapper. See the note in
-	get_book_by_url() about this not being verified against a live GETEM
-	detail page - if a field comes back empty here, the book is still
-	fully usable (its chapters resolve through the separately-verified
-	_parse_chapters_from_detail_html()); only that one detail is missing
-	from what would otherwise come from a catalog search result."""
-	match = re.search(
-		r'class="[^"]*' + re.escape(field_class) + r'[^"]*"[^>]*>(.*?)</div>\s*</div>',
-		html_text, re.DOTALL | re.IGNORECASE,
-	)
-	if not match:
+	renders one as a nested "field-label" element anywhere inside the
+	same wrapper - via _HtmlNode.text_excluding(), rather than assuming
+	the label sits in its own immediately-following </div></div> pair the
+	way the previous regex-based version did, which broke if the theme
+	nested the label one level deeper or shallower than expected. See the
+	note in get_book_by_url() about this not being verified against a
+	live GETEM detail page - if a field comes back empty here, the book
+	is still fully usable (its chapters resolve through the separately-
+	verified _parse_chapters_from_detail_html()); only that one detail is
+	missing from what would otherwise come from a catalog search
+	result."""
+	field_node = _parse_html(html_text).find(class_name=field_class)
+	if field_node is None:
 		return ""
-	text = re.sub(
-		r'<div[^>]*class="[^"]*field-label[^"]*"[^>]*>.*?</div>',
-		"", match.group(1), flags=re.DOTALL | re.IGNORECASE,
-	)
-	return _clean_html_text(text)
+	return _clean_html_text(field_node.text_excluding("field-label"))
 
 
 def get_book_by_url(url, session=None):

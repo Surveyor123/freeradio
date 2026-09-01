@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # FreeRadio - Station Manager
 # Fetches stations from Radio Browser API and manages favorites.
+# Core favorite and station management structures based on work by Gary Mp (GaryMp/freeradio).
 
 import gzip
 import json

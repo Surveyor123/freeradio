@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # FreeRadio - Station Browser Dialog
+# Initial UI event handling patterns and dialog base inspired by work by Gary Mp (GaryMp/freeradio).
 
 import addonHandler
 addonHandler.initTranslation()

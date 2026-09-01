@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # FreeRadio - Radio Player
 # BASS (subprocess) is the sole playback backend.
+# Initial player structure and state accessors based on work by Gary Mp (GaryMp/freeradio).
 
 import ctypes
 import json

@@ -6,7 +6,7 @@ FreeRadio, ekran okuyucu NVDA için geliştirilmiş, tüm özellikleriyle donan�
 
 - **İnternet radyosu** — [Radio Browser](https://www.radio-browser.info/) dizinindeki 50.000'i aşkın istasyona göz atın ve arama yapın; sonuçlar TuneIn ve iHeartRadio ile desteklenir. İstasyonları favorilere ekleyin, yeniden sıralayın ve Windows'ta herhangi bir yerden genel bir klavye kısayoluyla doğrudan çalmaya başlayın — bkz. [Radio Browser Dizini](#radio-browser-dizini) ve [Favoriler](#favoriler).
 - **Podcastler** — Herhangi bir RSS/Atom akışına abone olun veya Apple'ın podcast dizininde arama yaparak abone olmadan önce bölümleri önizleyin. Oynatma konumu otomatik olarak kaydedilir ve kaldığınız yerden devam eder — bkz. [Podcastler](#podcastler).
-- **Sesli kitaplar** — Boğaziçi Üniversitesi'nin görme engelliler için dijital kütüphanesi [GETEM](https://getem.boun.edu.tr/)'den kitap arayın, akışla dinleyin veya indirin; çok bölümlü eserlerde otomatik devam etme özelliği vardır — bkz. [Sesli Kitaplar (GETEM)](#sesli-kitaplar-getem).
+- **Sesli kitaplar** — İki kaynaktan kitap arayın, akışla dinleyin veya indirin: Boğaziçi Üniversitesi'nin görme engelliler için dijital kütüphanesi [GETEM](https://getem.boun.edu.tr/) ve hesap gerektirmeyen, gönüllülerin seslendirdiği kamu malı sesli kitap projesi [LibriVox](https://librivox.org/); çok bölümlü eserlerde otomatik devam etme özelliği vardır — bkz. [Sesli Kitaplar (GETEM ve LibriVox)](#sesli-kitaplar-getem-ve-librivox).
 - **Kayıt** — Çalan içeriği anında kaydedin, bir şarkıyı başladığında ve bittiğinde otomatik olarak tek başına yakalayın veya tek seferlik ya da tekrarlanan kayıtlar planlayın — tüm bunlar oynatmayı kesintiye uğratmadan gerçekleşir — bkz. [Kayıt](#kayıt).
 - **Zaman kaydırma (canlı radyoyu geri sarma)** — Canlı bir istasyonu bir DVR gibi duraklatın ve geri sarın, ardından istediğinizde canlıya tekrar yetişin — bkz. [Zaman Kaydırma (Canlı Radyoyu Geri Sarma)](#zaman-kaydırma-canlı-radyoyu-geri-sarma).
 - **Müzik tanıma ve beğenilen şarkılar** — Metadata bulunmayan parçaları Shazam tabanlı tanıma ile belirleyin, beğendiğiniz şarkıları bir metin dosyasına kaydedin ve sözlerini bulun — bkz. [Müzik Tanıma](#müzik-tanıma) ve [Beğenilen Şarkılar](#beğenilen-şarkılar).
@@ -68,8 +68,8 @@ Tüm kısayollar NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio
 | `Ctrl+Win+M` | Ses yansıtma | O an çalan akışı veya medyayı eş zamanlı olarak ek bir ses çıkış aygıtına yansıtır. Yansıtmayı durdurmak için tekrar basın. |
 | `Ctrl+Win+E` | Anlık kayıt | Bir kez basıldığında çalan istasyonu kaydetmeye başlar; tekrar basıldığında durdurur. **İki kez** basıldığında **şarkı kaydı** başlar — dosya o anki parça adıyla adlandırılır ve parça değiştiğinde kayıt otomatik olarak durur. Şarkı kaydı aktifken tekrar iki kez basılması kaydı erken sonlandırır. Oynatma tüm kayıt modlarında kesintisiz sürer. Yalnızca ICY metadata yayınlayan istasyonlarda kullanılabilir. |
 | `Ctrl+Win+W` | Kayıt klasörünü aç | Kaydedilen dosyaların bulunduğu klasörü Dosya Gezgini'nde açar. |
-| `Ctrl+Win+J` | Zaman kaydırma geri sarma | Canlı radyoyu 15 saniye geri sarar. İlk basış zaman kaydırma moduna girer; her ek basış FreeRadio ayarlarında belirlenen tampon sınırına kadar 15 saniye daha geri gider. Zaman kaydırma tamponunun Ayarlar'dan etkinleştirilmesi gerekir. Podcast veya sesli kitap oynatılırken ayardan bağımsız olarak 5 saniye geri sarar. |
-| `Ctrl+Win+K` | Zaman kaydırma ileri sarma | Zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve yeniden geri sarılana kadar bu komut işlevsiz kalır. Podcast veya sesli kitap oynatılırken ayardan bağımsız olarak 5 saniye ileri sarar. |
+| `Ctrl+Win+J` | Zaman kaydırma geri sarma / podcast ve sesli kitapta geri atlama | Canlı radyoda: 15 saniye geri sarar. İlk basış zaman kaydırma moduna girer; her ek basış FreeRadio ayarlarında belirlenen tampon sınırına kadar 15 saniye daha geri gider. Zaman kaydırma tamponunun Ayarlar'dan etkinleştirilmesi gerekir. Podcast veya sesli kitapta ise bu tuş dosya içinde atlama yapar ve basış şekline göre ölçeklenir: **basılı tutmak** öncekiyle aynı şekilde tekrar başına 5 saniye geri gider; **tek bir dokunuş** 12 saniye geri sarar; hızlıca **iki dokunuş** 1 dakika geri sarar; **üç veya daha fazla dokunuş** 5 dakika geri sarar. Bir dokunuş dizisinde yalnızca bir atlama gerçekleşir ve bu, ulaşılan dokunuş sayısına göre boyutlandırılır — dokunuşlar toplanmaz. Zaman kaydırma ayarından bağımsız çalışır. |
+| `Ctrl+Win+K` | Zaman kaydırma ileri sarma / podcast ve sesli kitapta ileri atlama | Canlı radyoda: zaman kaydırma modundayken 15 saniye ileri sarar. Canlı yayın kenarına ulaşıldığında oynatma otomatik olarak canlıya döner ve yeniden geri sarılana kadar bu komut işlevsiz kalır. Podcast veya sesli kitapta ise bu tuş yukarıdaki `Ctrl+Win+J` ile aynı dokunuş/basılı-tutma ölçeklemesini kullanarak dosya içinde ileri atlar (basılı tutma = tekrar başına 5 saniye; 1 dokunuş = 12 saniye; 2 dokunuş = 1 dakika; 3+ dokunuş = 5 dakika). Zaman kaydırma ayarından bağımsız çalışır. |
 | `Ctrl+Win+T` | Zaman kaydırma tamponunu aç/kapat | Zaman kaydırma tamponunu anında etkinleştirir veya devre dışı bırakır; Ayarlar'daki onay kutusunu yansıtır. Devre dışı bırakıldığında zaman kaydırma modundaysa hemen canlıya döner ve arka plan yakalamayı durdurur. Podcast veya sesli kitap oynatmasında etkisi yoktur. |
 | *(atanmamış)* | Çıkış aygıtı seç | Kullanılabilir ana çıkış aygıtlarının bir listesini isteğe bağlı olarak açar. Liste yalnızca BASS birden fazla fiziksel çıkış aygıtı algıladığında gösterilir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
 | *(atanmamış)* | Bildirimleri sessize al / aç | Bildirim sessize alma ayarını anlık olarak değiştirir. NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio bölümünden bir tuş kombinasyonu atanabilir. |
@@ -296,7 +296,7 @@ Kayıtlar varsayılan olarak `Belgeler\FreeRadio Recordings\` klasörüne kayded
 **Kaydı kaydet:** Her zamanlanmış kayıt için, varsayılan kayıt klasörüne veya özel bir klasöre kaydetmeyi seçebilirsiniz. Klasörü etkileşimli olarak seçmek için **Gözat...** düğmesini kullanın. Seçilen klasör kullanılamaz hale gelirse, kayıt varsayılan klasöre yönlendirilir ve bilgilendirilirsiniz.
 
 **Kayıt modu:**
-- **Dinleyerek kaydet** — eş zamanlı olarak çalar ve kaydeder. BASS → VLC → PotPlayer → Windows Media Player öncelik sırası kullanılarak bir oynatma arka ucu başlatılır.
+- **Dinleyerek kaydet** — eş zamanlı olarak çalar ve kaydeder. BASS arka ucu üzerinden bir oynatma başlatılır.
 - **Yalnızca kaydet** — herhangi bir ses çıkışı olmaksızın arka planda sessizce kaydeder; kayıt motoru doğrudan akışa bağlanır.
 
 Program eklendikten sonra aşağıdaki listede görünür. Bir programı silmek için **Seçili Olanı Kaldır** düğmesini veya programı düzenlemek için **Seçili Olanı Düzenle** düğmesini kullanarak zamanını, süresini, tekrarını, aktif günlerini, kayıt modunu veya çıktı klasörünü değiştirebilirsiniz.
@@ -340,7 +340,7 @@ Bir istasyonun çalma listesi hiç okunamazsa (örneğin bozuk veya erişilemeye
 
 ### Gereksinimler ve Sınırlamalar
 
-- **BASS arka ucunu gerektirir.** BASS devre dışıyken ve oynatma VLC, PotPlayer veya Windows Media Player'a düştüğünde zaman kaydırma kullanılamaz. Arka plan yakalamasının kendisi (ve Müzik Tanıma ile Kayıt'a sağladığı reklamdan kaçınma) da aynı BASS tabanlı bağlantıya dayandığından bu durumda kullanılamaz.
+- **BASS arka ucunu gerektirir**; FreeRadio, [Oynatma](#oynatma) bölümünde açıklandığı gibi çalma için her zaman bu arka ucu kullanır.
 - Tampon süresi Ayarlar'dan belirlenir.
 - Tampon istasyona özgüdür: istasyon değiştirme, oynatmayı durdurma veya NVDA'yı yeniden başlatma tamponu sıfırlar ve baştan başlatır.
 - Zaman kaydırmalı oynatma kendi yerel tampon dosyasını kullanır ve kayıtlı bir dosya üretmez — sesi kalıcı olarak saklamak istiyorsanız Anlık Kayıt (`Ctrl+Win+E`) özelliğini de kullanın.
@@ -444,13 +444,20 @@ Bölüm listesinin üzerinde bir **Filtre** alanı bulunur. Yazdıkça bölüm l
 
 ### Podcast Oynatma Ayrıntıları
 
-Podcast bölümleri, **BASS arka ucu** kullanılarak çalınır (radyo akışları için kullanılan aynı motor). Bölümler kademeli olarak indirildiği ve konum atlanabilir olduğu için, bir podcast çalarken zaman kaydırma geri/ileri sarma kısayollarını (`Ctrl+Win+J`/`Ctrl+Win+K`) kullanarak her seferinde **5 saniye** geri veya ileri atlayabilirsiniz (canlı radyoda kullanılan 15 saniyelik geri sarma yerine). Konum otomatik olarak kaydedilir, böylece daha sonra devam edebilirsiniz.
+Podcast bölümleri, **BASS arka ucu** kullanılarak çalınır (radyo akışları için kullanılan aynı motor ve bu sürümden itibaren FreeRadio'nun kullandığı tek oynatma arka ucu). Bölümler kademeli olarak indirildiği ve konum atlanabilir olduğu için, bir podcast çalarken zaman kaydırma geri/ileri sarma kısayollarını (`Ctrl+Win+J`/`Ctrl+Win+K`) kullanarak bölüm içinde atlama yapabilirsiniz. Konum otomatik olarak kaydedilir, böylece daha sonra devam edebilirsiniz.
 
-**Oynatma hızı:** Podcast bölümlerinin oynatma hızını `Ctrl+Win+Shift+K` (hızlandır) ve `Ctrl+Win+Shift+J` (yavaşlat) kullanarak ayarlayabilirsiniz. Hız 0.1x adımlarla değişir, aralık 0.5x ila 2.0x arasındadır ve perde korunur. Bu, eklenti klasörüne isteğe bağlı `bass_fx.dll` kütüphanesinin yerleştirilmesini gerektirir. Kütüphane eksikse, NVDA bu özelliğin kullanılamadığını bildirir.
+**Kademeli atlama:** Canlı radyonun sabit 15 saniyelik geri sarmasının aksine, bir podcast veya sesli kitap içindeki atlama, tuşa nasıl bastığınıza göre ölçeklenir; böylece art arda basmaya gerek kalmadan küçük bir düzeltme yapabilir veya uzun bir mesafe atlayabilirsiniz:
+
+- **Tuşu basılı tutmak** (otomatik tekrar) tekrar başına **5 saniye** geri veya ileri gider — bu kısayolun dosyalar için her zaman kullandığı küçük miktarla aynıdır.
+- **Tek bir dokunuş** artık **12 saniye** atlar.
+- Hızlıca yapılan **iki dokunuş** **1 dakika** atlar.
+- **Üç veya daha fazla dokunuş** **5 dakika** atlar; aynı dokunuş dizisindeki ek dokunuşlar bunu daha da artırmaz.
+
+Bir dokunuş, başka bir dokunuşun daha gelip gelmeyeceğini beklemek için gerçek atlamayı yapmadan önce kısa bir süre tutulur — bir dokunuş dizisinde yalnızca bir atlama gerçekleşir ve bu, ulaşılan son dokunuş sayısına göre boyutlandırılır; her dokunuşun miktarı toplanmaz. Bir atlamadan sonra NVDA, sadece "X saniye ileri/geri" demek yerine bölümdeki güncel geçen/kalan süreyi bildirir.
+
+**Oynatma hızı:** Podcast bölümlerinin oynatma hızını `Ctrl+Win+Shift+K` (hızlandır) ve `Ctrl+Win+Shift+J` (yavaşlat) ile ayarlayabilirsiniz. Hız, perde korunarak 0.1x artışlarla 0.5x ile 2.0x arasında değişir. Bu, eklenti klasörüne yerleştirilen isteğe bağlı `bass_fx.dll` kütüphanesini gerektirir. Kütüphane eksikse NVDA bu özelliğin kullanılamadığını bildirir.
 
 > **Not:** `bass_fx.dll` varsayılan olarak FreeRadio ile birlikte gelmez. Bu özelliği etkinleştirmek için [BASS FX sayfasından](https://www.un4seen.com/bass-fx.html) indirip eklentinin `bass/x64` (64-bit NVDA için) veya `bass` (32-bit NVDA için) klasörüne yerleştirebilirsiniz.
-
-BASS arka ucu devre dışıysa (veya başarısız olursa) podcast çalma, radyo için kullanılan aynı harici oynatıcı zincirine (VLC → PotPlayer → WMP) düşer, ancak bu durumda **atlama ve devam etme işlevi çalışmaz** — bölüm her seferinde baştan çalar. Tam podcast deneyimi için BASS arka ucunu etkin tutun.
 
 **Devam ettirme ses efekti:** Bir bölüm kaydedilmiş konumundan devam ederken FreeRadio, kaydedilen noktaya atlarken ayrı bir kanalda kısa bir kaset yükleme sesi çalar; böylece bu sırada bölümün kendi sesi 0:00'dan itibaren duyulur şekilde çalmaz. Bu, BASS arka ucu aktif olduğunda otomatik olarak gerçekleşir ve **İstasyon geçiş efekti** ayarından bağımsızdır — o ayar yalnızca canlı radyo istasyonları arasında geçişi etkiler, podcast veya sesli kitapların devam ettirilmesini değil.
 
@@ -475,29 +482,41 @@ Yalnızca seçtiğiniz parçalar profile yazılır; dışarıda bıraktığını
 
 Abonelikleriniz, NVDA kullanıcı yapılandırma klasöründeki `freeradio_podcasts.json` dosyasında saklanır. Bölüm konumları ayrı olarak aynı konumdaki `podcast_positions.json` dosyasında saklanır. Her iki dosya da düz JSON'dur ve yedeklenebilir veya başka bir bilgisayara aktarılabilir.
 
-## Sesli Kitaplar (GETEM)
+## Sesli Kitaplar (GETEM ve LibriVox)
 
-FreeRadio, Boğaziçi Üniversitesi Görme Engelliler Teknoloji ve Eğitim Laboratuvarı (GETEM) tarafından işletilen dijital kütüphane [GETEM](https://getem.boun.edu.tr/) için bir sesli kitap oynatıcısı içerir. Kataloğunda arama yapabilir, kitapları önizleyebilir ve kişisel kitaplığa ekleyebilir, çok bölümlü eserleri otomatik devam etme özelliğiyle oynatabilir ve kitapları çevrimdışı dinlemek için indirebilirsiniz — tümü tam erişilebilir şekilde.
+FreeRadio, iki kaynaktan kitap arayan, çalan ve indiren bir sesli kitap oynatıcısı içerir:
 
-GETEM, bu özellik tarafından desteklenen ilk kaynaktır. Sesli Kitaplar sekmesi, gelecekte yanına başka kütüphaneler veya kataloglar eklenebilecek şekilde oluşturulmuştur; şimdilik GETEM mevcut olan tek kaynaktır.
+- **[GETEM](https://getem.boun.edu.tr/)** — Boğaziçi Üniversitesi Görme Engelliler Teknoloji ve Eğitim Laboratuvarı tarafından işletilen dijital kütüphane. Bir kitabın sesini akışla dinlemek veya indirmek için ücretsiz bir üyelik gerektirir (göz atmak gerektirmez) — aşağıdaki [Oturum Açma](#oturum-açma) bölümüne bakın.
+- **[LibriVox](https://librivox.org/)** — gönüllülerin seslendirdiği, kamu malı sesli kitap projesi. Herhangi bir hesap veya oturum açma gerekmez; kataloğunun tamamı, ses dosyalarının kendisi dahil, kamu malıdır ve serbestçe erişilebilir.
 
-> **Not:** Dinlemek için ücretsiz bir GETEM üyeliği gereklidir. Kataloğa göz atmak için hesap gerekmez, ancak bir kitabın sesini çözmek ve oynatmak için gereklidir — aşağıdaki [Oturum Açma](#oturum-açma) bölümüne bakın.
+Her iki kaynaktan gelen sonuçlar, ayrı bir sekme veya açılır liste olmadan tek bir birleşik **Arama sonuçları** listesinde ve tek bir birleşik **Kitaplık** listesinde birlikte görünür. Her kitabın kaynağı (GETEM veya LibriVox), başlığının yanında ve ayrıntılarında bir etiket olarak gösterilir; böylece hangisine baktığınızı her zaman anlayabilirsiniz. Her iki kaynaktan kitapları tamamen aynı şekilde arayabilir, önizleyebilir, ekleyebilir, çalabilir ve indirebilirsiniz; çok bölümlü eserleri bölümler arası otomatik devam etme özelliğiyle oynatabilir ve kitapları çevrimdışı dinlemek için indirebilirsiniz — tümü tam erişilebilir şekilde.
+
+Yalnızca birini aramak isterseniz, **NVDA Menüsü → Tercihler → Ayarlar → FreeRadio** bölümündeki **Sesli kitap kaynakları** onay kutuları listesinden her iki kaynak da ayrı ayrı kapatılabilir. Varsayılan olarak ikisi de açıktır.
+
+> **Not:** Bir GETEM kitabını dinlemek için ücretsiz bir GETEM üyeliği gereklidir. GETEM kataloğuna göz atmak için hesap gerekmez, ancak bir GETEM kitabının sesini çözmek ve oynatmak için gereklidir — aşağıdaki [Oturum Açma](#oturum-açma) bölümüne bakın. LibriVox kitapları hiçbir zaman hesap gerektirmez.
 
 ### Sesli Kitaplar Sekmesine Erişim
 
 İstasyon tarayıcısını `Ctrl+Win+R` ile açın ve **Sesli Kitaplar** sekmesine geçmek için `Ctrl+Tab` veya `Alt+7` kullanın. Sekme üç ana alandan oluşur:
 
-1. **Arama** — GETEM kataloğunda arama yapmak için bir metin alanı ve arama yapıldığında görünen bir sonuç listesi.
-2. **Kitaplık** — eklediğiniz kitapların listesi; burada oynatabilir, indirebilir ve yönetebilirsiniz.
-3. **Ayrıntılar** — her iki listede de seçili olan kitabın başlığını, yazarını, seslendireni, yayıncısını, biçimini, bölüm sayısını, açıklamasını ve katalog URL'sini gösteren salt okunur bir kutu.
+1. **Arama** — açık olan her iki kataloğu birden aramak için bir metin alanı ve arama yapıldığında görünen bir sonuç listesi.
+2. **Kitaplık** — her iki kaynaktan da eklediğiniz kitapların listesi; burada oynatabilir, indirebilir ve yönetebilirsiniz.
+3. **Ayrıntılar** — her iki listede de seçili olan kitabın kaynağını, başlığını, yazarını, seslendireni, yayıncısını, biçimini, bölüm sayısını, açıklamasını ve katalog URL'sini gösteren salt okunur bir kutu.
 
 ### Oturum Açma
 
-GETEM, kataloğun kendisi özgürce taranabilse de, bir kitabın gerçek sesini akışla iletmek veya indirmek için kayıtlı bir üye olmayı gerektirir. GETEM kullanıcı adınızı ve şifrenizi **NVDA Menüsü → Tercihler → Ayarlar → FreeRadio** bölümüne bir kez girin; bunlar diskte (Windows Veri Koruma API'si aracılığıyla, Windows kullanıcı hesabınıza bağlı olarak) şifrelenmiş olarak saklanır ve daha sonra otomatik olarak yeniden kullanılır. Kimlik bilgilerini girmeden bir kitabı oynatmaya veya indirmeye çalışırsanız, FreeRadio önce bunları Ayarlar'a eklemenizi söyler.
+GETEM, kataloğun kendisi özgürce taranabilse de, bir kitabın gerçek sesini akışla iletmek veya indirmek için kayıtlı bir üye olmayı gerektirir. GETEM kullanıcı adınızı ve şifrenizi **NVDA Menüsü → Tercihler → Ayarlar → FreeRadio** bölümüne bir kez girin; bunlar diskte (Windows Veri Koruma API'si aracılığıyla, Windows kullanıcı hesabınıza bağlı olarak) şifrelenmiş olarak saklanır ve daha sonra otomatik olarak yeniden kullanılır. Kimlik bilgilerini girmeden bir GETEM kitabını oynatmaya veya indirmeye çalışırsanız, FreeRadio önce bunları Ayarlar'a eklemenizi söyler.
+
+LibriVox'ta herhangi bir oturum açma adımı yoktur — sonuçları ve sesi hiçbir kimlik bilgisi girmeden hemen arayabilir, önizleyebilir, çalabilir ve indirebilirsiniz.
 
 ### Sesli Kitapları Arama
 
-Arama alanına bir arama terimi — başlık, yazar, seslendiren, konu veya yayıncı — yazın ve `Enter`'a basın. FreeRadio tüm bu alanları aynı anda arar ve sonuçları birleştirir, çünkü GETEM'in kendi arama formu bunların hepsini birlikte daraltmayı destekler, tek bir aramayla herhangi birinde arama yapmayı değil. Yalnızca gerçekten sesli olarak mevcut olan eserler (insan veya bilgisayar sesi, sesli betimleme, radyo tiyatrosu, DAISY konuşan kitaplar vb.) gösterilir; braille, büyük puntolu ve diğer ses dışı biçimler otomatik olarak filtrelenir. NVDA kaç sesli kitap bulunduğunu bildirir.
+Arama alanına bir arama terimi yazın ve `Enter`'a basın. FreeRadio, Ayarlar'da açık olan kaynakları arar ve sonuçları tek bir listede birleştirir:
+
+- **GETEM**, başlık, yazar, seslendiren, konu ve yayıncı alanlarının tümünde aynı anda aranır; çünkü GETEM'in kendi arama formu bunların hepsini birlikte daraltmayı destekler, tek bir aramayla herhangi birinde arama yapmayı değil. Yalnızca gerçekten sesli olarak mevcut olan eserler (insan veya bilgisayar sesi, sesli betimleme, radyo tiyatrosu, DAISY konuşan kitaplar vb.) gösterilir; braille, büyük puntolu ve diğer ses dışı biçimler otomatik olarak filtrelenir.
+- **LibriVox**, kamu malı kataloğunda başlık veya yazar/seslendiren alanına göre aranır.
+
+NVDA, toplamda kaç sesli kitap bulunduğunu bildirir.
 
 Seçilen sonuçla ilgili bilgiler — yazar, seslendiren, yayıncı, biçim ve bölüm sayısı — aşağıdaki ayrıntı kutusunda gösterilir.
 
@@ -516,7 +535,7 @@ Eklediğiniz kitaplar, başlık, yazar ve biçimi gösteren **Kitaplık** listes
 **Kitaplık girişleri için bağlam menüsü:** Bir kitaba sağ tıklayın veya seçip Uygulamalar tuşuna / `Shift+F10`'a basarak şu seçenekleri içeren bir menü açın:
 - **Medyayı Oynat** — oynatmaya başlar, `Enter` ile aynı.
 - **Kitabı İndir** — kitabın her bölümünü indirir; aşağıdaki [Sesli Kitapları İndirme](#sesli-kitapları-i̇ndirme) bölümüne bakın.
-- **URL'yi Kopyala** — kitabın GETEM katalog sayfası URL'sini panoya kopyalar.
+- **URL'yi Kopyala** — kitabın katalog sayfası URL'sini panoya kopyalar (GETEM kitapları için GETEM katalog sayfası, LibriVox kitapları için archive.org ayrıntı sayfası).
 - **Bu Kitap İçin Ses Profili Kaydet** / **Ses Profilini Temizle** — bkz. aşağıdaki [Sesli Kitap Ses Profili](#sesli-kitap-ses-profili).
 - **Kitaplıktan Kaldır** — kitabı kitaplığınızdan siler.
 
@@ -542,7 +561,7 @@ Kitaplıktan bir kitap seçin ve bağlam menüsünden **Kitabı İndir**'i seçe
 
 ### Sesli Kitap Veri Depolama
 
-GETEM kitaplığınız (eklenen kitaplar ve dinleme ilerlemeleri), NVDA kullanıcı yapılandırma klasöründeki `freeradio_getem_library.json` dosyasında saklanır. Şifrelenmiş GETEM kimlik bilgileriniz aynı konumdaki `freeradio_getem_credentials.bin` dosyasında ayrı olarak saklanır ve yalnızca bunları kaydeden Windows kullanıcı hesabı tarafından şifresi çözülebilir.
+Sesli Kitaplar sekmesinde birleşik gösterilseler de, her kaynak kendi kitaplık dosyasını ayrı tutar. GETEM kitaplığınız (eklenen kitaplar ve dinleme ilerlemeleri) `freeradio_getem_library.json` dosyasında, LibriVox kitaplığınız ise ayrı olarak `freeradio_librivox_library.json` dosyasında saklanır; ikisi de NVDA kullanıcı yapılandırma klasöründedir. Şifrelenmiş GETEM kimlik bilgileriniz aynı konumdaki `freeradio_getem_credentials.bin` dosyasında ayrı olarak saklanır ve yalnızca bunları kaydeden Windows kullanıcı hesabı tarafından şifresi çözülebilir. LibriVox hesap gerektirmediğinden buna karşılık gelen bir kimlik bilgisi dosyası yoktur.
 
 ## Beğenilen Şarkılar
 
@@ -584,7 +603,6 @@ NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki
 
 | Seçenek | Açıklama |
 |---|---|
-| BASS arka ucunu devre dışı bırak | Etkinleştirildiğinde, FreeRadio dahili BASS motorunu kullanmaz ve bunun yerine VLC, PotPlayer veya Windows Media Player'a güvenir. Bu değişikliğin etkili olması için NVDA'yı yeniden başlatın. |
 | Parça değişimi sesi | Otomatik olarak duyurulan parça değişikliklerinin NVDA sentezleyici mi yoksa seçili bir SAPI5 sesi mi kullanılarak konuşulacağını seçin. |
 | SAPI5 sesi | **Parça değişimi sesi** SAPI5 olarak ayarlandığında, parça değişikliklerini seslendirmek için sistemde yüklü hangi SAPI5 sesinin kullanılacağını belirler. Liste, sistemde kurulu seslerden arka planda doldurulur. |
 | Ses çıkış cihazı (BASS arka ucu) | Radyo çalma sesinin yönlendirileceği çıkış aygıtını belirler. Listede sistemdeki BASS uyumlu tüm aygıtlar ve "Sistem varsayılanı" seçeneği yer alır. Kaydedildiğinde değişiklik anında uygulanır; seçili aygıtın bağlantısı kesilirse otomatik olarak sistem varsayılanına dönülür ve değişiklik bildirilir. Yalnızca BASS arka ucu aktifken geçerlidir. |
@@ -605,11 +623,9 @@ NVDA Menüsü → Tercihler → Ayarlar → FreeRadio bölümünden aşağıdaki
 | Ctrl+Win+P üç kez basıldığında | Kısayola art arda üç kez basıldığında gerçekleşecek işlemi seçer: hiçbir şey yapma, favoriler listesini aç, istasyon aramasını aç, kayıt sekmesini aç veya zamanlayıcı sekmesini aç. |
 | Güncellemeleri otomatik denetle | Açıksa NVDA her başlatıldığında arka planda güncelleme kontrolü yapılır; yeni sürüm bulunursa bildirim verilir. Kapatıldığında otomatik kontrol devre dışı kalır, elle kontrol hâlâ kullanılabilir. |
 | ffmpeg.exe yolu | Müzik tanıma için kullanılan ffmpeg.exe'nin konumu. Boş bırakılırsa eklenti klasöründeki ffmpeg.exe otomatik olarak kullanılır. |
-| VLC yolu | VLC kurulu değilse veya standart dışı bir konumdaysa yürütülebilir dosyanın tam yolu buraya girilebilir. |
-| wmplayer.exe yolu | Windows Media Player'ın yolu gerekiyorsa buraya girilebilir. |
-| PotPlayer yolu | PotPlayer standart dışı bir konumdaysa yolu buraya girilebilir. |
 | Kayıt klasörü | Kayıt dosyalarının yazılacağı klasörü belirler. Boş bırakılırsa varsayılan konum olan `Belgeler\FreeRadio Recordings\` kullanılır. Gözat düğmesiyle klasör seçilebilir. Değişiklikler kaydedildikten hemen sonra geçerli olur. |
-| GETEM kullanıcı adı / GETEM şifresi | Bir kitabın sesini akışla dinlemek veya indirmek için gereken [GETEM](https://getem.boun.edu.tr/) sesli kitap üyelik kimlik bilgileriniz — bkz. [Oturum Açma](#oturum-açma). Windows kullanıcı hesabınıza bağlı olarak diskte Windows Veri Koruma API'si aracılığıyla şifrelenmiş saklanır; asla düz metin olarak tutulmaz. Her iki alanı da boş bırakıp kaydetmek kayıtlı kimlik bilgilerini siler. |
+| Sesli kitap kaynakları | Sesli Kitaplar sekmesinde hangi kaynakların (**GETEM**, **LibriVox**) aranıp gösterileceğini belirleyen bir onay kutuları listesi. Varsayılan olarak ikisi de açıktır. Bir kaynağın işaretini kaldırmak, o kaynaktan daha önce eklediğiniz kitapları silmeden yalnızca birleşik arama sonuçlarından ve kitaplık listesinden gizler — bkz. [Sesli Kitaplar (GETEM ve LibriVox)](#sesli-kitaplar-getem-ve-librivox). |
+| GETEM kullanıcı adı / GETEM şifresi | Bir kitabın sesini akışla dinlemek veya indirmek için gereken [GETEM](https://getem.boun.edu.tr/) sesli kitap üyelik kimlik bilgileriniz — bkz. [Oturum Açma](#oturum-açma). Windows kullanıcı hesabınıza bağlı olarak diskte Windows Veri Koruma API'si aracılığıyla şifrelenmiş saklanır; asla düz metin olarak tutulmaz. Her iki alanı da boş bırakıp kaydetmek kayıtlı kimlik bilgilerini siler. LibriVox hesap gerektirmez ve buna karşılık gelen bir alanı yoktur. |
 | Kayıt çıkış formatı | Orijinal akışı korur, sesi codec'ini değiştirmeden ayıklar veya tamamlanan kayıtları MP3'e dönüştürür. Varsayılan, orijinal akış formatıdır. |
 | MP3 kayıt bit hızı | Kayıt çıkış formatı MP3 olarak seçildiğinde kullanılacak bit hızını belirler. Varsayılan 128 kb/sn'dir. |
 | İstasyon çalmadan önce internet bağlantısı kontrolünü devre dışı bırak | İstasyon çalmaya başlamadan önce gecikme yaşayan kullanıcılar için önerilir. DNS'in engellendiği durumlarda da faydalıdır. |
@@ -637,14 +653,11 @@ Bu özellik varsayılan olarak kapalıdır; NVDA Menüsü → Tercihler → Ayar
 
 ## Oynatma
 
-Eklenti ses çıkışı için şu öncelik sırasıyla bir arka uç seçer:
+FreeRadio, her şey için — internet radyosu, podcastler ve sesli kitaplar için — tek playback (oynatma) arka ucu olarak **BASS** kullanır. Ayrı bir kurulum gerektirmez; eklentiyle birlikte gelir. Yedek arka uç olarak VLC, PotPlayer ve Windows Media Player desteği kaldırılmıştır; artık her zaman BASS kullanılır.
 
-1. **BASS** — varsayılan ve birincil arka uç. Ayrı bir kurulum gerektirmez; eklentiyle birlikte gelir. BASS, sesi doğrudan Windows ses yığınına gönderir ve Windows ses mikseri üzerinde **pythonw.exe** adıyla bağımsız bir kaynak olarak görünür. Bu, FreeRadio sesinin NVDA konuşmasından tamamen ayrı bir kanal üzerinde aktığı anlamına gelir: NVDA bir şeyler okurken radyo sesi kesilmez, karışmaz ve NVDA'nın kendi ses ayarlarından etkilenmez. Kullanıcı Windows Ses Mikseri'nden radyo ses düzeyini NVDA'dan bağımsız olarak ayarlayabilir. HTTP, HTTPS ve gömülü çoğu akış biçimini destekler. Ses yansıtma ve podcast atlama/devam etme yalnızca bu arka uçla kullanılabilir.
-2. **VLC** — BASS başarısız olursa devreye girer. Yaygın kurulum konumlarında, kullanıcı profili klasörlerinde ve sistem PATH'inde otomatik aranır.
-3. **PotPlayer** — VLC bulunamazsa denenir. Yaygın kurulum konumlarında otomatik aranır.
-4. **Windows Media Player** — son seçenek olarak kullanılır; sistem üzerinde WMP bileşeni kurulu olmasını gerektirir.
+BASS, sesi doğrudan Windows ses yığınına gönderir ve Windows ses mikseri üzerinde **pythonw.exe** adıyla bağımsız bir kaynak olarak görünür. Bu, FreeRadio sesinin NVDA konuşmasından tamamen ayrı bir kanal üzerinde aktığı anlamına gelir: NVDA bir şeyler okurken radyo sesi kesilmez, karışmaz ve NVDA'nın kendi ses ayarlarından etkilenmez. Kullanıcı Windows Ses Mikseri'nden radyo ses düzeyini NVDA'dan bağımsız olarak ayarlayabilir. HTTP, HTTPS ve gömülü çoğu akış biçimini destekler.
 
-Podcast bölümleri, mevcutsa her zaman BASS üzerinden çalınır; çünkü BASS akışı, indirme sürerken bile atlanabilir bir dosya olarak açabilir ve hassas konum takibi ile devam etmeyi mümkün kılar. BASS devre dışıysa podcastler harici oynatıcı zincirine düşer, ancak atlama ve devam etme çalışmaz.
+Podcast bölümleri ve sesli kitap bölümleri de BASS üzerinden çalınır; çünkü BASS, akışı indirme sürerken bile atlanabilir bir dosya olarak açabilir ve bu da hassas konum takibi, kademeli geri/ileri sarma ve devam etmeyi mümkün kılar. Ses yansıtma, zaman kaydırma ve podcast/sesli kitap atlama ile devam etme özelliklerinin tümü BASS'a bağımlıdır ve her zaman kullanılabilir.
 
 ## Güncelleme Kontrolü
 

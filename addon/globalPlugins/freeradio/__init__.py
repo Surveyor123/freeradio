@@ -235,9 +235,6 @@ def _audio_device_refresh_mode():
 def _init_config():
 	config.conf.spec["freeradio"] = {
 		"volume":           "integer(default=100, min=0, max=100)",
-		"vlc_path":         "string(default='')",
-		"wmp_path":         "string(default='')",
-		"potplayer_path":   "string(default='')",
 		"last_station_url": "string(default='')",
 		"last_station_name":"string(default='')",
 		"last_station_uuid":"string(default='')",
@@ -275,7 +272,6 @@ def _init_config():
 		"eq_gain_eq_bass":   "integer(default=9)",
 		"eq_gain_eq_treble": "integer(default=9)",
 		"eq_gain_eq_vocal":  "integer(default=6)",
-		"disable_bass":          "boolean(default=False)",
 		"announce_track_changes":"boolean(default=False)",
 		"track_change_voice":    "string(default='nvda')",
 		"sapi5_voice_name":      "string(default='')",
@@ -365,9 +361,22 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 
 	def __init__(self):
 		super().__init__()
+		# Work around a rare wxWidgets/MSW notebook bug: if the native tab
+		# control's item count and wx's internal page list momentarily
+		# disagree (can happen around rapid Show()/SetSelection() sequences,
+		# DPI or display changes, etc.), wx's C++ assertion machinery raises
+		# a wxAssertionError from *inside* GetPageCount() itself - before
+		# execution ever reaches any Python try/except in radioDialog.py,
+		# including the existing "GetPageCount() == 0" safety checks. That
+		# escapes as an unhandled "SystemError: wx._core.BookCtrlEvent
+		# returned a result with an exception set" and the dialog silently
+		# fails to open/switch tabs. Disabling wx's assert-to-exception
+		# behavior turns that into a harmless logged wx assertion instead
+		# of a crash - it doesn't fix the underlying HWND/page-count race,
+		# but it stops that race from breaking the dialog for the user.
+		wx.DisableAsserts()
 		_cleanup_orphaned_timeshift_buffers()
-		disable_bass = config.conf["freeradio"].get("disable_bass", False)
-		self._player  = radioPlayer.RadioPlayer(disable_bass=disable_bass)
+		self._player  = radioPlayer.RadioPlayer()
 		self._player.set_audio_device_refresh_mode(_audio_device_refresh_mode())
 		self._player.set_volume(config.conf["freeradio"]["volume"])
 		# Time-shift buffer (rewind/fast-forward live radio) - disabled by
@@ -384,62 +393,61 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 				_("Time-shift buffer: running low on disk space, the oldest audio is being dropped more aggressively."),
 			)
 		)
-		# Apply saved audio output device (only if BASS is enabled)
-		if not disable_bass:
-			_saved_device = config.conf["freeradio"].get("audio_device", -1)
-			_saved_device_name = config.conf["freeradio"].get("audio_device_name", "")
-			_devices = []
-			try:
-				_devices = self._player.get_audio_devices()
-			except Exception:
-				pass
-			if _devices:
-				if _saved_device_name:
-					try:
-						_resolved_device, _resolved_name, _match = self._player.resolve_audio_device(
-							_devices,
-							_saved_device,
-							_saved_device_name,
-						)
-						if _match == "name" and _resolved_device != _saved_device:
-							_saved_device = _resolved_device
-							config.conf["freeradio"]["audio_device"] = _resolved_device
-							config.conf["freeradio"]["audio_device_name"] = _resolved_name
-					except Exception:
-						pass
-				elif _saved_device != -1:
-					try:
-						_resolved_device, _resolved_name, _match = self._player.resolve_audio_device(
-							_devices,
-							_saved_device,
-							"",
-						)
-						if _match == "index":
-							config.conf["freeradio"]["audio_device_name"] = _resolved_name
-					except Exception:
-						pass
-			if _saved_device != -1:
+		# Apply saved audio output device
+		_saved_device = config.conf["freeradio"].get("audio_device", -1)
+		_saved_device_name = config.conf["freeradio"].get("audio_device_name", "")
+		_devices = []
+		try:
+			_devices = self._player.get_audio_devices()
+		except Exception:
+			pass
+		if _devices:
+			if _saved_device_name:
 				try:
-					_actual_device = self._player.switch_output_device(_saved_device)
-					if _actual_device != _saved_device:
-						config.conf["freeradio"]["audio_device"] = _actual_device
-						_actual_name = ""
-						for _idx, _name in _devices:
-							if _idx == _actual_device:
-								_actual_name = _name
-								break
-						config.conf["freeradio"]["audio_device_name"] = _actual_name
+					_resolved_device, _resolved_name, _match = self._player.resolve_audio_device(
+						_devices,
+						_saved_device,
+						_saved_device_name,
+					)
+					if _match == "name" and _resolved_device != _saved_device:
+						_saved_device = _resolved_device
+						config.conf["freeradio"]["audio_device"] = _resolved_device
+						config.conf["freeradio"]["audio_device_name"] = _resolved_name
 				except Exception:
 					pass
-			# Apply saved audio FX setting
-			_saved_fx = config.conf["freeradio"].get("audio_fx", "none")
-			if _saved_fx and _saved_fx != "none":
-				self._player.set_fx(_saved_fx)
-			# Apply saved crossfade / station-tuning transition setting
-			_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
-			_saved_cf = config.conf["freeradio"].get("crossfade", "off")
-			self._player.set_tuning_effect_enabled(_saved_cf == "tuning")
-			self._player.set_crossfade_duration(_cf_map.get(_saved_cf, 0.0))
+			elif _saved_device != -1:
+				try:
+					_resolved_device, _resolved_name, _match = self._player.resolve_audio_device(
+						_devices,
+						_saved_device,
+						"",
+					)
+					if _match == "index":
+						config.conf["freeradio"]["audio_device_name"] = _resolved_name
+				except Exception:
+					pass
+		if _saved_device != -1:
+			try:
+				_actual_device = self._player.switch_output_device(_saved_device)
+				if _actual_device != _saved_device:
+					config.conf["freeradio"]["audio_device"] = _actual_device
+					_actual_name = ""
+					for _idx, _name in _devices:
+						if _idx == _actual_device:
+							_actual_name = _name
+							break
+					config.conf["freeradio"]["audio_device_name"] = _actual_name
+			except Exception:
+				pass
+		# Apply saved audio FX setting
+		_saved_fx = config.conf["freeradio"].get("audio_fx", "none")
+		if _saved_fx and _saved_fx != "none":
+			self._player.set_fx(_saved_fx)
+		# Apply saved crossfade / station-tuning transition setting
+		_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
+		_saved_cf = config.conf["freeradio"].get("crossfade", "off")
+		self._player.set_tuning_effect_enabled(_saved_cf == "tuning")
+		self._player.set_crossfade_duration(_cf_map.get(_saved_cf, 0.0))
 		# Notify and reset settings when audio device is lost
 		self._player.on_device_lost = self._on_audio_device_lost
 		# Refresh the podcast episode list's row when a position is saved
@@ -450,16 +458,10 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		# manual advance - see RadioDialog._on_playback_finished()).
 		self._player.on_podcast_finished = self._on_podcast_finished
 		self._manager = stationManager.StationManager()
-		# Initialize Recorder with dll_dir, player_paths, volume and main player reference
+		# Initialize Recorder with dll_dir, volume and main player reference
 		dll_dir = os.path.dirname(os.path.abspath(__file__))
-		player_paths = {
-			"vlc": config.conf["freeradio"].get("vlc_path", ""),
-			"potplayer": config.conf["freeradio"].get("potplayer_path", ""),
-			"wmp": config.conf["freeradio"].get("wmp_path", ""),
-		}
 		self._recorder = recorderModule.Recorder(
 			dll_dir=dll_dir,
-			player_paths=player_paths,
 			volume=config.conf["freeradio"]["volume"],
 			main_player=self._player,   # pass main player to avoid interruption
 			recording_format=config.conf["freeradio"].get("recording_format", "original"),

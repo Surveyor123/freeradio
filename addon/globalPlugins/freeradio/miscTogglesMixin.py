@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # FreeRadio - Small independent config toggles: mute notifications,
-# BASS backend, track-change announcements/voice, save-liked-songs
+# track-change announcements/voice, save-liked-songs
 #
 # Extracted from GlobalPlugin in __init__.py. Mixed into GlobalPlugin, so
 # `self` here is a GlobalPlugin instance - self._dialog (defined elsewhere
@@ -24,7 +24,7 @@ del _tr
 
 class MiscTogglesMixin:
 	"""Standalone on/off config toggles that don't fit any other mixin:
-	mute notifications, BASS backend, auto-announce track changes (and its
+	mute notifications, auto-announce track changes (and its
 	voice), and saving liked songs to a text file."""
 
 	@script(
@@ -41,27 +41,6 @@ class MiscTogglesMixin:
 		else:
 			ui.message(_("Notifications unmuted"))
 
-	@script(
-		description=_("Enable or disable the BASS audio backend"),
-		category=_("FreeRadio"),
-		# No gesture assigned by default; bind one via NVDA's Input Gestures dialog.
-	)
-	def script_toggleBassBackend(self, gesture):
-		current = config.conf["freeradio"].get("disable_bass", False)
-		config.conf["freeradio"]["disable_bass"] = not current
-
-		if self._dialog is not None and hasattr(self._dialog, "_disable_bass"):
-			try:
-				self._dialog._disable_bass.SetValue(not current)
-			except Exception:
-				pass
-
-		label = _("&Disable BASS backend (use VLC/PotPlayer/WMP instead)").replace("&", "")
-		ui.message(_("%(effect)s %(state)s") % {
-			"effect": label,
-			"state": _("enabled") if not current else _("disabled"),
-		})
-		ui.message(_("Restart NVDA for this change to take effect."))
 
 
 	@script(

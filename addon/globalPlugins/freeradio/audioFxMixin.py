@@ -148,10 +148,6 @@ class AudioFxMixin:
 		toggling must add/remove that name from "audio_fx" via set_fx,
 		in addition to (re)applying the saved gain via set_eq_gain.
 		"""
-		if config.conf["freeradio"].get("disable_bass", False):
-			ui.message(_("Note: Audio device selection, effects, and mirroring require BASS backend."))
-			return
-
 		fx_str = config.conf["freeradio"].get("audio_fx", "none")
 		active = [f.strip() for f in fx_str.split(",") if f.strip() and f.strip() != "none"]
 

@@ -386,9 +386,7 @@ class RadioDialog(wx.Dialog):
 		self._notebook.SetSelection(0)  # Start on the All Stations tab
 		main_sizer.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 5)
 
-		disable_bass = config.conf["freeradio"].get("disable_bass", False)
-
-		# Audio Output Device line (visible on all tabs, only if BASS is enabled)
+		# Audio Output Device line (visible on all tabs)
 		device_row = wx.BoxSizer(wx.HORIZONTAL)
 		self._dev_label = wx.StaticText(self, label=_("Output device:"))
 		device_row.Add(self._dev_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 8)
@@ -401,11 +399,7 @@ class RadioDialog(wx.Dialog):
 		self._audio_devices_loading = False
 		self._audio_devices_last_refresh = 0.0
 		
-		if not disable_bass:
-			self.refresh_audio_devices(force=True)
-		else:
-			self._dev_label.Hide()
-			self._device_choice.Hide()
+		self.refresh_audio_devices(force=True)
 
 		# Volume and Effects row (visible on all tabs)
 		audio_row = wx.BoxSizer(wx.HORIZONTAL)
@@ -419,7 +413,7 @@ class RadioDialog(wx.Dialog):
 		self._vol_spin.SetMinSize((70, -1))
 		audio_row.Add(self._vol_spin, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
 
-		# Effects - only if BASS is enabled
+		# Effects
 		self._fx_label = wx.StaticText(self, label=_("Effects:"))
 		audio_row.Add(self._fx_label, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 12)
 
@@ -438,10 +432,6 @@ class RadioDialog(wx.Dialog):
 		for i, key in enumerate(self._fx_keys):
 			self._fx_choice.Check(i, key in _active)
 		audio_row.Add(self._fx_choice, 0, wx.ALIGN_CENTER_VERTICAL | wx.LEFT, 4)
-
-		if disable_bass:
-			self._fx_label.Hide()
-			self._fx_choice.Hide()
 
 		main_sizer.Add(audio_row, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 4)
 
@@ -466,14 +456,6 @@ class RadioDialog(wx.Dialog):
 
 		self._eq_row_sizer = eq_row
 		main_sizer.Add(eq_row, 0, wx.EXPAND | wx.BOTTOM, 4)
-
-		if disable_bass:
-			for spin in self._eq_spins.values():
-				spin.Hide()
-			for item in eq_row.GetChildren():
-				wnd = item.GetWindow()
-				if wnd:
-					wnd.Hide()
 
 
 		# action buttons
@@ -1127,8 +1109,6 @@ class RadioDialog(wx.Dialog):
 
 	def refresh_audio_devices(self, force=False):
 		"""Odśwież listę urządzeń audio w głównym oknie dodatku."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			return
 		if getattr(self, "_audio_devices_loading", False):
 			return
 		now = time.monotonic()
@@ -1140,9 +1120,6 @@ class RadioDialog(wx.Dialog):
 
 	def _load_audio_devices(self):
 		"""Get the device list from BASS in the background, transfer it to the Choice control."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			self._audio_devices_loading = False
-			return
 		devices = []
 		try:
 			devices = self._player.get_audio_devices()
@@ -1209,9 +1186,6 @@ class RadioDialog(wx.Dialog):
 
 	def _on_device_changed(self, event):
 		"""When the user changes the device selection, apply it instantly and save it in the config."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			event.Skip()
-			return
 		sel = self._device_choice.GetSelection()
 		if 0 <= sel < len(self._dialog_audio_devices):
 			new_index, new_name = self._dialog_audio_devices[sel]
@@ -1244,9 +1218,6 @@ class RadioDialog(wx.Dialog):
 
 	def _on_fx_focus(self, event):
 		"""Tell the enabled/disabled status of an effect in the list when hovering over it."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			event.Skip()
-			return
 		idx = event.GetSelection()
 		if idx != wx.NOT_FOUND:
 			label = self._fx_choice.GetString(idx)
@@ -1259,9 +1230,6 @@ class RadioDialog(wx.Dialog):
 
 	def _on_fx_changed(self, event):
 		"""Instantly apply all checked effects and save them in the config."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			event.Skip()
-			return
 		idx = event.GetInt()
 		is_checked = self._fx_choice.IsChecked(idx)
 		label = self._fx_choice.GetString(idx)
@@ -1284,8 +1252,6 @@ class RadioDialog(wx.Dialog):
 		"""Toggle a single effect on/off via Ctrl+1..Ctrl+0, mirroring
 		_on_fx_changed's apply/announce/save logic but driven by a keyboard
 		shortcut instead of a checklist click."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			return
 		if not (0 <= idx < len(self._fx_keys)):
 			return
 		is_checked = not self._fx_choice.IsChecked(idx)
@@ -1307,8 +1273,6 @@ class RadioDialog(wx.Dialog):
 
 	def _update_eq_row_visibility(self, active_fx_list=None):
 		"""Show EQ gain controls only for the EQ bands that are currently enabled."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			return
 		if active_fx_list is None:
 			checked = self._fx_choice.GetCheckedItems()
 			active_fx_list = [self._fx_keys[i] for i in checked if 0 <= i < len(self._fx_keys)]
@@ -1333,8 +1297,6 @@ class RadioDialog(wx.Dialog):
 
 	def _init_eq_gains(self):
 		"""Apply saved EQ gain values to the player and set initial row visibility."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			return
 		for band, _label, default_db in self._eq_bands:
 			saved_db = config.conf["freeradio"].get("eq_gain_" + band, default_db)
 			try:
@@ -1348,9 +1310,6 @@ class RadioDialog(wx.Dialog):
 
 	def _on_eq_gain_changed(self, event, band):
 		"""Instantly apply EQ gain change and save it to config."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			event.Skip()
-			return
 		gain_db = self._eq_spins[band].GetValue()
 		config.conf["freeradio"]["eq_gain_" + band] = gain_db
 		try:
@@ -1555,11 +1514,6 @@ class RadioDialog(wx.Dialog):
 			ui.message(_("Please select a station"))
 			return
 		record_only = self._sched_mode_rec.GetValue()
-		player_paths = {
-			"vlc":       self._player._vlc_path,
-			"potplayer": self._player._potplayer_path,
-			"wmp":       self._player._wmp_path,
-		}
 		output_folder = _folder_picker_value(self._sched_folder_custom_rb, self._sched_folder_path)
 
 		now = datetime.datetime.now()
@@ -1580,7 +1534,6 @@ class RadioDialog(wx.Dialog):
 					candidate += datetime.timedelta(days=7)
 				_rec, conflict_names = self._recorder.add_schedule(
 					station, candidate, dur,
-					player_paths=player_paths,
 					record_only=record_only,
 					recurrence="once",
 					active_days=[],
@@ -1630,7 +1583,6 @@ class RadioDialog(wx.Dialog):
 
 			_rec, conflict_names = self._recorder.add_schedule(
 				station, start, dur,
-				player_paths=player_paths,
 				record_only=record_only,
 				recurrence=recurrence,
 				active_days=active_days,
@@ -1684,15 +1636,7 @@ class RadioDialog(wx.Dialog):
 		if idx >= len(index_map):
 			return
 		rec = index_map[idx]
-		dlg = EditScheduleDialog(
-			self,
-			rec,
-			player_paths={
-				"vlc":       self._player._vlc_path,
-				"potplayer": self._player._potplayer_path,
-				"wmp":       self._player._wmp_path,
-			},
-		)
+		dlg = EditScheduleDialog(self, rec)
 		if dlg.ShowModal() == wx.ID_OK:
 			updated = dlg.get_values()
 			# Apply, re-sort and snapshot atomically with respect to the
@@ -6302,14 +6246,13 @@ class EditScheduleDialog(wx.Dialog):
 	to retrieve a dict with the updated settings.
 	"""
 
-	def __init__(self, parent, rec, player_paths=None):
+	def __init__(self, parent, rec):
 		super().__init__(
 			parent,
 			title=_("Edit Schedule — %s") % rec.station.get("name", "?"),
 			style=wx.DEFAULT_DIALOG_STYLE | wx.RESIZE_BORDER,
 		)
 		self._rec          = rec
-		self._player_paths = player_paths or {}
 
 		sizer = wx.BoxSizer(wx.VERTICAL)
 

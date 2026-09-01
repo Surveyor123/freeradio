@@ -577,9 +577,8 @@ class PlaybackCoreMixin:
 
 		# Apply station-specific audio profile if one exists, else restore global settings
 		station_audio = station.get("station_audio")
-		disable_bass = config.conf["freeradio"].get("disable_bass", False)
 		is_podcast_like = "podcast" in station.get("tags", "")
-		if station_audio and not disable_bass:
+		if station_audio:
 			vol = station_audio.get("volume", config.conf["freeradio"]["volume"])
 			fx  = station_audio.get("fx", "none")
 			self._player.set_volume(vol)
@@ -600,19 +599,18 @@ class PlaybackCoreMixin:
 			global_vol = config.conf["freeradio"]["volume"]
 			global_fx  = config.conf["freeradio"].get("audio_fx", "none")
 			self._player.set_volume(global_vol)
-			if not disable_bass:
+			try:
+				self._player.set_fx(global_fx)
+			except Exception:
+				pass
+			# Restore global EQ gains
+			_eq_defaults = {"eq_bass": 9, "eq_treble": 9, "eq_vocal": 6}
+			for band, default_db in _eq_defaults.items():
+				gain_db = config.conf["freeradio"].get("eq_gain_" + band, default_db)
 				try:
-					self._player.set_fx(global_fx)
+					self._player.set_eq_gain(band, gain_db)
 				except Exception:
 					pass
-				# Restore global EQ gains
-				_eq_defaults = {"eq_bass": 9, "eq_treble": 9, "eq_vocal": 6}
-				for band, default_db in _eq_defaults.items():
-					gain_db = config.conf["freeradio"].get("eq_gain_" + band, default_db)
-					try:
-						self._player.set_eq_gain(band, gain_db)
-					except Exception:
-						pass
 			self._sync_dialog_audio(global_vol, global_fx)
 
 		# Playback speed - podcasts/audio books only (pitch-preserving
@@ -651,13 +649,5 @@ class PlaybackCoreMixin:
 	def _start_playing(self, url, name, url_resolved="", station=None):
 		try:
 			self._player.play(url, name, url_resolved=url_resolved, station=station or {})
-		except RuntimeError as e:
-			if "wmp_not_available" in str(e):
-				ui.message(_(
-					"Could not play station: Windows Media Player is not available "
-					"on this system. Please install VLC media player."
-				))
-			else:
-				ui.message(_("Could not play station: %s") % str(e))
 		except Exception as e:
 			ui.message(_("Could not play station: %s") % str(e))

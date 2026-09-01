@@ -52,15 +52,6 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 	def makeSettings(self, settingsSizer):
 		sHelper = guiHelper.BoxSizerHelper(self, sizer=settingsSizer)
 
-		# --- Disable BASS backend checkbox ---
-		self._disable_bass = wx.CheckBox(
-			self,
-			label=_("&Disable BASS backend (use VLC/PotPlayer/WMP instead)")
-		)
-		self._disable_bass.SetValue(config.conf["freeradio"].get("disable_bass", False))
-		self._disable_bass.Bind(wx.EVT_CHECKBOX, self._on_disable_bass_changed)
-		sHelper.addItem(self._disable_bass)
-
 		# --- Time-shift buffer checkbox ---
 		# Off by default: keeps a rolling ~10 minute local buffer of the
 		# live stream so the user can rewind/fast-forward it like a
@@ -97,14 +88,6 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		)
 		self._timeshift_duration_hint.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT))
 		sHelper.addItem(self._timeshift_duration_hint)
-
-		# Hint text for BASS-dependent features
-		self._bass_hint = wx.StaticText(
-			self,
-			label=_("Note: Audio device selection, effects, and mirroring require BASS backend.")
-		)
-		self._bass_hint.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_GRAYTEXT))
-		sHelper.addItem(self._bass_hint)
 
 		# --- Audio output device (BASS only) ---
 		self._audio_devices = []   # (index, name) list — populated from BASS
@@ -382,39 +365,6 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		sHelper.addItem(ffmpeg_sizer, flag=wx.EXPAND)
 		ffmpeg_browse.Bind(wx.EVT_BUTTON, self._on_browse_ffmpeg)
 
-		vlc_label = _("VLC path (optional, auto-detected if empty):")
-		sHelper.addItem(wx.StaticText(self, label=vlc_label))
-		vlc_sizer = wx.BoxSizer(wx.HORIZONTAL)
-		self._vlc_path = wx.TextCtrl(self, value=config.conf["freeradio"].get("vlc_path", ""))
-		self._vlc_path.SetName(vlc_label)
-		vlc_browse = wx.Button(self, label=_("&Browse..."))
-		vlc_sizer.Add(self._vlc_path, 1, wx.EXPAND | wx.RIGHT, 5)
-		vlc_sizer.Add(vlc_browse, 0)
-		sHelper.addItem(vlc_sizer, flag=wx.EXPAND)
-		vlc_browse.Bind(wx.EVT_BUTTON, self._on_browse_vlc)
-
-		wmp_label = _("wmplayer.exe path (optional, used if VLC not found):")
-		sHelper.addItem(wx.StaticText(self, label=wmp_label))
-		wmp_sizer = wx.BoxSizer(wx.HORIZONTAL)
-		self._wmp_path = wx.TextCtrl(self, value=config.conf["freeradio"].get("wmp_path", ""))
-		self._wmp_path.SetName(wmp_label)
-		wmp_browse = wx.Button(self, label=_("B&rowse..."))
-		wmp_sizer.Add(self._wmp_path, 1, wx.EXPAND | wx.RIGHT, 5)
-		wmp_sizer.Add(wmp_browse, 0)
-		sHelper.addItem(wmp_sizer, flag=wx.EXPAND)
-		wmp_browse.Bind(wx.EVT_BUTTON, self._on_browse_wmp)
-
-		pot_label = _("PotPlayer path (optional, auto-detected if empty):")
-		sHelper.addItem(wx.StaticText(self, label=pot_label))
-		pot_sizer = wx.BoxSizer(wx.HORIZONTAL)
-		self._pot_path = wx.TextCtrl(self, value=config.conf["freeradio"].get("potplayer_path", ""))
-		self._pot_path.SetName(pot_label)
-		pot_browse = wx.Button(self, label=_("Bro&wse..."))
-		pot_sizer.Add(self._pot_path, 1, wx.EXPAND | wx.RIGHT, 5)
-		pot_sizer.Add(pot_browse, 0)
-		sHelper.addItem(pot_sizer, flag=wx.EXPAND)
-		pot_browse.Bind(wx.EVT_BUTTON, self._on_browse_pot)
-
 		# --- Recordings folder ---
 		rec_dir_label = _("Recordings folder:")
 		sHelper.addItem(wx.StaticText(self, label=rec_dir_label))
@@ -545,73 +495,18 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		self._check_now_btn.Bind(wx.EVT_BUTTON, self._on_check_now)
 		sHelper.addItem(self._check_now_btn)
 
-		# Initial visibility state based on disable_bass setting
-		wx.CallAfter(self._update_bass_controls_visibility)
-		# Load audio devices in the background (only if BASS is enabled)
-		if not config.conf["freeradio"].get("disable_bass", False):
-			threading.Thread(target=self._load_devices, daemon=True).start()
-
-	def _on_disable_bass_changed(self, event):
-		"""Update visibility of BASS-dependent controls when checkbox changes."""
-		self._update_bass_controls_visibility()
-		event.Skip()
-
-	def _update_bass_controls_visibility(self):
-		"""Show/hide BASS-dependent controls based on disable_bass checkbox."""
-		disable_bass = self._disable_bass.GetValue()
-		
-		# Audio device selection - BASS only
-		self._device_choice.Show(not disable_bass)
-		self._audio_device_refresh_label.Show(not disable_bass)
-		self._audio_device_refresh_choice.Show(not disable_bass)
-		# Find the label for device choice (it's a StaticText)
-		parent = self._device_choice.GetParent()
-		for child in parent.GetChildren():
-			if isinstance(child, wx.StaticText) and child.GetLabel() == _("Audio output device (BASS backend):"):
-				child.Show(not disable_bass)
-				break
-		
-		# Audio effects label and checklistbox - BASS only
-		self._fx_static.Show(not disable_bass)
-		self._fx_choice.Show(not disable_bass)
-		# Find the label for fx choice ("Audio &effects:")
-		for child in parent.GetChildren():
-			if isinstance(child, wx.StaticText) and child.GetLabel().startswith(_("Audio &effects:")):
-				child.Show(not disable_bass)
-				break
-
-		# EQ gain spins - BASS only; also respect active-band visibility
-		if disable_bass:
-			for band in self._eq_spins_settings:
-				self._eq_spins_settings[band].Show(False)
-				self._eq_spin_labels_settings[band].Show(False)
-		else:
-			self._update_eq_spins_visibility()
-		
-		# Bass hint - show only when BASS is disabled
-		self._bass_hint.Show(disable_bass)
-		
-		# If BASS is being enabled and the device list hasn't been populated yet,
-		# trigger a background load now so the Choice is not stuck on "Loading devices..."
-		if not disable_bass and self._device_choice.GetCount() <= 1:
-			_label = self._device_choice.GetString(0) if self._device_choice.GetCount() == 1 else ""
-			if _label in (_("Loading devices..."), ""):
-				threading.Thread(target=self._load_devices, daemon=True).start()
-		
-		# Relayout the panel
-		parent.Layout()
-		self.Layout()
+		# Load audio devices in the background.
+		threading.Thread(target=self._load_devices, daemon=True).start()
 
 	def _load_devices(self):
 		"""Fetch device list from BASS in background and pass it to the UI."""
 		devices = []
-		if not config.conf["freeradio"].get("disable_bass", False):
-			plugin = _get_freeradio_plugin()
-			if plugin:
-				try:
-					devices = plugin._player.get_audio_devices()
-				except Exception:
-					pass
+		plugin = _get_freeradio_plugin()
+		if plugin:
+			try:
+				devices = plugin._player.get_audio_devices()
+			except Exception:
+				pass
 		wx.CallAfter(self._populate_devices, devices)
 
 	def _audio_device_name_for_index(self, device_index):
@@ -721,36 +616,6 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 				pass
 		event.Skip()
 
-	def _on_browse_vlc(self, event):
-		with wx.FileDialog(
-			self,
-			_("Select VLC executable"),
-			wildcard="vlc.exe|vlc.exe|Executable files (*.exe)|*.exe",
-			style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-		) as dlg:
-			if dlg.ShowModal() == wx.ID_OK:
-				self._vlc_path.SetValue(dlg.GetPath())
-
-	def _on_browse_wmp(self, event):
-		with wx.FileDialog(
-			self,
-			_("Select wmplayer.exe"),
-			wildcard="wmplayer.exe|wmplayer.exe|Executable files (*.exe)|*.exe",
-			style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-		) as dlg:
-			if dlg.ShowModal() == wx.ID_OK:
-				self._wmp_path.SetValue(dlg.GetPath())
-
-	def _on_browse_pot(self, event):
-		with wx.FileDialog(
-			self,
-			_("Select PotPlayer executable"),
-			wildcard="PotPlayerMini64.exe|PotPlayerMini64.exe|PotPlayerMini.exe|PotPlayerMini.exe|Executable files (*.exe)|*.exe",
-			style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST,
-		) as dlg:
-			if dlg.ShowModal() == wx.ID_OK:
-				self._pot_path.SetValue(dlg.GetPath())
-
 	def _on_browse_ffmpeg(self, event):
 		with wx.FileDialog(
 			self,
@@ -809,11 +674,6 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		config.conf["freeradio"]["braille_messages"]       = self._braille_messages.GetValue()
 		config.conf["freeradio"]["save_liked_songs"]        = self._save_liked_songs.GetValue()
 		
-		# Save disable_bass setting
-		new_disable_bass = self._disable_bass.GetValue()
-		old_disable_bass = config.conf["freeradio"].get("disable_bass", False)
-		config.conf["freeradio"]["disable_bass"] = new_disable_bass
-
 		_refresh_sel = self._audio_device_refresh_choice.GetSelection()
 		new_audio_device_refresh_mode = (
 			_AUDIO_DEVICE_REFRESH_MODE_KEYS[_refresh_sel]
@@ -822,24 +682,19 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 		)
 		config.conf["freeradio"]["audio_device_refresh_mode"] = new_audio_device_refresh_mode
 		
-		# Audio output device (only if BASS enabled)
+		# Audio output device
 		old_device_index = config.conf["freeradio"].get("audio_device", -1)
 		old_device_name = config.conf["freeradio"].get("audio_device_name", "")
-		if not new_disable_bass:
-			sel = self._device_choice.GetSelection()
-			if 0 <= sel < len(self._audio_devices):
-				new_device_index, new_device_name = self._audio_devices[sel]
-				if new_device_index == -1:
-					new_device_name = ""
-			else:
-				new_device_index = -1
+		sel = self._device_choice.GetSelection()
+		if 0 <= sel < len(self._audio_devices):
+			new_device_index, new_device_name = self._audio_devices[sel]
+			if new_device_index == -1:
 				new_device_name = ""
-			config.conf["freeradio"]["audio_device"] = new_device_index
-			config.conf["freeradio"]["audio_device_name"] = new_device_name
 		else:
 			new_device_index = -1
 			new_device_name = ""
-			config.conf["freeradio"]["audio_device_name"] = ""
+		config.conf["freeradio"]["audio_device"] = new_device_index
+		config.conf["freeradio"]["audio_device_name"] = new_device_name
 		
 		config.conf["freeradio"]["hotkey_p_action"] = (
 			"resume" if self._hotkey_p_action.GetSelection() == 0 else "favorites"
@@ -858,23 +713,14 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			config.conf["freeradio"]["ffmpeg_path"] = self._ffmpeg_path.GetValue().strip()
 		except (KeyError, AttributeError):
 			pass
-		try:
-			config.conf["freeradio"]["vlc_path"]       = self._vlc_path.GetValue().strip()
-			config.conf["freeradio"]["wmp_path"]        = self._wmp_path.GetValue().strip()
-			config.conf["freeradio"]["potplayer_path"]  = self._pot_path.GetValue().strip()
-		except KeyError:
-			pass
 		
-		# Audio effects (only if BASS enabled)
-		if not new_disable_bass:
-			try:
-				checked = self._fx_choice.GetCheckedItems()
-				active = [self._fx_keys[i] for i in checked if 0 <= i < len(self._fx_keys)]
-				config.conf["freeradio"]["audio_fx"] = ",".join(active) if active else "none"
-			except (AttributeError, IndexError):
-				pass
-		else:
-			config.conf["freeradio"]["audio_fx"] = "none"
+		# Audio effects
+		try:
+			checked = self._fx_choice.GetCheckedItems()
+			active = [self._fx_keys[i] for i in checked if 0 <= i < len(self._fx_keys)]
+			config.conf["freeradio"]["audio_fx"] = ",".join(active) if active else "none"
+		except (AttributeError, IndexError):
+			pass
 		
 		config.conf["freeradio"]["recordings_dir"] = self._recordings_dir.GetValue().strip()
 
@@ -944,88 +790,34 @@ class FreeRadioSettingsPanel(gui.settingsDialogs.SettingsPanel):
 			plugin._player.set_timeshift_enabled(new_timeshift_enabled)
 			plugin._player.set_timeshift_capacity_seconds(new_timeshift_seconds)
 			
-			# Handle BASS disable change
-			if new_disable_bass != old_disable_bass:
-				# Recreate player with new backend setting
-				was_playing = plugin._player.is_playing()
-				current_url = plugin._player._current_url
-				current_name = plugin._player._current_name
-				current_station = plugin._player._current_station
-				current_url_resolved = plugin._player._current_url_resolved
-				
-				plugin._player.terminate()
-				plugin._player = radioPlayer.RadioPlayer(disable_bass=new_disable_bass)
-				plugin._player.set_audio_device_refresh_mode(new_audio_device_refresh_mode)
-				plugin._player.set_volume(vol)
-				plugin._player.set_timeshift_enabled(new_timeshift_enabled)
-				plugin._player.set_timeshift_capacity_seconds(new_timeshift_seconds)
-				plugin._player.set_timeshift_disk_full_callback(
-					lambda: wx.CallAfter(
-						_notify,
-						_("Time-shift buffer: running low on disk space, the oldest audio is being dropped more aggressively."),
-					)
-				)
-				plugin._player.on_device_lost = plugin._on_audio_device_lost
-				plugin._player.on_podcast_progress_saved = plugin._on_podcast_progress_saved
-				if not new_disable_bass:
-					try:
-						actual_device_index = plugin._player.switch_output_device(new_device_index)
-					except Exception:
-						actual_device_index = getattr(plugin._player, "_output_device_index", new_device_index)
-					if actual_device_index != new_device_index:
-						config.conf["freeradio"]["audio_device"] = actual_device_index
-						config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual_device_index)
-						new_device_index = actual_device_index
-						new_device_name = config.conf["freeradio"].get("audio_device_name", "")
-				
-				if was_playing and current_url:
-					wx.CallAfter(
-						plugin._player.play,
-						current_url,
-						current_name,
-						url_resolved=current_url_resolved,
-						station=current_station
-					)
-			elif not new_disable_bass:
-				# Apply new audio output device immediately if changed
-				if new_device_index != old_device_index or new_device_name != old_device_name:
-					try:
-						actual_device_index = plugin._player.switch_output_device(new_device_index)
-					except Exception:
-						actual_device_index = getattr(plugin._player, "_output_device_index", new_device_index)
-					if actual_device_index != new_device_index:
-						config.conf["freeradio"]["audio_device"] = actual_device_index
-						config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual_device_index)
-						new_device_index = actual_device_index
-						new_device_name = config.conf["freeradio"].get("audio_device_name", "")
-					wx.CallAfter(plugin._sync_dialog_device, new_device_index)
-					if plugin._dialog and hasattr(plugin._dialog, "refresh_audio_devices"):
-						wx.CallAfter(plugin._dialog.refresh_audio_devices, True)
-				# Apply FX immediately
+			# Apply new audio output device immediately if changed
+			if new_device_index != old_device_index or new_device_name != old_device_name:
 				try:
-					plugin._player.set_fx(config.conf["freeradio"].get("audio_fx", "none"))
+					actual_device_index = plugin._player.switch_output_device(new_device_index)
 				except Exception:
-					pass
-				# Apply crossfade / station-tuning transition immediately
-				_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
-				_new_cf = config.conf["freeradio"].get("crossfade", "off")
-				try:
-					plugin._player.set_tuning_effect_enabled(_new_cf == "tuning")
-					plugin._player.set_crossfade_duration(_cf_map.get(_new_cf, 0.0))
-				except Exception:
-					pass
+					actual_device_index = getattr(plugin._player, "_output_device_index", new_device_index)
+				if actual_device_index != new_device_index:
+					config.conf["freeradio"]["audio_device"] = actual_device_index
+					config.conf["freeradio"]["audio_device_name"] = self._audio_device_name_for_index(actual_device_index)
+					new_device_index = actual_device_index
+					new_device_name = config.conf["freeradio"].get("audio_device_name", "")
+				wx.CallAfter(plugin._sync_dialog_device, new_device_index)
+				if plugin._dialog and hasattr(plugin._dialog, "refresh_audio_devices"):
+					wx.CallAfter(plugin._dialog.refresh_audio_devices, True)
+			# Apply FX immediately
+			try:
+				plugin._player.set_fx(config.conf["freeradio"].get("audio_fx", "none"))
+			except Exception:
+				pass
+			# Apply crossfade / station-tuning transition immediately
+			_cf_map = {"off": 0.0, "short": 1.0, "normal": 2.0, "tuning": 0.0}
+			_new_cf = config.conf["freeradio"].get("crossfade", "off")
+			try:
+				plugin._player.set_tuning_effect_enabled(_new_cf == "tuning")
+				plugin._player.set_crossfade_duration(_cf_map.get(_new_cf, 0.0))
+			except Exception:
+				pass
 			
-			plugin._player.update_paths(
-				vlc_path=config.conf["freeradio"].get("vlc_path") or None,
-				wmp_path=config.conf["freeradio"].get("wmp_path") or None,
-				potplayer_path=config.conf["freeradio"].get("potplayer_path") or None,
-			)
-			# Also update Recorder's player_paths and volume if needed
-			plugin._recorder._player_paths = {
-				"vlc": config.conf["freeradio"].get("vlc_path", ""),
-				"potplayer": config.conf["freeradio"].get("potplayer_path", ""),
-				"wmp": config.conf["freeradio"].get("wmp_path", ""),
-			}
 			plugin._recorder._volume = vol
 
 

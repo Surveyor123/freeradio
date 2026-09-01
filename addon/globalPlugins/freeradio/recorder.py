@@ -1173,14 +1173,13 @@ class ScheduledRecording:
 	"""
 
 	def __init__(self, station, start_time, duration_minutes,
-	             player_paths=None, record_only=False,
+	             record_only=False,
 	             recurrence="once", active_days=None,
 	             max_occurrences=0, occurrences_done=0,
 	             output_folder=None):
 		self.station           = station
 		self.start_time        = start_time
 		self.duration_minutes  = duration_minutes
-		self.player_paths      = player_paths or {}   # {vlc, potplayer, wmp}
 		self.record_only       = record_only
 		self.fired             = False
 		self.output_path       = None
@@ -1289,7 +1288,6 @@ def _save_schedules(schedules):
 				"station":           rec.station,
 				"start_time":        rec.start_time.isoformat(),
 				"duration_minutes":  rec.duration_minutes,
-				"player_paths":      rec.player_paths,
 				"record_only":       rec.record_only,
 				# Recurrence fields (absent in legacy files → defaults apply on load)
 				"recurrence":        rec.recurrence,
@@ -1409,7 +1407,6 @@ def _load_schedules(now=None):
 					station          = item["station"],
 					start_time       = start,
 					duration_minutes = duration_minutes,
-					player_paths     = item.get("player_paths", {}),
 					record_only      = item.get("record_only", False),
 					recurrence       = recurrence,
 					active_days      = active_days,
@@ -1432,11 +1429,10 @@ def _load_schedules(now=None):
 class Recorder:
 	"""Manages instant and scheduled recordings."""
 
-	def __init__(self, dll_dir=None, player_paths=None, volume=100, main_player=None,
+	def __init__(self, dll_dir=None, volume=100, main_player=None,
 	             recording_format="original", mp3_bitrate=128, ffmpeg_path=""):
 		"""
 		dll_dir: Path to the directory containing bass_host.py and bass/ subfolder.
-		player_paths: dict with optional keys 'vlc', 'potplayer', 'wmp' for fallback.
 		volume: Default volume (0-100) for scheduled playback.
 		main_player: Reference to the main RadioPlayer instance used for user playback.
 		"""
@@ -1447,7 +1443,6 @@ class Recorder:
 		self._scheduler_thread = None
 		self._stop_scheduler  = threading.Event()
 		self._dll_dir         = dll_dir
-		self._player_paths    = player_paths or {}
 		self._volume          = volume
 		self._main_player     = main_player  # to avoid interrupting user
 		self._recording_format = _normalise_recording_format(recording_format)
@@ -1543,7 +1538,7 @@ class Recorder:
 		return result
 
 	def start(self, player, station_name, timeshift_buffer=None):
-		"""Start instant recording. VLC keeps playing; Python writes the stream
+		"""Start instant recording. Playback keeps going; Python writes the stream
 		via its own independent connection.
 
 		timeshift_buffer is no longer used to tail the main player's capture
@@ -1662,15 +1657,11 @@ class Recorder:
 		return self._station_name
 
 	def add_schedule(self, station, start_time, duration_minutes,
-	                 player_paths=None, record_only=False,
+	                 record_only=False,
 	                 recurrence="once", active_days=None,
 	                 max_occurrences=0, output_folder=None):
 		"""Schedule a recording.
 
-		player_paths: dict with optional keys 'vlc', 'potplayer', 'wmp'.
-		              Used only when record_only=False (listen + record mode)
-		              to launch a player for audio output.  Recording itself
-		              never requires a player.
 		recurrence:   "once" | "weekly" | "indefinite"
 		active_days:  list of weekday ints 0–6 (0=Mon). [] means all days.
 		max_occurrences: for "weekly" mode — 0 means no cap.
@@ -1687,7 +1678,6 @@ class Recorder:
 			)
 		rec = ScheduledRecording(
 			station, start_time, duration_minutes,
-			player_paths=player_paths or {},
 			record_only=record_only,
 			recurrence=recurrence,
 			active_days=active_days or [],
@@ -1935,7 +1925,6 @@ class Recorder:
 					station          = rec.station,
 					start_time       = next_start,
 					duration_minutes = rec.duration_minutes,
-					player_paths     = rec.player_paths,
 					record_only      = rec.record_only,
 					recurrence       = rec.recurrence,
 					active_days      = rec.active_days,

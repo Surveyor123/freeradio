@@ -35,11 +35,6 @@ class AudioDeviceMixin:
 
 	def _request_output_device_selection(self):
 		"""Open the main-output picker on demand when multiple devices exist."""
-		if config.conf["freeradio"].get("disable_bass", False):
-			ui.message(
-				_("Audio device selection requires BASS backend. Enable it in FreeRadio settings.")
-			)
-			return
 		if getattr(self, "_output_device_dialog_open", False):
 			return
 		self._output_device_dialog_open = True
@@ -162,11 +157,6 @@ class AudioDeviceMixin:
 		gesture="kb:control+windows+m",
 	)
 	def script_mirrorAudio(self, gesture):
-		# If BASS is disabled, the mirror feature will not work
-		if config.conf["freeradio"].get("disable_bass", False):
-			ui.message(_("Audio mirror requires BASS backend. Enable it in FreeRadio settings."))
-			return
-
 		# Stop existing mirror if active
 		if self._player.get_mirror_device() is not None:
 			self._player.stop_mirror()

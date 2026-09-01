@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # FreeRadio - Radio Player
-# Backend priority: BASS (subprocess) → VLC → WMP.
+# BASS (subprocess) is the sole playback backend.
 
 import ctypes
 import json
@@ -8,13 +8,11 @@ import logging
 import os
 import subprocess
 import sys
-import tempfile
 import threading
 import time
 import re
 import random
 import urllib.request
-import socket
 import atexit
 
 from . import timeshift as _timeshift_mod
@@ -81,76 +79,6 @@ _BASS_ERROR_NOTAVAIL = 37
 _BASS_ERROR_ALREADY  = 8
 
 
-_VLC_PATHS = [
-	r"C:\Program Files\VideoLAN\VLC\vlc.exe",
-	r"C:\Program Files (x86)\VideoLAN\VLC\vlc.exe",
-]
-
-_POTPLAYER_PATHS = [
-	r"C:\Program Files\DAUM\PotPlayer\PotPlayerMini64.exe",
-	r"C:\Program Files\DAUM\PotPlayer\PotPlayerMini.exe",
-	r"C:\Program Files (x86)\DAUM\PotPlayer\PotPlayerMini.exe",
-	r"C:\Program Files\PotPlayer\PotPlayerMini64.exe",
-	r"C:\Program Files\PotPlayer\PotPlayerMini.exe",
-]
-
-
-def _find_vlc():
-	for path in _VLC_PATHS:
-		if os.path.isfile(path):
-			return path
-	userprofile = os.environ.get("USERPROFILE", "")
-	if userprofile:
-		for candidate in [
-			os.path.join(userprofile, "vlc", "vlc.exe"),
-			os.path.join(userprofile, "AppData", "Local", "Programs", "VLC", "vlc.exe"),
-			os.path.join(userprofile, "AppData", "Local", "VLC", "vlc.exe"),
-		]:
-			if os.path.isfile(candidate):
-				return candidate
-	try:
-		result = subprocess.run(
-			["where", "vlc.exe"],
-			capture_output=True, text=True,
-			creationflags=subprocess.CREATE_NO_WINDOW,
-		)
-		if result.returncode == 0:
-			first = result.stdout.strip().splitlines()[0].strip()
-			if os.path.isfile(first):
-				return first
-	except Exception:
-		pass
-	return None
-
-
-def _find_potplayer():
-	for path in _POTPLAYER_PATHS:
-		if os.path.isfile(path):
-			return path
-	userprofile = os.environ.get("USERPROFILE", "")
-	if userprofile:
-		for candidate in [
-			os.path.join(userprofile, "AppData", "Local", "DAUM", "PotPlayer", "PotPlayerMini64.exe"),
-			os.path.join(userprofile, "AppData", "Local", "DAUM", "PotPlayer", "PotPlayerMini.exe"),
-		]:
-			if os.path.isfile(candidate):
-				return candidate
-	try:
-		result = subprocess.run(
-			["where", "PotPlayerMini64.exe"],
-			capture_output=True, text=True,
-			creationflags=subprocess.CREATE_NO_WINDOW,
-		)
-		if result.returncode == 0:
-			first = result.stdout.strip().splitlines()[0].strip()
-			if os.path.isfile(first):
-				return first
-	except Exception:
-		pass
-	return None
-
-
-
 def _read_icy_title(url):
 	try:
 		req = urllib.request.Request(
@@ -181,44 +109,6 @@ def _read_icy_title(url):
 	except Exception:
 		pass
 	return None
-
-
-
-_VBS = """\
-On Error Resume Next
-Dim wmp
-Set wmp = CreateObject("WMPlayer.OCX")
-If Err.Number <> 0 Then
-	WScript.Quit 1
-End If
-On Error GoTo 0
-wmp.settings.volume = {volume}
-wmp.settings.autoStart = True
-wmp.URL = "{url}"
-wmp.controls.play()
-
-Dim stoppedCount
-stoppedCount = 0
-
-Do While True
-	WScript.Sleep 3000
-	Dim state
-	state = wmp.playState
-	If state = 1 Or state = 10 Then
-		stoppedCount = stoppedCount + 1
-		If stoppedCount >= 2 Then
-			wmp.controls.stop
-			WScript.Sleep 1000
-			wmp.URL = "{url}"
-			wmp.controls.play
-			stoppedCount = 0
-		End If
-	Else
-		stoppedCount = 0
-	End If
-Loop
-"""
-
 
 
 
@@ -808,19 +698,13 @@ class _BassEngine(_BassSubprocessEngine):
 class RadioPlayer:
 	"""
 	Unified radio player.
-	Backend priority: BASS (in-process ctypes) → VLC → WMP.
-	BASS is used for ALL streams by default, only falls back on failure.
+	BASS (in-process ctypes) is the sole playback backend.
 	"""
 
 	BACKEND_BASS	  = "bass"
-	BACKEND_VLC	   = "vlc"
-	BACKEND_POTPLAYER = "potplayer"
-	BACKEND_WMP	   = "wmp"
 	BACKEND_NONE	  = "none"
 
-	def __init__(self, vlc_path=None, wmp_path=None, potplayer_path=None,
-				 output_device=_BASS_DEVICE_DEFAULT, config_path=None,
-				 disable_bass=False):
+	def __init__(self, output_device=_BASS_DEVICE_DEFAULT, config_path=None):
 		self._current_url = None
 		self._current_url_resolved = None
 		self._current_name = ""
@@ -834,27 +718,17 @@ class RadioPlayer:
 		self._play_lock = threading.RLock()  # Prevent concurrent play operations
 		self._play_gen  = 0		  # Incremented on every play(); bg threads check this
 
-		self._vlc_path		= vlc_path if vlc_path and os.path.isfile(vlc_path) else _find_vlc()
-		self._wmp_path		= wmp_path if wmp_path and os.path.isfile(wmp_path) else None
-		self._potplayer_path  = potplayer_path if potplayer_path and os.path.isfile(potplayer_path) else _find_potplayer()
-
 		self._backend = self.BACKEND_NONE
-		self._proc = None
-		self._vbs_path = None
 
-		self._disable_bass = disable_bass
 		self._audio_device_refresh_mode = "reliable"
 
-		if not disable_bass:
-			dll_dir = os.path.dirname(os.path.abspath(__file__))
-			self._bass_engine = _BassEngine(dll_dir, output_device=output_device)
-			self._bass_engine.load()
-			if self._bass_engine.ready():
-				self._bass_engine.on_meta = self._on_bass_meta
-				self._bass_engine.on_connecting = self._on_bass_connecting
-				self._bass_engine.on_stall = self._on_bass_stall
-		else:
-			self._bass_engine = None
+		dll_dir = os.path.dirname(os.path.abspath(__file__))
+		self._bass_engine = _BassEngine(dll_dir, output_device=output_device)
+		self._bass_engine.load()
+		if self._bass_engine.ready():
+			self._bass_engine.on_meta = self._on_bass_meta
+			self._bass_engine.on_connecting = self._on_bass_connecting
+			self._bass_engine.on_stall = self._on_bass_stall
 
 		self._icy_title = None
 		self._icy_stop = threading.Event()
@@ -945,9 +819,8 @@ class RadioPlayer:
 		# happened to reset it back into sync.
 		self._timeshift_launch_lock = threading.Lock()
 
-		if not disable_bass:
-			self._device_monitor_thread = threading.Thread(target=self._device_monitor_loop, daemon=True)
-			self._device_monitor_thread.start()
+		self._device_monitor_thread = threading.Thread(target=self._device_monitor_loop, daemon=True)
+		self._device_monitor_thread.start()
 
 
 
@@ -964,8 +837,6 @@ class RadioPlayer:
 
 	def _on_bass_stall(self):
 		"""Called when bass_host.py sends a stall event."""
-		if self._disable_bass:
-			return
 		if not self._is_playing or self._intentional_stop:
 			return
 
@@ -1064,85 +935,31 @@ class RadioPlayer:
 					pass
 			log.warning("FreeRadio: BASS stall reconnect exhausted")
 
-			# BASS could not recover after repeated attempts. Previously this
-			# just gave up here, leaving _is_playing True with no audio
-			# actually playing (and possibly stale ICY metadata still
-			# displayed). Fall back to the VLC/PotPlayer/WMP chain instead,
-			# same as a normal BASS-unavailable startup would.
+			# BASS could not recover after repeated attempts. There is no
+			# other backend to fall back to, so stop playback cleanly
+			# instead of leaving _is_playing True with no audio actually
+			# playing (and possibly stale ICY metadata still displayed).
 			if not self._is_playing or self._intentional_stop:
 				return
 			if self._play_gen != captured_gen:
 				return
-			with self._play_lock:
-				if self._play_gen != captured_gen:
-					return
-				self._play_gen += 1
-				fallback_gen = self._play_gen
-			log.warning(
-				"FreeRadio: falling back to VLC/PotPlayer/WMP after BASS "
-				"exhaustion: %s", url)
-			try:
-				self._launch_non_bass_fallback(url, vol, fallback_gen)
-			except Exception:
-				log.warning(
-					"FreeRadio: non-BASS fallback also failed", exc_info=True)
+			self.stop()
 
 		threading.Thread(target=_reconnect, daemon=True,
 						 name="FreeRadio-BassReconnect").start()
 
 
 	def _watchdog_loop(self):
-		attempt = 0
-		last_check = time.time()
+		# The BASS backend is self-managing (its own stall/reconnect logic
+		# in _on_bass_stall handles recovery), so with no other backend
+		# left to babysit, this loop has nothing left to do. Kept as a
+		# lightweight idle thread rather than removed outright to avoid
+		# touching the start/stop wiring in __init__/terminate().
 		while not self._watchdog_stop.is_set():
 			for _ in range(_WATCHDOG_INTERVAL * 2):
 				if self._watchdog_stop.is_set():
 					return
 				time.sleep(0.5)
-
-			if not self._is_playing or self._intentional_stop:
-				attempt = 0
-				continue
-
-			# The BASS backend is self-managing, the watchdog does not intervene.
-			if self._backend in (self.BACKEND_BASS, self.BACKEND_NONE):
-				attempt = 0
-				continue
-
-			proc = self._proc
-			if proc is None:
-				continue
-				
-			is_dead = proc.poll() is not None
-			
-			if not is_dead:
-				attempt = 0
-				last_check = time.time()
-				continue
-				
-			# Waiting time for newly started process
-			if time.time() - last_check < 5:
-				continue
-
-			wait = _WATCHDOG_BACKOFF[min(attempt, len(_WATCHDOG_BACKOFF) - 1)]
-			for _ in range(wait * 2):
-				if self._watchdog_stop.is_set() or self._intentional_stop:
-					return
-				time.sleep(0.5)
-
-			if self._watchdog_stop.is_set() or self._intentional_stop:
-				return
-
-			if self._is_playing and self._current_url and not self._intentional_stop:
-				with self._play_lock:
-					self._play_gen += 1
-					wdog_gen = self._play_gen
-				try:
-					self._launch(self._current_url, self._volume, gen=wdog_gen)
-					last_check = time.time()
-				except Exception:
-					pass
-				attempt += 1
 
 
 	def _start_icy_thread(self, url):
@@ -1171,7 +988,7 @@ class RadioPlayer:
 				time.sleep(0.5)
 
 	def get_icy_title(self):
-		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+		if self._backend == self.BACKEND_BASS and self._bass_engine:
 			return self._bass_engine.get_icy_title()
 		return self._icy_title
 
@@ -1182,85 +999,13 @@ class RadioPlayer:
 	def use_fresh_audio_device_probe(self):
 		return getattr(self, "_audio_device_refresh_mode", "reliable") != "fast"
 
-
-	def update_paths(self, vlc_path=None, wmp_path=None, potplayer_path=None):
-		self._vlc_path	   = vlc_path if vlc_path and os.path.isfile(vlc_path) else _find_vlc()
-		self._wmp_path	   = wmp_path if wmp_path and os.path.isfile(wmp_path) else None
-		self._potplayer_path = potplayer_path if potplayer_path and os.path.isfile(potplayer_path) else _find_potplayer()
-
 	def _stop_current(self):
-		if not self._disable_bass and self._backend == self.BACKEND_BASS:
-			if self._bass_engine:
-				self._bass_engine.stop()
-		else:
-			self._stop_process()
+		if self._bass_engine:
+			self._bass_engine.stop()
 		self._backend = self.BACKEND_NONE
 
-	def _stop_process(self):
-		proc = self._proc
-		self._proc = None
-		if proc:
-			try:
-				proc.terminate()
-				proc.wait(timeout=2)
-			except:
-				try:
-					proc.kill()
-				except:
-					pass
-
-		vbs = self._vbs_path
-		self._vbs_path = None
-		if vbs:
-			try:
-				os.unlink(vbs)
-			except:
-				pass
-
-	def _launch_non_bass_fallback(self, url, volume, gen):
-		"""VLC -> PotPlayer -> WMP only — used when BASS has already been
-		retried and exhausted (see _on_bass_stall's _reconnect()). Mirrors
-		the tail of _launch() but deliberately skips the BASS step, since
-		BASS just failed repeatedly for this URL.
-		"""
-		def _stale():
-			return gen is not None and self._play_gen != gen
-
-		self._stop_current()
-
-		if _stale():
-			return
-
-		if self._vlc_path:
-			try:
-				self._launch_vlc(url, volume)
-				if _stale():
-					self._stop_process()
-				return
-			except Exception:
-				pass
-
-		if _stale():
-			return
-
-		if self._potplayer_path:
-			try:
-				self._launch_potplayer(url, volume)
-				if _stale():
-					self._stop_process()
-				return
-			except Exception:
-				pass
-
-		if _stale():
-			return
-
-		self._launch_wmp(url, volume)
-		if _stale():
-			self._stop_process()
-
 	def _launch(self, url, volume, gen=None):
-		"""Launch playback: BASS → VLC → PotPlayer → WMP.
+		"""Launch playback via BASS.
 		Always called from a background thread.
 		gen: the _play_gen value captured when this launch was requested.
 			 If self._play_gen no longer matches, a newer play() has arrived
@@ -1274,7 +1019,7 @@ class RadioPlayer:
 		if _stale():
 			return
 
-		if not self._disable_bass and self._bass_engine and self._bass_engine.ready():
+		if self._bass_engine and self._bass_engine.ready():
 			try:
 				if self._launch_bass(url, volume):
 					if _stale():
@@ -1283,40 +1028,6 @@ class RadioPlayer:
 					return
 			except Exception:
 				pass
-
-		if _stale():
-			return
-
-		if self._vlc_path:
-			try:
-				self._launch_vlc(url, volume)
-				if _stale():
-					self._stop_process()
-					return
-				return
-			except Exception:
-				pass
-
-		if _stale():
-			return
-
-		if self._potplayer_path:
-			try:
-				self._launch_potplayer(url, volume)
-				if _stale():
-					self._stop_process()
-					return
-				return
-			except Exception:
-				pass
-
-		if _stale():
-			return
-
-		self._launch_wmp(url, volume)
-		if _stale():
-			self._stop_process()
-			return
 
 	def _launch_bass(self, url, volume):
 		"""Start BASS playback — single attempt, no retry."""
@@ -1339,7 +1050,7 @@ class RadioPlayer:
 		# set_tuning_effect_enabled() and _play_casette_clip().
 		resume_wait_engine = None
 		resume_wait_stop   = None
-		if is_podcast and saved_pos > 1.0 and not self._disable_bass:
+		if is_podcast and saved_pos > 1.0:
 			try:
 				dll_dir = os.path.dirname(os.path.abspath(__file__))
 				candidate = _BassEngine(dll_dir, output_device=self._output_device_index)
@@ -1469,112 +1180,6 @@ class RadioPlayer:
 			delay = min(delay * 1.5, 1.5)
 		log.info("FreeRadio: could not resume podcast at %.1fs after %d attempts over ~15s",
 				  saved_pos, attempt)
-
-	def _launch_vlc(self, url, volume):
-		self._stop_process()
-
-		vlc_volume = str(int(min(volume, 200) / 100.0 * 256))  # VLC scale: 256=100%, 512=200%
-		cmd = [
-			self._vlc_path,
-			"--intf", "dummy",
-			"--aout", "directsound",
-			"--no-video",
-			"--quiet",
-			"--http-reconnect",
-			"--network-caching", "6000",
-			"--live-caching", "6000",
-			"--volume", vlc_volume,
-			"--extraintf", "rc",
-			"--rc-host", "127.0.0.1:19155",
-			url,
-		]
-
-		si = subprocess.STARTUPINFO()
-		si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-		si.wShowWindow = 0
-
-		self._proc = subprocess.Popen(
-			cmd,
-			stdout=subprocess.DEVNULL,
-			stderr=subprocess.DEVNULL,
-			startupinfo=si,
-			creationflags=subprocess.CREATE_NO_WINDOW,
-		)
-		self._backend = self.BACKEND_VLC
-
-		# VLC ignores --volume on startup and resets to its default (~128/256).
-		# Re-apply the correct volume via the RC interface once VLC is ready.
-		_target_vol = int(min(volume, 200) / 100.0 * 256)
-
-		def _apply_vlc_volume():
-			for _attempt in range(8):
-				time.sleep(0.4)
-				try:
-					with socket.create_connection(("127.0.0.1", 19155), timeout=1.0) as s:
-						s.sendall(("volume %d\r\nquit\r\n" % _target_vol).encode())
-					return
-				except Exception:
-					pass
-
-		threading.Thread(target=_apply_vlc_volume, daemon=True,
-						 name="FreeRadio-VLCVol").start()
-
-	def _launch_potplayer(self, url, volume):
-		"""Launch PotPlayer for stream playback."""
-		self._stop_process()
-		cmd = [
-			self._potplayer_path,
-			url,
-			"/new",
-			f"/volume={min(volume, 200)}",
-			"/autoplay",
-			"/cache=6000",
-			"/network_retry=3",
-			"/network_retry_delay=2000",
-		]
-		si = subprocess.STARTUPINFO()
-		si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-		si.wShowWindow = 0
-		self._proc = subprocess.Popen(
-			cmd,
-			stdout=subprocess.DEVNULL,
-			stderr=subprocess.DEVNULL,
-			startupinfo=si,
-			creationflags=subprocess.CREATE_NO_WINDOW,
-		)
-		self._backend = self.BACKEND_POTPLAYER
-
-	def _launch_wmp(self, url, volume):
-		self._stop_process()
-
-		safe_url = url.replace('"', "")
-		fd, path = tempfile.mkstemp(suffix=".vbs", prefix="freeradio_")
-		try:
-			with os.fdopen(fd, "w", encoding="utf-8") as f:
-				f.write(_VBS.format(volume=min(volume, 100), url=safe_url))
-		except:
-			try:
-				os.unlink(path)
-			except:
-				pass
-			raise
-		self._vbs_path = path
-
-		cmd = ["wscript", "/nologo", path]
-
-		si = subprocess.STARTUPINFO()
-		si.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-		si.wShowWindow = 0
-
-		self._proc = subprocess.Popen(
-			cmd,
-			stdout=subprocess.DEVNULL,
-			stderr=subprocess.DEVNULL,
-			startupinfo=si,
-			creationflags=subprocess.CREATE_NO_WINDOW,
-		)
-		self._backend = self.BACKEND_WMP
-
 
 	def set_crossfade_duration(self, seconds):
 		"""Set the crossfade duration in seconds when switching stations.
@@ -1731,8 +1336,7 @@ class RadioPlayer:
 			xfade_engine = None
 			tuner_engine = None
 			do_crossfade = (
-				not self._disable_bass
-				and self._crossfade_duration > 0.0
+				self._crossfade_duration > 0.0
 				and not self._tuning_effect_enabled
 				and self._backend == self.BACKEND_BASS
 				and self._bass_engine is not None
@@ -1741,7 +1345,6 @@ class RadioPlayer:
 			)
 			do_tuning = (
 				not do_crossfade
-				and not self._disable_bass
 				and self._tuning_effect_enabled
 				and self._backend == self.BACKEND_BASS
 				and self._bass_engine is not None
@@ -1899,44 +1502,43 @@ class RadioPlayer:
 			# in sync instead of the mirror trailing behind by however long
 			# the main connect took.
 			mirror_thread = None
-			if not self._disable_bass:
-				mirror = getattr(self, "_mirror_engine", None)
-				mirror_dev = getattr(self, "_mirror_device_index", None)
-				if mirror is not None and mirror_dev is not None:
-					station = self._current_station
-					is_podcast = bool(station and "podcast" in station.get("tags", ""))
-					saved_pos = 0.0
-					if is_podcast:
-						saved_pos = self.get_podcast_position(station.get("url") or stream_url)
-					rate = self._playback_rate
+			mirror = getattr(self, "_mirror_engine", None)
+			mirror_dev = getattr(self, "_mirror_device_index", None)
+			if mirror is not None and mirror_dev is not None:
+				station = self._current_station
+				is_podcast = bool(station and "podcast" in station.get("tags", ""))
+				saved_pos = 0.0
+				if is_podcast:
+					saved_pos = self.get_podcast_position(station.get("url") or stream_url)
+				rate = self._playback_rate
 
-					def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen,
-									  podcast=is_podcast, pos=saved_pos, r=rate):
-						if self._play_gen != g:
-							return
+				def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen,
+								  podcast=is_podcast, pos=saved_pos, r=rate):
+					if self._play_gen != g:
+						return
+					try:
+						m.stop()
+						# Podcasts/audio books must open seekable, same as
+						# the main engine, or the resume-position and
+						# rewind/forward seeks below silently no-op on
+						# the mirror.
+						m.play(u, v / 100.0, seekable=podcast)
+					except Exception:
+						return
+					if self._play_gen != g:
+						return
+					if podcast and r != 1.0:
 						try:
-							m.stop()
-							# Podcasts/audio books must open seekable, same as
-							# the main engine, or the resume-position and
-							# rewind/forward seeks below silently no-op on
-							# the mirror.
-							m.play(u, v / 100.0, seekable=podcast)
+							m.set_playback_rate(r)
 						except Exception:
-							return
-						if self._play_gen != g:
-							return
-						if podcast and r != 1.0:
-							try:
-								m.set_playback_rate(r)
-							except Exception:
-								pass
-						if podcast and pos > 1.0:
-							self._resume_podcast_position_on_engine(m, pos)
+							pass
+					if podcast and pos > 1.0:
+						self._resume_podcast_position_on_engine(m, pos)
 
-					mirror_thread = threading.Thread(
-						target=_sync_mirror, daemon=True,
-						name="FreeRadio-mirror-sync")
-					mirror_thread.start()
+				mirror_thread = threading.Thread(
+					target=_sync_mirror, daemon=True,
+					name="FreeRadio-mirror-sync")
+				mirror_thread.start()
 
 			try:
 				self._launch(stream_url, vol, gen=gen)
@@ -2115,20 +1717,16 @@ class RadioPlayer:
 			self._play_gen += 1
 			self._intentional_stop = True
 			self._paused_at = time.time()
-			if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+			if self._bass_engine:
 				self._bass_engine.pause()
-			else:
-				self._stop_icy_thread()
-				self._stop_process()
 			self._is_playing = False
 		# Also pause Mirror
-		if not self._disable_bass:
-			mirror = getattr(self, "_mirror_engine", None)
-			if mirror and mirror.ready():
-				try:
-					mirror.pause()
-				except Exception:
-					pass
+		mirror = getattr(self, "_mirror_engine", None)
+		if mirror and mirror.ready():
+			try:
+				mirror.pause()
+			except Exception:
+				pass
 		if station and "podcast" in station.get("tags", ""):
 			cb = self.on_podcast_progress_saved
 			if cb:
@@ -2164,7 +1762,6 @@ class RadioPlayer:
 
 			if (
 				not is_podcast
-				and not self._disable_bass
 				and self._backend == self.BACKEND_BASS
 				and self._bass_engine
 				and paused_duration <= _BASS_RESUME_THRESHOLD
@@ -2188,7 +1785,7 @@ class RadioPlayer:
 				self._timeshift_buffer_gen = my_gen
 				return
 
-			if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+			if self._backend == self.BACKEND_BASS and self._bass_engine:
 				# Long pause (or a podcast, which always lands here) —
 				# restart BASS. This always reconnects to the *live* URL
 				# below (see _bg_resume), never back into time-shifted
@@ -2224,41 +1821,40 @@ class RadioPlayer:
 			# instead of after it finishes, so both outputs reconnect at
 			# roughly the same moment after a long pause.
 			mirror_thread = None
-			if not self._disable_bass:
-				mirror = getattr(self, "_mirror_engine", None)
-				if mirror and mirror.ready():
-					station = self._current_station
-					podcast = bool(station and "podcast" in station.get("tags", ""))
-					pos = self.get_podcast_position(station.get("url") or stream_url) if podcast else 0.0
-					rate = self._playback_rate
+			mirror = getattr(self, "_mirror_engine", None)
+			if mirror and mirror.ready():
+				station = self._current_station
+				podcast = bool(station and "podcast" in station.get("tags", ""))
+				pos = self.get_podcast_position(station.get("url") or stream_url) if podcast else 0.0
+				rate = self._playback_rate
 
-					def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen,
-									  podcast=podcast, pos=pos, r=rate):
-						if self._play_gen != g:
-							return
+				def _sync_mirror(m=mirror, u=stream_url, v=vol, g=gen,
+								  podcast=podcast, pos=pos, r=rate):
+					if self._play_gen != g:
+						return
+					try:
+						m.stop()
+						# Podcasts/audio books must reopen seekable, same
+						# as the main engine, or the resume-position and
+						# rewind/forward seeks below silently no-op on
+						# the mirror.
+						m.play(u, v / 100.0, seekable=podcast)
+					except Exception:
+						return
+					if self._play_gen != g:
+						return
+					if podcast and r != 1.0:
 						try:
-							m.stop()
-							# Podcasts/audio books must reopen seekable, same
-							# as the main engine, or the resume-position and
-							# rewind/forward seeks below silently no-op on
-							# the mirror.
-							m.play(u, v / 100.0, seekable=podcast)
+							m.set_playback_rate(r)
 						except Exception:
-							return
-						if self._play_gen != g:
-							return
-						if podcast and r != 1.0:
-							try:
-								m.set_playback_rate(r)
-							except Exception:
-								pass
-						if podcast and pos > 1.0:
-							self._resume_podcast_position_on_engine(m, pos)
+							pass
+					if podcast and pos > 1.0:
+						self._resume_podcast_position_on_engine(m, pos)
 
-					mirror_thread = threading.Thread(
-						target=_sync_mirror, daemon=True,
-						name="FreeRadio-mirror-sync")
-					mirror_thread.start()
+				mirror_thread = threading.Thread(
+					target=_sync_mirror, daemon=True,
+					name="FreeRadio-mirror-sync")
+				mirror_thread.start()
 
 			try:
 				self._launch(stream_url, vol, gen=gen)
@@ -2299,10 +1895,8 @@ class RadioPlayer:
 			self._abort_crossfade()
 			self._abort_tuning_transition()
 
-			if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+			if self._bass_engine:
 				self._bass_engine.stop()
-			else:
-				self._stop_process()
 
 			self._current_url = None
 			self._current_name = ""
@@ -2326,44 +1920,27 @@ class RadioPlayer:
 		with self._play_lock:
 			# Allow amplification beyond 100 % up to 200 % (maps to 0.0–2.0 in BASS).
 			self._volume = max(0, min(200, int(volume)))
-			# Sync mirror volume too (only if BASS enabled)
-			if not self._disable_bass:
-				mirror = getattr(self, "_mirror_engine", None)
-				if mirror and mirror.ready():
-					try:
-						mirror.set_volume(self._volume / 100.0)
-					except Exception:
-						pass
+			# Sync mirror volume too
+			mirror = getattr(self, "_mirror_engine", None)
+			if mirror and mirror.ready():
+				try:
+					mirror.set_volume(self._volume / 100.0)
+				except Exception:
+					pass
 			if not self._is_playing:
 				return
 
-			if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+			if self._backend == self.BACKEND_BASS and self._bass_engine:
 				self._bass_engine.set_volume(self._volume / 100.0)
-				return
-
-			if self._backend == self.BACKEND_VLC and self._proc and self._proc.poll() is None:
-				try:
-					vlc_vol = int(min(self._volume, 200) / 100.0 * 256)
-					with socket.create_connection(("127.0.0.1", 19155), timeout=1.0) as s:
-						s.sendall(("volume %d\r\n" % vlc_vol).encode())
-					return
-				except Exception:
-					# Don't restrat, just log in
-					return
-
-			# do not restart for PotPlayer
-			if self._backend == self.BACKEND_POTPLAYER:
-				# PotPlayer does not support volume adjustment directly
 				return
 
 	def set_bass_boost(self, boost_0_1):
 		"""Adjust the bass boost level.
 
 		boost_0_1: 0.0 = off, 1.0 = maximum (+12 dB low-shelf ~150 Hz).
-		It only works on the BASS backend.
 		"""
 		self._bass_boost = max(0.0, min(1.0, float(boost_0_1)))
-		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+		if self._backend == self.BACKEND_BASS and self._bass_engine:
 			try:
 				self._bass_engine.set_bass_boost(self._bass_boost)
 			except Exception:
@@ -2401,7 +1978,7 @@ class RadioPlayer:
 		"""
 		new_rate = round(float(rate), 1)
 		new_rate = max(self._PLAYBACK_RATE_MIN, min(self._PLAYBACK_RATE_MAX, new_rate))
-		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+		if self._backend == self.BACKEND_BASS and self._bass_engine:
 			try:
 				applied, actual_rate, reason = self._bass_engine.set_playback_rate(new_rate)
 			except Exception:
@@ -2434,7 +2011,7 @@ class RadioPlayer:
 		It only works on the BASS backend; is applied immediately to the active stream.
 		"""
 		self._audio_fx = fx_name or "none"
-		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+		if self._backend == self.BACKEND_BASS and self._bass_engine:
 			try:
 				self._bass_engine.set_fx(self._audio_fx)
 			except Exception:
@@ -2450,7 +2027,7 @@ class RadioPlayer:
 		if not hasattr(self, "_eq_gains"):
 			self._eq_gains = {}
 		self._eq_gains[band] = max(-15.0, min(15.0, float(gain_db)))
-		if not self._disable_bass and self._backend == self.BACKEND_BASS and self._bass_engine:
+		if self._backend == self.BACKEND_BASS and self._bass_engine:
 			try:
 				self._bass_engine.set_eq_gain(band, gain_db)
 			except Exception:
@@ -2471,7 +2048,7 @@ class RadioPlayer:
 		"""Seek relative to current position (for file-based playback like podcasts).
 		Only works with BASS backend. Returns (ok, new_position_seconds).
 		"""
-		if self._disable_bass or self._backend != self.BACKEND_BASS or not self._bass_engine:
+		if self._backend != self.BACKEND_BASS or not self._bass_engine:
 			return False, 0.0
 		try:
 			ok, pos, length = self._bass_engine.timeshift_seek(seconds)
@@ -2574,7 +2151,7 @@ class RadioPlayer:
 		station = self._current_station
 		if not station or "podcast" not in station.get("tags", ""):
 			return
-		if self._disable_bass or self._backend != self.BACKEND_BASS or not self._bass_engine:
+		if self._backend != self.BACKEND_BASS or not self._bass_engine:
 			return
 		try:
 			pos, length = self._bass_engine.timeshift_status()
@@ -2641,7 +2218,7 @@ class RadioPlayer:
 		"""Return (ok, position_seconds, length_seconds) for whatever is
 		currently open on the BASS backend (live station, timeshift buffer
 		file, or a seekable podcast stream all share the same handle)."""
-		if self._disable_bass or self._backend != self.BACKEND_BASS or not self._bass_engine:
+		if self._backend != self.BACKEND_BASS or not self._bass_engine:
 			return False, 0.0, 0.0
 		try:
 			pos, length = self._bass_engine.timeshift_status()
@@ -2813,11 +2390,9 @@ class RadioPlayer:
 		*seconds* before the live edge. Returns
 		(ok, position_seconds, buffered_seconds, reason) where reason is a
 		short code identifying why it failed ("ok" on success):
-		"bass_disabled", "feature_disabled", "wrong_backend",
-		"hls_unsupported", "no_buffer_yet", "no_buffer_file", "engine_error".
+		"feature_disabled", "wrong_backend", "hls_unsupported",
+		"no_buffer_yet", "no_buffer_file", "engine_error".
 		"""
-		if self._disable_bass:
-			return False, 0.0, 0.0, "bass_disabled"
 		if not self._timeshift_enabled:
 			return False, 0.0, 0.0, "feature_disabled"
 		if self._backend != self.BACKEND_BASS or not self._bass_engine:
@@ -2994,8 +2569,6 @@ class RadioPlayer:
 		BASS. To wymusza aktualne indeksy urządzeń po podłączeniu lub
 		odłączeniu wyjścia audio bez restartu NVDA.
 		"""
-		if self._disable_bass:
-			return []
 		if fresh is None:
 			fresh = self.use_fresh_audio_device_probe()
 		if fresh:
@@ -3069,8 +2642,6 @@ class RadioPlayer:
 		safety-net comment in _launch().
 		Returns True on success, False otherwise.
 		"""
-		if self._disable_bass:
-			return False
 		if not self._current_url:
 			return False
 		self.stop_mirror()
@@ -3127,8 +2698,6 @@ class RadioPlayer:
 
 	def get_mirror_device(self):
 		"""Return the device index of the active mirror, or None."""
-		if self._disable_bass:
-			return None
 		return getattr(self, "_mirror_device_index", None)
 
 	def switch_output_device(self, device_index):
@@ -3142,9 +2711,6 @@ class RadioPlayer:
 		device_index: indeks urządzenia BASS; -1 = domyślne systemowe.
 		Zwraca indeks urządzenia, które faktycznie zostało wybrane.
 		"""
-		if self._disable_bass:
-			return self._output_device_index
-
 		requested_device_index = device_index
 		with self._play_lock:
 			was_playing = self._is_playing
@@ -3281,5 +2847,5 @@ class RadioPlayer:
 		self._abort_crossfade()
 		self._abort_tuning_transition()
 		self.stop()
-		if not self._disable_bass and self._bass_engine:
+		if self._bass_engine:
 			self._bass_engine.unload()

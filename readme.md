@@ -6,7 +6,7 @@ FreeRadio is a full-featured internet radio, podcast, and audio-book add-on for 
 
 - **Internet radio** — Browse and search over 50,000 stations from the [Radio Browser](https://www.radio-browser.info/) directory, with results supplemented by TuneIn and iHeartRadio. Save favourites, reorder them, and jump straight to any of them with a global keyboard shortcut from anywhere in Windows — see [Radio Browser Directory](#radio-browser-directory) and [Favourites](#favourites).
 - **Podcasts** — Subscribe to any RSS/Atom feed, or search Apple's podcast directory and preview episodes before subscribing. Playback position is saved automatically and resumes where you left off — see [Podcasts](#podcasts).
-- **Audio books** — Search and stream or download books from [GETEM](https://getem.boun.edu.tr/), Boğaziçi University's digital library for the visually impaired, with automatic resume across multi-part works — see [Audio Books (GETEM)](#audio-books-getem).
+- **Audio books** — Search and stream or download books from two sources: [GETEM](https://getem.boun.edu.tr/), Boğaziçi University's digital library for the visually impaired, and [LibriVox](https://librivox.org/), the volunteer-read public-domain audiobook project (no account needed), with automatic resume across multi-part works — see [Audio Books (GETEM and LibriVox)](#audio-books-getem-and-librivox).
 - **Recording** — Record what's playing instantly, capture a single song automatically when it starts and stops, or schedule one-off and recurring recordings — all without interrupting playback — see [Recording](#recording).
 - **Time-shift (rewind live radio)** — Pause and rewind a live station like a DVR, then catch back up to live whenever you want — see [Time-Shift (Rewind Live Radio)](#time-shift-rewind-live-radio).
 - **Music recognition and liked songs** — Identify tracks with no metadata using Shazam-based recognition, save liked songs to a text file, and look up their lyrics — see [Music Recognition](#music-recognition) and [Liked Songs](#liked-songs).
@@ -68,8 +68,8 @@ All shortcuts can be reassigned from NVDA Menu → Preferences → Input Gesture
 | `Ctrl+Win+M` | Audio mirror | Mirrors the current stream or media to an additional audio output device simultaneously. Press again to stop mirroring. |
 | `Ctrl+Win+E` | Instant recording | Press once to start recording the current station; press again to stop. Press **twice** to start a **song recording** — the file is named after the current track and the recording stops automatically when the track changes. Press twice again while a song recording is active to stop it early. Playback continues uninterrupted in all recording modes. Only available for stations that broadcast ICY metadata. |
 | `Ctrl+Win+W` | Open recordings folder | Opens the folder containing recorded files in File Explorer. |
-| `Ctrl+Win+J` | Time-shift rewind | Rewinds live radio by 15 seconds. The first press enters time-shift mode; each further press moves 15 seconds further back, up to the buffer limit set in the freeradio setting's. Requires the time-shift buffer to be enabled in Settings. Rewinds podcast or audio book by 5 seconds regardless of the setting. |
-| `Ctrl+Win+K` | Time-shift fast-forward | Moves forward 15 seconds while time-shifted. Once the live edge is reached, playback automatically returns to live and this becomes a no-op until you rewind again. Moves forward  podcast or audio book by 5 seconds regardless of the setting. |
+| `Ctrl+Win+J` | Time-shift rewind / podcast & audio book seek back | For live radio: rewinds 15 seconds. The first press enters time-shift mode; each further press moves 15 seconds further back, up to the buffer limit set in the FreeRadio settings. Requires the time-shift buffer to be enabled in Settings. For a podcast or audio book, this key seeks within the file instead, and scales with how you press it: **holding it down** keeps stepping back 5 seconds per repeat, exactly as before; a **single deliberate tap** seeks back 12 seconds; **two taps** in quick succession seek back 1 minute; **three or more taps** seek back 5 minutes. Only one seek happens per tap sequence, sized for however many taps were made — taps don't add up. Works regardless of the time-shift setting. |
+| `Ctrl+Win+K` | Time-shift fast-forward / podcast & audio book seek forward | For live radio: moves forward 15 seconds while time-shifted. Once the live edge is reached, playback automatically returns to live and this becomes a no-op until you rewind again. For a podcast or audio book, this key seeks forward within the file using the same tap/hold scaling as `Ctrl+Win+J` above (hold = 5 seconds per repeat; 1 tap = 12 seconds; 2 taps = 1 minute; 3+ taps = 5 minutes). Works regardless of the time-shift setting. |
 | `Ctrl+Win+T` | Toggle time-shift buffer | Enables or disables the time-shift buffer on the fly, mirroring the Settings checkbox. Disabling immediately returns to live playback if time-shifted and stops the background capture. No effect on podcast or audio book playbacks. |
 | *(unassigned)* | Select output device | Opens an on-demand list of the available main output devices. The list is shown only when BASS detects more than one physical output device. Assign a key combination via NVDA Menu → Preferences → Input Gestures → FreeRadio. |
 | *(unassigned)* | Toggle mute notifications | Toggles the Mute Notifications setting on the fly. Assign a key combination via NVDA Menu → Preferences → Input Gestures → FreeRadio. |
@@ -296,7 +296,7 @@ A **Filter** field above the station list lets you narrow the favourites list in
 **Save recording to:** For each scheduled recording, you can choose to save to the default recordings folder or a custom folder. Use the **Browse...** button to select a folder interactively. If the chosen folder becomes unavailable, the recording falls back to the default folder and you are notified.
 
 **Recording mode:**
-- **Record while listening** — plays and records simultaneously. A playback backend is started using the BASS → VLC → PotPlayer → Windows Media Player priority order.
+- **Record while listening** — plays and records simultaneously through the BASS backend.
 - **Record only** — records silently in the background without any audio output; the recording engine connects directly to the stream.
 
 Once a schedule is added, it appears in the list below. Use the **Remove Selected** button to delete a schedule, or **Edit Selected** to modify its time, duration, recurrence, active days, recording mode, or output folder.
@@ -341,7 +341,7 @@ In the rare case that a station's playlist cannot be read at all (for example, a
 
 ### Requirements and Limitations
 
-- **Requires the BASS backend.** Time-shift is not available when BASS is disabled and playback falls back to VLC, PotPlayer, or Windows Media Player. The background capture itself (and the ad-avoidance it provides to Music Recognition and Recording) is also unavailable in that case, since it depends on the same BASS-based connection.
+- **Requires the BASS backend**, which FreeRadio always uses for playback (see [Playback](#playback)).
 - The Buffer time is determined in the settings.
 - The buffer is per-station: switching stations, stopping playback, or restarting NVDA clears it and starts fresh.
 - Time-shifted playback uses its own local buffer file and does not produce a saved recording — if you want to keep the audio permanently, use Instant Recording (`Ctrl+Win+E`) as well.
@@ -445,13 +445,20 @@ Above the episode list is a **Filter** field. As you type, the episode list is f
 
 ### Podcast Playback Details
 
-Podcast episodes are played using the **BASS backend** (the same engine used for radio streams). Because episodes are downloaded progressively and are seekable, you can use the time-shift rewind/forward shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`) while playing a podcast to jump back or forward **5 seconds** at a time (instead of the 15‑second rewind used for live radio). The position is saved automatically so you can resume later.
+Podcast episodes are played using the **BASS backend** (the same engine used for radio streams and, as of this version, the only playback backend FreeRadio uses). Because episodes are downloaded progressively and are seekable, you can use the time-shift rewind/forward shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`) while playing a podcast to seek within the episode. The position is saved automatically so you can resume later.
+
+**Tiered seeking:** Unlike live radio's fixed 15-second rewind, seeking within a podcast or audio book scales with how you press the key, so you can make a small correction or jump a long way without repeated presses:
+
+- **Holding the key down** (auto-repeat) steps back or forward **5 seconds** per repeat — the same small amount this shortcut has always used for files.
+- **One deliberate tap** seeks **12 seconds**.
+- **Two taps** in quick succession seek **1 minute**.
+- **Three or more taps** seek **5 minutes**; further taps in the same burst don't escalate any further.
+
+A deliberate tap is held for a brief moment before it actually seeks, in case another tap is still coming — only one seek happens per tap sequence, sized for however many taps were ultimately made, not the sum of each tap's amount. After a seek, NVDA announces the resulting elapsed/remaining position in the episode rather than just "X seconds forward/back".
 
 **Playback speed:** You can adjust the playback speed of podcast episodes using `Ctrl+Win+Shift+K` (faster) and `Ctrl+Win+Shift+J` (slower). The speed changes in 0.1x increments, ranging from 0.5x to 2.0x, with pitch preserved. This requires the optional `bass_fx.dll` library to be placed in the add‑on's folder. If the library is missing, NVDA will inform you that the feature is unavailable.
 
 > **Note:** `bass_fx.dll` is not bundled with FreeRadio by default. You can download it from the [BASS FX page](https://www.un4seen.com/bass-fx.html) and place it in the add‑on's `bass/x64` (for 64‑bit NVDA) or `bass` (for 32‑bit NVDA) folder to enable this feature.
-
-If the BASS backend is disabled (or fails), podcast playback falls back to the same chain of external players (VLC → PotPlayer → WMP) used for radio, but **seek and resume functionality will not work** in that case — the episode will play from the beginning each time. For the full podcast experience, keep the BASS backend enabled.
 
 **Resume sound effect:** Whenever an episode resumes from a saved position, FreeRadio briefly plays a soft cassette-loading sound effect on a separate channel while it seeks back to your saved spot, instead of letting the episode's own audio play audibly from 0:00 in the meantime. This happens automatically whenever the BASS backend is active and is independent of the **Station switch transition** setting — that setting only affects switching between live radio stations, not resuming podcasts or audio books.
 
@@ -476,29 +483,41 @@ Only the pieces you pick are written to the profile; anything left out keeps wha
 
 Your subscriptions are stored in `freeradio_podcasts.json` in the NVDA user configuration folder. Episode positions are stored separately in `podcast_positions.json` in the same location. Both files are plain JSON and can be backed up or transferred to another computer.
 
-## Audio Books (GETEM)
+## Audio Books (GETEM and LibriVox)
 
-FreeRadio includes an audio book player for [GETEM](https://getem.boun.edu.tr/), the digital library run by Boğaziçi University's Center for the Visually Impaired. You can search its catalogue, preview and add books to a personal library, play multi-part works with automatic resume, and download books for offline listening — all fully accessible.
+FreeRadio includes an audio book player that searches, plays, and downloads books from two sources:
 
-GETEM is the first source supported by this feature. The Audio Books tab is built so that further libraries or catalogues can be added alongside it in the future; for now, GETEM is the only one available.
+- **[GETEM](https://getem.boun.edu.tr/)** — the digital library run by Boğaziçi University's Center for the Visually Impaired. Requires a free membership to stream or download a book's audio (browsing does not) — see [Signing In](#signing-in) below.
+- **[LibriVox](https://librivox.org/)** — the volunteer-read public-domain audiobook project. No account or sign-in of any kind is needed; its whole catalogue, including the audio files themselves, is public domain and openly reachable.
 
-> **Note:** Listening requires a free GETEM membership. Browsing the catalogue does not need an account, but resolving and playing a book's audio does — see [Signing In](#signing-in) below.
+Results from both sources appear together in a single merged **Search results** list and a single merged **Library** list — there is no separate tab or dropdown to switch between them. Each book's source (GETEM or LibriVox) is shown as a label next to its title, and in its details, so you can always tell which one you're looking at. You can search, preview, add, play, and download books from either source exactly the same way; play multi-part works with automatic resume across parts; and download books for offline listening — all fully accessible.
+
+Either source can be turned off from **NVDA Menu → Preferences → Settings → FreeRadio** with the **Audio book sources** checklist, if you only want to search one of them. Both are enabled by default.
+
+> **Note:** Listening to a GETEM book requires a free GETEM membership. Browsing GETEM's catalogue does not need an account, but resolving and playing a GETEM book's audio does — see [Signing In](#signing-in) below. LibriVox books never require an account.
 
 ### Accessing the Audio Books Tab
 
 Open the station browser with `Ctrl+Win+R` and switch to the **Audio Books** tab using `Ctrl+Tab` or `Alt+7`. The tab has three main areas:
 
-1. **Search** — a text field to search GETEM's catalogue, with a results list that appears once a search is run.
-2. **Library** — the list of books you have added, where you play, download and manage them.
-3. **Details** — a read-only box showing the title, author, narrator, publisher, format, number of parts, description and catalogue URL of whichever book is selected, in either list.
+1. **Search** — a text field to search both enabled catalogues at once, with a results list that appears once a search is run.
+2. **Library** — the list of books you have added from either source, where you play, download and manage them.
+3. **Details** — a read-only box showing the source, title, author, narrator, publisher, format, number of parts, description and catalogue URL of whichever book is selected, in either list.
 
 ### Signing In
 
-GETEM requires being a registered member to stream or download a book's actual audio, even though the catalogue itself can be searched freely. Enter your GETEM username and password once in **NVDA Menu → Preferences → Settings → FreeRadio**; they are stored encrypted on disk (via the Windows Data Protection API, tied to your Windows user account) and reused automatically afterward. If you try to play or download a book before entering credentials, FreeRadio tells you to add them in Settings first.
+GETEM requires being a registered member to stream or download a book's actual audio, even though the catalogue itself can be searched freely. Enter your GETEM username and password once in **NVDA Menu → Preferences → Settings → FreeRadio**; they are stored encrypted on disk (via the Windows Data Protection API, tied to your Windows user account) and reused automatically afterward. If you try to play or download a GETEM book before entering credentials, FreeRadio tells you to add them in Settings first.
+
+LibriVox needs no sign-in step at all — its results and audio can be searched, previewed, played and downloaded immediately, with no credentials to enter.
 
 ### Searching for Audio Books
 
-Type a search term — title, author, narrator, subject or publisher — into the search field and press `Enter`. FreeRadio searches all of these fields at once and merges the results, since GETEM's own search form only supports narrowing by all of them together rather than a single search across any of them. Only works that are actually available as audio (human or computer narration, audio description, radio drama, DAISY talking books, etc.) are shown; braille, large-print and other non-audio formats are filtered out automatically. NVDA announces how many audio books were found.
+Type a search term into the search field and press `Enter`. FreeRadio searches whichever sources are enabled in Settings and merges the results into one list:
+
+- **GETEM** is searched by title, author, narrator, subject and publisher at once, since GETEM's own search form only supports narrowing by all of them together rather than a single search across any of them. Only works that are actually available as audio (human or computer narration, audio description, radio drama, DAISY talking books, etc.) are shown; braille, large-print and other non-audio formats are filtered out automatically.
+- **LibriVox** is searched by title or author/reader against its public-domain catalogue.
+
+NVDA announces how many audio books were found in total.
 
 Selecting a result shows its details — author, narrator, publisher, format and part count — in the details box below.
 
@@ -517,7 +536,7 @@ Books you've added appear in the **Library** list, showing title, author and for
 **Context menu for library entries:** Right‑click a book, or select it and press the Applications key / `Shift+F10`, to open a menu with:
 - **Play Media** — start playing, same as `Enter`.
 - **Download Book** — download every part of the book; see [Downloading Audio Books](#downloading-audio-books) below.
-- **Copy the URL** — copy the book's GETEM catalogue page URL to the clipboard.
+- **Copy the URL** — copy the book's catalogue page URL to the clipboard (the GETEM catalogue page for a GETEM book, or the archive.org details page for a LibriVox book).
 - **Save Audio Profile for This Book** / **Clear Audio Profile** — see [Audio Book Audio Profile](#audio-book-audio-profile) below.
 - **Remove from the Library** — delete the book from your library.
 
@@ -543,7 +562,7 @@ Select a book in your library and choose **Download Book** from its context menu
 
 ### Audio Book Data Storage
 
-Your GETEM library (added books and their listening progress) is stored in `freeradio_getem_library.json` in the NVDA user configuration folder. Your encrypted GETEM credentials are stored separately in `freeradio_getem_credentials.bin` in the same location, and can only be decrypted by the same Windows user account that saved them.
+Each source keeps its own library file, even though they're displayed merged in the Audio Books tab. Your GETEM library (added books and their listening progress) is stored in `freeradio_getem_library.json`, and your LibriVox library is stored separately in `freeradio_librivox_library.json`, both in the NVDA user configuration folder. Your encrypted GETEM credentials are stored separately in `freeradio_getem_credentials.bin` in the same location, and can only be decrypted by the same Windows user account that saved them. LibriVox has no credentials file, since it requires no account.
 
 ## Liked Songs
 
@@ -585,7 +604,6 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 
 | Option | Description |
 |---|---|
-| Disable BASS backend | When enabled, FreeRadio will not use the bundled BASS engine and will rely on VLC, PotPlayer, or Windows Media Player instead. Restart NVDA for this change to take effect. |
 | Track change voice | Choose whether auto‑announced track changes are spoken using the NVDA synthesizer or a selected SAPI5 voice. |
 | SAPI5 voice | When **Track change voice** is set to SAPI5, selects which installed SAPI5 voice is used to announce track changes. The list is populated in the background from the voices installed on the system. |
 | Audio output device (BASS backend) | Sets the audio output device for radio playback. The list includes all BASS-compatible devices on the system plus a "System default" option. Changes are applied immediately on save; if the selected device is disconnected, the add-on automatically falls back to the system default and announces the change. Only active when the BASS backend is in use. |
@@ -606,11 +624,9 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | When Ctrl+Win+P is pressed three times | Selects what happens when the shortcut is pressed three times in quick succession: do nothing, open the favourites list, open station search, open the recording tab or open the timer tab. |
 | Check for updates automatically | When enabled, a background update check runs each time NVDA starts; you are notified if a new version is found. When disabled, automatic checks stop but manual checks remain available. |
 | ffmpeg.exe path | Path to the ffmpeg.exe used for music recognition. If left blank, an ffmpeg.exe in the add-on folder is used automatically. |
-| VLC path | If VLC is not installed or is in a non-standard location, the full path to the executable can be entered here. |
-| wmplayer.exe path | Enter the path to Windows Media Player here if needed. |
-| PotPlayer path | If PotPlayer is in a non-standard location, its path can be entered here. |
 | Recordings folder | Sets the folder where recorded files are saved. If left blank, the default location `Documents\FreeRadio Recordings\` is used. A Browse button lets you select the folder interactively. Changes take effect immediately after saving. |
-| GETEM username / GETEM password | Your [GETEM](https://getem.boun.edu.tr/) audio-book membership credentials, needed to stream or download a book's audio — see [Signing In](#signing-in). Stored encrypted on disk via the Windows Data Protection API, tied to your Windows user account; never stored as plain text. Leaving both fields empty and saving removes any stored credentials. |
+| Audio book sources | A checklist selecting which audio-book sources (**GETEM**, **LibriVox**) are searched and shown in the Audio Books tab. Both are enabled by default. Unchecking a source hides its books from the merged search results and library list without deleting anything you've already added from it — see [Audio Books (GETEM and LibriVox)](#audio-books-getem-and-librivox). |
+| GETEM username / GETEM password | Your [GETEM](https://getem.boun.edu.tr/) audio-book membership credentials, needed to stream or download a book's audio — see [Signing In](#signing-in). Stored encrypted on disk via the Windows Data Protection API, tied to your Windows user account; never stored as plain text. Leaving both fields empty and saving removes any stored credentials. LibriVox requires no account and has no equivalent field. |
 | Recording output format | Keeps the original stream, extracts audio without changing its codec, or converts completed recordings to MP3. The default is the original stream format. |
 | MP3 recording bitrate | Sets the bitrate used when the recording output format is MP3. The default is 128 kb/s. |
 | Disable internet connectivity check before playing | Recommended for users who experience a delay before a station starts playing. Also useful when DNS is blocked. |
@@ -638,14 +654,11 @@ This feature is disabled by default and can be toggled from NVDA Menu → Prefer
 
 ## Playback
 
-The add-on selects a playback backend using the following priority order:
+FreeRadio uses **BASS** as its sole playback backend for everything — internet radio, podcasts and audio books. No separate installation is required; it is bundled with the add-on. Support for VLC, PotPlayer and Windows Media Player as fallback backends has been removed; BASS is always used.
 
-1. **BASS** — the default and primary backend. No separate installation is required; it is bundled with the add-on. BASS sends audio directly to the Windows audio stack and appears in the Windows volume mixer as an independent audio source named "pythonw.exe", separate from NVDA. This means FreeRadio audio flows on a completely separate channel from NVDA speech: the radio does not cut out, mix with, or get affected by NVDA's own audio settings while NVDA is speaking. The user can adjust the radio volume independently from NVDA in the Windows Volume Mixer. Supports HTTP, HTTPS and most embedded stream formats. Audio mirroring and podcast seek/resume are only available with this backend.
-2. **VLC** — takes over if BASS fails. Searched automatically in common installation locations, user profile folders and the system PATH.
-3. **PotPlayer** — tried if VLC is not found. Searched automatically in common installation locations.
-4. **Windows Media Player** — used as a last resort; requires the WMP component to be installed on the system.
+BASS sends audio directly to the Windows audio stack and appears in the Windows volume mixer as an independent audio source named "pythonw.exe", separate from NVDA. This means FreeRadio audio flows on a completely separate channel from NVDA speech: the radio does not cut out, mix with, or get affected by NVDA's own audio settings while NVDA is speaking. The user can adjust the radio volume independently from NVDA in the Windows Volume Mixer. Supports HTTP, HTTPS and most embedded stream formats.
 
-Podcast episodes are always played through BASS if available, because BASS can open the stream as a seekable file (even while downloading) and allows precise position tracking and resuming. If BASS is disabled, podcasts fall back to the external player chain, but seek and resume will not work.
+Podcast episodes and audio book chapters are played through BASS because it can open the stream as a seekable file (even while downloading), allowing precise position tracking, tiered rewind/fast-forward, and resuming. Audio mirroring, time-shift, and podcast/audio-book seek and resume all depend on BASS and are always available.
 
 ## Update Check
 

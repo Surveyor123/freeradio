@@ -5346,7 +5346,7 @@ class RadioDialog(wx.Dialog):
 		file updated too - this method already handles the LibriVox case
 		correctly for anything resumed earlier in the *same* session."""
 		current = self._player.get_current_station() or {}
-		if "audiobook" not in current.get("tags", ""):
+		if current.get("media_kind") != "audiobook":
 			return
 		detail_url = current.get("getem_detail_url")
 		if not detail_url:
@@ -5895,7 +5895,7 @@ class RadioDialog(wx.Dialog):
 		to automatically move on to the next part; regular podcast episodes
 		are left as-is (the user only asked for auto-advance on audio
 		books) and are still advanced manually via _play_next_episode()."""
-		if not station or "audiobook" not in station.get("tags", ""):
+		if not station or station.get("media_kind") != "audiobook":
 			return
 		playing = getattr(self, "_getem_now_playing", None)
 		if not playing:

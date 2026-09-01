@@ -529,6 +529,16 @@ class GetemBook:
 			"stationuuid": "getem-" + str(uuid.uuid5(uuid.NAMESPACE_URL, self.detail_url)),
 			"countrycode": "",
 			"tags": "podcast,audiobook",
+			# See podcast.PodcastEpisode.to_dict()'s comment on "media_kind"
+			# for why this exists as a separate field from "tags" above:
+			# "tags" is kept as-is purely for backward compatibility with
+			# anything still reading it; all resume/seek/speed/download
+			# logic keys off "media_kind" instead, which - unlike "tags" -
+			# is never derived from external data and so can never collide
+			# with a real Radio Browser station's own genre tags (e.g. a
+			# live talk-radio stream that happens to be community-tagged
+			# "podcast" or "audiobook" on Radio Browser).
+			"media_kind": "audiobook",
 			"getem_detail_url": self.detail_url,
 			"author": self.author,
 			"narrator": self.narrator,

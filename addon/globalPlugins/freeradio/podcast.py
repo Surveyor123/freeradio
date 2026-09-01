@@ -122,6 +122,27 @@ class PodcastEpisode:
 			"stationuuid": "podcast-" + str(uuid.uuid4()),
 			"countrycode": "",
 			"tags": "podcast",
+			# Dedicated marker used by radioPlayer.py/timeshiftMixin.py/
+			# radioDialog.py/__init__.py to decide whether this is a
+			# seekable local-media item (podcast/audio book) that gets
+			# resume/seek/speed handling. Deliberately NOT the same thing
+			# as "tags" above: "tags" is free-text and, for real Radio
+			# Browser stations elsewhere in the app, can legitimately
+			# contain the substring "podcast" as a community-assigned
+			# genre on a live stream (e.g. talk-radio stations mirrored
+			# from podcast-hosting platforms like Zeno.fm or Qingting.fm).
+			# Checking that free-text field for "podcast"/"audiobook" used
+			# to be how this was detected, which meant any live station
+			# tagged that way by Radio Browser got treated as a
+			# downloadable, seekable podcast episode - opened as
+			# seekable=True, resumed to a stale/impossible saved position
+			# on an actually-infinite stream, and left silently stuck
+			# behind the casette.mp3 resume-wait effect. "media_kind" is
+			# only ever set here, in getem.GetemBook.to_dict(), and in
+			# librivox.LibriVoxBook.to_dict() - never derived from
+			# external data - so it can't collide with a real station's
+			# genre tags.
+			"media_kind": "podcast",
 			"episode_published": self.published.isoformat() if self.published else "",
 			"episode_duration": self.duration,
 			"description": self.description,

@@ -38,6 +38,7 @@ _ = _tr
 del _tr
 
 from . import _notify, _speak_on_demand, _format_duration, _sapi5_speak
+from .radioPlayer import _is_seekable_media
 
 log = logging.getLogger(__name__)
 
@@ -153,7 +154,7 @@ class TrackInfoMixin:
 						msg = _("Playing: %s") % name
 					# Podcast: append elapsed/remaining time.
 					station = self._player.get_current_station()
-					if station and "podcast" in station.get("tags", ""):
+					if _is_seekable_media(station):
 						ok, pos, length = self._player.get_playback_position()
 						if ok and length > 0:
 							msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
@@ -177,7 +178,7 @@ class TrackInfoMixin:
 				msg = _("Paused: %s") % name
 				# Podcast: append elapsed/remaining time even when paused
 				station = self._player.get_current_station()
-				if station and "podcast" in station.get("tags", ""):
+				if _is_seekable_media(station):
 					ok, pos, length = self._player.get_playback_position()
 					if not ok or pos <= 0.0:
 						# Fallback to saved position if live player handle is closed
@@ -439,7 +440,7 @@ class TrackInfoMixin:
 					else:
 						msg = _("Playing: %s") % name
 					station = self._player.get_current_station()
-					if station and "podcast" in station.get("tags", ""):
+					if _is_seekable_media(station):
 						ok, pos, length = self._player.get_playback_position()
 						if ok and length > 0:
 							msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
@@ -455,7 +456,7 @@ class TrackInfoMixin:
 			else:
 				msg = _("Paused: %s") % name
 				station = self._player.get_current_station()
-				if station and "podcast" in station.get("tags", ""):
+				if _is_seekable_media(station):
 					ok, pos, length = self._player.get_playback_position()
 					if not ok or pos <= 0.0:
 						url = station.get("url")
@@ -620,7 +621,7 @@ class TrackInfoMixin:
 				else:
 					msg = _("Playing: %s") % name
 				station = self._player.get_current_station()
-				if station and "podcast" in station.get("tags", ""):
+				if _is_seekable_media(station):
 					ok, pos, length = self._player.get_playback_position()
 					if ok and length > 0:
 						msg += ". " + _("%(elapsed)s elapsed, %(remaining)s remaining") % {
@@ -649,12 +650,11 @@ class TrackInfoMixin:
 		if not s:
 			return []
 
-		tags = s.get("tags", "").strip()
-		tag_set = {t.strip() for t in tags.split(",") if t.strip()}
+		media_kind = s.get("media_kind")
 
-		if "audiobook" in tag_set:
+		if media_kind == "audiobook":
 			return self._build_audiobook_details(s)
-		if "podcast" in tag_set:
+		if media_kind == "podcast":
 			return self._build_podcast_details(s)
 		return self._build_radio_station_details(s)
 
@@ -904,9 +904,8 @@ class TrackInfoMixin:
 		# for it there would just be a wasted background fetch against a
 		# podcast episode URL or a temporary GETEM streaming-proxy address.
 		current_station = self._player.get_current_station() or {}
-		current_tags = {t.strip() for t in current_station.get("tags", "").split(",") if t.strip()}
 		now_playing_label = _("Now playing")
-		if not (current_tags & {"podcast", "audiobook"}) and now_playing_label not in field_ctrls:
+		if not _is_seekable_media(current_station) and now_playing_label not in field_ctrls:
 			def _fetch_icy_and_update():
 				from . import radioPlayer as _rp
 				icy = self._player.get_icy_title()

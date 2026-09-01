@@ -79,6 +79,28 @@ _BASS_ERROR_NOTAVAIL = 37
 _BASS_ERROR_ALREADY  = 8
 
 
+def _is_seekable_media(station):
+	"""True if *station* is a podcast episode or audio-book chapter
+	(GETEM/LibriVox) - i.e. locally-seekable media that should get the
+	podcast-style resume/seek/speed/finish-detection treatment throughout
+	this file.
+
+	Deliberately keyed off the dedicated "media_kind" field (set only by
+	podcast.PodcastEpisode.to_dict(), getem.GetemBook.to_dict() and
+	librivox.LibriVoxBook.to_dict()) rather than substring-matching the
+	free-text "tags" field. A real Radio Browser station can legitimately
+	carry "podcast" as a community-assigned genre tag on an ordinary live
+	stream (e.g. talk-radio mirrors of podcast-hosting platforms like
+	Zeno.fm or Qingting.fm) - matching against "tags" used to make
+	FreeRadio treat such a station as an actual downloadable podcast
+	episode: opened seekable, resumed to a saved position that can never
+	apply to a live/infinite stream, and left stuck (muted) behind the
+	casette.mp3 resume-wait effect while the seek retry loop spent up to
+	15 seconds failing over and over. "media_kind" is never derived from
+	external data, so it can't collide with a real station's own tags."""
+	return bool(station) and station.get("media_kind") in ("podcast", "audiobook")
+
+
 def _read_icy_title(url):
 	try:
 		req = urllib.request.Request(
@@ -190,8 +212,16 @@ class _BassSubprocessEngine:
 		self._reader_thread = None
 		self._stop_reader   = threading.Event()
 		self._play_seq	 = 0
-		self._pending_play = None   # (seq, event, [result])
+		self._pending_play = None   # (seq, event, [result, error])
 		self._current_play_seq = None  # Track currently active play request
+		# The "error" string bass_host.py sends alongside {"ok": false} for
+		# a failed play (see bass_host.py's _send({"ok": ok, "error": ...})
+		# for the "play" command) - e.g. "StreamCreateURL failed (err=41)".
+		# Set by _read_loop()/play() on every play attempt (cleared to None
+		# on success) so callers that get False back from play() can look
+		# here for *why*, instead of that detail being read off the wire
+		# and then silently discarded the way it used to be.
+		self.last_play_error = None
 		atexit.register(self._cleanup)
 
 	def _find_python(self):
@@ -382,6 +412,7 @@ class _BassSubprocessEngine:
 			if self._pending_play:
 				seq, evt, result_slot = self._pending_play
 				result_slot[0] = False
+				result_slot[1] = "cancelled"
 				evt.set()
 				self._pending_play = None
 
@@ -392,8 +423,14 @@ class _BassSubprocessEngine:
 		seekable=True asks the host to open the URL without BASS_STREAM_BLOCK
 		so seek_relative() actually works (podcasts); live radio should
 		leave this False.
+
+		On failure, the reason bass_host.py gave (e.g. "StreamCreateURL
+		failed (err=41)") is left on self.last_play_error for the caller
+		to read - see its declaration in __init__() for why this exists.
 		"""
+		self.last_play_error = None
 		if not self.ready():
+			self.last_play_error = "BASS not loaded"
 			return False
 
 		# Cancel any ongoing play request
@@ -405,7 +442,7 @@ class _BassSubprocessEngine:
 			seq = self._play_seq
 			self._current_play_seq = seq
 			evt = threading.Event()
-			self._pending_play = (seq, evt, [None])   # [result_slot]
+			self._pending_play = (seq, evt, [None, None])   # [ok, error]
 			result_slot = self._pending_play[2]
 
 		self._send({"cmd": "play", "url": url, "volume": volume_0_1, "seq": seq, "seekable": seekable})
@@ -431,9 +468,12 @@ class _BassSubprocessEngine:
 			# The host may still be in BASS_StreamCreateURL.
 			# If we do not send stop, it will start sound when completed.
 			self._send({"cmd": "stop"})
+			self.last_play_error = "timed out waiting for a response from the BASS host"
 			return False
 
 		success = result_slot[0]
+		if not success:
+			self.last_play_error = result_slot[1] or "unknown error"
 		return bool(success)
 
 	def stop(self):
@@ -667,6 +707,7 @@ class _BassSubprocessEngine:
 					# Only accept response if it matches the current active play
 					if pending and pending[0] == seq and current_seq == seq:
 						pending[2][0] = msg.get("ok", False)
+						pending[2][1] = msg.get("error")
 						pending[1].set()
 					continue
 
@@ -751,6 +792,29 @@ class RadioPlayer:
 		# May run on a background thread (called from _on_bass_stall); the
 		# handler is responsible for marshalling onto the UI thread.
 		self.on_podcast_finished = None
+		# Callback: called with (station, url, reason) when a live-radio
+		# launch's BASS connection attempt fails outright (BASS_StreamCreateURL/
+		# ChannelPlay never succeeded for this URL through any resolve
+		# step) - see _bg_launch()'s post-_launch() backend check below.
+		# reason is whatever string bass_host.py sent back with its
+		# {"ok": false, "error": ...} reply for the "play" command (e.g.
+		# "StreamCreateURL failed (err=41)"), forwarded via
+		# _BassSubprocessEngine.last_play_error - or "unknown reason" if
+		# that wasn't available for some reason.
+		#
+		# Without this, a failed _launch_bass() used to be swallowed
+		# silently: _is_playing was already set True back in play()
+		# (optimistically, before the connection was confirmed) and
+		# nothing ever set it back to False or told the user anything -
+		# _launch() doesn't raise on a failed connection, it just quietly
+		# returns without setting self._backend to BACKEND_BASS. The UI
+		# kept showing the station as "playing" indefinitely with no
+		# audio and no error, and time-shift/rewind would only ever
+		# report the generic "not available for the current playback
+		# backend" message, with no indication *why* BASS never actually
+		# started. May run on a background thread - the handler is
+		# responsible for marshalling onto the UI thread.
+		self.on_play_failed = None
 
 		# Crossfade
 		self._crossfade_duration = 0.0   # seconds; 0.0 = disabled
@@ -841,7 +905,7 @@ class RadioPlayer:
 			return
 
 		station = self._current_station
-		is_podcast = bool(station and "podcast" in station.get("tags", ""))
+		is_podcast = _is_seekable_media(station)
 
 		# If it's a podcast, reaching stall means the episode has ended.
 		# Mark as listened and stop player instead of reconnecting/restarting.
@@ -1035,7 +1099,7 @@ class RadioPlayer:
 		if self._bass_engine:
 			self._bass_engine.stop()
 		station = self._current_station
-		is_podcast = bool(station and "podcast" in station.get("tags", ""))
+		is_podcast = _is_seekable_media(station)
 		saved_pos = 0.0
 		if is_podcast:
 			saved_pos = self.get_podcast_position(station.get("url") or url)
@@ -1380,7 +1444,7 @@ class RadioPlayer:
 				# too instead of the station-tuning tuner.mp3, so Enter and
 				# pause/resume sound consistent. See _play_casette_clip()
 				# and the matching resume-wait logic in _launch_bass().
-				target_is_podcast = bool(station and "podcast" in (station or {}).get("tags", ""))
+				target_is_podcast = _is_seekable_media(station)
 				transition_clip_fn = self._play_casette_clip if target_is_podcast else self._play_tuner_clip
 
 				tuner_engine = self._bass_engine
@@ -1506,7 +1570,7 @@ class RadioPlayer:
 			mirror_dev = getattr(self, "_mirror_device_index", None)
 			if mirror is not None and mirror_dev is not None:
 				station = self._current_station
-				is_podcast = bool(station and "podcast" in station.get("tags", ""))
+				is_podcast = _is_seekable_media(station)
 				saved_pos = 0.0
 				if is_podcast:
 					saved_pos = self.get_podcast_position(station.get("url") or stream_url)
@@ -1566,6 +1630,36 @@ class RadioPlayer:
 						pass
 				if tuner:
 					self._abort_tuning_transition()
+				return
+
+			# _launch() doesn't raise on a failed BASS connection - it just
+			# returns quietly without ever setting self._backend to
+			# BACKEND_BASS (see _launch()/_launch_bass()). Left unchecked,
+			# self._is_playing (already set True back in play(), before
+			# this background launch even started - see play()) would stay
+			# True forever with nothing actually playing: no audio, no
+			# error, and time-shift/rewind only ever reporting the generic
+			# "not available for the current playback backend" message
+			# with no indication why BASS never started in the first
+			# place. Treat this exactly like the exception branch above.
+			if self._backend != self.BACKEND_BASS:
+				reason = getattr(self._bass_engine, "last_play_error", None) or "unknown reason"
+				log.warning("FreeRadio: BASS connection failed for %s, giving up (%s)", stream_url, reason)
+				self._is_playing = False
+				if xfade:
+					try:
+						xfade.stop()
+						xfade.unload()
+					except Exception:
+						pass
+				if tuner:
+					self._abort_tuning_transition()
+				cb = self.on_play_failed
+				if cb:
+					try:
+						cb(self._current_station, stream_url, reason)
+					except Exception:
+						pass
 				return
 
 			# New stream is confirmed playing — for the tuning effect this is
@@ -1631,7 +1725,7 @@ class RadioPlayer:
 					# out without touching the buffer so we can't clobber
 					# the newer, correct capture session.
 					if self._play_gen == gen:
-						is_podcast = "podcast" in self._current_station.get("tags", "")
+						is_podcast = _is_seekable_media(self._current_station)
 						if is_podcast:
 							# Podcasts and GETEM audio books are on-demand,
 							# already-seekable files (via seek_relative()/
@@ -1727,7 +1821,7 @@ class RadioPlayer:
 				mirror.pause()
 			except Exception:
 				pass
-		if station and "podcast" in station.get("tags", ""):
+		if _is_seekable_media(station):
 			cb = self.on_podcast_progress_saved
 			if cb:
 				try:
@@ -1758,7 +1852,7 @@ class RadioPlayer:
 			# saved in podcast_positions.json (updated right before pause),
 			# so it is the one path proven to land at the right spot.
 			station = self._current_station
-			is_podcast = bool(station and "podcast" in station.get("tags", ""))
+			is_podcast = _is_seekable_media(station)
 
 			if (
 				not is_podcast
@@ -1824,7 +1918,7 @@ class RadioPlayer:
 			mirror = getattr(self, "_mirror_engine", None)
 			if mirror and mirror.ready():
 				station = self._current_station
-				podcast = bool(station and "podcast" in station.get("tags", ""))
+				podcast = _is_seekable_media(station)
 				pos = self.get_podcast_position(station.get("url") or stream_url) if podcast else 0.0
 				rate = self._playback_rate
 
@@ -2054,7 +2148,7 @@ class RadioPlayer:
 			ok, pos, length = self._bass_engine.timeshift_seek(seconds)
 			if ok:
 				station = self._current_station
-				if station and "podcast" in station.get("tags", ""):
+				if _is_seekable_media(station):
 					self._save_podcast_position_now(station, pos, length)
 				self._sync_mirror_timeshift_seek(seconds)
 			return ok, pos
@@ -2149,7 +2243,7 @@ class RadioPlayer:
 		Called before switching stations, on pause/stop, and on
 		termination, so the resume point is never far behind."""
 		station = self._current_station
-		if not station or "podcast" not in station.get("tags", ""):
+		if not _is_seekable_media(station):
 			return
 		if self._backend != self.BACKEND_BASS or not self._bass_engine:
 			return
@@ -2301,7 +2395,7 @@ class RadioPlayer:
 			# them in the first place (see _bg_launch above) - they're
 			# already seekable files, so there's nothing here to widen the
 			# retention window on.
-			and "podcast" not in self._current_station.get("tags", "")
+			and not _is_seekable_media(self._current_station)
 		):
 			self._timeshift_buffer.CAPACITY_SECONDS = self._timeshift_capacity_seconds
 			stream_url = self._current_url_resolved or self._current_url
@@ -2651,7 +2745,7 @@ class RadioPlayer:
 			return False
 		vol = self._volume / 100.0
 		station = self._current_station
-		is_podcast = bool(station and "podcast" in station.get("tags", ""))
+		is_podcast = _is_seekable_media(station)
 		timeshifted = self._timeshift_active
 
 		current_pos = 0.0

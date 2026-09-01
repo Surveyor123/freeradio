@@ -24,6 +24,7 @@ _ = _tr
 del _tr
 
 from . import _notify, _format_duration
+from .radioPlayer import _is_seekable_media
 
 log = logging.getLogger(__name__)
 
@@ -189,7 +190,7 @@ class TimeshiftMixin:
 		# Podcast/sesli kitap oynatılıyorsa dosya içinde geri sar - bkz.
 		# _handle_podcast_seek()'in tap/hold ayrımı.
 		station = self._player.get_current_station()
-		if station and "podcast" in station.get("tags", ""):
+		if _is_seekable_media(station):
 			self._handle_podcast_seek(-1)
 			return
 
@@ -224,7 +225,7 @@ class TimeshiftMixin:
 		# Podcast/sesli kitap oynatılıyorsa dosya içinde ileri sar - bkz.
 		# _handle_podcast_seek()'in tap/hold ayrımı.
 		station = self._player.get_current_station()
-		if station and "podcast" in station.get("tags", ""):
+		if _is_seekable_media(station):
 			self._handle_podcast_seek(1)
 			return
 

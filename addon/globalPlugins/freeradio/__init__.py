@@ -450,6 +450,11 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		self._player.set_crossfade_duration(_cf_map.get(_saved_cf, 0.0))
 		# Notify and reset settings when audio device is lost
 		self._player.on_device_lost = self._on_audio_device_lost
+		# Notify when a station's BASS connection attempt fails outright,
+		# instead of silently leaving the UI showing "playing" with no
+		# audio and no explanation - see radioPlayer.py's on_play_failed
+		# docstring for the full "why this exists" rationale.
+		self._player.on_play_failed = self._on_play_failed
 		# Refresh the podcast episode list's row when a position is saved
 		# due to a pause or the episode finishing (not the periodic autosave).
 		self._player.on_podcast_progress_saved = self._on_podcast_progress_saved
@@ -735,15 +740,23 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		if not station:
 			ui.message(_("No station is playing"))
 			return
-		tags = station.get("tags", "")
-		# Checked ahead of the plain "podcast" branch below: GETEM chapters
-		# carry both tags (see getem.GetemBook.to_dict()), and a whole-book
-		# download - into its own folder, all parts - is what's wanted here
-		# rather than a single-episode-style download of just this part.
-		if "audiobook" in tags:
+		media_kind = station.get("media_kind")
+		# Checked ahead of the plain "podcast" branch below: GETEM/LibriVox
+		# chapters carry media_kind="audiobook" (see getem.GetemBook.to_dict()/
+		# librivox.LibriVoxBook.to_dict()), and a whole-book download - into
+		# its own folder, all parts - is what's wanted here rather than a
+		# single-episode-style download of just this part.
+		#
+		# Deliberately keyed off "media_kind" rather than the free-text
+		# "tags" field: a real Radio Browser station can legitimately carry
+		# "podcast" or "audiobook" as a community-assigned genre tag on an
+		# ordinary live stream, and matching against "tags" used to make
+		# this try to download a nonexistent podcast episode/GETEM book
+		# for such a station instead of just adding it to favourites.
+		if media_kind == "audiobook":
 			self._download_current_getem_book(station)
 			return
-		if "podcast" in tags:
+		if media_kind == "podcast":
 			self._download_current_podcast_episode(station)
 			return
 		if self._manager.is_favorite(station):
@@ -829,6 +842,23 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 				self._advance_getem_chapter_headless(station)
 			except Exception:
 				pass
+
+	def _on_play_failed(self, station, url, reason):
+		"""Called (possibly from a background thread - the launch thread
+		in radioPlayer.RadioPlayer._bg_launch) when a station's BASS
+		connection attempt fails outright - see
+		radioPlayer.RadioPlayer.on_play_failed's docstring. Marshals onto
+		the UI thread and lets the person know playback never actually
+		started, instead of the previous silence (station shown as
+		"playing" with no audio and no explanation, rewind just reporting
+		the generic "not available for the current playback backend")."""
+		wx.CallAfter(self._on_play_failed_ui, station, url, reason)
+
+	def _on_play_failed_ui(self, station, url, reason):
+		name = (station or {}).get("name", "").strip() or url
+		ui.message(_("Could not play %(name)s: %(reason)s") % {
+			"name": name, "reason": reason,
+		})
 
 
 	def _open_dialog(self, focus=None):

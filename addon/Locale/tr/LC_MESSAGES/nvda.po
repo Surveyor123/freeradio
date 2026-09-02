@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FreeRadio 2026.20.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-09-01 13:55+0300\n"
-"PO-Revision-Date: 2026-09-01 13:56+0300\n"
+"POT-Creation-Date: 2026-09-02 15:10+0300\n"
+"PO-Revision-Date: 2026-09-02 15:21+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -168,7 +168,6 @@ msgstr "Bu sesli kitap indirilemedi."
 
 #: addon/globalPlugins/freeradio/__init__.py:859
 #, python-format
-#| msgid "Could not play station: %s"
 msgid "Could not play %(name)s: %(reason)s"
 msgstr "%(name)s çalınamadı: %(reason)s"
 
@@ -244,8 +243,8 @@ msgid "Downloading FreeRadio %s…"
 msgstr "FreeRadio %s indiriliyor…"
 
 #: addon/globalPlugins/freeradio/__init__.py:1137
-#: addon/globalPlugins/freeradio/radioDialog.py:4795
-#: addon/globalPlugins/freeradio/radioDialog.py:6114
+#: addon/globalPlugins/freeradio/radioDialog.py:4796
+#: addon/globalPlugins/freeradio/radioDialog.py:6115
 #: addon/globalPlugins/freeradio/recordingMixin.py:62
 #, python-format
 msgid "Download failed: %s"
@@ -284,7 +283,7 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:67
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:151
-#: addon/globalPlugins/freeradio/radioDialog.py:1141
+#: addon/globalPlugins/freeradio/radioDialog.py:1142
 #: addon/globalPlugins/freeradio/settingsPanel.py:522
 msgid "System default"
 msgstr "Sistem varsayılanı"
@@ -343,10 +342,10 @@ msgstr "FreeRadio sesini 5 artır"
 
 #: addon/globalPlugins/freeradio/audioFxMixin.py:40
 #: addon/globalPlugins/freeradio/audioFxMixin.py:52
-#: addon/globalPlugins/freeradio/radioDialog.py:3148
-#: addon/globalPlugins/freeradio/radioDialog.py:3161
-#: addon/globalPlugins/freeradio/radioDialog.py:3312
-#: addon/globalPlugins/freeradio/radioDialog.py:3319
+#: addon/globalPlugins/freeradio/radioDialog.py:3149
+#: addon/globalPlugins/freeradio/radioDialog.py:3162
+#: addon/globalPlugins/freeradio/radioDialog.py:3313
+#: addon/globalPlugins/freeradio/radioDialog.py:3320
 #, python-format
 msgid "Volume %d"
 msgstr "Ses %d"
@@ -393,7 +392,7 @@ msgid "Toggle bass boost"
 msgstr "Bas güçlendirmeyi aç/kapatToggle bass boos"
 
 #: addon/globalPlugins/freeradio/audioFxMixin.py:125
-#: addon/globalPlugins/freeradio/radioDialog.py:426
+#: addon/globalPlugins/freeradio/radioDialog.py:427
 #: addon/globalPlugins/freeradio/settingsPanel.py:142
 msgid "EQ: Bass Boost"
 msgstr "EQ: Bas Güçlendirme"
@@ -403,7 +402,7 @@ msgid "Toggle treble boost"
 msgstr "Tiz güçlendirmeyi aç/kapa"
 
 #: addon/globalPlugins/freeradio/audioFxMixin.py:133
-#: addon/globalPlugins/freeradio/radioDialog.py:426
+#: addon/globalPlugins/freeradio/radioDialog.py:427
 #: addon/globalPlugins/freeradio/settingsPanel.py:143
 msgid "EQ: Treble Boost"
 msgstr "EQ: Tiz Güçlendirme"
@@ -413,7 +412,7 @@ msgid "Toggle vocal boost"
 msgstr "Vokal güçlendirmeyi aç/kapa"
 
 #: addon/globalPlugins/freeradio/audioFxMixin.py:141
-#: addon/globalPlugins/freeradio/radioDialog.py:426
+#: addon/globalPlugins/freeradio/radioDialog.py:427
 #: addon/globalPlugins/freeradio/settingsPanel.py:144
 msgid "EQ: Vocal Boost"
 msgstr "EQ: Vokal Güçlendirme"
@@ -421,9 +420,9 @@ msgstr "EQ: Vokal Güçlendirme"
 #: addon/globalPlugins/freeradio/audioFxMixin.py:203
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:64
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:104
-#: addon/globalPlugins/freeradio/radioDialog.py:1225
-#: addon/globalPlugins/freeradio/radioDialog.py:1236
-#: addon/globalPlugins/freeradio/radioDialog.py:1260
+#: addon/globalPlugins/freeradio/radioDialog.py:1226
+#: addon/globalPlugins/freeradio/radioDialog.py:1237
+#: addon/globalPlugins/freeradio/radioDialog.py:1261
 #: addon/globalPlugins/freeradio/settingsPanel.py:568
 #: addon/globalPlugins/freeradio/settingsPanel.py:579
 #, python-format
@@ -433,9 +432,9 @@ msgstr "%(effect)s %(state)s"
 #: addon/globalPlugins/freeradio/audioFxMixin.py:205
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:66
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:106
-#: addon/globalPlugins/freeradio/radioDialog.py:1227
-#: addon/globalPlugins/freeradio/radioDialog.py:1238
-#: addon/globalPlugins/freeradio/radioDialog.py:1262
+#: addon/globalPlugins/freeradio/radioDialog.py:1228
+#: addon/globalPlugins/freeradio/radioDialog.py:1239
+#: addon/globalPlugins/freeradio/radioDialog.py:1263
 #: addon/globalPlugins/freeradio/settingsPanel.py:570
 #: addon/globalPlugins/freeradio/settingsPanel.py:581
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:275
@@ -445,9 +444,9 @@ msgstr "açık"
 #: addon/globalPlugins/freeradio/audioFxMixin.py:205
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:66
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:106
-#: addon/globalPlugins/freeradio/radioDialog.py:1227
-#: addon/globalPlugins/freeradio/radioDialog.py:1238
-#: addon/globalPlugins/freeradio/radioDialog.py:1262
+#: addon/globalPlugins/freeradio/radioDialog.py:1228
+#: addon/globalPlugins/freeradio/radioDialog.py:1239
+#: addon/globalPlugins/freeradio/radioDialog.py:1263
 #: addon/globalPlugins/freeradio/settingsPanel.py:570
 #: addon/globalPlugins/freeradio/settingsPanel.py:581
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:275
@@ -483,13 +482,13 @@ msgstr "İstasyon ayarlama sesi efekti"
 #: addon/globalPlugins/freeradio/getem.py:983
 #: addon/globalPlugins/freeradio/librivox.py:151
 #: addon/globalPlugins/freeradio/librivox.py:246
-#: addon/globalPlugins/freeradio/radioDialog.py:2914
+#: addon/globalPlugins/freeradio/radioDialog.py:2915
 #: addon/globalPlugins/freeradio/utils.py:335
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #: addon/globalPlugins/freeradio/getem.py:549
-#: addon/globalPlugins/freeradio/radioDialog.py:5217
+#: addon/globalPlugins/freeradio/radioDialog.py:5218
 #: addon/globalPlugins/freeradio/settingsPanel.py:405
 msgid "GETEM"
 msgstr "GETEM"
@@ -514,8 +513,8 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/getem.py:712
 #: addon/globalPlugins/freeradio/librivox.py:187
-#: addon/globalPlugins/freeradio/radioDialog.py:4833
-#: addon/globalPlugins/freeradio/radioDialog.py:5432
+#: addon/globalPlugins/freeradio/radioDialog.py:4834
+#: addon/globalPlugins/freeradio/radioDialog.py:5433
 msgid "Please enter a search term."
 msgstr "Lütfen bir arama terimi girin."
 
@@ -564,7 +563,7 @@ msgid "Untitled"
 msgstr "İsimsiz"
 
 #: addon/globalPlugins/freeradio/librivox.py:327
-#: addon/globalPlugins/freeradio/radioDialog.py:5217
+#: addon/globalPlugins/freeradio/radioDialog.py:5218
 #: addon/globalPlugins/freeradio/settingsPanel.py:405
 msgid "LibriVox"
 msgstr "LibriVox"
@@ -658,15 +657,15 @@ msgid "Pause or resume FreeRadio playback"
 msgstr "FreeRadio oynatmayı duraklat veya devam ettir"
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:119
-#: addon/globalPlugins/freeradio/radioDialog.py:2742
-#: addon/globalPlugins/freeradio/radioDialog.py:3180
-#: addon/globalPlugins/freeradio/radioDialog.py:3574
-#: addon/globalPlugins/freeradio/radioDialog.py:3628
+#: addon/globalPlugins/freeradio/radioDialog.py:2743
+#: addon/globalPlugins/freeradio/radioDialog.py:3181
+#: addon/globalPlugins/freeradio/radioDialog.py:3575
+#: addon/globalPlugins/freeradio/radioDialog.py:3629
 msgid "Radio paused"
 msgstr "Duraklatıldı"
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:122
-#: addon/globalPlugins/freeradio/radioDialog.py:3184
+#: addon/globalPlugins/freeradio/radioDialog.py:3185
 msgid "Playing"
 msgstr "Çalıyor"
 
@@ -776,232 +775,232 @@ msgstr "Yeni bölüm yok (304)."
 msgid "Unrecognized feed format (not RSS or Atom)."
 msgstr "Tanınmayan akış biçimi (RSS veya Atom değil)."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:72
+#: addon/globalPlugins/freeradio/radioDialog.py:73
 msgid "Save recording to:"
 msgstr "sesi şuraya kaydet:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:76
+#: addon/globalPlugins/freeradio/radioDialog.py:77
 msgid "&Default recordings folder"
 msgstr "&Varsayılan kayıtlar klasörü"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:78
+#: addon/globalPlugins/freeradio/radioDialog.py:79
 msgid "&Selected folder:"
 msgstr "&Seçilen klasör:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:84
+#: addon/globalPlugins/freeradio/radioDialog.py:85
 msgid "Selected folder:"
 msgstr "Seçilen klasör:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:85
+#: addon/globalPlugins/freeradio/radioDialog.py:86
 msgid "Bro&wse..."
 msgstr "Gö&zat..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:104
+#: addon/globalPlugins/freeradio/radioDialog.py:105
 #: addon/globalPlugins/freeradio/settingsPanel.py:653
 msgid "Select recordings folder"
 msgstr "Kayıtların tutulacağı klasörü seç"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:159
+#: addon/globalPlugins/freeradio/radioDialog.py:160
 msgid "URL is empty."
 msgstr "URL boş."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:199
+#: addon/globalPlugins/freeradio/radioDialog.py:200
 #, python-format
 msgid "Response received but content type is not audio: %s"
 msgstr "Yanıt alındı ama içerik türü ses değil: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:202
+#: addon/globalPlugins/freeradio/radioDialog.py:203
 #, python-format
 msgid "HTTP error %d: %s"
 msgstr "HTTP hatası %d: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:204
+#: addon/globalPlugins/freeradio/radioDialog.py:205
 #, python-format
 msgid "Connection failed: %s"
 msgstr "Bağlantı başarısız: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:206
+#: addon/globalPlugins/freeradio/radioDialog.py:207
 #, python-format
 msgid "Network error: %s"
 msgstr "Ağ hatası: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:249
+#: addon/globalPlugins/freeradio/radioDialog.py:250
 #, python-format
 msgid "Source: %s"
 msgstr "Kaynak: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:251
+#: addon/globalPlugins/freeradio/radioDialog.py:252
 #, python-format
 msgid "Author: %s"
 msgstr "Yazar: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:253
+#: addon/globalPlugins/freeradio/radioDialog.py:254
 #, python-format
 msgid "Narrator: %s"
 msgstr "Seslendiren: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:255
+#: addon/globalPlugins/freeradio/radioDialog.py:256
 #, python-format
 msgid "Publisher: %s"
 msgstr "Yayıncı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:257
+#: addon/globalPlugins/freeradio/radioDialog.py:258
 #, python-format
 msgid "Type: %s"
 msgstr "Tür: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:259
+#: addon/globalPlugins/freeradio/radioDialog.py:260
 #, python-format
 msgid "%d part"
 msgid_plural "%d parts"
 msgstr[0] "%d bölüm"
 msgstr[1] "%d bölüm"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:284
-#: addon/globalPlugins/freeradio/radioDialog.py:4488
+#: addon/globalPlugins/freeradio/radioDialog.py:285
+#: addon/globalPlugins/freeradio/radioDialog.py:4489
 #, python-format
 msgid "By: %s"
 msgstr "Yayınlayan: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:286
+#: addon/globalPlugins/freeradio/radioDialog.py:287
 #, python-format
 msgid "Published: %s"
 msgstr "Yayın tarihi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:288
+#: addon/globalPlugins/freeradio/radioDialog.py:289
 #, python-format
 msgid "Duration: %s"
 msgstr "Süre: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:326
+#: addon/globalPlugins/freeradio/radioDialog.py:327
 msgid "FreeRadio - Station Browser"
 msgstr "FreeRadio - İstasyon Tarayıcısı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:379
+#: addon/globalPlugins/freeradio/radioDialog.py:380
 msgid "All Stations"
 msgstr "Tüm İstasyonlar"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:380
-#: addon/globalPlugins/freeradio/radioDialog.py:644
+#: addon/globalPlugins/freeradio/radioDialog.py:381
+#: addon/globalPlugins/freeradio/radioDialog.py:645
 msgid "Favourites"
 msgstr "Favoriler"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:381
+#: addon/globalPlugins/freeradio/radioDialog.py:382
 msgid "Recording"
 msgstr "Kayıt"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:382
+#: addon/globalPlugins/freeradio/radioDialog.py:383
 msgid "Timer"
 msgstr "Zamanlayıcı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:383
-#: addon/globalPlugins/freeradio/radioDialog.py:3903
+#: addon/globalPlugins/freeradio/radioDialog.py:384
+#: addon/globalPlugins/freeradio/radioDialog.py:3904
 msgid "Liked Songs"
 msgstr "Beğenilen Şarkılar"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:384
+#: addon/globalPlugins/freeradio/radioDialog.py:385
 msgid "Podcasts"
 msgstr "Podcast'ler"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:385
+#: addon/globalPlugins/freeradio/radioDialog.py:386
 msgid "Audio Books"
 msgstr "Sesli Kitaplar"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:391
-#: addon/globalPlugins/freeradio/radioDialog.py:394
+#: addon/globalPlugins/freeradio/radioDialog.py:392
+#: addon/globalPlugins/freeradio/radioDialog.py:395
 msgid "Output device:"
 msgstr "Çıkış cihazı:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:393
-#: addon/globalPlugins/freeradio/radioDialog.py:5466
+#: addon/globalPlugins/freeradio/radioDialog.py:394
+#: addon/globalPlugins/freeradio/radioDialog.py:5467
 msgid "Loading..."
 msgstr "Yükleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:407
-#: addon/globalPlugins/freeradio/radioDialog.py:412
+#: addon/globalPlugins/freeradio/radioDialog.py:408
+#: addon/globalPlugins/freeradio/radioDialog.py:413
 msgid "Volume:"
 msgstr "Ses seviyesi:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:417
-#: addon/globalPlugins/freeradio/radioDialog.py:429
+#: addon/globalPlugins/freeradio/radioDialog.py:418
+#: addon/globalPlugins/freeradio/radioDialog.py:430
 msgid "Effects:"
 msgstr "Efektler:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:424
+#: addon/globalPlugins/freeradio/radioDialog.py:425
 #: addon/globalPlugins/freeradio/settingsPanel.py:135
 msgid "Chorus"
 msgstr "Koro"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:424
+#: addon/globalPlugins/freeradio/radioDialog.py:425
 #: addon/globalPlugins/freeradio/settingsPanel.py:136
 msgid "Compressor"
 msgstr "Kompresör"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:424
+#: addon/globalPlugins/freeradio/radioDialog.py:425
 #: addon/globalPlugins/freeradio/settingsPanel.py:137
 msgid "Distortion"
 msgstr "Distorsiyon"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:425
+#: addon/globalPlugins/freeradio/radioDialog.py:426
 #: addon/globalPlugins/freeradio/settingsPanel.py:138
 msgid "Echo"
 msgstr "Eko"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:425
+#: addon/globalPlugins/freeradio/radioDialog.py:426
 #: addon/globalPlugins/freeradio/settingsPanel.py:139
 msgid "Flanger"
 msgstr "Flanger"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:425
+#: addon/globalPlugins/freeradio/radioDialog.py:426
 #: addon/globalPlugins/freeradio/settingsPanel.py:140
 msgid "Gargle"
 msgstr "Gargara"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:425
+#: addon/globalPlugins/freeradio/radioDialog.py:426
 #: addon/globalPlugins/freeradio/settingsPanel.py:141
 msgid "Reverb"
 msgstr "Yankı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:441
+#: addon/globalPlugins/freeradio/radioDialog.py:442
 msgid "Bass gain (dB):"
 msgstr "Bas kazancı (dB):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:442
+#: addon/globalPlugins/freeradio/radioDialog.py:443
 msgid "Treble gain (dB):"
 msgstr "Tiz kazancı (dB):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:443
+#: addon/globalPlugins/freeradio/radioDialog.py:444
 msgid "Vocal gain (dB):"
 msgstr "Vokal kazancı (dB):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:463
+#: addon/globalPlugins/freeradio/radioDialog.py:464
 msgid "&Play/Pause"
 msgstr "&Çal/Duraklat"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:464
-#: addon/globalPlugins/freeradio/radioDialog.py:3017
+#: addon/globalPlugins/freeradio/radioDialog.py:465
+#: addon/globalPlugins/freeradio/radioDialog.py:3018
 msgid "&Delete Station"
 msgstr "Favorilerden &Sil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:466
-#: addon/globalPlugins/freeradio/radioDialog.py:3013
+#: addon/globalPlugins/freeradio/radioDialog.py:467
+#: addon/globalPlugins/freeradio/radioDialog.py:3014
 msgid "Add to Fa&vorites"
 msgstr "Fa&vorilere Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:467
-#: addon/globalPlugins/freeradio/radioDialog.py:3007
+#: addon/globalPlugins/freeradio/radioDialog.py:468
+#: addon/globalPlugins/freeradio/radioDialog.py:3008
 msgid "Station Detai&ls"
 msgstr "İstasyon Ayrıntı&ları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:469
+#: addon/globalPlugins/freeradio/radioDialog.py:470
 msgid "Add C&ustom Station..."
 msgstr "&Özel İstasyon Ekle..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:472
+#: addon/globalPlugins/freeradio/radioDialog.py:473
 msgid "&Update Station List"
 msgstr "İstasyon Listesini G&üncelle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:474
+#: addon/globalPlugins/freeradio/radioDialog.py:475
 msgid ""
 "Re-downloads the full station list from the server, so search and browsing "
 "use the latest data."
@@ -1009,241 +1008,241 @@ msgstr ""
 "Tüm istasyon listesini sunucudan yeniden indirir, böylece arama ve tarama en "
 "son verileri kullanır."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:476
-#: addon/globalPlugins/freeradio/radioDialog.py:6142
+#: addon/globalPlugins/freeradio/radioDialog.py:477
+#: addon/globalPlugins/freeradio/radioDialog.py:6143
 msgid "&Close"
 msgstr "&Kapat"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:636
-#: addon/globalPlugins/freeradio/radioDialog.py:779
-#: addon/globalPlugins/freeradio/radioDialog.py:935
-#: addon/globalPlugins/freeradio/radioDialog.py:3895
-#: addon/globalPlugins/freeradio/radioDialog.py:4271
+#: addon/globalPlugins/freeradio/radioDialog.py:637
+#: addon/globalPlugins/freeradio/radioDialog.py:780
+#: addon/globalPlugins/freeradio/radioDialog.py:936
+#: addon/globalPlugins/freeradio/radioDialog.py:3896
+#: addon/globalPlugins/freeradio/radioDialog.py:4272
 msgid "Filter:"
 msgstr "Filtrele:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:640
+#: addon/globalPlugins/freeradio/radioDialog.py:641
 msgid "Filter favourites"
 msgstr "Favorileri filtrele"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:648
-#: addon/globalPlugins/freeradio/radioDialog.py:3028
+#: addon/globalPlugins/freeradio/radioDialog.py:649
+#: addon/globalPlugins/freeradio/radioDialog.py:3029
 msgid "Save Audio Pr&ofile for This Station"
 msgstr "Ses Pr&ofilini bu İstasyon için Kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:652
-#: addon/globalPlugins/freeradio/radioDialog.py:3032
-#: addon/globalPlugins/freeradio/radioDialog.py:5109
-#: addon/globalPlugins/freeradio/radioDialog.py:5153
-#: addon/globalPlugins/freeradio/radioDialog.py:5944
+#: addon/globalPlugins/freeradio/radioDialog.py:653
+#: addon/globalPlugins/freeradio/radioDialog.py:3033
+#: addon/globalPlugins/freeradio/radioDialog.py:5110
+#: addon/globalPlugins/freeradio/radioDialog.py:5154
+#: addon/globalPlugins/freeradio/radioDialog.py:5945
 msgid "Clear Audio Prof&ile"
 msgstr "Ses Prof&ilini sil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:656
-#: addon/globalPlugins/freeradio/radioDialog.py:3021
+#: addon/globalPlugins/freeradio/radioDialog.py:657
+#: addon/globalPlugins/freeradio/radioDialog.py:3022
 msgid "Re&name Station"
 msgstr "İstasyonu Ye&niden Adlandır"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:664
+#: addon/globalPlugins/freeradio/radioDialog.py:665
 msgid "E&xport Favourites..."
 msgstr "Favorileri dı&şa aktar..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:666
+#: addon/globalPlugins/freeradio/radioDialog.py:667
 msgid "&Import Favourites..."
 msgstr "Favorileri &içe aktar..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:693
-#: addon/globalPlugins/freeradio/radioDialog.py:700
+#: addon/globalPlugins/freeradio/radioDialog.py:694
+#: addon/globalPlugins/freeradio/radioDialog.py:701
 msgid "Sort:"
 msgstr "Sırala:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:698
+#: addon/globalPlugins/freeradio/radioDialog.py:699
 msgid "Alphabetical"
 msgstr "Alfabetik"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:698
+#: addon/globalPlugins/freeradio/radioDialog.py:699
 msgid "By Rating"
 msgstr "Puana göre (azalan)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:705
+#: addon/globalPlugins/freeradio/radioDialog.py:706
 msgid "Country:"
 msgstr "Ülke:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:708
-#: addon/globalPlugins/freeradio/radioDialog.py:1786
-#: addon/globalPlugins/freeradio/radioDialog.py:1819
-#: addon/globalPlugins/freeradio/radioDialog.py:1821
+#: addon/globalPlugins/freeradio/radioDialog.py:709
+#: addon/globalPlugins/freeradio/radioDialog.py:1787
+#: addon/globalPlugins/freeradio/radioDialog.py:1820
+#: addon/globalPlugins/freeradio/radioDialog.py:1822
 msgid "All"
 msgstr "Tümü"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:716
+#: addon/globalPlugins/freeradio/radioDialog.py:717
 msgid "Result limit per country:"
 msgstr "Ülke başına sonuç sınırı:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:723
+#: addon/globalPlugins/freeradio/radioDialog.py:724
 msgid "Result limit:"
 msgstr "Sonuç sınırı:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:728
-#: addon/globalPlugins/freeradio/radioDialog.py:4209
-#: addon/globalPlugins/freeradio/radioDialog.py:5250
+#: addon/globalPlugins/freeradio/radioDialog.py:729
+#: addon/globalPlugins/freeradio/radioDialog.py:4210
+#: addon/globalPlugins/freeradio/radioDialog.py:5251
 msgid "Search:"
 msgstr "Ara:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:735
+#: addon/globalPlugins/freeradio/radioDialog.py:736
 msgid "Type to search · results update automatically"
 msgstr "Aramak için yazın · sonuçlar otomatik olarak güncellenir"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:740
+#: addon/globalPlugins/freeradio/radioDialog.py:741
 msgid "Loading stations..."
 msgstr "İstasyonlar yükleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:743
+#: addon/globalPlugins/freeradio/radioDialog.py:744
 msgid "Stations:"
 msgstr "İstasyonlar:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:770
+#: addon/globalPlugins/freeradio/radioDialog.py:771
 msgid "Scheduled Recording"
 msgstr "Planlı Kayıt"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:773
-#: addon/globalPlugins/freeradio/radioDialog.py:929
-#: addon/globalPlugins/freeradio/radioDialog.py:948
+#: addon/globalPlugins/freeradio/radioDialog.py:774
+#: addon/globalPlugins/freeradio/radioDialog.py:930
+#: addon/globalPlugins/freeradio/radioDialog.py:949
 msgid "Station:"
 msgstr "İstasyon:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:783
-#: addon/globalPlugins/freeradio/radioDialog.py:939
+#: addon/globalPlugins/freeradio/radioDialog.py:784
+#: addon/globalPlugins/freeradio/radioDialog.py:940
 msgid "Filter stations"
 msgstr "İstasyonları filtrele"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:793
-#: addon/globalPlugins/freeradio/radioDialog.py:921
-#: addon/globalPlugins/freeradio/radioDialog.py:925
-#: addon/globalPlugins/freeradio/radioDialog.py:3698
-#: addon/globalPlugins/freeradio/radioDialog.py:6260
-#: addon/globalPlugins/freeradio/radioDialog.py:6262
+#: addon/globalPlugins/freeradio/radioDialog.py:794
+#: addon/globalPlugins/freeradio/radioDialog.py:922
+#: addon/globalPlugins/freeradio/radioDialog.py:926
+#: addon/globalPlugins/freeradio/radioDialog.py:3699
+#: addon/globalPlugins/freeradio/radioDialog.py:6261
+#: addon/globalPlugins/freeradio/radioDialog.py:6263
 msgid "Start time (HH:MM):"
 msgstr "Başlangıç saati (SS:DD):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:800
-#: addon/globalPlugins/freeradio/radioDialog.py:6266
-#: addon/globalPlugins/freeradio/radioDialog.py:6268
+#: addon/globalPlugins/freeradio/radioDialog.py:801
+#: addon/globalPlugins/freeradio/radioDialog.py:6267
+#: addon/globalPlugins/freeradio/radioDialog.py:6269
 msgid "Duration (minutes):"
 msgstr "Süre (dakika):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:809
-#: addon/globalPlugins/freeradio/radioDialog.py:6272
+#: addon/globalPlugins/freeradio/radioDialog.py:810
+#: addon/globalPlugins/freeradio/radioDialog.py:6273
 msgid "Recurrence:"
 msgstr "Tekrarlama:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:814
-#: addon/globalPlugins/freeradio/radioDialog.py:6273
+#: addon/globalPlugins/freeradio/radioDialog.py:815
+#: addon/globalPlugins/freeradio/radioDialog.py:6274
 msgid "Record &once"
 msgstr "&Bir kez kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:822
-#: addon/globalPlugins/freeradio/radioDialog.py:6278
+#: addon/globalPlugins/freeradio/radioDialog.py:823
+#: addon/globalPlugins/freeradio/radioDialog.py:6279
 msgid "Repeat &weekly"
 msgstr "&Haftalık olarak tekrarla"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:833
-#: addon/globalPlugins/freeradio/radioDialog.py:843
-#: addon/globalPlugins/freeradio/radioDialog.py:6291
-#: addon/globalPlugins/freeradio/radioDialog.py:6294
+#: addon/globalPlugins/freeradio/radioDialog.py:834
+#: addon/globalPlugins/freeradio/radioDialog.py:844
+#: addon/globalPlugins/freeradio/radioDialog.py:6292
+#: addon/globalPlugins/freeradio/radioDialog.py:6295
 msgid "Active days:"
 msgstr "Aktif günler:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:837
-#: addon/globalPlugins/freeradio/radioDialog.py:1403
-#: addon/globalPlugins/freeradio/radioDialog.py:6288
+#: addon/globalPlugins/freeradio/radioDialog.py:838
+#: addon/globalPlugins/freeradio/radioDialog.py:1404
+#: addon/globalPlugins/freeradio/radioDialog.py:6289
 msgid "Monday"
 msgstr "Pazartesi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:837
-#: addon/globalPlugins/freeradio/radioDialog.py:1403
-#: addon/globalPlugins/freeradio/radioDialog.py:6288
+#: addon/globalPlugins/freeradio/radioDialog.py:838
+#: addon/globalPlugins/freeradio/radioDialog.py:1404
+#: addon/globalPlugins/freeradio/radioDialog.py:6289
 msgid "Tuesday"
 msgstr "Salı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:837
-#: addon/globalPlugins/freeradio/radioDialog.py:1403
-#: addon/globalPlugins/freeradio/radioDialog.py:6288
+#: addon/globalPlugins/freeradio/radioDialog.py:838
+#: addon/globalPlugins/freeradio/radioDialog.py:1404
+#: addon/globalPlugins/freeradio/radioDialog.py:6289
 msgid "Wednesday"
 msgstr "Çarşamba"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:837
-#: addon/globalPlugins/freeradio/radioDialog.py:1403
-#: addon/globalPlugins/freeradio/radioDialog.py:6288
+#: addon/globalPlugins/freeradio/radioDialog.py:838
+#: addon/globalPlugins/freeradio/radioDialog.py:1404
+#: addon/globalPlugins/freeradio/radioDialog.py:6289
 msgid "Thursday"
 msgstr "Perşembe"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:838
-#: addon/globalPlugins/freeradio/radioDialog.py:1404
-#: addon/globalPlugins/freeradio/radioDialog.py:6289
+#: addon/globalPlugins/freeradio/radioDialog.py:839
+#: addon/globalPlugins/freeradio/radioDialog.py:1405
+#: addon/globalPlugins/freeradio/radioDialog.py:6290
 msgid "Friday"
 msgstr "Cuma"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:838
-#: addon/globalPlugins/freeradio/radioDialog.py:1404
-#: addon/globalPlugins/freeradio/radioDialog.py:6289
+#: addon/globalPlugins/freeradio/radioDialog.py:839
+#: addon/globalPlugins/freeradio/radioDialog.py:1405
+#: addon/globalPlugins/freeradio/radioDialog.py:6290
 msgid "Saturday"
 msgstr "Cumartesi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:838
-#: addon/globalPlugins/freeradio/radioDialog.py:1404
-#: addon/globalPlugins/freeradio/radioDialog.py:6289
+#: addon/globalPlugins/freeradio/radioDialog.py:839
+#: addon/globalPlugins/freeradio/radioDialog.py:1405
+#: addon/globalPlugins/freeradio/radioDialog.py:6290
 msgid "Sunday"
 msgstr "Pazar"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:850
-#: addon/globalPlugins/freeradio/radioDialog.py:6302
+#: addon/globalPlugins/freeradio/radioDialog.py:851
+#: addon/globalPlugins/freeradio/radioDialog.py:6303
 msgid "Playback during recording:"
 msgstr "Kayıt sırasında oynatma:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:854
-#: addon/globalPlugins/freeradio/radioDialog.py:6303
+#: addon/globalPlugins/freeradio/radioDialog.py:855
+#: addon/globalPlugins/freeradio/radioDialog.py:6304
 msgid "Record while &listening (play and record simultaneously)"
 msgstr "Dinlerken &kaydet (aynı anda çal ve kaydet)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:859
-#: addon/globalPlugins/freeradio/radioDialog.py:6304
+#: addon/globalPlugins/freeradio/radioDialog.py:860
+#: addon/globalPlugins/freeradio/radioDialog.py:6305
 msgid "Record &only (no audio output)"
 msgstr "&Yalnızca kaydet (ses çıkışı yok)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:872
+#: addon/globalPlugins/freeradio/radioDialog.py:873
 msgid "&Add to Schedule"
 msgstr "Programa &Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:875
+#: addon/globalPlugins/freeradio/radioDialog.py:876
 msgid "Upcoming scheduled recordings:"
 msgstr "Yaklaşan planlı kayıtlar:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:905
+#: addon/globalPlugins/freeradio/radioDialog.py:906
 msgid "Timer action:"
 msgstr "Zamanlayıcı eylemi:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:909
+#: addon/globalPlugins/freeradio/radioDialog.py:910
 msgid "&Start radio at specified time (alarm)"
 msgstr "Belirtilen saatte radyoyu &başlat (alarm)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:914
+#: addon/globalPlugins/freeradio/radioDialog.py:915
 msgid "St&op radio at specified time (sleep)"
 msgstr "Belirtilen saatte radyoyu dur&dur (uyku)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:951
+#: addon/globalPlugins/freeradio/radioDialog.py:952
 msgid "&Add Timer"
 msgstr "Zamanlayıcı &Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:956
+#: addon/globalPlugins/freeradio/radioDialog.py:957
 msgid "Pending timers:"
 msgstr "Bekleyen zamanlayıcılar:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:961
+#: addon/globalPlugins/freeradio/radioDialog.py:962
 msgid "&Remove Selected Timer"
 msgstr "Seçili Zamanlayıcıyı Kald&ır"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1328
+#: addon/globalPlugins/freeradio/radioDialog.py:1329
 msgid ""
 "Press comma to pick a station, navigate to the target position, then press "
 "comma again to drop."
@@ -1251,237 +1250,237 @@ msgstr ""
 "Bir istasyon seçmek için virgül tuşuna basın, hedef konuma gidin ve bırakmak "
 "için tekrar virgüle basın."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1343
+#: addon/globalPlugins/freeradio/radioDialog.py:1344
 msgid "No favourites found"
 msgstr "Favori bulunamadı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1345
+#: addon/globalPlugins/freeradio/radioDialog.py:1346
 #, python-format
 msgid "%d favourite"
 msgid_plural "%d favourites"
 msgstr[0] "%d favori"
 msgstr[1] "%d favori"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1415
-#: addon/globalPlugins/freeradio/radioDialog.py:1548
-#: addon/globalPlugins/freeradio/radioDialog.py:1594
+#: addon/globalPlugins/freeradio/radioDialog.py:1416
+#: addon/globalPlugins/freeradio/radioDialog.py:1549
+#: addon/globalPlugins/freeradio/radioDialog.py:1595
 #: addon/globalPlugins/freeradio/recorder.py:1240
 msgid "Record only"
 msgstr "yalnızca kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1415
-#: addon/globalPlugins/freeradio/radioDialog.py:1548
-#: addon/globalPlugins/freeradio/radioDialog.py:1594
+#: addon/globalPlugins/freeradio/radioDialog.py:1416
+#: addon/globalPlugins/freeradio/radioDialog.py:1549
+#: addon/globalPlugins/freeradio/radioDialog.py:1595
 #: addon/globalPlugins/freeradio/recorder.py:1240
 msgid "Listen and record"
 msgstr "dinlerken kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1420
+#: addon/globalPlugins/freeradio/radioDialog.py:1421
 msgid "Every day"
 msgstr "Her gün"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1422
+#: addon/globalPlugins/freeradio/radioDialog.py:1423
 #, python-format
 msgid "Every %s"
 msgstr "Her %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1424
+#: addon/globalPlugins/freeradio/radioDialog.py:1425
 #, python-format
 msgid "%s — %s — %s, %d min, %s"
 msgstr "%s — %s — %s, %d dk, %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1452
-#: addon/globalPlugins/freeradio/radioDialog.py:3770
+#: addon/globalPlugins/freeradio/radioDialog.py:1453
+#: addon/globalPlugins/freeradio/radioDialog.py:3771
 msgid "No stations found"
 msgstr "İstasyon bulunamadı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1454
-#: addon/globalPlugins/freeradio/radioDialog.py:3772
+#: addon/globalPlugins/freeradio/radioDialog.py:1455
+#: addon/globalPlugins/freeradio/radioDialog.py:3773
 #, python-format
 msgid "%d station"
 msgid_plural "%d stations"
 msgstr[0] "%d istasyon"
 msgstr[1] "%d istasyon"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1480
+#: addon/globalPlugins/freeradio/radioDialog.py:1481
 msgid "Recording is not available"
 msgstr "Kayıt mevcut değil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1492
-#: addon/globalPlugins/freeradio/radioDialog.py:3798
-#: addon/globalPlugins/freeradio/radioDialog.py:6361
+#: addon/globalPlugins/freeradio/radioDialog.py:1493
+#: addon/globalPlugins/freeradio/radioDialog.py:3799
+#: addon/globalPlugins/freeradio/radioDialog.py:6362
 msgid "Invalid time format. Use HH:MM"
 msgstr "Geçersiz saat biçimi. SS:DD kullanın"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1514
-#: addon/globalPlugins/freeradio/radioDialog.py:3832
+#: addon/globalPlugins/freeradio/radioDialog.py:1515
+#: addon/globalPlugins/freeradio/radioDialog.py:3833
 msgid "Please select a station"
 msgstr "Lütfen bir istasyon seçin"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1549
+#: addon/globalPlugins/freeradio/radioDialog.py:1550
 #, python-format
 msgid "Schedule added: %(station)s at %(time)s on %(dates)s (%(mode)s)"
 msgstr ""
 "Program eklendi: %(station)s %(time)s saat ve %(dates)s tarihli (%(mode)s)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1558
-#: addon/globalPlugins/freeradio/radioDialog.py:1602
+#: addon/globalPlugins/freeradio/radioDialog.py:1559
+#: addon/globalPlugins/freeradio/radioDialog.py:1603
 #, python-format
 msgid "Time conflict with: %(names)s. Switched to record-only mode."
 msgstr ""
 "Bu programla çakışma var: %(names)s. Plan Yalnızca kayıt modunda oluşturuldu."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1561
-#: addon/globalPlugins/freeradio/radioDialog.py:1603
+#: addon/globalPlugins/freeradio/radioDialog.py:1562
+#: addon/globalPlugins/freeradio/radioDialog.py:1604
 msgid "Schedule Conflict"
 msgstr "Program Çakışması"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1596
+#: addon/globalPlugins/freeradio/radioDialog.py:1597
 #, python-format
 msgid "Schedule added: %(station)s on %(date)s at %(time)s (%(mode)s)"
 msgstr ""
 "Program eklendi: %(station)s %(date)s tarihinde saat %(time)s (%(mode)s)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1627
+#: addon/globalPlugins/freeradio/radioDialog.py:1628
 msgid "Schedule deleted"
 msgstr "Program silindi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1657
+#: addon/globalPlugins/freeradio/radioDialog.py:1658
 msgid "Schedule updated"
 msgstr "Program güncellendi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1686
+#: addon/globalPlugins/freeradio/radioDialog.py:1687
 msgid "&Edit Selected"
 msgstr "Seçileni Dü&zenle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1690
+#: addon/globalPlugins/freeradio/radioDialog.py:1691
 msgid "&Remove Selected"
 msgstr "Seçiliyi Kald&ır"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1751
+#: addon/globalPlugins/freeradio/radioDialog.py:1752
 #, python-format
 msgid "Top stations (%d)"
 msgstr "En popüler istasyonlar (%d)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1758
+#: addon/globalPlugins/freeradio/radioDialog.py:1759
 msgid "Station list refresh already in progress"
 msgstr "İstasyon listesi yenileme işlemi zaten devam ediyor"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1761
+#: addon/globalPlugins/freeradio/radioDialog.py:1762
 msgid "Refreshing station list from the server..."
 msgstr "İstasyon listesi sunucudan yenileniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1762
+#: addon/globalPlugins/freeradio/radioDialog.py:1763
 msgid "Refreshing station list..."
 msgstr "İstasyon listesi yenileniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1773
+#: addon/globalPlugins/freeradio/radioDialog.py:1774
 msgid "Station list updated"
 msgstr "İstasyon listesi güncellendi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1774
+#: addon/globalPlugins/freeradio/radioDialog.py:1775
 msgid "Station list updated."
 msgstr "İstasyon listesi güncellendi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1870
+#: addon/globalPlugins/freeradio/radioDialog.py:1871
 #, python-format
 msgid "\"%(query)s\" in %(country)s: %(count)d"
 msgstr "%(country)s içinde \"%(query)s\": %(count)d"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1872
+#: addon/globalPlugins/freeradio/radioDialog.py:1873
 #, python-format
 msgid "%(count)d stations in %(country)s"
 msgstr "%(count)d istasyon %(country)s içinde"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1874
+#: addon/globalPlugins/freeradio/radioDialog.py:1875
 #, python-format
 msgid "\"%(query)s\": %(count)d"
 msgstr "\"%(query)s\": %(count)d"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1876
+#: addon/globalPlugins/freeradio/radioDialog.py:1877
 #, python-format
 msgid "%(count)d stations"
 msgstr "%(count)d istasyon"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1893
+#: addon/globalPlugins/freeradio/radioDialog.py:1894
 #, python-format
 msgid "(%(shown)d of %(total)d shown — increase result limit to see more)"
 msgstr ""
 "(%(total)d sonuçtan %(shown)d tanesi gösteriliyor — daha fazlası için sonuç "
 "limitini artırın)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1895
+#: addon/globalPlugins/freeradio/radioDialog.py:1896
 msgid "(limit reached — increase result limit to see more)"
 msgstr "(sınıra ulaşıldı — daha fazlasını görmek için sonuç sınırını artırın)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:1978
+#: addon/globalPlugins/freeradio/radioDialog.py:1979
 msgid "Could not connect to radio directory. Check your internet connection."
 msgstr "Radyo dizinine bağlanılamadı. İnternet bağlantınızı kontrol edin."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2465
+#: addon/globalPlugins/freeradio/radioDialog.py:2466
 msgid "Volume only"
 msgstr "Yalnızca ses düzeyi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2467
+#: addon/globalPlugins/freeradio/radioDialog.py:2468
 msgid "Effects only"
 msgstr "Yalnızca efektler"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2469
+#: addon/globalPlugins/freeradio/radioDialog.py:2470
 msgid "Volume and effects"
 msgstr "Ses düzeyi ve efektler"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2474
+#: addon/globalPlugins/freeradio/radioDialog.py:2475
 msgid "Volume and playback speed"
 msgstr "Ses düzeyi ve oynatma hızı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2476
+#: addon/globalPlugins/freeradio/radioDialog.py:2477
 msgid "Effects and playback speed"
 msgstr "Efektler ve oynatma hızı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2478
+#: addon/globalPlugins/freeradio/radioDialog.py:2479
 msgid "Playback speed only"
 msgstr "Yalnızca oynatma hızı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2480
+#: addon/globalPlugins/freeradio/radioDialog.py:2481
 msgid "Volume, effects, and playback speed"
 msgstr "Ses düzeyi, efektler ve oynatma hızı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2488
+#: addon/globalPlugins/freeradio/radioDialog.py:2489
 msgid "What would you like to save in the audio profile?"
 msgstr "Ses profiline neyi kaydetmek istersiniz?"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2490
+#: addon/globalPlugins/freeradio/radioDialog.py:2491
 msgid "Save Audio Profile"
 msgstr "Ses Profilini Kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2549
+#: addon/globalPlugins/freeradio/radioDialog.py:2550
 #, python-format
 msgid "Audio profile saved for %(station)s"
 msgstr "Ses Profili kaydedildi: %(station)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2561
+#: addon/globalPlugins/freeradio/radioDialog.py:2562
 #, python-format
 msgid "Audio profile cleared for %(station)s"
 msgstr "Ses Profili silindi: %(station)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2568
+#: addon/globalPlugins/freeradio/radioDialog.py:2569
 msgid "JSON favourites (*.json)|*.json|M3U playlist (*.m3u)|*.m3u"
 msgstr "JSON favorileri (*.json)|*.json|M3U çalma listesi (*.m3u)|*.m3u"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2573
+#: addon/globalPlugins/freeradio/radioDialog.py:2574
 msgid "Export Favourites"
 msgstr "Favorileri dışa aktar"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2597
+#: addon/globalPlugins/freeradio/radioDialog.py:2598
 #, python-format
 msgid "Export failed: %(error)s"
 msgstr "Dışa aktarma başarısız: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2598
+#: addon/globalPlugins/freeradio/radioDialog.py:2599
 msgid "Export Error"
 msgstr "Dışa aktarma hatası"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2607
+#: addon/globalPlugins/freeradio/radioDialog.py:2608
 #, python-format
 msgid ""
 "Exported %(count)d station to:\n"
@@ -1496,11 +1495,11 @@ msgstr[1] ""
 "%(count)d istasyon şuraya aktarıldı:\n"
 "%(path)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2611
+#: addon/globalPlugins/freeradio/radioDialog.py:2612
 msgid "Export Complete"
 msgstr "Dışa aktarma tamamlandı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2619
+#: addon/globalPlugins/freeradio/radioDialog.py:2620
 msgid ""
 "Supported files (*.json;*.m3u)|*.json;*.m3u|JSON favourites (*.json)|*.json|"
 "M3U playlist (*.m3u)|*.m3u"
@@ -1508,12 +1507,12 @@ msgstr ""
 "Desteklenen dosyalar (*.json;*.m3u)|*.json;*.m3u|JSON favorileri (*.json)|"
 "*.json|M3U çalma listesi (*.m3u)|*.m3u"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2625
-#: addon/globalPlugins/freeradio/radioDialog.py:2642
+#: addon/globalPlugins/freeradio/radioDialog.py:2626
+#: addon/globalPlugins/freeradio/radioDialog.py:2643
 msgid "Import Favourites"
 msgstr "Favorileri içe aktar"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2638
+#: addon/globalPlugins/freeradio/radioDialog.py:2639
 msgid ""
 "How should the imported stations be added?\n"
 "\n"
@@ -1525,187 +1524,187 @@ msgstr ""
 "Evet — Birleştir: mevcut istasyonları silmeden yenilerini ekle.\n"
 "Hayır — Değiştir: mevcut listeyi temizle ve dosyadan yükle."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2654
+#: addon/globalPlugins/freeradio/radioDialog.py:2655
 #, python-format
 msgid "Import failed: %(error)s"
 msgstr "İçe aktarma başarısız: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2655
-#: addon/globalPlugins/freeradio/radioDialog.py:2663
+#: addon/globalPlugins/freeradio/radioDialog.py:2656
+#: addon/globalPlugins/freeradio/radioDialog.py:2664
 msgid "Import Error"
 msgstr "İçe aktarma hatası"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2662
+#: addon/globalPlugins/freeradio/radioDialog.py:2663
 #, python-format
 msgid "Could not read the file: %(error)s"
 msgstr "Dosya okunamadı: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2675
+#: addon/globalPlugins/freeradio/radioDialog.py:2676
 #, python-format
 msgid "Import complete: %(count)d new station added."
 msgid_plural "Import complete: %(count)d new stations added."
 msgstr[0] "İçe aktarma tamamlandı: %(count)d yeni istasyon eklendi."
 msgstr[1] "İçe aktarma tamamlandı: %(count)d yeni istasyon eklendi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2682
+#: addon/globalPlugins/freeradio/radioDialog.py:2683
 #, python-format
 msgid "Favourites replaced with %(count)d station from the file."
 msgid_plural "Favourites replaced with %(count)d stations from the file."
 msgstr[0] "Favoriler, dosyadan %(count)d istasyonla değiştirildi."
 msgstr[1] "Favoriler, dosyadan %(count)d istasyonla değiştirildi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2686
+#: addon/globalPlugins/freeradio/radioDialog.py:2687
 msgid "Import Complete"
 msgstr "İçe aktarma tamamlandı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2705
+#: addon/globalPlugins/freeradio/radioDialog.py:2706
 msgid "Enter a new name for the station:"
 msgstr "İstasyon için yeni bir ad girin:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2706
+#: addon/globalPlugins/freeradio/radioDialog.py:2707
 msgid "Rename Station"
 msgstr "İstasyonu Yeniden Adlandır"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2717
+#: addon/globalPlugins/freeradio/radioDialog.py:2718
 msgid "Name cannot be empty"
 msgstr "Ad boş olamaz"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2730
+#: addon/globalPlugins/freeradio/radioDialog.py:2731
 #, python-format
 msgid "Renamed to: %s"
 msgstr "Yeniden adlandırıldı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2788
+#: addon/globalPlugins/freeradio/radioDialog.py:2789
 msgid "Added to favorites"
 msgstr "Favorilere eklendi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2810
+#: addon/globalPlugins/freeradio/radioDialog.py:2811
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:669
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:925
 msgid "Station"
 msgstr "İstasyon"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2817
-#: addon/globalPlugins/freeradio/radioDialog.py:2819
+#: addon/globalPlugins/freeradio/radioDialog.py:2818
+#: addon/globalPlugins/freeradio/radioDialog.py:2820
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:681
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:683
 msgid "Country"
 msgstr "Ülke"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2822
+#: addon/globalPlugins/freeradio/radioDialog.py:2823
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:687
 msgid "Language"
 msgstr "Dil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2826
+#: addon/globalPlugins/freeradio/radioDialog.py:2827
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:694
 msgid "Genre"
 msgstr "Tür"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2834
+#: addon/globalPlugins/freeradio/radioDialog.py:2835
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:703
 msgid "Format"
 msgstr "Format"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2836
+#: addon/globalPlugins/freeradio/radioDialog.py:2837
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:705
 msgid "Bitrate"
 msgstr "Bit hızı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2838
+#: addon/globalPlugins/freeradio/radioDialog.py:2839
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:707
 msgid "Codec"
 msgstr "Kodek"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2841
+#: addon/globalPlugins/freeradio/radioDialog.py:2842
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:711
 msgid "Website"
 msgstr "Web sitesi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2844
+#: addon/globalPlugins/freeradio/radioDialog.py:2845
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:715
 msgid "Stream URL"
 msgstr "Yayın adresi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2851
+#: addon/globalPlugins/freeradio/radioDialog.py:2852
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:723
 msgid "Votes"
 msgstr "Oy"
 
 # ── İstasyon detayları (__init__.py)
 # ─────────────────────────────────────────
-#: addon/globalPlugins/freeradio/radioDialog.py:2854
+#: addon/globalPlugins/freeradio/radioDialog.py:2855
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:842
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:967
 msgid "No station detail available"
 msgstr "İstasyon ayrıntısı bulunamadı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2859
+#: addon/globalPlugins/freeradio/radioDialog.py:2860
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:847
 msgid "Station Details"
 msgstr "İstasyon Ayrıntıları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2886
+#: addon/globalPlugins/freeradio/radioDialog.py:2887
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:879
 msgid "&Copy all to clipboard"
 msgstr "&Tümünü panoya kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2892
+#: addon/globalPlugins/freeradio/radioDialog.py:2893
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:885
 msgid "Station details copied to clipboard"
 msgstr "İstasyon ayrıntıları panoya kopyalandı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2915
+#: addon/globalPlugins/freeradio/radioDialog.py:2916
 #, python-format
 msgid "Do you want to delete the station \"%s\"?"
 msgstr "\"%s\" istasyonunu silmek istiyor musunuz?"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2917
+#: addon/globalPlugins/freeradio/radioDialog.py:2918
 msgid "Delete Station"
 msgstr "İstasyonu Sil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2926
+#: addon/globalPlugins/freeradio/radioDialog.py:2927
 msgid "Station deleted"
 msgstr "İstasyon silindi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2953
+#: addon/globalPlugins/freeradio/radioDialog.py:2954
 #, python-format
 msgid "Station added: %s"
 msgstr "İstasyon eklendi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2967
+#: addon/globalPlugins/freeradio/radioDialog.py:2968
 msgid "No station selected."
 msgstr "Hiçbir istasyon seçilmedi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2971
+#: addon/globalPlugins/freeradio/radioDialog.py:2972
 msgid "This station has no URL."
 msgstr "Bu istasyonun URL'si yok."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2974
+#: addon/globalPlugins/freeradio/radioDialog.py:2975
 #, python-format
 msgid "Checking stream for %s, please wait…"
 msgstr "%s için akış kontrol ediliyor, lütfen bekleyin…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2984
+#: addon/globalPlugins/freeradio/radioDialog.py:2985
 #, python-format
 msgid "%(name)s: stream is reachable."
 msgstr "%(name)s: akışa erişilebiliyor."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:2986
+#: addon/globalPlugins/freeradio/radioDialog.py:2987
 #, python-format
 msgid "%(name)s: stream check failed — %(detail)s"
 msgstr "%(name)s: akış kontrolü başarısız — %(detail)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3039
-#: addon/globalPlugins/freeradio/radioDialog.py:6179
+#: addon/globalPlugins/freeradio/radioDialog.py:3040
+#: addon/globalPlugins/freeradio/radioDialog.py:6180
 msgid "&Test URL"
 msgstr "&URL'yi Test Et"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3092
+#: addon/globalPlugins/freeradio/radioDialog.py:3093
 msgid "Help file not found."
 msgstr "Yardım dosyası bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3470
+#: addon/globalPlugins/freeradio/radioDialog.py:3471
 #, python-format
 msgid ""
 "%s selected. Navigate to the target position and press comma again to drop."
@@ -1713,423 +1712,423 @@ msgstr ""
 "%s sürüklemek için seçildi. Hedef konuma gittikten sonra, bırakmak için "
 "tekrar virgüle basın."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3476
+#: addon/globalPlugins/freeradio/radioDialog.py:3477
 msgid "Move cancelled"
 msgstr "Taşıma iptal edildi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3511
+#: addon/globalPlugins/freeradio/radioDialog.py:3512
 #, python-format
 msgid "Moved: %s"
 msgstr "Taşındı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3698
+#: addon/globalPlugins/freeradio/radioDialog.py:3699
 msgid "Stop time (HH:MM):"
 msgstr "Durdurma saati (SS:DD):"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3741
+#: addon/globalPlugins/freeradio/radioDialog.py:3742
 #: addon/globalPlugins/freeradio/timerManager.py:47
 msgid "Sleep timer"
 msgstr "Uyku zamanlayıcısı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3743
+#: addon/globalPlugins/freeradio/radioDialog.py:3744
 #, python-format
 msgid "Alarm %(time)s — %(station)s"
 msgstr "Alarm %(time)s — %(station)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3747
+#: addon/globalPlugins/freeradio/radioDialog.py:3748
 #, python-format
 msgid "Sleep %(time)s"
 msgstr "Uyku %(time)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3786
+#: addon/globalPlugins/freeradio/radioDialog.py:3787
 msgid "Timer manager is not available"
 msgstr "Zamanlayıcı yöneticisi kullanılamıyor"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3819
+#: addon/globalPlugins/freeradio/radioDialog.py:3820
 #, python-format
 msgid "A timer already exists at %(time)s (%(label)s). Remove it first."
 msgstr "%(time)s için Bir zamanlayıcı (%(label)s) var. Önce onu kaldırın."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3840
+#: addon/globalPlugins/freeradio/radioDialog.py:3841
 #, python-format
 msgid "Alarm added: %(station)s at %(time)s"
 msgstr "Alarm eklendi: %(station)s, saat %(time)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3846
+#: addon/globalPlugins/freeradio/radioDialog.py:3847
 #, python-format
 msgid "Sleep timer added: radio will stop at %s"
 msgstr "Uyku zamanlayıcısı eklendi: Radyo saat %s'de duracak"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3849
+#: addon/globalPlugins/freeradio/radioDialog.py:3850
 msgid "(tomorrow)"
 msgstr "(yarın)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3864
+#: addon/globalPlugins/freeradio/radioDialog.py:3865
 msgid "Timer removed"
 msgstr "Zamanlayıcı kaldırıldı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3889
+#: addon/globalPlugins/freeradio/radioDialog.py:3890
 msgid "Liked Songs:"
 msgstr "Beğenilen Şarkılar:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3899
+#: addon/globalPlugins/freeradio/radioDialog.py:3900
 msgid "Filter liked songs"
 msgstr "Beğenilen şarkıları filtrele"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3909
-#: addon/globalPlugins/freeradio/radioDialog.py:4088
+#: addon/globalPlugins/freeradio/radioDialog.py:3910
+#: addon/globalPlugins/freeradio/radioDialog.py:4089
 msgid "Play on &Spotify"
 msgstr "&Spotify'da çal"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3912
-#: addon/globalPlugins/freeradio/radioDialog.py:4092
+#: addon/globalPlugins/freeradio/radioDialog.py:3913
+#: addon/globalPlugins/freeradio/radioDialog.py:4093
 msgid "Play on Y&ouTube"
 msgstr "Y&ouTube'da çal"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3915
-#: addon/globalPlugins/freeradio/radioDialog.py:4096
+#: addon/globalPlugins/freeradio/radioDialog.py:3916
+#: addon/globalPlugins/freeradio/radioDialog.py:4097
 msgid "Show &Lyrics"
 msgstr "&Şarkı sözlerini göster"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3918
-#: addon/globalPlugins/freeradio/radioDialog.py:4102
+#: addon/globalPlugins/freeradio/radioDialog.py:3919
+#: addon/globalPlugins/freeradio/radioDialog.py:4103
 msgid "Re&move"
 msgstr "Te&mizle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3921
-#: addon/globalPlugins/freeradio/radioDialog.py:4108
+#: addon/globalPlugins/freeradio/radioDialog.py:3922
+#: addon/globalPlugins/freeradio/radioDialog.py:4109
 msgid "R&efresh"
 msgstr "Y&enile (Alt+E)"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3980
-#: addon/globalPlugins/freeradio/radioDialog.py:3998
-#: addon/globalPlugins/freeradio/radioDialog.py:4034
-#: addon/globalPlugins/freeradio/radioDialog.py:4119
-#: addon/globalPlugins/freeradio/radioDialog.py:4160
+#: addon/globalPlugins/freeradio/radioDialog.py:3981
+#: addon/globalPlugins/freeradio/radioDialog.py:3999
+#: addon/globalPlugins/freeradio/radioDialog.py:4035
+#: addon/globalPlugins/freeradio/radioDialog.py:4120
+#: addon/globalPlugins/freeradio/radioDialog.py:4161
 msgid "No results found."
 msgstr "Sonuç bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3982
+#: addon/globalPlugins/freeradio/radioDialog.py:3983
 #, python-format
 msgid "Could not read file: %s"
 msgstr "Dosya okunamadı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:3984
-#: addon/globalPlugins/freeradio/radioDialog.py:3998
-#: addon/globalPlugins/freeradio/radioDialog.py:4020
-#: addon/globalPlugins/freeradio/radioDialog.py:4034
-#: addon/globalPlugins/freeradio/radioDialog.py:4119
-#: addon/globalPlugins/freeradio/radioDialog.py:4160
+#: addon/globalPlugins/freeradio/radioDialog.py:3985
+#: addon/globalPlugins/freeradio/radioDialog.py:3999
+#: addon/globalPlugins/freeradio/radioDialog.py:4021
+#: addon/globalPlugins/freeradio/radioDialog.py:4035
+#: addon/globalPlugins/freeradio/radioDialog.py:4120
+#: addon/globalPlugins/freeradio/radioDialog.py:4161
 msgid "No liked songs yet."
 msgstr "Henüz beğenilen şarkı yok."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4001
+#: addon/globalPlugins/freeradio/radioDialog.py:4002
 msgid "No results found"
 msgstr "Sonuç bulunamadı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4003
+#: addon/globalPlugins/freeradio/radioDialog.py:4004
 #, python-format
 msgid "%d song"
 msgid_plural "%d songs"
 msgstr[0] "%d şarkı"
 msgstr[1] "%d şarkı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4124
+#: addon/globalPlugins/freeradio/radioDialog.py:4125
 #, python-format
 msgid "Do you want to remove \"%s\" from liked songs?"
 msgstr "\"%s\" şarkısını beğenilenlerden  kaldırmak istiyor musunuz?"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4125
+#: addon/globalPlugins/freeradio/radioDialog.py:4126
 msgid "Remove Song"
 msgstr "Şarkıyı Kaldır"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4149
+#: addon/globalPlugins/freeradio/radioDialog.py:4150
 #, python-format
 msgid "Could not remove song: %s"
 msgstr "Şarkı kaldırılamadı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4154
+#: addon/globalPlugins/freeradio/radioDialog.py:4155
 #, python-format
 msgid "Removed: %s"
 msgstr "Kaldırıldı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4173
+#: addon/globalPlugins/freeradio/radioDialog.py:4174
 msgid "Liked songs list refreshed"
 msgstr "Beğenilen şarkılar listesi yenilendi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4180
+#: addon/globalPlugins/freeradio/radioDialog.py:4181
 msgid "Fetching lyrics…"
 msgstr "Şarkı sözleri alınıyor…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4188
+#: addon/globalPlugins/freeradio/radioDialog.py:4189
 #, python-format
 msgid "Lyrics not found for: %s"
 msgstr "Şarkı sözü bulunamadı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4211
+#: addon/globalPlugins/freeradio/radioDialog.py:4212
 msgid "Search podcasts. Press enter to search"
 msgstr "Podcast'leri arayın. Aramak için enter tuşuna basın"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4221
-#: addon/globalPlugins/freeradio/radioDialog.py:5259
+#: addon/globalPlugins/freeradio/radioDialog.py:4222
+#: addon/globalPlugins/freeradio/radioDialog.py:5260
 msgid "Search results:"
 msgstr "Arama sonuçları:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4224
+#: addon/globalPlugins/freeradio/radioDialog.py:4225
 msgid "Podcast search results"
 msgstr "Podcast arama sonuçları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4233
+#: addon/globalPlugins/freeradio/radioDialog.py:4234
 msgid "Episodes in selected result:"
 msgstr "Seçilen akıştaki bölümler:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4236
+#: addon/globalPlugins/freeradio/radioDialog.py:4237
 msgid "Episode preview for selected search result"
 msgstr "Seçilen arama sonucu için bölüm önizlemesi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4247
+#: addon/globalPlugins/freeradio/radioDialog.py:4248
 msgid "Or enter podcast URL:"
 msgstr "Veya podcast URL'sini girin:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4249
+#: addon/globalPlugins/freeradio/radioDialog.py:4250
 msgid "Podcast URL"
 msgstr "Podcast URL'si"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4251
+#: addon/globalPlugins/freeradio/radioDialog.py:4252
 msgid "&Add Feed"
 msgstr "&Akış ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4256
+#: addon/globalPlugins/freeradio/radioDialog.py:4257
 msgid "Subscriptions:"
 msgstr "Abonelikler:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4258
+#: addon/globalPlugins/freeradio/radioDialog.py:4259
 msgid "Podcast subscriptions"
 msgstr "Podcast abonelikleri"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4265
+#: addon/globalPlugins/freeradio/radioDialog.py:4266
 msgid "Feed details"
 msgstr "Akış ayrıntıları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4273
+#: addon/globalPlugins/freeradio/radioDialog.py:4274
 msgid "Filter episodes by title or number"
 msgstr "Bölümleri başlığa veya numaraya göre filtrele"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4278
+#: addon/globalPlugins/freeradio/radioDialog.py:4279
 msgid "Episodes:"
 msgstr "Bölümler:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4280
+#: addon/globalPlugins/freeradio/radioDialog.py:4281
 msgid "Podcast episodes"
 msgstr "Podcast bölümleri"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4287
+#: addon/globalPlugins/freeradio/radioDialog.py:4288
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:760
 msgid "Episode details"
 msgstr "Bölüm ayrıntıları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4295
-#: addon/globalPlugins/freeradio/radioDialog.py:5136
+#: addon/globalPlugins/freeradio/radioDialog.py:4296
+#: addon/globalPlugins/freeradio/radioDialog.py:5137
 msgid "&Download Episode"
 msgstr "Bölümü İn&dir"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4382
+#: addon/globalPlugins/freeradio/radioDialog.py:4383
 msgid "Updating podcast feeds..."
 msgstr "Podcast akışları güncelleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4399
+#: addon/globalPlugins/freeradio/radioDialog.py:4400
 msgid "Podcast feeds updated."
 msgstr "Podcast yayınları güncellendi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4410
+#: addon/globalPlugins/freeradio/radioDialog.py:4411
 msgid "Please enter a podcast URL."
 msgstr "Lütfen bir podcast URL'si girin."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4413
+#: addon/globalPlugins/freeradio/radioDialog.py:4414
 msgid "URL must start with http:// or https://"
 msgstr "URL http:// veya https:// ile başlamalı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4418
+#: addon/globalPlugins/freeradio/radioDialog.py:4419
 msgid "Fetching podcast feed..."
 msgstr "Podcast akışı alınıyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4430
-#: addon/globalPlugins/freeradio/radioDialog.py:4997
+#: addon/globalPlugins/freeradio/radioDialog.py:4431
+#: addon/globalPlugins/freeradio/radioDialog.py:4998
 #, python-format
 msgid "Could not add feed: %s"
 msgstr "Akış eklenemedi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4433
-#: addon/globalPlugins/freeradio/radioDialog.py:4999
+#: addon/globalPlugins/freeradio/radioDialog.py:4434
+#: addon/globalPlugins/freeradio/radioDialog.py:5000
 #, python-format
 msgid "Feed added: %s"
 msgstr "Akış eklendi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4469
+#: addon/globalPlugins/freeradio/radioDialog.py:4470
 #, python-format
 msgid "Audio profile saved for %(feed)s"
 msgstr "ses profili %(feed)s için kaydedildi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4478
+#: addon/globalPlugins/freeradio/radioDialog.py:4479
 #, python-format
 msgid "Audio profile cleared for %(feed)s"
 msgstr "%(feed)s için ses profili silindi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4490
-#: addon/globalPlugins/freeradio/radioDialog.py:4555
+#: addon/globalPlugins/freeradio/radioDialog.py:4491
+#: addon/globalPlugins/freeradio/radioDialog.py:4556
 #, python-format
 msgid "%d episode"
 msgid_plural "%d episodes"
 msgstr[0] "%d bölüm"
 msgstr[1] "%d bölüm"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4553
+#: addon/globalPlugins/freeradio/radioDialog.py:4554
 msgid "No episodes found"
 msgstr "Bölüm bulunamadı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4583
+#: addon/globalPlugins/freeradio/radioDialog.py:4584
 #, python-format
 msgid "Refreshing feed: %s"
 msgstr "Akış yenileniyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4593
+#: addon/globalPlugins/freeradio/radioDialog.py:4594
 #, python-format
 msgid "Refresh failed: %s"
 msgstr "Yenileme başarısız: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4595
+#: addon/globalPlugins/freeradio/radioDialog.py:4596
 #, python-format
 msgid "Feed refreshed: %s"
 msgstr "Akış yenilendi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4609
+#: addon/globalPlugins/freeradio/radioDialog.py:4610
 #, python-format
 msgid "Do you want to remove the feed \"%s\"?"
 msgstr "\"%s\" akışını kaldırmak istiyor musunuz?"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4610
+#: addon/globalPlugins/freeradio/radioDialog.py:4611
 msgid "Remove Feed"
 msgstr "Akışı Kaldır"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4627
+#: addon/globalPlugins/freeradio/radioDialog.py:4628
 #, python-format
 msgid "Feed removed: %s"
 msgstr "Akış kaldırıldı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4704
-#: addon/globalPlugins/freeradio/radioDialog.py:5664
+#: addon/globalPlugins/freeradio/radioDialog.py:4705
+#: addon/globalPlugins/freeradio/radioDialog.py:5665
 msgid "Paused"
 msgstr "Duraklatıldı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4784
+#: addon/globalPlugins/freeradio/radioDialog.py:4785
 #: addon/globalPlugins/freeradio/recordingMixin.py:52
 #, python-format
 msgid "File already exists: %s"
 msgstr "Dosya zaten mevcut: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4787
+#: addon/globalPlugins/freeradio/radioDialog.py:4788
 #: addon/globalPlugins/freeradio/recordingMixin.py:55
 #, python-format
 msgid "Downloading: %s"
 msgstr "İndiriliyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4793
-#: addon/globalPlugins/freeradio/radioDialog.py:6110
+#: addon/globalPlugins/freeradio/radioDialog.py:4794
+#: addon/globalPlugins/freeradio/radioDialog.py:6111
 #: addon/globalPlugins/freeradio/recordingMixin.py:60
 #, python-format
 msgid "Download complete: %s"
 msgstr "İndirme tamamlandı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4838
+#: addon/globalPlugins/freeradio/radioDialog.py:4839
 msgid "Searching for podcasts..."
 msgstr "Podcast'ler aranıyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4851
+#: addon/globalPlugins/freeradio/radioDialog.py:4852
 msgid "No podcasts found."
 msgstr "Hiçbir podcast bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4856
+#: addon/globalPlugins/freeradio/radioDialog.py:4857
 #, python-format
 msgid "%d podcasts found."
 msgstr "%d podcast' bulundu."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4878
-#: addon/globalPlugins/freeradio/radioDialog.py:4984
+#: addon/globalPlugins/freeradio/radioDialog.py:4879
+#: addon/globalPlugins/freeradio/radioDialog.py:4985
 msgid "This podcast has no feed URL."
 msgstr "Bu podcast'in akış URL'si yok."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4883
+#: addon/globalPlugins/freeradio/radioDialog.py:4884
 msgid "Loading episodes..."
 msgstr "Bölümler yükleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4900
+#: addon/globalPlugins/freeradio/radioDialog.py:4901
 msgid "No episodes found."
 msgstr "Bölüm bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4965
-#: addon/globalPlugins/freeradio/radioDialog.py:5569
+#: addon/globalPlugins/freeradio/radioDialog.py:4966
+#: addon/globalPlugins/freeradio/radioDialog.py:5570
 msgid "&Stop Preview"
 msgstr "&Önizlemeyi Durdur"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4965
-#: addon/globalPlugins/freeradio/radioDialog.py:5569
+#: addon/globalPlugins/freeradio/radioDialog.py:4966
+#: addon/globalPlugins/freeradio/radioDialog.py:5570
 msgid "&Preview"
 msgstr "&Önizle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:4987
+#: addon/globalPlugins/freeradio/radioDialog.py:4988
 msgid "Adding feed..."
 msgstr "Akış ekleniyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5007
+#: addon/globalPlugins/freeradio/radioDialog.py:5008
 msgid "Already at first episode"
 msgstr "İlk bölüm"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5023
+#: addon/globalPlugins/freeradio/radioDialog.py:5024
 msgid "Already at last episode"
 msgstr "Son bölüm"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5034
+#: addon/globalPlugins/freeradio/radioDialog.py:5035
 msgid "Already at first feed"
 msgstr "İlk akış"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5057
+#: addon/globalPlugins/freeradio/radioDialog.py:5058
 msgid "Already at last feed"
 msgstr "Son akış"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5078
+#: addon/globalPlugins/freeradio/radioDialog.py:5079
 msgid "&Subscribe"
 msgstr "&Abone ol"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5096
+#: addon/globalPlugins/freeradio/radioDialog.py:5097
 msgid "&Refresh Feed"
 msgstr "Akışı Y&enile"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5099
+#: addon/globalPlugins/freeradio/radioDialog.py:5100
 msgid "Re&move Feed"
 msgstr "Akışı &Sil"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5105
-#: addon/globalPlugins/freeradio/radioDialog.py:5149
+#: addon/globalPlugins/freeradio/radioDialog.py:5106
+#: addon/globalPlugins/freeradio/radioDialog.py:5150
 msgid "Save Audio Pr&ofile for This Podcast"
 msgstr "Ses Pr&ofilini bu Podcast için Kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5115
+#: addon/globalPlugins/freeradio/radioDialog.py:5116
 msgid "&Copy Feed URL"
 msgstr "&Akış URL'sini kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5133
+#: addon/globalPlugins/freeradio/radioDialog.py:5134
 msgid "&Play Episode"
 msgstr "Bölümü &Oynat"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5159
+#: addon/globalPlugins/freeradio/radioDialog.py:5160
 msgid "&Copy Episode URL"
 msgstr "&Bölüm URL'sini kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5173
+#: addon/globalPlugins/freeradio/radioDialog.py:5174
 msgid "Copied to clipboard"
 msgstr "Panoya kopyalandı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5229
+#: addon/globalPlugins/freeradio/radioDialog.py:5230
 msgid ""
 "Search audio books by title, author, narrator, subject, or publisher. Press "
 "enter to search"
@@ -2137,147 +2136,147 @@ msgstr ""
 "Başlık, yazar, seslendiren, konu veya yayıncıya göre sesli kitap arayın. "
 "Aramak için Enter tuşuna basın."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5262
+#: addon/globalPlugins/freeradio/radioDialog.py:5263
 msgid "Audio book search results"
 msgstr "Sesli kitap arama sonuçları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5272
+#: addon/globalPlugins/freeradio/radioDialog.py:5273
 msgid "My Library:"
 msgstr "Kitaplığım"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5274
+#: addon/globalPlugins/freeradio/radioDialog.py:5275
 msgid "Audio books library"
 msgstr "Sesli kitap Kitaplığı"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5281
+#: addon/globalPlugins/freeradio/radioDialog.py:5282
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:813
 msgid "Audio book details"
 msgstr "Sesli kitap ayrıntıları"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5438
+#: addon/globalPlugins/freeradio/radioDialog.py:5439
 msgid ""
 "No audio book sources are enabled. Enable at least one in FreeRadio settings."
 msgstr ""
 "Sesli kitap kaynakları etkin değil. Freeradio ayarlarında en az birini "
 "etkinleştirin."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5479
+#: addon/globalPlugins/freeradio/radioDialog.py:5480
 msgid "Searching..."
 msgstr "Aranıyor..."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5523
+#: addon/globalPlugins/freeradio/radioDialog.py:5524
 msgid "No audio books found."
 msgstr "Sesli kitap bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5527
+#: addon/globalPlugins/freeradio/radioDialog.py:5528
 #, python-format
 msgid "%d audio books found."
 msgstr "%d sesli kitap bulundu."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5547
+#: addon/globalPlugins/freeradio/radioDialog.py:5548
 msgid "This audio book is already in your library."
 msgstr "Bu sesli kitap zaten kitaplığınızda."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5550
+#: addon/globalPlugins/freeradio/radioDialog.py:5551
 #, python-format
 msgid "Added to library: %s"
 msgstr "Kitaplığa eklendi: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5553
+#: addon/globalPlugins/freeradio/radioDialog.py:5554
 msgid "Could not add to library."
 msgstr "Kitaplığa eklenemedi."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5564
+#: addon/globalPlugins/freeradio/radioDialog.py:5565
 msgid "&Add to Library"
 msgstr "Kitaplığa &Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5693
-#: addon/globalPlugins/freeradio/radioDialog.py:5747
-#: addon/globalPlugins/freeradio/radioDialog.py:6044
+#: addon/globalPlugins/freeradio/radioDialog.py:5694
+#: addon/globalPlugins/freeradio/radioDialog.py:5748
+#: addon/globalPlugins/freeradio/radioDialog.py:6045
 #, python-format
 msgid "Loading: %s"
 msgstr "Yükleniyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5808
-#: addon/globalPlugins/freeradio/radioDialog.py:5828
+#: addon/globalPlugins/freeradio/radioDialog.py:5809
+#: addon/globalPlugins/freeradio/radioDialog.py:5829
 msgid "Library is empty"
 msgstr "Kütüphane boş"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5812
+#: addon/globalPlugins/freeradio/radioDialog.py:5813
 msgid "Already at first book"
 msgstr "Zaten ilk kitapta"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5832
+#: addon/globalPlugins/freeradio/radioDialog.py:5833
 msgid "Already at last book"
 msgstr "Zaten son kitapta"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5862
+#: addon/globalPlugins/freeradio/radioDialog.py:5863
 msgid "Already at first part"
 msgstr "Zaten ilk bölümde"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5882
+#: addon/globalPlugins/freeradio/radioDialog.py:5883
 #, python-format
 msgid "Finished: %s"
 msgstr "Bitti: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5884
+#: addon/globalPlugins/freeradio/radioDialog.py:5885
 msgid "Already at last part"
 msgstr "Zaten son bölümde"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5924
+#: addon/globalPlugins/freeradio/radioDialog.py:5925
 msgid "&Play Media"
 msgstr "&Medyayı Oynat"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5929
+#: addon/globalPlugins/freeradio/radioDialog.py:5930
 msgid "&Download Book"
 msgstr "Kitabı &İndir"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5934
+#: addon/globalPlugins/freeradio/radioDialog.py:5935
 msgid "&Copy the URL"
 msgstr "&URL'yi kopyala"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5940
+#: addon/globalPlugins/freeradio/radioDialog.py:5941
 msgid "Save Audio Pr&ofile for This Book"
 msgstr "Ses Pr&ofilini bu Kitap için Kaydet"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5950
+#: addon/globalPlugins/freeradio/radioDialog.py:5951
 msgid "&Remove from the Library"
 msgstr "Kitaplıktan Kaldı&r"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5973
+#: addon/globalPlugins/freeradio/radioDialog.py:5974
 #, python-format
 msgid "Audio profile saved for %(book)s"
 msgstr "Ses profili %(book)s için kaydedildi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:5987
+#: addon/globalPlugins/freeradio/radioDialog.py:5988
 #, python-format
 msgid "Audio profile cleared for %(book)s"
 msgstr "%(book)s için ses profili silindi"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6011
+#: addon/globalPlugins/freeradio/radioDialog.py:6012
 #, python-format
 msgid "Removed from library: %s"
 msgstr "Kitaplıktan kaldırıldı: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6029
+#: addon/globalPlugins/freeradio/radioDialog.py:6030
 msgid "Could not find this audio book."
 msgstr "Bu sesli kitap bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6064
+#: addon/globalPlugins/freeradio/radioDialog.py:6065
 msgid "No audio parts found for this book."
 msgstr "Bu kitap için ses parçası bulunamadı."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6073
+#: addon/globalPlugins/freeradio/radioDialog.py:6074
 #, python-format
 msgid "Already downloading: %s"
 msgstr "Zaten indiriliyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6077
+#: addon/globalPlugins/freeradio/radioDialog.py:6078
 #, python-format
 msgid "Downloading book: %s"
 msgstr "Kitap indiriliyor: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6112
+#: addon/globalPlugins/freeradio/radioDialog.py:6113
 #, python-format
 msgid ""
 "Downloaded %(saved)d of %(total)d parts of %(book.title)s. Last error: "
@@ -2286,77 +2285,77 @@ msgstr ""
 "%(book.title)s kitabının %(total)d bölümünden %(saved)d tanesi indirildi. "
 "Son hata: %(error)s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6123
+#: addon/globalPlugins/freeradio/radioDialog.py:6124
 #, python-format
 msgid "Lyrics — %s"
 msgstr "Şarkı sözleri — %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6129
+#: addon/globalPlugins/freeradio/radioDialog.py:6130
 #, python-format
 msgid "Lyrics for: %s"
 msgstr "Şarkı sözleri: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6138
+#: addon/globalPlugins/freeradio/radioDialog.py:6139
 msgid "Lyrics"
 msgstr "Şarkı sözleri"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6166
+#: addon/globalPlugins/freeradio/radioDialog.py:6167
 msgid "Add Custom Station"
 msgstr "Özel İstasyon Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6169
+#: addon/globalPlugins/freeradio/radioDialog.py:6170
 msgid "Station name:"
 msgstr "İstasyon adı:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6173
+#: addon/globalPlugins/freeradio/radioDialog.py:6174
 msgid "Stream URL:"
 msgstr "Yayın adresi:"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6185
+#: addon/globalPlugins/freeradio/radioDialog.py:6186
 msgid "Add to &Radio Browser directory…"
 msgstr "&Radio Browser dizinine ekle…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6189
+#: addon/globalPlugins/freeradio/radioDialog.py:6190
 msgid "&Add"
 msgstr "&Ekle"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6211
 #: addon/globalPlugins/freeradio/radioDialog.py:6212
+#: addon/globalPlugins/freeradio/radioDialog.py:6213
 msgid "Please enter a URL first."
 msgstr "Lütfen önce bir URL girin."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6215
+#: addon/globalPlugins/freeradio/radioDialog.py:6216
 msgid "Checking…"
 msgstr "Kontrol ediliyor…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6216
+#: addon/globalPlugins/freeradio/radioDialog.py:6217
 msgid "Checking stream URL, please wait…"
 msgstr "Akış URL'si kontrol ediliyor, lütfen bekleyin…"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6229
+#: addon/globalPlugins/freeradio/radioDialog.py:6230
 msgid "✓ Stream reachable"
 msgstr "✓ Akışa erişilebiliyor"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6231
+#: addon/globalPlugins/freeradio/radioDialog.py:6232
 msgid "Stream is reachable."
 msgstr "Akışa erişilebiliyor."
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6233
+#: addon/globalPlugins/freeradio/radioDialog.py:6234
 #, python-format
 msgid "✗ %s"
 msgstr "✗ %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6235
+#: addon/globalPlugins/freeradio/radioDialog.py:6236
 #, python-format
 msgid "Stream check failed: %s"
 msgstr "Akış kontrolü başarısız: %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6252
+#: addon/globalPlugins/freeradio/radioDialog.py:6253
 #, python-format
 msgid "Edit Schedule — %s"
 msgstr "Programı Düzenle — %s"
 
-#: addon/globalPlugins/freeradio/radioDialog.py:6322
+#: addon/globalPlugins/freeradio/radioDialog.py:6323
 msgid "&Save"
 msgstr "K&aydet"
 
@@ -2997,132 +2996,265 @@ msgstr "FreeRadio"
 msgid ""
 "FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that "
 "provides seamless access to thousands of internet radio stations via the "
-"Radio Browser open directory, RSS/Atom podcast feeds, and the GETEM digital "
-"library for the visually impaired. It features a fully accessible station "
-"browser with search, country filter, favourites management, and per-station, "
-"per-podcast, and per-audio-book audio profiles. Podcast episodes and audio "
-"book chapters resume automatically from where you left off, with adjustable "
-"pitch-preserving playback speed. Playback is handled by a prioritised "
-"backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for "
-"volume control, audio effects, output device selection, and simultaneous "
-"audio mirroring to a second device. Additional features include instant and "
-"scheduled recording, time-shift rewind of live radio, sleep and alarm "
-"timers, automatic ICY metadata announcements, Shazam-based music "
-"recognition, and a liked-songs log with lyrics lookup. All controls and "
-"shortcuts are designed for NVDA accessibility."
+"Radio Browser open directory, RSS/Atom podcast feeds, and the libriVox + "
+"GETEM digital library for the visually impaired. It features a fully "
+"accessible station browser with search, country filter, favourites "
+"management, and per-station, per-podcast, and per-audio-book audio profiles. "
+"Podcast episodes and audio book chapters resume automatically from where you "
+"left off, with adjustable pitch-preserving playback speed. Playback is "
+"handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media "
+"Player) with support for volume control, audio effects, output device "
+"selection, and simultaneous audio mirroring to a second device. Additional "
+"features include instant and scheduled recording, time-shift rewind of live "
+"radio, sleep and alarm timers, automatic ICY metadata announcements, Shazam-"
+"based music recognition, and a liked-songs log with lyrics lookup. All "
+"controls and shortcuts are designed for NVDA accessibility."
 msgstr ""
-"FreeRadio; Radio Browser açık dizini, RSS/Atom podcast beslemeleri ve görme "
-"engelliler için dijital kütüphane olan GETEM aracılığıyla binlerce internet "
-"radyo istasyonuna, podcast'e ve sesli kitaba kesintisiz erişim sağlayan, "
-"NVDA için geliştirilmiş bir internet radyosu, podcast ve sesli kitap "
-"eklentisidir. Arama, ülke filtresi, favori yönetimi ve istasyon, podcast ile "
-"sesli kitap bazında ayrı ayrı ses profilleri sunan, tamamen erişilebilir bir "
-"istasyon tarayıcısına sahiptir. Podcast bölümleri ve sesli kitap parçaları "
-"kaldığınız yerden otomatik olarak devam eder ve perdeyi koruyan, "
-"ayarlanabilir oynatma hızı sunar. Oynatma işlemi öncelik sıralı bir arka uç "
-"zinciri (BASS, VLC, PotPlayer, Windows Media Player) üzerinden yürütülür; "
-"ses düzeyi kontrolü, ses efektleri, çıkış cihazı seçimi ve ikinci bir cihaza "
-"eşzamanlı ses yansıtma (audio mirroring) desteklenir. Diğer özellikler "
-"arasında anlık ve zamanlanmış kayıt, canlı radyoda geri sarma (time-shift), "
-"uyku ve alarm zamanlayıcıları, otomatik ICY meta veri anonsları, Shazam "
-"tabanlı müzik tanıma ve şarkı sözü aramalı beğenilen şarkılar listesi "
-"bulunur. Tüm kontroller ve kısayollar NVDA erişilebilirliği göz önünde "
-"bulundurularak tasarlanmıştır."
+"FreeRadio; Radio Browser açık dizini, RSS/Atom podcast beslemeleri ve "
+"libriVox + görme engelliler için dijital kütüphane olan GETEM aracılığıyla "
+"binlerce internet radyo istasyonuna, podcast'e ve sesli kitaba kesintisiz "
+"erişim sağlayan, NVDA için geliştirilmiş bir internet radyosu, podcast ve "
+"sesli kitap eklentisidir. Arama, ülke filtresi, favori yönetimi ve istasyon, "
+"podcast ile sesli kitap bazında ayrı ayrı ses profilleri sunan, tamamen "
+"erişilebilir bir istasyon tarayıcısına sahiptir. Podcast bölümleri ve sesli "
+"kitap parçaları kaldığınız yerden otomatik olarak devam eder ve perdeyi "
+"koruyan, ayarlanabilir oynatma hızı sunar. Oynatma işlemi öncelik sıralı bir "
+"arka uç zinciri (BASS, VLC, PotPlayer, Windows Media Player) üzerinden "
+"yürütülür; ses düzeyi kontrolü, ses efektleri, çıkış cihazı seçimi ve ikinci "
+"bir cihaza eşzamanlı ses yansıtma (audio mirroring) desteklenir. Diğer "
+"özellikler arasında anlık ve zamanlanmış kayıt, canlı radyoda geri sarma "
+"(time-shift), uyku ve alarm zamanlayıcıları, otomatik ICY meta veri "
+"anonsları, Shazam tabanlı müzik tanıma ve şarkı sözü aramalı beğenilen "
+"şarkılar listesi bulunur. Tüm kontroller ve kısayollar NVDA erişilebilirliği "
+"göz önünde bulundurularak tasarlanmıştır."
 
 #: buildVars.py:26
 msgid ""
 "\n"
-"**Security**\n"
-"- Certificate verification for streaming connections (live playback, "
-"recording, and time-shift) is now enabled by default, closing a gap where "
-"every station's stream could previously be intercepted or substituted "
-"without warning. Stations with known broken/expired certificates "
-"automatically fall back to an unverified connection so they keep working — "
-"nothing else changes for those stations, and only they pay a small extra "
-"delay the first time they're opened each session.\n"
-"**Fixed**\n"
-"- **Audio books:** Fixed a rare timing issue where, right as one chapter "
-"finished and the next was about to start automatically, playback could "
-"occasionally jump backward to an already-heard chapter instead of continuing "
-"forward. Most noticeable during long unattended listening sessions.\n"
-"- **Scheduled recordings:** Recurring recordings now recover much more "
-"reliably after your PC wakes from sleep or when NVDA was closed for a "
-"while:\n"
-"  - A missed recurring recording on a multi-day schedule (e.g. Mon/Wed/Fri) "
-"no longer skips ahead by a full week — it correctly finds the next eligible "
-"day.\n"
-"  - Old, incorrectly saved schedule dates from earlier versions are "
-"automatically fixed on load — no need to recreate them.\n"
-"  - If a recording's start was delayed (e.g. by sleep), it now records only "
-"the time actually remaining in its original window, instead of starting a "
-"full-length recording late.\n"
-"  - Schedule data is now saved more safely, preventing rare cases of a "
-"damaged or incomplete schedule file.\n"
-"  - While a scheduled recording is in progress, Windows is prevented from "
-"going into idle sleep automatically.\n"
-"**Added**\n"
-"- New keyboard shortcuts for quick access:\n"
-"  - `Ctrl+Windows+L` — jumps straight to the Audio Books tab (focus on your "
-"library).\n"
-"  - `Ctrl+Windows+O` — jumps straight to the Podcasts tab (focus on your "
-"subscriptions).\n"
-"  - Both open the FreeRadio window if it's closed, or bring it to the front "
-"if it's already open.\n"
-"- More audio profile options when saving a profile for a podcast or "
-"audiobook: **Volume and playback speed**, **Effects and playback speed**, "
-"and **Playback speed only**, alongside the existing Volume only / Effects "
-"only / Volume and effects / Volume, effects, and playback speed choices.\n"
-"- The **Save Audio Profile for This Podcast** and **Clear Audio Profile** "
-"commands are now also available from the episode context menu, so you don't "
-"need to switch back to the podcast list to reach them. They still apply to "
-"the whole podcast, not to a single episode.\n"
-"\n"
+"- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS is\n"
+"now the sole, mandatory playback backend. This removes the \"Disable BASS\n"
+"backend\" option and its VLC/wmplayer/PotPlayer path settings from the\n"
+"FreeRadio settings panel; if BASS itself fails to start, playback now\n"
+"fails with a clear error instead of silently switching to another\n"
+"player.\n"
+"- Internal cleanup: removed unused code paths and a dead\n"
+"\"player_paths\" field from scheduled recordings that was never actually\n"
+"used for playback.\n"
+"- **Seeking within a podcast or audio book now supports tap-to-jump "
+"amounts:** a single press seeks 12 seconds, two quick presses seek 1 minute, "
+"three quick presses seek 5 minutes. Holding the key down still seeks "
+"continuously in the original 5-second steps, unchanged.\n"
+"**Improved**\n"
+"- Station search now also matches on **codec**, **bitrate**, and "
+"**language**, in addition to name, country, and tags. For example, searching "
+"\"aac\" or \"320\" now finds stations using that codec or bitrate, and "
+"results can be combined with other terms (e.g. \"jazz 320\"). Partialy "
+"closing #30\n"
+"Add a new source for audio books\n"
+"- Added LibriVox as a second audio book source alongside GETEM. Both "
+"catalogs now share the same Audio Books tab: search, browse, play, and "
+"resume progress work the same way regardless of which source a book came "
+"from.\n"
+"- Searching the Audio Books tab now queries GETEM and LibriVox together, and "
+"results from both are combined into a single list.\n"
+"- Pasting a LibriVox or Getem book URL directly into the search field now "
+"resolves and adds that book.\n"
+"- Added an \"Audio book sources\" option to the settings panel: a checkbox "
+"list lets you choose which of GETEM and LibriVox are searched (both are "
+"enabled by default).\n"
+"- **GETEM catalog & detail-page parsing: replaced regex scraping with a real "
+"DOM parser**\n"
+"The HTML-scraping code that read GETEM's search results and work-detail "
+"pages relied on regexes over raw HTML and a literal string split to find "
+"each result row. That approach breaks silently the moment the site changes "
+"something cosmetic — element order, an extra wrapper tag, a label nested one "
+"level deeper — without changing what the page actually means.\n"
+"Replaced it with a small, dependency-free DOM builder on top of Python's "
+"standard `html.parser.HTMLParser`, then rewrote every scraping function to "
+"query that tree by tag/class instead of matching raw markup:\n"
+"- **Catalog search results**: each result row is now parsed as its own real "
+"subtree, so a field missing from one row can no longer leak text belonging "
+"to the next row — a risk the old row-splitting approach carried.\n"
+"- **Format-filter options, hidden form fields**: read directly from parsed "
+"`<select>`/`<option>` elements instead of locating them by substring "
+"search.\n"
+"- **Work-detail pages**: chapter links, title, and metadata fields (author/"
+"narrator/publisher/etc.) are now found by walking the tree rather than "
+"requiring an exact tag sequence; a field's own label text is excluded via "
+"nesting-depth-independent lookup instead of an assumed fixed `</div></div>` "
+"boundary.\n"
+"- **URL resolution**: relative/absolute link handling now goes through "
+"`urllib.parse.urljoin`, which correctly covers protocol-relative and query-"
+"only links the old hand-written checks didn't.\n"
+"- No public function signatures changed, so nothing else in the add-on "
+"needed touching. Verified against hand-built fixtures covering the exact "
+"failure modes the old code was vulnerable to (reordered attributes, div/span "
+"markup variance, a field missing mid-listing, a link wrapped in an extra "
+"tag, a deeply nested label) — all resolved correctly.\n"
 msgstr ""
 "\n"
-"**Güvenlik**\n"
-"- Canlı yayın, kayıt ve zaman kaydırma bağlantıları için sertifika "
-"doğrulaması artık varsayılan olarak etkinleştirildi; bu sayede daha önce her "
-"istasyonun yayın akışının uyarı yapılmadan kesintiye uğratılabileceği veya "
-"değiştirilebileceği bir boşluk kapatıldı. Bilinen bozuk/süresi dolmuş "
-"sertifikalara sahip istasyonlar, çalışmaya devam edebilmeleri için otomatik "
-"olarak doğrulanmamış bir bağlantıya geri dönerler; bu istasyonlar için başka "
-"hiçbir şey değişmez ve yalnızca her oturumda ilk kez açıldıklarında küçük "
-"bir gecikme yaşarlar.\n"
-"**Düzeltildi**\n"
-"- **Sesli kitaplar:** Nadir görülen bir zamanlama sorunu düzeltildi: Bir "
-"bölüm bitip bir sonraki bölüm otomatik olarak başlamak üzereyken, oynatma "
-"bazen ileriye doğru devam etmek yerine daha önce dinlenen bir bölüme geri "
-"atlıyordu. Bu sorun, uzun süreli ve gözetimsiz dinleme seanslarında daha "
-"belirgindi.\n"
-"- **Planlanmış kayıtlar:** Tekrarlayan kayıtlar artık bilgisayarınız uyku "
-"modundan çıktığında veya NVDA bir süre kapalı kaldığında çok daha güvenilir "
-"bir şekilde kurtarılıyor:\\n\n"
-"  - Çok günlük bir programda (örneğin Pazartesi/Çarşamba/Cuma) tekrarlanan "
-"bir kaydın kaçırılması durumunda artık bir hafta ileriye atlama yapılmaz; "
-"bunun yerine bir sonraki uygun gün doğru şekilde bulunur.\n"
-"  - Önceki sürümlerden yanlış kaydedilmiş eski takvim tarihleri, yükleme "
-"sırasında otomatik olarak düzeltilir; yeniden oluşturmanıza gerek yoktur.\n"
-"  - Eğer bir kaydın başlangıcı geciktiyse (örneğin uyku nedeniyle), artık "
-"tam uzunlukta bir kaydı geç başlatmak yerine, yalnızca orijinal zaman "
-"aralığında gerçekten kalan süreyi kaydeder.\n"
-"  - Planlama verileri artık daha güvenli bir şekilde kaydediliyor; bu sayede "
-"nadir görülen hasarlı veya eksik planlama dosyası sorunları önleniyor.\n"
-"  - Planlanmış bir kayıt işlemi devam ederken, Windows'un otomatik olarak "
-"bekleme moduna geçmesi engellenir.\n"
-"**Eklendi**\n"
-"- Hızlı erişim için yeni klavye kısayolları:\\n\n"
-"  - `Ctrl+Windows+L` — doğrudan Sesli Kitaplar sekmesine (kitaplığınıza "
-"odaklanarak) atlar.\n"
-"  - `Ctrl+Windows+O` — doğrudan Podcast'ler sekmesine (aboneliklerinize "
-"odaklanarak) gider.\n"
-"  - FreeRadio penceresi kapalıysa açar veya zaten açıksa öne getirir.\n"
-"- Podcast veya sesli kitap için profil kaydederken daha fazla ses profili "
-"seçeneği: Mevcut \"Sadece ses seviyesi / Sadece efektler / Ses seviyesi ve "
-"efektler / Ses seviyesi, efektler ve oynatma hızı\" seçeneklerine ek olarak "
-"**Ses seviyesi ve oynatma hızı**, **Efektler ve oynatma hızı** ve **Sadece "
-"oynatma hızı**.\n"
-"- **Bu Podcast için Ses Profilini Kaydet** ve **Ses Profilini Temizle** "
-"komutları artık bölüm bağlam menüsünden de erişilebilir durumda, bu nedenle "
-"bunlara ulaşmak için podcast listesine geri dönmenize gerek yok. Bu komutlar "
-"hala tek bir bölüme değil, tüm podcast'e uygulanır.\n"
-"\n"
+"- VLC / PotPlayer / Windows Media Player yedek desteği kaldırıldı. Artık tek "
+"ve zorunlu oynatma altyapısı BASS. Bu değişiklikle FreeRadio ayarlar "
+"panelinden “BASS altyapısını devre dışı bırak” seçeneği ve ilgili VLC/"
+"wmplayer/PotPlayer yol ayarları da kaldırıldı; BASS başlatılamazsa artık "
+"sessizce başka bir oynatıcıya geçmek yerine net bir hata mesajıyla oynatma "
+"işlemi sonlandırılır.\n"
+"- İçsel temizlik: Kullanılmayan kod yolları ve aslında hiçbir zaman oynatma "
+"için kullanılmayan “player_paths” alanı kaldırıldı.\n"
+"- **Podcast veya sesli kitap içinde ilerleme artık belirli miktarlarda "
+"atlama desteği sunuyor:** Tek bir dokunuşla 12 saniye, iki hızlı dokunuşla 1 "
+"dakika, üç hızlı dokunuşla 5 dakika ileri/geri sarılabilir. Tuşu basılı "
+"tutmak ise yine eskisi gibi 5 saniyelik adımlarla sürekli ilerlemeye devam "
+"eder.\n"
+"**Geliştirildi**\n"
+"- İstasyon araması artık isim, ülke ve etiketlerin yanı sıra **kodek**, "
+"**bit hızı** ve **dil** bilgilerine göre de eşleşme yapıyor. Örneğin “aac” "
+"veya “320” kelimeleriyle yapılan aramalar, bu kodek veya bit hızını kullanan "
+"istasyonları bulur ve sonuçlar diğer terimlerle birleştirilebilir (örneğin "
+"“jazz 320”). Kısmen #30 sorunu çözüldü.\n"
+"- Yeni bir sesli kitap kaynağı eklendi\n"
+"- GETEM’in yanı sıra LibriVox da ikinci sesli kitap kaynağı olarak eklendi. "
+"Artık her iki katalog da aynı Sesli Kitaplar sekmesini paylaşıyor: Arama, "
+"gözatma, oynatma ve kaldığı yerden devam ettirme işlemleri, kitabın hangi "
+"kaynaktan geldiğine bakılmaksızın aynı şekilde çalışıyor.\n"
+"- Sesli Kitaplar sekmesinde yapılan arama artık GETEM ve LibriVox’u birlikte "
+"sorgular ve her ikisinden gelen sonuçlar tek bir listede birleştirilir.\n"
+"- Bir LibriVox veya Getem kitabının URL’sini doğrudan arama alanına "
+"yapıştırmak artık o kitabı bulup ekler.\n"
+"- Ayarlar paneline “Sesli kitap kaynakları” seçeneği eklendi: Burada GETEM "
+"ve LibriVox’tan hangilerinin aranacağı seçilebilir (her ikisi de varsayılan "
+"olarak seçili durumdadır).\n"
+"- **GETEM kataloğu ve detay sayfası işleme: Düzenli ifadeler yerine gerçek "
+"bir DOM çözümleyici kullanıldı**\n"
+"- GETEM’in arama sonuçlarını ve eser detay sayfalarını okuyan HTML işleme "
+"kodu, her sonuç satırını bulmak için düzenli ifadeler ve metin bölme "
+"işlemlerine dayanıyordu. Bu yöntem, sitenin görsel açıdan bir şey "
+"değiştirmesi durumunda – örneğin öğe sırasının değişmesi, ekstra bir wrapper "
+"etiketi veya daha derin seviyede bir etiket – sayfanın anlamını değiştirmese "
+"bile sessizce bozuluyordu.\n"
+"Bunu, Python’un standart `html.parser.HTMLParser` modülü üzerine kurulu, "
+"bağımlılıksız küçük bir DOM oluşturucu ile değiştirdik ve her işleme "
+"fonksiyonunu ham işaretleme yerine etiket/sınıf bazında sorgulama yapacak "
+"şekilde yeniden yazdık:\n"
+"- **Katalog arama sonuçları**: Artık her sonuç satırı kendi alt ağacı olarak "
+"işleniyor; böylece bir satırdaki eksik bir alanın bir sonraki satıra ait "
+"metni sızdırması engellenmiş oldu – eski satır bölme yönteminde bu bir "
+"riskti.\n"
+"- **Biçim filtre seçenekleri, gizli form alanları**: Bunlar artık alt dizgi "
+"aramasıyla bulunmak yerine doğrudan ayrıştırılmış `<select>`/`<option>` "
+"öğelerinden okunuyor.\n"
+"- **Eser detay sayfaları**: Bölüm bağlantıları, başlık ve meta veri alanları "
+"(yazar/seslendiren/yayıncı vb.) artık tam bir etiket dizisi gerektirmeden "
+"ağaçta gezinerek bulunuyor; bir alanın etiket metni ise sabit bir `</div></"
+"div>` sınırı yerine derinlikten bağımsız olarak tespit ediliyor.\n"
+"- **URL çözümleme**: Göreceli/mutlak bağlantı işlemleri artık "
+"`urllib.parse.urljoin` aracılığıyla yapılıyor; bu da eski manuel "
+"kontrollerin ele alamadığı protokol-bağımlı ve yalnızca sorgu içeren "
+"bağlantıları doğru şekilde işliyor.\n"
+"- Herhangi bir genel fonksiyon imzası değişmediği için eklentinin başka "
+"hiçbir yeriyle ilgilenmeye gerek kalmadı. Eski kodun hassas olduğu durumları "
+"kapsayan özel testlerle doğrulama yapıldı (sıralanmış öznitelikler, farklı "
+"div/span işaretlemesi, liste ortasına eksik bir alan, ekstra bir etiketle "
+"sarılmış bağlantı, derinlemesine iç içe etiketler) – hepsi doğru şekilde "
+"çözüldü.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "**Security**\n"
+#~ "- Certificate verification for streaming connections (live playback, "
+#~ "recording, and time-shift) is now enabled by default, closing a gap where "
+#~ "every station's stream could previously be intercepted or substituted "
+#~ "without warning. Stations with known broken/expired certificates "
+#~ "automatically fall back to an unverified connection so they keep working "
+#~ "— nothing else changes for those stations, and only they pay a small "
+#~ "extra delay the first time they're opened each session.\n"
+#~ "**Fixed**\n"
+#~ "- **Audio books:** Fixed a rare timing issue where, right as one chapter "
+#~ "finished and the next was about to start automatically, playback could "
+#~ "occasionally jump backward to an already-heard chapter instead of "
+#~ "continuing forward. Most noticeable during long unattended listening "
+#~ "sessions.\n"
+#~ "- **Scheduled recordings:** Recurring recordings now recover much more "
+#~ "reliably after your PC wakes from sleep or when NVDA was closed for a "
+#~ "while:\n"
+#~ "  - A missed recurring recording on a multi-day schedule (e.g. Mon/Wed/"
+#~ "Fri) no longer skips ahead by a full week — it correctly finds the next "
+#~ "eligible day.\n"
+#~ "  - Old, incorrectly saved schedule dates from earlier versions are "
+#~ "automatically fixed on load — no need to recreate them.\n"
+#~ "  - If a recording's start was delayed (e.g. by sleep), it now records "
+#~ "only the time actually remaining in its original window, instead of "
+#~ "starting a full-length recording late.\n"
+#~ "  - Schedule data is now saved more safely, preventing rare cases of a "
+#~ "damaged or incomplete schedule file.\n"
+#~ "  - While a scheduled recording is in progress, Windows is prevented from "
+#~ "going into idle sleep automatically.\n"
+#~ "**Added**\n"
+#~ "- New keyboard shortcuts for quick access:\n"
+#~ "  - `Ctrl+Windows+L` — jumps straight to the Audio Books tab (focus on "
+#~ "your library).\n"
+#~ "  - `Ctrl+Windows+O` — jumps straight to the Podcasts tab (focus on your "
+#~ "subscriptions).\n"
+#~ "  - Both open the FreeRadio window if it's closed, or bring it to the "
+#~ "front if it's already open.\n"
+#~ "- More audio profile options when saving a profile for a podcast or "
+#~ "audiobook: **Volume and playback speed**, **Effects and playback speed**, "
+#~ "and **Playback speed only**, alongside the existing Volume only / Effects "
+#~ "only / Volume and effects / Volume, effects, and playback speed choices.\n"
+#~ "- The **Save Audio Profile for This Podcast** and **Clear Audio Profile** "
+#~ "commands are now also available from the episode context menu, so you "
+#~ "don't need to switch back to the podcast list to reach them. They still "
+#~ "apply to the whole podcast, not to a single episode.\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "**Güvenlik**\n"
+#~ "- Canlı yayın, kayıt ve zaman kaydırma bağlantıları için sertifika "
+#~ "doğrulaması artık varsayılan olarak etkinleştirildi; bu sayede daha önce "
+#~ "her istasyonun yayın akışının uyarı yapılmadan kesintiye uğratılabileceği "
+#~ "veya değiştirilebileceği bir boşluk kapatıldı. Bilinen bozuk/süresi "
+#~ "dolmuş sertifikalara sahip istasyonlar, çalışmaya devam edebilmeleri için "
+#~ "otomatik olarak doğrulanmamış bir bağlantıya geri dönerler; bu "
+#~ "istasyonlar için başka hiçbir şey değişmez ve yalnızca her oturumda ilk "
+#~ "kez açıldıklarında küçük bir gecikme yaşarlar.\n"
+#~ "**Düzeltildi**\n"
+#~ "- **Sesli kitaplar:** Nadir görülen bir zamanlama sorunu düzeltildi: Bir "
+#~ "bölüm bitip bir sonraki bölüm otomatik olarak başlamak üzereyken, oynatma "
+#~ "bazen ileriye doğru devam etmek yerine daha önce dinlenen bir bölüme geri "
+#~ "atlıyordu. Bu sorun, uzun süreli ve gözetimsiz dinleme seanslarında daha "
+#~ "belirgindi.\n"
+#~ "- **Planlanmış kayıtlar:** Tekrarlayan kayıtlar artık bilgisayarınız uyku "
+#~ "modundan çıktığında veya NVDA bir süre kapalı kaldığında çok daha "
+#~ "güvenilir bir şekilde kurtarılıyor:\\n\n"
+#~ "  - Çok günlük bir programda (örneğin Pazartesi/Çarşamba/Cuma) "
+#~ "tekrarlanan bir kaydın kaçırılması durumunda artık bir hafta ileriye "
+#~ "atlama yapılmaz; bunun yerine bir sonraki uygun gün doğru şekilde "
+#~ "bulunur.\n"
+#~ "  - Önceki sürümlerden yanlış kaydedilmiş eski takvim tarihleri, yükleme "
+#~ "sırasında otomatik olarak düzeltilir; yeniden oluşturmanıza gerek "
+#~ "yoktur.\n"
+#~ "  - Eğer bir kaydın başlangıcı geciktiyse (örneğin uyku nedeniyle), artık "
+#~ "tam uzunlukta bir kaydı geç başlatmak yerine, yalnızca orijinal zaman "
+#~ "aralığında gerçekten kalan süreyi kaydeder.\n"
+#~ "  - Planlama verileri artık daha güvenli bir şekilde kaydediliyor; bu "
+#~ "sayede nadir görülen hasarlı veya eksik planlama dosyası sorunları "
+#~ "önleniyor.\n"
+#~ "  - Planlanmış bir kayıt işlemi devam ederken, Windows'un otomatik olarak "
+#~ "bekleme moduna geçmesi engellenir.\n"
+#~ "**Eklendi**\n"
+#~ "- Hızlı erişim için yeni klavye kısayolları:\\n\n"
+#~ "  - `Ctrl+Windows+L` — doğrudan Sesli Kitaplar sekmesine (kitaplığınıza "
+#~ "odaklanarak) atlar.\n"
+#~ "  - `Ctrl+Windows+O` — doğrudan Podcast'ler sekmesine (aboneliklerinize "
+#~ "odaklanarak) gider.\n"
+#~ "  - FreeRadio penceresi kapalıysa açar veya zaten açıksa öne getirir.\n"
+#~ "- Podcast veya sesli kitap için profil kaydederken daha fazla ses profili "
+#~ "seçeneği: Mevcut \"Sadece ses seviyesi / Sadece efektler / Ses seviyesi "
+#~ "ve efektler / Ses seviyesi, efektler ve oynatma hızı\" seçeneklerine ek "
+#~ "olarak **Ses seviyesi ve oynatma hızı**, **Efektler ve oynatma hızı** ve "
+#~ "**Sadece oynatma hızı**.\n"
+#~ "- **Bu Podcast için Ses Profilini Kaydet** ve **Ses Profilini Temizle** "
+#~ "komutları artık bölüm bağlam menüsünden de erişilebilir durumda, bu "
+#~ "nedenle bunlara ulaşmak için podcast listesine geri dönmenize gerek yok. "
+#~ "Bu komutlar hala tek bir bölüme değil, tüm podcast'e uygulanır.\n"
+#~ "\n"

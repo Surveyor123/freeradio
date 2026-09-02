@@ -16,32 +16,39 @@ addon_info = AddonInfo(
 	
 	# Add-on description
 	# Translators: Long description to be shown for this add-on
-	addon_description=_("""FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that provides seamless access to thousands of internet radio stations via the Radio Browser open directory, RSS/Atom podcast feeds, and the GETEM digital library for the visually impaired. It features a fully accessible station browser with search, country filter, favourites management, and per-station, per-podcast, and per-audio-book audio profiles. Podcast episodes and audio book chapters resume automatically from where you left off, with adjustable pitch-preserving playback speed. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, time-shift rewind of live radio, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log with lyrics lookup. All controls and shortcuts are designed for NVDA accessibility."""),
+	addon_description=_("""FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that provides seamless access to thousands of internet radio stations via the Radio Browser open directory, RSS/Atom podcast feeds, and the libriVox + GETEM digital library for the visually impaired. It features a fully accessible station browser with search, country filter, favourites management, and per-station, per-podcast, and per-audio-book audio profiles. Podcast episodes and audio book chapters resume automatically from where you left off, with adjustable pitch-preserving playback speed. Playback is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media Player) with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, time-shift rewind of live radio, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log with lyrics lookup. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.23.3",
+	addon_version="2026.23.4",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-**Security**
-- Certificate verification for streaming connections (live playback, recording, and time-shift) is now enabled by default, closing a gap where every station's stream could previously be intercepted or substituted without warning. Stations with known broken/expired certificates automatically fall back to an unverified connection so they keep working — nothing else changes for those stations, and only they pay a small extra delay the first time they're opened each session.
-**Fixed**
-- **Audio books:** Fixed a rare timing issue where, right as one chapter finished and the next was about to start automatically, playback could occasionally jump backward to an already-heard chapter instead of continuing forward. Most noticeable during long unattended listening sessions.
-- **Scheduled recordings:** Recurring recordings now recover much more reliably after your PC wakes from sleep or when NVDA was closed for a while:
-  - A missed recurring recording on a multi-day schedule (e.g. Mon/Wed/Fri) no longer skips ahead by a full week — it correctly finds the next eligible day.
-  - Old, incorrectly saved schedule dates from earlier versions are automatically fixed on load — no need to recreate them.
-  - If a recording's start was delayed (e.g. by sleep), it now records only the time actually remaining in its original window, instead of starting a full-length recording late.
-  - Schedule data is now saved more safely, preventing rare cases of a damaged or incomplete schedule file.
-  - While a scheduled recording is in progress, Windows is prevented from going into idle sleep automatically.
-**Added**
-- New keyboard shortcuts for quick access:
-  - `Ctrl+Windows+L` — jumps straight to the Audio Books tab (focus on your library).
-  - `Ctrl+Windows+O` — jumps straight to the Podcasts tab (focus on your subscriptions).
-  - Both open the FreeRadio window if it's closed, or bring it to the front if it's already open.
-- More audio profile options when saving a profile for a podcast or audiobook: **Volume and playback speed**, **Effects and playback speed**, and **Playback speed only**, alongside the existing Volume only / Effects only / Volume and effects / Volume, effects, and playback speed choices.
-- The **Save Audio Profile for This Podcast** and **Clear Audio Profile** commands are now also available from the episode context menu, so you don't need to switch back to the podcast list to reach them. They still apply to the whole podcast, not to a single episode.
-
+- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS is
+now the sole, mandatory playback backend. This removes the "Disable BASS
+backend" option and its VLC/wmplayer/PotPlayer path settings from the
+FreeRadio settings panel; if BASS itself fails to start, playback now
+fails with a clear error instead of silently switching to another
+player.
+- Internal cleanup: removed unused code paths and a dead
+"player_paths" field from scheduled recordings that was never actually
+used for playback.
+- **Seeking within a podcast or audio book now supports tap-to-jump amounts:** a single press seeks 12 seconds, two quick presses seek 1 minute, three quick presses seek 5 minutes. Holding the key down still seeks continuously in the original 5-second steps, unchanged.
+**Improved**
+- Station search now also matches on **codec**, **bitrate**, and **language**, in addition to name, country, and tags. For example, searching "aac" or "320" now finds stations using that codec or bitrate, and results can be combined with other terms (e.g. "jazz 320"). Partialy closing #30
+Add a new source for audio books
+- Added LibriVox as a second audio book source alongside GETEM. Both catalogs now share the same Audio Books tab: search, browse, play, and resume progress work the same way regardless of which source a book came from.
+- Searching the Audio Books tab now queries GETEM and LibriVox together, and results from both are combined into a single list.
+- Pasting a LibriVox or Getem book URL directly into the search field now resolves and adds that book.
+- Added an "Audio book sources" option to the settings panel: a checkbox list lets you choose which of GETEM and LibriVox are searched (both are enabled by default).
+- **GETEM catalog & detail-page parsing: replaced regex scraping with a real DOM parser**
+The HTML-scraping code that read GETEM's search results and work-detail pages relied on regexes over raw HTML and a literal string split to find each result row. That approach breaks silently the moment the site changes something cosmetic — element order, an extra wrapper tag, a label nested one level deeper — without changing what the page actually means.
+Replaced it with a small, dependency-free DOM builder on top of Python's standard `html.parser.HTMLParser`, then rewrote every scraping function to query that tree by tag/class instead of matching raw markup:
+- **Catalog search results**: each result row is now parsed as its own real subtree, so a field missing from one row can no longer leak text belonging to the next row — a risk the old row-splitting approach carried.
+- **Format-filter options, hidden form fields**: read directly from parsed `<select>`/`<option>` elements instead of locating them by substring search.
+- **Work-detail pages**: chapter links, title, and metadata fields (author/narrator/publisher/etc.) are now found by walking the tree rather than requiring an exact tag sequence; a field's own label text is excluded via nesting-depth-independent lookup instead of an assumed fixed `</div></div>` boundary.
+- **URL resolution**: relative/absolute link handling now goes through `urllib.parse.urljoin`, which correctly covers protocol-relative and query-only links the old hand-written checks didn't.
+- No public function signatures changed, so nothing else in the add-on needed touching. Verified against hand-built fixtures covering the exact failure modes the old code was vulnerable to (reordered attributes, div/span markup variance, a field missing mid-listing, a link wrapped in an extra tag, a deeply nested label) — all resolved correctly.
 """),
 	
 	# Author(s)
@@ -60,7 +67,7 @@ addon_info = AddonInfo(
 	addon_minimumNVDAVersion="2024.1.0",
 	
 	# Last NVDA version supported/tested
-	addon_lastTestedNVDAVersion="2026.1.1",
+	addon_lastTestedNVDAVersion="2026.2.0",
 	
 	# Add-on update channel (None denotes stable releases)
 	addon_updateChannel=None,

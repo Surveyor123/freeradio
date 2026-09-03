@@ -6,7 +6,7 @@ FreeRadio es un complemento completo para el lector de pantalla NVDA que incluye
 
 - **Radio por Internet** — Explore y busque entre más de 50.000 emisoras desde el directorio de [Radio Browser](https://www.radio-browser.info/), con resultados complementados por TuneIn e iHeartRadio. Guarda favoritos, reordénalos y salta directamente a cualquiera de ellos con un atajo de teclado global desde cualquier lugar en Windows — consulta las secciones [El Directorio de Radio Browser](#radio-browser-directory) y [Favoritos](#favourites).
 - **Podcasts** — Suscríbete a cualquier fuente RSS/Atom o busca en el directorio de podcasts de Apple y escucha un adelanto de los episodios antes de suscribirte. La posición de reproducción se guarda automáticamente y se reanuda donde la dejaste — consulta la sección [Podcasts](#podcasts).
-- **Audiolibros** — Busca y reproduce en streaming o descarga libros desde la biblioteca digital [GETEM](https://getem.boun.edu.tr/), de la Universidad Boğaziçi para personas con discapacidad visual, con reanudación automática para obras en varias partes — consulta la sección [Audiolibros (GETEM)](#audio-books-getem).
+- **Audiolibros** — Busca y reproduce en streaming o descarga libros desde las dos fuentes: [GETEM](https://getem.boun.edu.tr/), la biblioteca digital de la Universidad de Boğaziçi para personas con discapacidad visual, y [LibriVox](https://librivox.org/), el proyecto de audiolibros de dominio público leídos por voluntarios (no se necesita cuenta), con reanudación automática para obras en varias partes — consulta la sección [Audiolibros (GETEM y LibriVox)](#audio-books-getem-and-librivox).
 - **Grabación** — Graba al instante lo que se está reproduciendo, captura automáticamente una sola canción cuando empieza y termina, o programa grabaciones únicas y recurrentes, todo ello sin interrumpir la reproducción — consulta la sección [Grabación](#recording).
 - **Desplazamiento temporal (rebobinar radio en directo)** — Pausa y rebobina una emisora ​​en directo como si fuera un grabador de vídeo digital, y luego vuelve a verla en directo cuando quieras — consulta la sección [Desplazamiento temporal (rebobinar radio en directo)](#time-shift-rewind-live-radio).
 - **Reconocimiento de música y canciones favoritas** — Identifica pistas sin metadatos mediante el reconocimiento basado en Shazam, guarda las canciones favoritas en un archivo de texto y busca sus letras — consulta las secciones [Reconocimiento de Música](#music-recognition) y [Canciones favoritas](#liked-songs).
@@ -68,8 +68,8 @@ Todos los atajos se pueden reasignar desde el Menú NVDA → Preferencias → Ge
 | `Ctrl+Win+M` | Espejo de audio | Poner en espejo el flujo actual hacia un dispositivo de salida de audio adicional simultáneamente. Pulsa nuevamente para detener la puesta en espejo. |
 | `Ctrl+Win+E` | Grabación instantánea | Pulsa una vez para comenzar a grabar la estación actual; pulsa nuevamente para detener. Pulsa **dos veces** para comenzar una **grabación de la canción**: El archivo lleva el nombre de la pista actual y la grabación se detiene automáticamente cuando cambia la pista. Pulsa nuevamente dos veces mientras la grabación de una canción está activa para detenerla antes de tiempo. La reproducción continúa sin interrupción en todos los modos de grabación. Solo disponible para estaciones que transmiten metadatos ICY. |
 | `Ctrl+Win+W` | Abrir la carpeta de grabaciones | Abre la carpeta que contiene los archivos guardados en el Explorador de archivos. |
-| `Ctrl+Win+J` | Retroceso del desplazamiento temporal | Retrocede la radio en directo 15 segundos. La primera pulsación entra en el modo de desplazamiento temporal; cada pulsación adicional retrocede 15 segundos más, hasta el límite del búfer (~10 minutos). Requiere que el búfer de desplazamiento temporal esté habilitado en Ajustes. |
-| `Ctrl+Win+K` | Avance rápido del desplazamiento temporal | Avanza 15 segundos mientras se está en modo de desplazamiento temporal. Una vez alcanzado el borde del directo, la reproducción vuelve automáticamente al directo y este comando no tiene efecto hasta que se retroceda de nuevo. |
+| `Ctrl+Win+J` | Retroceso del desplazamiento temporal / podcast & audiolibro buscar hacia atrás | Para la radio en directo: retrocede 15 segundos. La primera pulsación entra en el modo de desplazamiento temporal; cada pulsación adicional retrocede 15 segundos más, hasta el límite del búfer configurado en los ajustes de FreeRadio. Requiere que el búfer de desplazamiento temporal esté habilitado en Ajustes. Para un podcast o audiolibro, Esta tecla busca dentro del archivo y se ajusta según cómo la pulses: **manteniéndola pulsada** retrocede 5 segundos por repetición, igual que antes; **una sola pulsación deliberada** retrocede 12 segundos; **dos pulsaciones rápidas** retroceden 1 minuto; **tres o más pulsaciones** retroceden 5 minutos. Solo se realiza una búsqueda por secuencia de pulsaciones, cuyo tamaño corresponde a la cantidad de pulsaciones realizadas — las pulsaciones no se suman. Funciona independientemente de la configuración del desplazamiento temporal. |
+| `Ctrl+Win+K` | Avance rápido del desplazamiento temporal / podcast & audiolibro buscar hacia adelante | Para la radio en directo: avanza 15 segundos mientras se está en modo de desplazamiento temporal. Una vez alcanzado el borde del directo, la reproducción vuelve automáticamente al directo y este comando no tiene efecto hasta que se retroceda de nuevo. Para un podcast o audiolibro, esta tecla avanza en el archivo usando la misma escala de pulsación prolongada que `Ctrl+Win+J` (mantener pulsado = 5 segundos por repetición; 1 pulsación = 12 segundos; 2 pulsaciones = 1 minuto; 3 o más pulsaciones = 5 minutos). Funciona independientemente de la configuración de desplazamiento temporal. |
 | `Ctrl+Win+T` | Alternar búfer de desplazamiento temporal | Habilita o deshabilita el búfer de desplazamiento temporal al instante, reflejando la casilla de Ajustes. Al deshabilitarlo, vuelve inmediatamente al directo si estaba en modo de desplazamiento temporal y detiene la captura en segundo plano. |
 | *(no asignado)* | Seleccionar dispositivo de salida | Abre una lista bajo demanda de los principales dispositivos de salida disponibles. La lista se muestra solo cuando el BASS detecta más de un dispositivo de salida físico. Asignar una combinación de teclas a través del Menú NVDA → Preferencias → Gestos de Entrada → FreeRadio. |
 | *((no asignado)* | Alternar notificaciones silenciosas | Alternar la configuración de Silenciar notificaciones sobre la marcha. Asignar una combinación de teclas a través del Menú NVDA → Preferencias → Gestos de Entrada → FreeRadio. |
@@ -296,7 +296,7 @@ Un campo **Filtrar** encima de la lista de estaciones le permite limitar la list
 **Guarde la grabación en:** Para cada grabación programada, puede optar por guardarla en la carpeta de grabaciones predeterminada o en una carpeta personalizada. Utilice el botón **Examinar...** para seleccionar una carpeta de forma interactiva. Si la carpeta elegida deja de estar disponible, la grabación vuelve a la carpeta predeterminada y se le notifica.
 
 **Modo de grabación:**
-- **Grabar mientras escuchas** — reproduce y graba simultáneamente. Se inicia un backend de reproducción usando el orden de prioridad BASS → VLC → PotPlayer → Windows Media Player.
+- **Grabar mientras escuchas** — reproduce y graba simultáneamente a través del BASS backend.
 - **Solo grabación** — Graba silenciosamente en segundo plano sin ninguna salida de audio; El motor de grabación se conecta directamente al flujo de  transmisión.
 
 Una vez que se añade una programación, aparece en la lista de abajo. Utilice el botón **Eliminar seleccionado** para eliminar una programación o **Editar seleccionado** para modificar su hora, duración, recurrencia, días activos, modo de grabación o carpeta de salida.
@@ -340,8 +340,8 @@ En el raro caso de que la lista de reproducción de una emisora no pueda leerse 
 
 ### Requisitos y limitaciones
 
-- **Requiere el BASS backend.** El desplazamiento temporal no está disponible cuando el BASS está deshabilitado y la reproducción vuelve a VLC, PotPlayer, o Windows Media Player. La captura en segundo plano en sí (y la función de evitar el anuncio publicitario que proporciona al Reconocimiento de Música y el de Grabación) tampoco está disponible en ese caso, ya que depende de la misma conexión basada en BASS.
-- El búfer tiene aproximadamente 10 minutos; no se puede retroceder más allá de ese límite.
+- **Requiere el BASS backend**, que FreeRadio siempre utiliza para la reproducción (consulta la sección [Reproducción](#playback)).
+- El búfer se establece en los ajustes.
 - El búfer es por emisora: cambiar de emisora, detener la reproducción o reiniciar NVDA lo borra y empieza de nuevo.
 - La reproducción con desplazamiento temporal usa su propio archivo de búfer local y no produce una grabación guardada. Si quieres conservar el audio de forma permanente, usa también la Grabación instantánea (`Ctrl+Win+E`).
 
@@ -444,13 +444,20 @@ Encima de la lista de episodios hay un campo  **Filtrar**. A medida que escribe,
 
 ### Detalles de Reproducción del Podcast
 
-Los episodios de podcast se reproducen utilizando el **BASS backend** (el mismo motor que se utiliza para los flujos de radio). Debido a que los episodios se descargan progresivamente y se pueden buscar, puedes usar los atajos del desplazamiento temporal: rebobinar/avanzar (`Ctrl+Win+J`/`Ctrl+Win+K`) mientras reproduce un podcast para retroceder o avanzar **5 segundos** a la vez (en lugar  de rebobinar 15 segundos que se usa para la radio en directo). La posición se guarda automáticamente para que puedas retomarla más tarde.
+Los episodios de podcast se reproducen utilizando el **BASS backend** (el mismo motor que se utiliza para los flujos de radio y, a partir de esta versión, el único sistema de reproducción que usa FreeRadio). Debido a que los episodios se descargan progresivamente y se pueden buscar, puedes usar los atajos del desplazamiento temporal: rebobinar/avanzar (`Ctrl+Win+J`/`Ctrl+Win+K`) mientras reproduces un podcast para buscar dentro del episodio. La posición se guarda automáticamente para que puedas retomarla más tarde.
+
+**Búsqueda escalonada:** A diferencia del rebobinado fijo de 15 segundos de la radio en directo, la búsqueda dentro de un podcast o audiolibro se adapta a la forma en que pulses la tecla, de modo que puedes hacer una pequeña corrección o saltar mucho sin pulsaciones repetidas:
+
+- **Mantener pulsada la tecla** (repetición automática) retrocede o avanza **5 segundos** por repetición, la misma pequeña cantidad que este atajo siempre ha utilizado para los archivos.
+- **Una pulsación deliberada** busca **12 segundos**.
+- **Dos pulsaciones** en rápida sucesión busca **1 minuto**.
+- **Tres o más pulsaciones** busca **5 minutos**; las pulsaciones adicionales en la misma ráfaga no provocan una escalada mayor.
+
+Se mantiene pulsado un instante antes de realizar la búsqueda, por si acaso se produce otra pulsación; solo se realiza una búsqueda por secuencia de pulsaciones, cuyo tamaño depende del número total de pulsaciones, no de la suma de las pulsaciones individuales. Tras la búsqueda, NVDA anuncia la posición transcurrida/restante del episodio, en lugar de simplemente indicar "X segundos hacia adelante/atrás".
 
 **Velocidad de reproducción:** Puede ajustar la velocidad de reproducción de los episodios del podcast usando `Ctrl+Win+Shift+K` (más rápido) y `Ctrl+Win+Shift+J` (más lento). La velocidad cambia por incrementos de 0.1x, desde 0.5x hasta 2.0x, con la altura preservada. Esto requiere que la biblioteca opcional `bass_fx.dll` se coloque en la carpeta del complemento. Si falta la biblioteca, NVDA te informará que la función no está disponible.
 
 > **Nota:** `bass_fx.dll` no está incluido con FreeRadio por defecto. Puedes descargarlo desde la [página BASS FX](https://www.un4seen.com/bass-fx.html) y colóquelo en la carpeta del complemento `bass/x64` (para NVDA de 64 bits) o `bass` (para NVDA de 32 bits) para habilitar esta característica.
-
-Si el BASS backend está deshabilitado (o falla), La reproducción de podcast vuelve a la misma cadena de reproductores externos (VLC → PotPlayer → WMP) utilizados para la radio, pero **la función de búsqueda y reanudación no funcionará** en ese caso — el episodio se reproducirá desde el principio cada vez. Para disfrutar de una experiencia de podcast completa, mantenga el BASS backend habilitado.
 
 **Reanudar efecto de sonido:** Siempre que un episodio se reanuda desde una posición guardada, FreeRadio reproduce brevemente un suave efecto de sonido de carga de casete en un canal separado mientras busca el punto guardado, en lugar de dejar que el audio del episodio se reproduzca audiblemente desde 0:00 mientras tanto. Esto sucede automáticamente siempre que el BASS backend está activo y es independiente del ajuste de la **Transición de cambio de estación** — ese ajuste solo afecta al cambio entre emisoras de radio en directo, y no la reanudación de podcasts o audiolibros.
 
@@ -475,29 +482,41 @@ Solo los elementos que elijas se escribirán en el perfil; lo que se omita conse
 
 Tus suscripciones se almacenan en `freeradio_podcasts.json` en la carpeta de configuración de usuario de NVDA. Las posiciones de los episodios se almacenan por separado en `podcast_positions.json` en la misma ubicación. Ambos archivos son JSON simples y se puede realizar una copia de seguridad o transferirlos a otra computadora.
 
-## Audiolibros (GETEM)
+## Audiolibros (GETEM y LibriVox)
 
-FreeRadio incluye un reproductor de audiolibros para [GETEM](https://getem.boun.edu.tr/), la biblioteca digital dirigida por el Centro Universitario Boğaziçi para personas con discapacidad visual. Puede buscar en su catálogo, obtener una vista previa y agregar libros a una biblioteca personal, reproducir obras de varias partes con resumen automático y descargar libros para escucharlos sin conexión, todo totalmente accesible.
+FreeRadio incluye un reproductor de audiolibros que busca, reproduce y descarga libros de dos fuentes:
 
-GETEM es la primera fuente soportada por esta característica. La pestaña Audiolibros está diseñada para que se puedan añadir más bibliotecas o catálogos en el futuro; por ahora, GETEM es el único disponible.
+- **[GETEM](https://getem.boun.edu.tr/)** — la biblioteca digital dirigida por el Centro Universitario Boğaziçi para personas con discapacidad visual. Se requiere una membresía gratuita para transmitir o descargar el audio de un libro (la navegación no requiere membresía gratuita) — consulta la sección [Iniciar Sesión](#signing-in) más abajo.
+- **[LibriVox](https://librivox.org/)** — el proyecto de audiolibros de dominio público leídos por voluntarios. No se necesita ninguna cuenta ni inicio de sesión; todo su catálogo, incluidos los propios archivos de audio, es de dominio público y de libre acceso.
 
-> **Nota:** Escuchar requiere una membresía gratuita de GETEM. Para explorar el catálogo no se necesita una cuenta, pero para resolver y reproducir el audio de un libro sí — consulta la sección [Iniciar Sesión](#signing-in) más abajo.
+Los resultados de ambas fuentes aparecen juntos en una única lista combinada de **Resultados de la búsqueda** y en una única lista combinada de **Biblioteca** — no hay ninguna pestaña o menú desplegable separado para cambiar entre ellos. La fuente de cada libro (GETEM o LibriVox) se muestra como una etiqueta junto a su título y en sus detalles, para que siempre sepas cuál estás viendo. Puedes buscar, previsualizar, añadir, reproducir y descargar libros de cualquiera de las dos fuentes exactamente igual; reproducir obras divididas en partes con reanudación automática entre ellas; y descargar libros para escucharlos sin conexión, todo ello con total accesibilidad.
+
+Cualquiera de las dos fuentes se puede desactivar desde el **Menú NVDA → Preferencias → Opciones → FreeRadio** con la lista de verificación **Fuentes de audiolibros**, si solo desea buscar en una de ellas. Ambas opciones están habilitadas por defecto.
+
+> **Nota:** Para escuchar un audiolibro de GETEM se requiere una membresía gratuita de GETEM. Navegar por el catálogo de GETEM no requiere una cuenta, pero resolver y reproducir el audio de un libro de GETEM sí — consulta la sección [Iniciar Sesión](#signing-in) abajo. Los libros de LibriVox nunca requieren una cuenta.
 
 ### Acceso a la Pestaña Audiolibros
 
 Abra el navegador de estaciones con `Ctrl+Win+R` y cambie a la pestaña  **Audiolibros** usando `Ctrl+Tab` o `Alt+7`. La pestaña tiene tres áreas principales:
 
-1. **Buscar** — un campo de texto para buscar en el catálogo de  GETEM, con una lista de resultados que aparece una vez que se ejecuta una búsqueda.
-2. **Biblioteca** — la lista de libros que ha añadido, donde puede reproducirlos, descargarlos y administrarlos.
-3. **Detalles** — un cuadro de solo lectura que muestra el título, autor, narrador, editorial, formato, número de partes, descripción y URL del catálogo del libro seleccionado, en cualquiera de las listas.
+1. **Buscar** — un campo de texto para buscar en ambos catálogos habilitados a la vez, con una lista de resultados que aparece una vez que se ejecuta la búsqueda.
+2. **Biblioteca** — la lista de libros que ha añadido de cualquiera de las dos fuentes, donde puede reproducirlos, descargarlos y administrarlos.
+3. **Detalles** — un cuadro de solo lectura que muestra la fuente, el título, autor, narrador, editorial, formato, número de partes, descripción y URL del catálogo del libro seleccionado, en cualquiera de las listas.
 
 ### Iniciar Sesión
 
-GETEM requiere ser miembro registrado para  el flujo de transmisión o descargar el audio real de un libro, aunque el catálogo en sí se puede buscar libremente. Ingresa tu nombre de usuario y contraseña de GETEM una vez en  **Menú NVDA → Preferencias → Opciones → FreeRadio**; se almacenan cifrados en el disco (a través de la API de protección de datos de Windows, vinculados a su cuenta de usuario de Windows) y luego se reutilizan automáticamente. Si intenta reproducir o descargar un libro antes de ingresar las credenciales, FreeRadio le indica que las agregue primero  en las Opciones.
+GETEM requiere ser miembro registrado para reproducir en streaming o descargar el audio real de un libro, aunque el catálogo en sí se puede buscar libremente. Ingresa tu nombre de usuario y contraseña de GETEM una vez en  **Menú NVDA → Preferencias → Opciones → FreeRadio**; se almacenan cifrados en el disco (a través de la API de protección de datos de Windows, vinculados a su cuenta de usuario de Windows) y luego se reutilizan automáticamente. Si intenta reproducir o descargar un libro GETEM antes de ingresar las credenciales, FreeRadio le indica que las agregue primero  en las Opciones.
+
+LibriVox no requiere ningún paso de inicio de sesión: sus resultados y audios se pueden buscar, previsualizar, reproducir y descargar inmediatamente, sin necesidad de introducir credenciales.
 
 ### Búsqueda de Audiolibros
 
-Escriba un término de búsqueda – título, autor, narrador, tema o editorial – en el campo de búsqueda y pulse `Intro`. FreeRadio busca todos estos campos a la vez y combina los resultados,ya que el propio formulario de búsqueda de GETEM solo admite la reducción de todos ellos juntos en lugar de una única búsqueda en cualquiera de ellos. Sólo se muestran obras que realmente están disponibles en formato de audio (narración humana o por computadora, descripción de audio, radiodrama, libros hablados de DAISY, etc.); braille, letra grande y otros formatos que no son de audio se filtran automáticamente. NVDA anuncia cuántos audiolibros se encontraron.
+Escriba un término de búsqueda en el campo de búsqueda y pulse `Intro`. FreeRadio busca en las fuentes que estén habilitadas en los ajustes y combina los resultados en una sola lista:
+
+- **GETEM** permite realizar búsquedas simultáneas por título, autor, narrador, tema y editorial, ya que su formulario de búsqueda interno solo permite combinar todos estos criterios. Únicamente se muestran las obras disponibles en formato de audio (narración humana o computarizada, audiodescripción, radionovelas, audiolibros DAISY, etc.); los documentos en braille, letra grande y otros formatos que no sean de audio se excluyen automáticamente.
+- **LibriVox** permite realizar búsquedas por título o autor/lector en su catálogo de dominio público.
+
+NVDA anuncia cuántos audiolibros se encontraron en total.
 
 Al seleccionar un resultado, se muestran sus detalles — autor, narrador, editor, formato y recuento de partes — en el cuadro de detalles debajo.
 
@@ -516,7 +535,7 @@ Los libros que ha añadido aparecen en la lista **Biblioteca**, mostrando el tí
 **Menú contextual para entradas de la biblioteca:** Haga clic con el botón derecho en un libro o selecciónelo y pulse la tecla Aplicaciones / `Shift+F10`, para abrir un menú con:
 - **Reproducir medios** — comienza a reproducir, igual que `Intro`.
 - **Descargar libro** — descarga cada parte del libro; consulta la sección [Descarga de Audiolibros](#downloading-audio-books) más abajo.
-- **Copiar la URL** — copia la URL de la página del catálogo GETEM del libro al portapapeles.
+- **Copiar la URL** — copia la URL de la página del catálogo del libro al portapapeles (la página del catálogo GETEM para un libro GETEM, o la página de detalles de archive.org para un libro LibriVox).
 - **Guardar perfil de audio para este libro** / **Borrar perfil de audio** — consulta la sección [Perfil de audio del Audiolibro](#audio-book-audio-profile) más abajo.
 - **Eliminar de la biblioteca** — elimina el libro de tu biblioteca.
 
@@ -542,7 +561,7 @@ Seleccione un libro en su biblioteca y elija **Descargar libro** en su menú con
 
 ### Almacenamiento de Datos de Audiolibros
 
-Tu biblioteca GETEM (libros añadidos y su progreso de escucha) se almacena en `freeradio_getem_library.json` en la carpeta de configuración de usuario de NVDA. Sus credenciales GETEM cifradas se almacenan por separado en `freeradio_getem_credentials.bin` en la misma ubicación, y solo pueden ser descifradas por la misma cuenta de usuario de Windows que las guardó.
+Cada fuente conserva su propio archivo de biblioteca, aunque se muestren combinados en la pestaña Audiolibros. Tu biblioteca GETEM (libros añadidos y su progreso de escucha) se almacena en `freeradio_getem_library.json` y su biblioteca LibriVox se almacena por separado en `freeradio_librivox_library.json`, ambos en la carpeta de configuración de usuario de NVDA. Sus credenciales GETEM cifradas se almacenan por separado en `freeradio_getem_credentials.bin` en la misma ubicación, y solo pueden ser descifradas por la misma cuenta de usuario de Windows que las guardó. LibriVox no tiene archivo de credenciales, ya que no requiere cuenta.
 
 ## Canciones favoritas
 
@@ -604,10 +623,9 @@ Las siguientes opciones se pueden configurar desde el Menú NVDA → Preferencia
 | Cuando Ctrl+Win+P se pulsa tres veces | Selecciona lo que sucede cuando se pulsa el atajo tres veces en sucesión rápida: no hacer nada, abrir la lista de favoritos, abrir búsqueda de emisoras, abrir la pestaña de grabación o abrir la pestaña del temporizador. |
 | Buscar actualizaciones automáticamente al iniciar | Cuando está habilitado, una verificación de actualización en segundo plano se ejecuta cada vez que se inicia NVDA; se le notificará si se encuentra una nueva versión. Cuando está deshabilitado, los controles automáticos se detienen pero los controles manuales permanecen disponibles. |
 | Ruta ffmpeg.exe | Ruta de acceso al ffmpeg.exe usado para el reconocimiento de música. Si se deja vacío, un ffmpeg.exe en la carpeta del complementos se usa automáticamente. |
-| Ruta VLC | Si VLC no está instalado o se encuentra en una ubicación no estándar, aquí se puede ingresar la ruta completa al ejecutable. |
-| Ruta wmplayer.exe | Ingrese la ruta a Windows Media Player aquí si es necesario. |
-| Ruta PotPlayer | Si PotPlayer se encuentra en una ubicación no estándar, su ruta se puede ingresar aquí. |
 | Carpeta de grabaciones | Establece la carpeta donde se guardan los archivos grabados. Si se deja en blanco, la ubicación predeterminada `Documentos\FreeRadio Recordings\` se utiliza. Un botón Explorar carpeta le permite seleccionar la carpeta de forma interactiva. Los cambios entran en vigor inmediatamente después de guardarlos. |
+| Fuentes audiolibro | Una lista de verificación para seleccionar qué fuentes de audiolibros (**GETEM**, **LibriVox**) se buscan y se muestran en la pestaña Audiolibros. Ambas opciones están habilitadas por defecto. Al desmarcar una fuente, sus libros se ocultan de los resultados de búsqueda combinados y de la lista de la biblioteca sin eliminar nada de lo que ya hayas añadido desde ella — consulta la sección [Audiolibros (GETEM y LibriVox)](#audio-books-getem-and-librivox). |
+| Nombre de usuario de GETEM / Contraseña de GETEM | Sus credenciales de membresía de audiolibros [GETEM](https://getem.boun.edu.tr/), necesarias para escuchar o descargar el audio de un libro — consulta la sección [Iniciar sesión](#signing-in). Almacenadas cifradas en disco a través de la API de protección de datos de Windows, vinculadas a su cuenta de usuario de Windows; nunca se almacenan como texto sin formato. Si deja ambos campos vacíos y guarda, se eliminarán las credenciales almacenadas. LibriVox no requiere cuenta y no tiene un campo equivalente. |
 | Formato de salida de grabación | Conserva el flujo original, extrae el audio sin cambiar su codec o convierte grabaciones completas a MP3. El valor predeterminado es el formato de flujo original. |
 | Velocidad de bits de grabación de MP3 | Establece la velocidad de bits utilizada cuando el formato de salida de grabación es MP3. El valor predeterminado es 128 kbps. |
 | Desactivar la verificación de conectividad a Internet antes de reproducir | Recomendado para usuarios que experimentan un retraso antes de que una estación comience a reproducirse. También es útil cuando el DNS está bloqueado. |
@@ -635,14 +653,11 @@ Esta función está desactivada de forma predeterminada y se puede alternar desd
 
 ## Reproducción
 
-El complemento selecciona un backend de reproducción usando el siguiente orden de prioridad:
+FreeRadio utiliza **BASS** como único motor de reproducción para todo: radio por internet, podcasts y audiolibros. No requiere instalación adicional; viene incluido con el complemento. Se ha eliminado la compatibilidad con VLC, PotPlayer y Windows Media Player como motores de reproducción alternativos; siempre se utiliza BASS.
 
-1. **BASS** — el backend predeterminado y principal. No se requiere instalación por separado; viene incluido con el complemento. BASS envía el audio directamente a la pila de audio de Windows y aparece en el mezclador de volumen de Windows como una fuente de audio independiente llamada "pythonw.exe", separada de NVDA. Esto significa que el audio de FreeRadio circula en un canal completamente separado del habla de NVDA: la radio no se corta, no se mezcla ni se ve afectada por la propia configuración de audio de NVDA mientras NVDA está hablando. El usuario puede ajustar el volumen de la radio independientemente de NVDA en el Mezclador de volumen de Windows. Admite HTTP, HTTPS y la mayoría de los formatos de flujo integrados. La puesta en espejo  de audio y la búsqueda/reanudación de podcasts solo están disponibles  con este backend.
-2. **VLC** — se hace cargo si el BASS falla. Se busca automáticamente en ubicaciones de instalación comunes, carpetas de perfil de usuario y la RUTA del sistema.
-3. **PotPlayer** — probado si no se encuentra VLC. Se busca automáticamente en ubicaciones de instalación comunes.
-4. **Windows Media Player** — utilizado como último recurso; requiere que el componente WMP esté instalado en el sistema.
+BASS envía el audio directamente a la pila de audio de Windows y aparece en el mezclador de volumen de Windows como una fuente de audio independiente llamada "pythonw.exe", separada de NVDA. Esto significa que el audio de FreeRadio circula en un canal completamente separado del habla de NVDA: la radio no se corta, no se mezcla ni se ve afectada por la propia configuración de audio de NVDA mientras NVDA está hablando. El usuario puede ajustar el volumen de la radio independientemente de NVDA en el Mezclador de volumen de Windows. Admite HTTP, HTTPS y la mayoría de los formatos de flujo integrados.
 
-Los episodios de podcast siempre se reproducen a través de BASS si están disponibles, porque el BASS puede abrir el flujo  como un archivo buscable (incluso durante la descarga) y permite un seguimiento y reanudación precisos de la posición. Si el BASS está desactivado, los podcasts vuelven a la cadena de reproductores externos, pero la búsqueda y la reanudación no funcionarán.
+Los episodios de podcasts y los capítulos de audiolibros se reproducen a través de BASS porque éste puede abrir el flujo como un archivo buscable (incluso durante la descarga), lo que permite un seguimiento preciso de la posición, rebobinado/avance rápido por niveles y reanudación. La puesta en espejo  de audio, el desplazamiento temporal y la búsqueda y la reanudación  de podcasts/audiolibros dependen de BASS y están siempre disponibles.
 
 ## Comprobación de Actualización
 
@@ -658,6 +673,13 @@ FreeRadio busca automáticamente nuevas versiones a través de GitHub.
 - Si no hay ningún enlace de descarga directa disponible,, un botón **Abrir la página** se muestra y la página de la release en GitHub se abre en el navegador predeterminado.
 
 **Para desactivar las comprobaciones automáticas:** Deshabilitar la opción **Buscar actualizaciones automáticamente al iniciar** desde el Menú NVDA → Preferencias → Opciones → FreeRadio.
+
+## Agradecimientos & Créditos
+
+* **Fundamentos y conceptos originales:** Un sincero agradecimiento a **Gary Mp** ([GaryMp/freeradio](https://github.com/GaryMp/freeradio)) por los conceptos originales del complemento de radio y las estructuras principales de gestión de favoritos que sirvieron como base fundamental para este proyecto.
+* **Herramientas de IA y LLM:** Agradecemos sinceramente a las herramientas modernas de modelos de lenguaje a gran escala (LLM, por sus siglas en inglés) (incluidas Claude, ChatGPT y Gemini) por su ayuda durante las fases de desarrollo, refactorización de código e implementación de funciones.
+* **Servicio de directorio:** Directorio de estaciones impulsado por la [API de Radio Browser](https://www.radio-browser.info/).
+* **Comunidad:** Nuestro más sincero agradecimiento a todos los miembros de la comunidad NVDA y a los traductores por su continuo apoyo, comentarios y contribuciones a la localización.
 
 ## Licencia
 

@@ -64,7 +64,7 @@ Replaced it with a small, dependency-free DOM builder on top of Python's standar
 	addon_docFileName="readme.html",
 	
 	# Minimum NVDA version supported
-	addon_minimumNVDAVersion="2024.1.0",
+	addon_minimumNVDAVersion="2025.1.0",
 	
 	# Last NVDA version supported/tested
 	addon_lastTestedNVDAVersion="2026.2.0",

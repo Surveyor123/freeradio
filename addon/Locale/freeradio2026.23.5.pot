@@ -16,78 +16,78 @@ msgstr ""
 "X-Poedit-Basepath: ../..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: addon/globalPlugins/freeradio/__init__.py:393
+#: addon/globalPlugins/freeradio/__init__.py:407
 msgid ""
 "Time-shift buffer: running low on disk space, the oldest audio is being "
 "dropped more aggressively."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:477
+#: addon/globalPlugins/freeradio/__init__.py:491
 #: addon/globalPlugins/freeradio/recordingMixin.py:193
 #, python-format
 msgid "Recording started: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:480
+#: addon/globalPlugins/freeradio/__init__.py:494
 #, python-format
 msgid "Recording finished: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:484
+#: addon/globalPlugins/freeradio/__init__.py:498
 #, python-format
 msgid "Recording failed: could not connect to %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:488
+#: addon/globalPlugins/freeradio/__init__.py:502
 #, python-format
 msgid "Recording conversion failed. The original file was kept: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:493
+#: addon/globalPlugins/freeradio/__init__.py:507
 #, python-format
 msgid ""
 "Could not use the selected folder for '%(station)s' (%(reason)s). Saved to "
 "the default recordings folder instead."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:558
+#: addon/globalPlugins/freeradio/__init__.py:580
 msgid "FreeRadio Stations"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:578
+#: addon/globalPlugins/freeradio/__init__.py:600
 #, python-format
 msgid "Station no longer in favourites: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:587
+#: addon/globalPlugins/freeradio/__init__.py:609
 #, python-format
 msgid "%s playback shortcut ()"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:617
+#: addon/globalPlugins/freeradio/__init__.py:639
 msgid "Station &Browser...\tCtrl+Win+R"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:626
+#: addon/globalPlugins/freeradio/__init__.py:648
 msgid "FreeRadio &Settings..."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:635
+#: addon/globalPlugins/freeradio/__init__.py:657
 msgid "Check for &Updates..."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:648
+#: addon/globalPlugins/freeradio/__init__.py:670
 msgid "&FreeRadio"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:707
+#: addon/globalPlugins/freeradio/__init__.py:730
 msgid "Open FreeRadio station browser"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:708
-#: addon/globalPlugins/freeradio/__init__.py:717
-#: addon/globalPlugins/freeradio/__init__.py:726
-#: addon/globalPlugins/freeradio/__init__.py:735
+#: addon/globalPlugins/freeradio/__init__.py:731
+#: addon/globalPlugins/freeradio/__init__.py:740
+#: addon/globalPlugins/freeradio/__init__.py:749
+#: addon/globalPlugins/freeradio/__init__.py:758
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:30
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:156
 #: addon/globalPlugins/freeradio/audioFxMixin.py:33
@@ -102,6 +102,7 @@ msgstr ""
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:48
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:71
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:90
+#: addon/globalPlugins/freeradio/obligatoMixin.py:196
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:43
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:140
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:192
@@ -119,68 +120,68 @@ msgstr ""
 msgid "FreeRadio"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:716
+#: addon/globalPlugins/freeradio/__init__.py:739
 msgid "Open FreeRadio audio book library"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:725
+#: addon/globalPlugins/freeradio/__init__.py:748
 msgid "Open FreeRadio podcast subscriptions"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:734
+#: addon/globalPlugins/freeradio/__init__.py:757
 msgid ""
 "Add currently playing station to favourites, download the whole audio book "
 "if one is playing, or download the episode if a podcast is playing"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:741
+#: addon/globalPlugins/freeradio/__init__.py:764
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:167
 #: addon/globalPlugins/freeradio/recordingMixin.py:106
 #: addon/globalPlugins/freeradio/recordingMixin.py:187
 msgid "No station is playing"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:763
+#: addon/globalPlugins/freeradio/__init__.py:786
 #, python-format
 msgid "Already in favourites: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:766
+#: addon/globalPlugins/freeradio/__init__.py:789
 #, python-format
 msgid "Added to favourites: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:780
+#: addon/globalPlugins/freeradio/__init__.py:803
 msgid "No audio book is playing"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:786
+#: addon/globalPlugins/freeradio/__init__.py:809
 msgid "Could not download this audio book."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:859
+#: addon/globalPlugins/freeradio/__init__.py:882
 #, python-format
 msgid "Could not play %(name)s: %(reason)s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1041
+#: addon/globalPlugins/freeradio/__init__.py:1064
 msgid "No releases found on GitHub yet."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1045
+#: addon/globalPlugins/freeradio/__init__.py:1068
 #, python-format
 msgid "Update check failed (HTTP %d)."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1050
+#: addon/globalPlugins/freeradio/__init__.py:1073
 msgid "Update check failed. Please check your internet connection."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1065
+#: addon/globalPlugins/freeradio/__init__.py:1088
 msgid "Could not determine latest version."
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1084
+#: addon/globalPlugins/freeradio/__init__.py:1107
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -189,17 +190,17 @@ msgid ""
 "Would you like to download and install it now?"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1087
-#: addon/globalPlugins/freeradio/__init__.py:1095
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1110
+#: addon/globalPlugins/freeradio/__init__.py:1118
+#: addon/globalPlugins/freeradio/__init__.py:1179
 msgid "unknown"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1088
+#: addon/globalPlugins/freeradio/__init__.py:1111
 msgid "&Install"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1092
+#: addon/globalPlugins/freeradio/__init__.py:1115
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -208,24 +209,24 @@ msgid ""
 "Would you like to open the download page?"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1096
+#: addon/globalPlugins/freeradio/__init__.py:1119
 msgid "&Open Page"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1101
+#: addon/globalPlugins/freeradio/__init__.py:1124
 msgid "FreeRadio Update Available"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1104
+#: addon/globalPlugins/freeradio/__init__.py:1127
 msgid "&Cancel"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1119
+#: addon/globalPlugins/freeradio/__init__.py:1142
 #, python-format
 msgid "Downloading FreeRadio %s…"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1137
+#: addon/globalPlugins/freeradio/__init__.py:1160
 #: addon/globalPlugins/freeradio/radioDialog.py:4796
 #: addon/globalPlugins/freeradio/radioDialog.py:6115
 #: addon/globalPlugins/freeradio/recordingMixin.py:62
@@ -233,17 +234,17 @@ msgstr ""
 msgid "Download failed: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1147
+#: addon/globalPlugins/freeradio/__init__.py:1170
 #, python-format
 msgid "Could not launch installer. File saved to: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1179
 #, python-format
 msgid "FreeRadio is up to date. Installed: %s"
 msgstr ""
 
-#: addon/globalPlugins/freeradio/__init__.py:1157
+#: addon/globalPlugins/freeradio/__init__.py:1180
 msgid "FreeRadio Update Check"
 msgstr ""
 
@@ -264,6 +265,7 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:67
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:151
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
 #: addon/globalPlugins/freeradio/radioDialog.py:1142
 #: addon/globalPlugins/freeradio/settingsPanel.py:522
 msgid "System default"
@@ -618,6 +620,84 @@ msgid ""
 "settings."
 msgstr ""
 
+#: addon/globalPlugins/freeradio/obligatoMixin.py:55
+msgid "Obligato Mode"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:64
+#: addon/globalPlugins/freeradio/obligatoMixin.py:71
+msgid "Background station:"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:86
+#: addon/globalPlugins/freeradio/obligatoMixin.py:97
+msgid "Audio output:"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
+msgid "Same as main output"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:123
+#: addon/globalPlugins/freeradio/obligatoMixin.py:137
+msgid "Background volume:"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:131
+msgid "100% (same as main volume)"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:135
+#, python-format
+msgid "%d%% of main volume"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:149
+msgid "&Start"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:167
+msgid "Please select a station for the background music."
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:195
+msgid "Toggle Obligato background music mode"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:210
+msgid ""
+"No favourite stations. Add a station to favourites first to use Obligato "
+"mode."
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:272
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
+msgid "No stream URL available for this station"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:286
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
+msgid "No internet connection. Please check your connection and try again."
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:294
+msgid "Could not start Obligato mode."
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:331
+#, python-format
+msgid "Obligato mode started: %s"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:384
+#, python-format
+msgid "Could not play %(name)s in Obligato mode: %(reason)s"
+msgstr ""
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:411
+msgid "Obligato mode stopped"
+msgstr ""
+
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:42
 msgid "Pause or resume FreeRadio playback"
 msgstr ""
@@ -693,14 +773,6 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:528
 msgid "Unknown station"
-msgstr ""
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
-msgid "No stream URL available for this station"
-msgstr ""
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
-msgid "No internet connection. Please check your connection and try again."
 msgstr ""
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:653
@@ -2905,64 +2977,25 @@ msgstr ""
 #: buildVars.py:26
 msgid ""
 "\n"
-"- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS is\n"
-"now the sole, mandatory playback backend. This removes the \"Disable BASS\n"
-"backend\" option and its VLC/wmplayer/PotPlayer path settings from the\n"
-"FreeRadio settings panel; if BASS itself fails to start, playback now\n"
-"fails with a clear error instead of silently switching to another\n"
-"player.\n"
-"- Internal cleanup: removed unused code paths and a dead\n"
-"\"player_paths\" field from scheduled recordings that was never actually\n"
-"used for playback.\n"
-"- **Seeking within a podcast or audio book now supports tap-to-jump "
-"amounts:** a single press seeks 12 seconds, two quick presses seek 1 minute, "
-"three quick presses seek 5 minutes. Holding the key down still seeks "
-"continuously in the original 5-second steps, unchanged.\n"
-"**Improved**\n"
-"- Station search now also matches on **codec**, **bitrate**, and "
-"**language**, in addition to name, country, and tags. For example, searching "
-"\"aac\" or \"320\" now finds stations using that codec or bitrate, and "
-"results can be combined with other terms (e.g. \"jazz 320\"). Partialy "
-"closing #30\n"
-"Add a new source for audio books\n"
-"- Added LibriVox as a second audio book source alongside GETEM. Both "
-"catalogs now share the same Audio Books tab: search, browse, play, and "
-"resume progress work the same way regardless of which source a book came "
-"from.\n"
-"- Searching the Audio Books tab now queries GETEM and LibriVox together, and "
-"results from both are combined into a single list.\n"
-"- Pasting a LibriVox or Getem book URL directly into the search field now "
-"resolves and adds that book.\n"
-"- Added an \"Audio book sources\" option to the settings panel: a checkbox "
-"list lets you choose which of GETEM and LibriVox are searched (both are "
-"enabled by default).\n"
-"- **GETEM catalog & detail-page parsing: replaced regex scraping with a real "
-"DOM parser**\n"
-"The HTML-scraping code that read GETEM's search results and work-detail "
-"pages relied on regexes over raw HTML and a literal string split to find "
-"each result row. That approach breaks silently the moment the site changes "
-"something cosmetic — element order, an extra wrapper tag, a label nested one "
-"level deeper — without changing what the page actually means.\n"
-"Replaced it with a small, dependency-free DOM builder on top of Python's "
-"standard `html.parser.HTMLParser`, then rewrote every scraping function to "
-"query that tree by tag/class instead of matching raw markup:\n"
-"- **Catalog search results**: each result row is now parsed as its own real "
-"subtree, so a field missing from one row can no longer leak text belonging "
-"to the next row — a risk the old row-splitting approach carried.\n"
-"- **Format-filter options, hidden form fields**: read directly from parsed "
-"`<select>`/`<option>` elements instead of locating them by substring "
-"search.\n"
-"- **Work-detail pages**: chapter links, title, and metadata fields (author/"
-"narrator/publisher/etc.) are now found by walking the tree rather than "
-"requiring an exact tag sequence; a field's own label text is excluded via "
-"nesting-depth-independent lookup instead of an assumed fixed `</div></div>` "
-"boundary.\n"
-"- **URL resolution**: relative/absolute link handling now goes through "
-"`urllib.parse.urljoin`, which correctly covers protocol-relative and query-"
-"only links the old hand-written checks didn't.\n"
-"- No public function signatures changed, so nothing else in the add-on "
-"needed touching. Verified against hand-built fixtures covering the exact "
-"failure modes the old code was vulnerable to (reordered attributes, div/span "
-"markup variance, a field missing mid-listing, a link wrapped in an extra "
-"tag, a deeply nested label) — all resolved correctly.\n"
+"### Added\n"
+"- **Obligato mode (background music)** — Play a favourite station quietly in "
+"the background, on its own independent audio output and volume, no matter "
+"what plays (or doesn't play) as the main media.\n"
+"  - New shortcut: `Ctrl+Win+Shift+M` toggles Obligato mode on and off.\n"
+"  - On first press, a dialog lets you choose the background station (from "
+"your favourites), the output device (**Same as main output** by default, "
+"**System default**, or any specific device), and the background volume as a "
+"percentage of the main player's current volume (25%–150%). Your choices are "
+"remembered for next time.\n"
+"  - Runs on a fully separate playback engine from the main player, so "
+"switching stations, podcasts, or audio books — or stopping the main player "
+"entirely — never interrupts it.\n"
+"  - Background volume automatically stays proportional to the main player's "
+"volume as it changes (`Ctrl+Win+↑`/`↓`).\n"
+"  - Pausing the main player (`Ctrl+Win+P`) pauses the background station "
+"too, and resuming the main player resumes it; a full stop of the main player "
+"is not treated as a pause.\n"
+"  - Requires at least one favourite station; if none exist, FreeRadio "
+"prompts you to add one first.\n"
+"  - Start/stop announcements respect the **Mute notifications** setting.\n"
 msgstr ""

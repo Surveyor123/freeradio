@@ -1,6 +1,20 @@
 # FreeRadio — Complemento para o NVDA
 
-FreeRadio é um complemento de rádio pela Internet para o leitor de ecrã NVDA. O seu principal objetivo é dar aos utilizadores acesso fácil a milhares de estações de rádio online. Toda a interface e todas as funcionalidades foram concebidas com total acessibilidade para o NVDA.
+FreeRadio é um complemento completo de rádio pela Internet, podcasts e audiolivros para o leitor de ecrã NVDA. O que começou como uma forma simples de transmitir estações de rádio pela Internet tornou-se um centro de escuta completo e totalmente acessível — cada ecrã, caixa de diálogo e controlo é concebido de raiz para uso com teclado e leitor de ecrã, sem necessidade de rato em momento algum.
+
+## O Que o FreeRadio Pode Fazer
+
+- **Rádio pela Internet** — Navegue e pesquise mais de 50 000 estações no diretório [Radio Browser](https://www.radio-browser.info/), com resultados complementados por TuneIn e iHeartRadio. Guarde favoritos, reordene-os e aceda diretamente a qualquer um deles com um atalho de teclado global a partir de qualquer parte do Windows — veja [Diretório Radio Browser](#diretório-radio-browser) e [Favoritos](#favoritos).
+- **Podcasts** — Subscreva qualquer feed RSS/Atom, ou pesquise no diretório de podcasts da Apple e pré-visualize episódios antes de subscrever. A posição de reprodução é guardada automaticamente e retoma onde ficou — veja [Podcasts](#podcasts).
+- **Audiolivros** — Pesquise e transmita ou descarregue livros de duas fontes: [GETEM](https://getem.boun.edu.tr/), a biblioteca digital da Universidade de Boğaziçi para pessoas com deficiência visual, e [LibriVox](https://librivox.org/), o projeto de audiolivros de domínio público lidos por voluntários (sem necessidade de conta), com retoma automática em obras de várias partes — veja [Audiolivros (GETEM e LibriVox)](#audiolivros-getem-e-librivox).
+- **Gravação** — Grave o que está a tocar instantaneamente, capture automaticamente uma única música quando começa e termina, ou agende gravações únicas ou recorrentes — tudo sem interromper a reprodução — veja [Gravação](#gravação).
+- **Time-Shift (recuar na rádio em direto)** — Pause e recue numa estação em direto como um DVR, e depois volte ao direto sempre que quiser — veja [Time-Shift (Recuar na Rádio em Direto)](#time-shift-recuar-na-rádio-em-direto).
+- **Reconhecimento musical e músicas gostadas** — Identifique faixas sem metadados usando reconhecimento baseado em Shazam, guarde músicas gostadas num ficheiro de texto e consulte as suas letras — veja [Reconhecimento Musical](#reconhecimento-musical) e [Músicas Gostadas](#músicas-gostadas).
+- **Perfis e efeitos de áudio** — Guarde definições separadas de volume, efeitos, equalizador e velocidade de reprodução por estação, por podcast ou por audiolivro, e aplique efeitos em tempo real (Chorus, Reverb, reforços de equalizador e mais) através do motor BASS — veja [Perfil de Áudio da Estação](#perfil-de-áudio-da-estação).
+- **Espelhamento de áudio** — Envie o mesmo fluxo para dois dispositivos de saída de áudio em simultâneo, como colunas e auscultadores ao mesmo tempo — veja [Espelho de Áudio](#espelho-de-áudio).
+- **Modo Obligato (música de fundo)** — Reproduza em ciclo uma estação favorita escolhida discretamente em segundo plano, no seu próprio dispositivo de saída e volume, independentemente do que estiver (ou não) a tocar como média principal — veja [Modo de Música de Fundo (Obligato)](#modo-de-música-de-fundo-obligato).
+- **Temporizadores** — Agende o início da reprodução de uma estação favorita, ou agende a paragem da reprodução, a uma hora específica — veja [Temporizador](#temporizador).
+- **Acesso profundo por teclado e braille** — Todas as funcionalidades são acessíveis inteiramente pelo teclado, com atalhos globais que funcionam a partir de qualquer parte do Windows, teclas de atalho diretas para estações favoritas individuais, e saída braille opcional para todas as notificações faladas do FreeRadio.
 
 ## Diretório Radio Browser
 
@@ -51,6 +65,7 @@ Todos os atalhos podem ser reatribuídos em Menu NVDA → Preferências → Defi
 | `Ctrl+Win+V` | Adicionar aos favoritos | Adiciona a estação em reprodução à lista de favoritos. Anuncia se a estação já está na lista. |
 | `Ctrl+Win+I` | Informação da estação | Anuncia o nome da estação em reprodução. Premir duas vezes mostra detalhes como país, género e bitrate numa caixa de diálogo. Premir três vezes copia as informações da faixa atual (metadados ICY) para a área de transferência, se disponíveis; se não existirem metadados, inicia o reconhecimento musical Shazam. Premir quatro vezes força o reconhecimento musical em caso de metadados ICY incorretos. |
 | `Ctrl+Win+M` | Espelho de áudio | Espelha a transmissão atual para um dispositivo de saída de áudio adicional em simultâneo. Prima novamente para parar o espelhamento. |
+| `Ctrl+Win+Shift+M` | Modo Obligato (música de fundo) | Reproduz em ciclo uma estação favorita escolhida discretamente em segundo plano, no seu próprio dispositivo de saída e volume, independentemente do que estiver a tocar no leitor principal. A primeira pressão abre uma caixa de diálogo para escolher a estação, o dispositivo de saída e o volume relativo. Prima novamente para o parar. |
 | `Ctrl+Win+E` | Gravação instantânea | Prima uma vez para iniciar a gravação da estação atual; prima novamente para parar. Prima **duas vezes** para iniciar uma **gravação de canção** — o ficheiro recebe o nome da faixa atual e a gravação para automaticamente quando a faixa muda. Prima duas vezes novamente enquanto uma gravação de canção está ativa para terminá-la antecipadamente. A reprodução continua sem interrupção em todos os modos de gravação. Disponível apenas em estações que difundem metadados ICY. |
 | `Ctrl+Win+W` | Abrir pasta de gravações | Abre a pasta com os ficheiros gravados no Explorador de Ficheiros. |
 | `Ctrl+Win+J` | Retrocesso do time-shift | Retrocede a rádio em direto 15 segundos. A primeira pressão entra no modo time-shift; cada pressão adicional retrocede mais 15 segundos, até ao limite do buffer (~10 minutos). Requer que o buffer de time-shift esteja ativado nas Definições. |
@@ -245,6 +260,23 @@ Na primeira pressão, aparece uma caixa de diálogo de seleção com os disposit
 
 > **Nota:** O espelho de áudio só está disponível quando o backend BASS está ativo. Se o volume for alterado enquanto o espelhamento está ativo, ambas as saídas são atualizadas em simultâneo.
 
+## Modo de Música de Fundo (Obligato)
+
+O atalho `Ctrl+Win+Shift+M` reproduz uma estação favorita discretamente em segundo plano, num motor de áudio completamente separado do leitor principal — como um fundo musical suave a tocar por baixo do que estiver realmente a fazer.
+
+Na primeira pressão, abre-se uma caixa de diálogo com três controlos:
+
+- **Estação de fundo** — uma lista das suas estações favoritas para escolher qual reproduzir em ciclo em segundo plano. Requer pelo menos um favorito; se a sua lista de favoritos estiver vazia, o FreeRadio pede-lhe para adicionar primeiro uma estação (`Ctrl+Win+V` enquanto uma estação está a tocar).
+- **Saída de áudio** — o dispositivo através do qual a estação de fundo é reproduzida: **Igual à saída principal** (predefinição), **Predefinição do sistema**, ou qualquer dispositivo específico que o FreeRadio consiga detetar.
+- **Volume de fundo** — a que volume a estação de fundo toca, como percentagem do volume atual do leitor principal (10%, 25%, 50%, 75%, 100%, 125% ou 150%). As suas escolhas são memorizadas para a próxima vez.
+
+Depois de iniciado, a estação de fundo continua a tocar independentemente do leitor principal — mudar de estação, podcast ou audiolivro no leitor principal, ou pará-lo completamente, nunca interrompe o modo Obligato. Duas coisas permanecem automaticamente ligadas ao leitor principal:
+
+- **Volume** — o volume de fundo é mantido continuamente na percentagem escolhida do volume atual do leitor principal, pelo que aumentar ou diminuir o volume principal (`Ctrl+Win+↑`/`↓`) ajusta a música de fundo na mesma proporção.
+- **Pausa** — pausar o leitor principal (`Ctrl+Win+P`) também pausa a estação de fundo, e retomar o leitor principal também a retoma. Uma paragem completa do leitor principal não é considerada uma pausa, pelo que a estação de fundo continua a tocar.
+
+Prima `Ctrl+Win+Shift+M` novamente a qualquer momento para parar o modo Obligato.
+
 ## Gravação
 
 As gravações são guardadas por predefinição em `Documents\FreeRadio Recordings\`. O nome do ficheiro inclui o nome da estação e a hora de início da gravação. A pasta de gravações pode ser alterada em qualquer altura em Menu NVDA → Preferências → Definições → FreeRadio → **Pasta de gravações**. Uma vez que o motor de gravação se liga diretamente à transmissão, o áudio é escrito em disco tal como é recebido — sem processamento nem recodificação; a qualidade da gravação é idêntica à qualidade da emissão.
@@ -319,6 +351,212 @@ Abra o separador Temporizador no navegador de estações (`Alt+4`). É possível
 
 Para ambos os tipos, se a hora introduzida já tiver passado, a ação é agendada para o dia seguinte. Se já existir um temporizador à mesma hora (independentemente do tipo), a adição de um novo é bloqueada; o utilizador é informado do conflito e solicitado a remover primeiro a entrada existente. Os temporizadores pendentes estão listados no separador; selecione um e prima o botão Remover Temporizador Selecionado para o cancelar.
 
+## Podcasts
+
+O FreeRadio inclui um leitor de podcasts completo. Pode subscrever qualquer feed de podcast RSS ou Atom, navegar por episódios, reproduzi-los, descarregá-los e retomar a reprodução onde ficou — tudo totalmente acessível.
+
+### Aceder ao Separador Podcasts
+
+Abra o navegador de estações com `Ctrl+Win+R` e mude para o separador **Podcasts** com `Ctrl+Tab` ou `Alt+6`. O separador está organizado em três áreas principais:
+
+1. **Pesquisar e adicionar** — secção superior para descobrir novos podcasts, incluindo uma lista de pré-visualização que mostra os episódios do resultado de pesquisa atualmente selecionado.
+2. **Subscrições** — lista dos seus feeds subscritos.
+3. **Episódios** — lista de episódios do feed selecionado, com controlos de reprodução.
+
+### Adicionar um Feed de Podcast
+
+Pode adicionar um feed de podcast de duas formas:
+
+**Por URL:**
+- No campo **"Ou introduza o URL do podcast"**, cole o URL completo do feed RSS ou Atom (por exemplo, `https://example.com/feed.xml`).
+- Prima Enter ou clique no botão **Adicionar Feed**.
+- O FreeRadio obtém o feed, valida-o e adiciona-o às suas subscrições. Se o feed for válido, ouvirá uma confirmação com o título do feed. Se falhar, uma mensagem de erro explica o motivo.
+
+**Por pesquisa:**
+- No campo **Pesquisar**, escreva uma palavra-chave (título do podcast, tema ou nome do apresentador) e prima Enter.
+- O FreeRadio pesquisa no diretório de podcasts da iTunes e apresenta os podcasts correspondentes na lista **Resultados da pesquisa**.
+- Selecionar um resultado obtém esse feed em segundo plano e lista os seus episódios na lista **Episódios do resultado selecionado** logo abaixo, para que possa pré-visualizar o que o programa realmente contém antes de decidir subscrever — veja [Pré-visualizar Episódios Antes de Subscrever](#pré-visualizar-episódios-antes-de-subscrever) abaixo.
+- Assim que estiver satisfeito com o que vê, selecione o resultado e prima `Enter`, ou abra o seu menu de contexto (tecla Aplicações / `Shift+F10`, ou clique com o botão direito) e escolha **Subscrever**, para o adicionar às suas subscrições. O feed é adicionado imediatamente e aparece na sua lista de subscrições. Não existe um botão separado "Adicionar Selecionado da Pesquisa" — `Enter` ou o menu de contexto é a única forma de subscrever a partir dos resultados de pesquisa, mantendo a interface limpa e acessível.
+
+> **Dica:** Também pode escrever um URL de feed diretamente no campo de pesquisa — se parecer um URL válido, o complemento tentará adicioná-lo como feed sem pesquisar.
+
+**Menu de contexto para resultados de pesquisa:** Clique com o botão direito num resultado de pesquisa, ou selecione-o e prima a tecla Aplicações / `Shift+F10`, para abrir um menu com uma única ação **Subscrever**, idêntica a premir `Enter` no resultado.
+
+### Pré-visualizar Episódios Antes de Subscrever
+
+Antes de se comprometer com uma subscrição, pode ouvir os episódios de um podcast diretamente a partir dos resultados de pesquisa. Sempre que seleciona um podcast na lista **Resultados da pesquisa**, o FreeRadio obtém esse feed e mostra os seus episódios — título e data de publicação — na lista **Episódios do resultado selecionado** por baixo.
+
+- Selecione um episódio nessa lista de pré-visualização e prima `Enter`, ou abra o seu menu de contexto (tecla Aplicações / `Shift+F10`, ou clique com o botão direito) e escolha **Pré-visualizar**, para começar a reproduzi-lo através do leitor normal. Todos os controlos de reprodução habituais (pausa, volume, time-shift, etc.) funcionam nele exatamente como funcionariam em qualquer outra estação ou episódio.
+- Enquanto um episódio está a ser pré-visualizado, o mesmo menu de contexto mostra **Parar Pré-visualização** no lugar de **Pré-visualizar** — escolha-o, ou prima `Enter` novamente nesse episódio, para parar.
+- Pré-visualizar não o subscreve a nada; é puramente para ouvir antes de decidir. A própria lista de pré-visualização é temporária — é substituída assim que seleciona um resultado de pesquisa diferente, e não persiste em lado nenhum da forma como as suas subscrições reais persistem.
+
+### Gerir Subscrições
+
+Depois de adicionar alguns feeds, estes aparecem na lista **Subscrições**. Cada entrada mostra o título do feed e o número de episódios disponíveis.
+
+- **Selecione um feed** para ver os seus episódios na lista inferior. A caixa de texto só de leitura **Detalhes do feed** por baixo da lista de subscrições mostra o título do feed, autor, descrição, número de episódios e URL.
+- **Atualizar um feed** — selecione-o e prima o botão **Atualizar Feed** (disponível através do menu de contexto, veja abaixo) para obter os episódios mais recentes. Todos os feeds também são atualizados automaticamente em segundo plano quando abre o separador Podcasts, pelo que normalmente vê os episódios mais recentes sem intervenção manual.
+- **Remover um feed** — selecione-o e prima `Delete` ou use o menu de contexto para o remover das suas subscrições. Ser-lhe-á pedida confirmação antes da remoção.
+
+**Menu de contexto para feeds:** Clique com o botão direito num feed, ou selecione-o e prima a tecla Aplicações / `Shift+F10`, para abrir um menu com:
+- **Atualizar Feed** — obtém novos episódios agora.
+- **Guardar Perfil de Áudio para Este Podcast** / **Limpar Perfil de Áudio** — veja [Perfil de Áudio do Podcast](#perfil-de-áudio-do-podcast).
+- **Remover Feed** — elimina a subscrição.
+- **Copiar URL do Feed** — copia o URL do feed para a área de transferência.
+
+### Navegar e Reproduzir Episódios
+
+Selecione um feed na lista de subscrições; os seus episódios aparecem na lista **Episódios** abaixo. Cada episódio mostra:
+- O seu número de episódio (1 = o episódio mais antigo no feed, contando até ao mais recente).
+- A sua data de publicação (se disponível).
+- O seu título.
+- Um prefixo **"Ouvido"** se o episódio tiver sido reproduzido na totalidade.
+- Um sufixo de duração, seja a duração total (se nunca reproduzido) ou o progresso decorrido/total (se reproduzido parcialmente).
+
+**Reprodução:**
+- Selecione um episódio e prima `Enter` ou `Espaço` para começar a reproduzi-lo. Se um episódio foi reproduzido parcialmente antes, retoma de onde ficou.
+- A linha *não* é atualizada durante a reprodução do episódio — isto é intencional, para que o NVDA não reanuncie repetidamente a linha enquanto está nela. A sua marca "Ouvido" e duração são atualizadas imediatamente no momento em que pausa o episódio ou este termina de reproduzir, pelo que a apresentação é sempre exata precisamente quando importa; simplesmente não avança segundo a segundo durante a reprodução.
+- Use `F3` / `F4` no separador Podcasts para se mover para o episódio anterior / seguinte e reproduzi-lo imediatamente. Também pode usar `←` / `→` enquanto a lista de episódios está em foco, ou `Ctrl+←` / `Ctrl+→` em qualquer parte do separador Podcasts — ambos funcionam de forma idêntica.
+- Use `Shift+F3` / `Shift+F4` para se mover entre feeds sem reproduzir episódios.
+- Prima `Espaço` enquanto um episódio está a tocar para pausar ou retomar a reprodução.
+
+**Retomar a reprodução:** O FreeRadio guarda a sua posição em cada episódio de podcast automaticamente — imediatamente sempre que pausa ou o episódio termina, e a cada 15 segundos em segundo plano enquanto continua a ouvir, para que uma falha ou reinício inesperado não perca muito progresso. Se parar ou pausar a reprodução e voltar mais tarde, o episódio retoma a partir da posição guardada. Se reproduzir o episódio até ao fim (dentro dos últimos 3 segundos), é marcado como "Ouvido" e não retomará — começa do início da próxima vez, e o prefixo "Ouvido" aparece na lista.
+
+**Menu de contexto para episódios:** Clique com o botão direito num episódio, ou selecione-o e prima a tecla Aplicações / `Shift+F10`, para abrir um menu com:
+- **Reproduzir Episódio** — inicia a reprodução.
+- **Descarregar Episódio** — descarrega o ficheiro do episódio para a sua pasta de gravações.
+- **Guardar Perfil de Áudio para Este Podcast** / **Limpar Perfil de Áudio** — os mesmos comandos do menu de contexto do próprio feed, incluídos aqui por conveniência para não ter de voltar à lista de Subscrições. Continuam a guardar um perfil para todo o podcast, não um separado para este episódio — veja [Perfil de Áudio do Podcast](#perfil-de-áudio-do-podcast).
+- **Copiar URL do Episódio** — copia o URL de áudio direto para a área de transferência.
+
+### Descarregar Episódios
+
+Selecione um episódio e clique no botão **Descarregar Episódio** (ou use o menu de contexto). O episódio é descarregado para a sua pasta de gravações (`Documentos\FreeRadio Recordings\` por predefinição). O nome do ficheiro baseia-se no título do episódio e na extensão de ficheiro detetada (`.mp3`, `.m4a`, `.ogg`, etc.). O NVDA anuncia quando o descarregamento começa e termina. Se o ficheiro já existir, é informado e o descarregamento é ignorado.
+
+### Filtrar Episódios
+
+Acima da lista de episódios está um campo **Filtro**. À medida que escreve, a lista de episódios é filtrada em tempo real para mostrar episódios cujo título contém o texto escrito, ou cujo número de episódio corresponde exatamente — pelo que escrever `47` salta diretamente para o episódio 47 mesmo que "47" não apareça em lado nenhum do seu título. O NVDA anuncia o número de episódios correspondentes após cada alteração. Prima a seta `Para Baixo` a partir do campo de filtro para mover o foco diretamente para a lista filtrada.
+
+### Detalhes de Reprodução de Podcasts
+
+Os episódios de podcast são reproduzidos usando o **motor BASS** (o mesmo motor usado para fluxos de rádio e, a partir desta versão, o único motor de reprodução que o FreeRadio usa). Como os episódios são descarregados progressivamente e são pesquisáveis, pode usar os atalhos de recuo/avanço de time-shift (`Ctrl+Win+J`/`Ctrl+Win+K`) enquanto reproduz um podcast para navegar dentro do episódio. A posição é guardada automaticamente para que possa retomar mais tarde.
+
+**Navegação escalonada:** Ao contrário do recuo fixo de 15 segundos da rádio em direto, a navegação dentro de um podcast ou audiolivro escala consoante a forma como prime a tecla, para que possa fazer uma pequena correção ou saltar uma longa distância sem premir repetidamente:
+
+- **Manter a tecla premida** (repetição automática) avança ou recua **5 segundos** por repetição — a mesma pequena quantidade que este atalho sempre usou para ficheiros.
+- **Um toque deliberado** navega **12 segundos**.
+- **Dois toques** em sucessão rápida navegam **1 minuto**.
+- **Três ou mais toques** navegam **5 minutos**; toques adicionais na mesma sequência não aumentam mais.
+
+Um toque deliberado é retido por um breve momento antes de realmente navegar, para o caso de vir mais um toque — só ocorre uma navegação por sequência de toques, dimensionada consoante quantos toques foram finalmente feitos, não a soma da quantidade de cada toque. Após uma navegação, o NVDA anuncia a posição decorrida/restante resultante no episódio em vez de apenas "X segundos à frente/atrás".
+
+**Velocidade de reprodução:** Pode ajustar a velocidade de reprodução dos episódios de podcast usando `Ctrl+Win+Shift+K` (mais rápido) e `Ctrl+Win+Shift+J` (mais lento). A velocidade muda em incrementos de 0,1x, variando entre 0,5x e 2,0x, com o tom preservado. Isto requer a biblioteca opcional `bass_fx.dll` colocada na pasta do complemento. Se a biblioteca estiver em falta, o NVDA informa-o de que a funcionalidade não está disponível.
+
+> **Nota:** O `bass_fx.dll` não é distribuído com o FreeRadio por predefinição. Pode descarregá-lo da [página do BASS FX](https://www.un4seen.com/bass-fx.html) e colocá-lo na pasta `bass/x64` do complemento (para NVDA de 64 bits) ou `bass` (para NVDA de 32 bits) para ativar esta funcionalidade.
+
+**Efeito sonoro ao retomar:** Sempre que um episódio retoma de uma posição guardada, o FreeRadio reproduz brevemente um suave efeito sonoro de carregamento de cassete num canal separado enquanto navega de volta ao seu ponto guardado, em vez de deixar o áudio do próprio episódio tocar audivelmente a partir de 0:00 entretanto. Isto acontece automaticamente sempre que o motor BASS está ativo e é independente da definição **Transição ao mudar de estação** — essa definição afeta apenas a mudança entre estações de rádio em direto, não a retoma de podcasts ou audiolivros.
+
+### Perfil de Áudio do Podcast
+
+Clique com o botão direito num podcast na lista Subscrições, ou clique com o botão direito em qualquer um dos seus episódios, e escolha **Guardar Perfil de Áudio para Este Podcast** para guardar o volume, efeitos, ganhos de equalizador e/ou velocidade de reprodução atuais como um perfil associado a esse podcast. Sempre que qualquer episódio desse podcast toca, as definições guardadas são aplicadas automaticamente, substituindo as predefinições globais. Como o comando está disponível tanto no menu de contexto do feed como no do episódio, pode aceder-lhe sem ter de voltar à lista de Subscrições — de qualquer forma, guarda sempre um perfil para todo o podcast, não um separado por episódio.
+
+Uma caixa de diálogo permite-lhe escolher exatamente o que guardar:
+- **Apenas volume**
+- **Apenas efeitos**
+- **Volume e efeitos**
+- **Volume e velocidade de reprodução**
+- **Efeitos e velocidade de reprodução**
+- **Apenas velocidade de reprodução**
+- **Volume, efeitos e velocidade de reprodução**
+
+Apenas as partes que escolher são escritas no perfil; o que for deixado de fora mantém o que já estava guardado. Por exemplo, escolher **Apenas velocidade de reprodução** num podcast que já tem um perfil de volume/efeitos guardado atualiza apenas a velocidade e deixa o resto intacto.
+
+**Limpar Perfil de Áudio** remove o perfil guardado do podcast, a partir de qualquer um dos menus de contexto. Só está ativo quando o podcast tem atualmente um perfil guardado.
+
+### Armazenamento de Dados de Podcasts
+
+As suas subscrições são armazenadas em `freeradio_podcasts.json` na pasta de configuração de utilizador do NVDA. As posições dos episódios são armazenadas separadamente em `podcast_positions.json` no mesmo local. Ambos os ficheiros são JSON simples e podem ser copiados para backup ou transferidos para outro computador.
+
+## Audiolivros (GETEM e LibriVox)
+
+O FreeRadio inclui um leitor de audiolivros que pesquisa, reproduz e descarrega livros de duas fontes:
+
+- **[GETEM](https://getem.boun.edu.tr/)** — a biblioteca digital gerida pelo Centro para Pessoas com Deficiência Visual da Universidade de Boğaziçi. Requer uma adesão gratuita para transmitir ou descarregar o áudio de um livro (a navegação não requer) — veja [Iniciar Sessão](#iniciar-sessão) abaixo.
+- **[LibriVox](https://librivox.org/)** — o projeto de audiolivros de domínio público lidos por voluntários. Não é necessária conta ou início de sessão de qualquer tipo; todo o seu catálogo, incluindo os próprios ficheiros de áudio, é de domínio público e livremente acessível.
+
+Os resultados de ambas as fontes aparecem juntos numa única lista fundida de **Resultados da pesquisa** e numa única lista fundida de **Biblioteca** — não existe um separador ou menu suspenso separado para alternar entre eles. A fonte de cada livro (GETEM ou LibriVox) é apresentada como uma etiqueta junto ao seu título, e nos seus detalhes, para que possa sempre saber qual está a ver. Pode pesquisar, pré-visualizar, adicionar, reproduzir e descarregar livros de qualquer uma das fontes exatamente da mesma forma; reproduzir obras de várias partes com retoma automática entre partes; e descarregar livros para ouvir offline — tudo totalmente acessível.
+
+Qualquer uma das fontes pode ser desativada em **NVDA Menu → Preferências → Definições → FreeRadio** com a lista de verificação **Fontes de audiolivros**, se quiser pesquisar apenas uma delas. Ambas estão ativadas por predefinição.
+
+> **Nota:** Ouvir um livro do GETEM requer uma adesão gratuita ao GETEM. Navegar no catálogo do GETEM não requer conta, mas resolver e reproduzir o áudio de um livro do GETEM requer — veja [Iniciar Sessão](#iniciar-sessão) abaixo. Os livros do LibriVox nunca requerem conta.
+
+### Aceder ao Separador Audiolivros
+
+Abra o navegador de estações com `Ctrl+Win+R` e mude para o separador **Audiolivros** com `Ctrl+Tab` ou `Alt+7`. O separador tem três áreas principais:
+
+1. **Pesquisar** — um campo de texto para pesquisar ambos os catálogos ativados de uma vez, com uma lista de resultados que aparece assim que uma pesquisa é executada.
+2. **Biblioteca** — a lista de livros que adicionou de qualquer uma das fontes, onde os reproduz, descarrega e gere.
+3. **Detalhes** — uma caixa só de leitura que mostra a fonte, título, autor, narrador, editora, formato, número de partes, descrição e URL do catálogo do livro selecionado, em qualquer uma das listas.
+
+### Iniciar Sessão
+
+O GETEM requer ser um membro registado para transmitir ou descarregar o áudio real de um livro, embora o próprio catálogo possa ser pesquisado livremente. Introduza o seu nome de utilizador e palavra-passe do GETEM uma vez em **NVDA Menu → Preferências → Definições → FreeRadio**; são armazenados encriptados no disco (através da API Windows Data Protection, associada à sua conta de utilizador do Windows) e reutilizados automaticamente depois. Se tentar reproduzir ou descarregar um livro do GETEM antes de introduzir as credenciais, o FreeRadio diz-lhe para as adicionar primeiro nas Definições.
+
+O LibriVox não precisa de nenhum passo de início de sessão — os seus resultados e áudio podem ser pesquisados, pré-visualizados, reproduzidos e descarregados imediatamente, sem credenciais a introduzir.
+
+### Pesquisar Audiolivros
+
+Escreva um termo de pesquisa no campo de pesquisa e prima `Enter`. O FreeRadio pesquisa nas fontes ativadas nas Definições e funde os resultados numa única lista:
+
+- O **GETEM** é pesquisado por título, autor, narrador, assunto e editora ao mesmo tempo, uma vez que o próprio formulário de pesquisa do GETEM só suporta restringir por todos eles em conjunto, em vez de uma única pesquisa através de qualquer um deles. Só são mostradas obras realmente disponíveis em formato áudio (narração humana ou computorizada, audiodescrição, drama radiofónico, livros falados DAISY, etc.); braille, letra grande e outros formatos não sonoros são filtrados automaticamente.
+- O **LibriVox** é pesquisado por título ou autor/leitor no seu catálogo de domínio público.
+
+O NVDA anuncia quantos audiolivros foram encontrados no total.
+
+Selecionar um resultado mostra os seus detalhes — autor, narrador, editora, formato e número de partes — na caixa de detalhes abaixo.
+
+**Pré-visualização:** Selecione um resultado e prima `Espaço`, ou abra o seu menu de contexto (tecla Aplicações / `Shift+F10`, ou clique com o botão direito) e escolha **Pré-visualizar**, para começar a reproduzi-lo a partir da primeira parte sem o adicionar à sua biblioteca. Enquanto um livro está a ser pré-visualizado, o mesmo menu de contexto mostra **Parar Pré-visualização** no seu lugar — escolha-o, ou prima `Espaço` novamente, para parar. Pré-visualizar um livro não guarda a sua posição de escuta, uma vez que isso só é seguido para livros já na sua biblioteca.
+
+**Adicionar à sua biblioteca:** Selecione um resultado e prima `Enter`, ou use o seu menu de contexto e escolha **Adicionar à Biblioteca**, para o adicionar. O FreeRadio diz-lhe se o livro já lá está.
+
+### A Sua Biblioteca
+
+Os livros que adicionou aparecem na lista **Biblioteca**, mostrando título, autor e formato. Selecionar um mostra os seus detalhes abaixo.
+
+- Prima `Enter` ou `Espaço` para reproduzir o livro selecionado. Se nada estiver carregado, `Espaço` inicia-o; se algo já estiver a tocar, `Espaço` pausa-o, correspondendo ao resto do leitor.
+- Use `F3` / `F4` no separador Audiolivros para se mover para o **livro** anterior / seguinte na sua biblioteca e começar a reproduzi-lo. `Ctrl+←` / `Ctrl+→` fazem o mesmo enquanto a lista da biblioteca está em foco.
+- Use `Shift+F3` / `Shift+F4` para se mover entre **partes** do livro atualmente a tocar — o inverso do separador Podcasts, onde F3/F4 se movem entre episódios e Shift+F3/F4 entre feeds. Isto porque um livro é uma única entrada da biblioteca mesmo quando tem várias partes, pelo que a navegação mais detalhada "por parte" fica aqui nas teclas modificadas com Shift.
+
+**Menu de contexto para entradas da biblioteca:** Clique com o botão direito num livro, ou selecione-o e prima a tecla Aplicações / `Shift+F10`, para abrir um menu com:
+- **Reproduzir Média** — inicia a reprodução, o mesmo que `Enter`.
+- **Descarregar Livro** — descarrega todas as partes do livro; veja [Descarregar Audiolivros](#descarregar-audiolivros) abaixo.
+- **Copiar o URL** — copia o URL da página do catálogo do livro para a área de transferência (a página do catálogo GETEM para um livro do GETEM, ou a página de detalhes do archive.org para um livro do LibriVox).
+- **Guardar Perfil de Áudio para Este Livro** / **Limpar Perfil de Áudio** — veja [Perfil de Áudio do Audiolivro](#perfil-de-áudio-do-audiolivro) abaixo.
+- **Remover da Biblioteca** — elimina o livro da sua biblioteca.
+
+### Reprodução e Retoma
+
+Uma obra de várias partes é tratada como um único item no leitor, não uma linha por parte — da mesma forma que um episódio de podcast é um único item independentemente de como é entregue. O FreeRadio lembra-se de qual parte ouviu por último e retoma aí automaticamente da próxima vez que reproduzir esse livro, mesmo após um reinício do NVDA.
+
+Quando uma parte termina, o FreeRadio inicia automaticamente a parte seguinte do mesmo livro — não precisa de a selecionar manualmente. Isto acontece mesmo que a janela do Navegador de Estações esteja fechada nessa altura; a parte "a tocar agora" mostrada na lista Biblioteca é ressincronizada automaticamente da próxima vez que a janela é aberta.
+
+A reprodução é transmitida através de um pequeno relé local em vez de descarregar toda a parte primeiro, pelo que a escuta começa assim que os primeiros bytes chegam — o mesmo comportamento de início imediato que os podcasts usam. Todos os controlos habituais do leitor (pausa, volume, time-shift, velocidade de reprodução, dispositivo de saída, etc.) funcionam num audiolivro exatamente como funcionariam numa estação ou episódio de podcast.
+
+Tal como os podcasts, retomar um livro da sua posição guardada reproduz um breve efeito sonoro de carregamento de cassete enquanto o FreeRadio navega até ao seu ponto guardado — veja a nota **Efeito sonoro ao retomar** em [Detalhes de Reprodução de Podcasts](#detalhes-de-reprodução-de-podcasts).
+
+### Perfil de Áudio do Audiolivro
+
+Clique com o botão direito num livro na sua lista Biblioteca e escolha **Guardar Perfil de Áudio para Este Livro** para guardar o volume, efeitos, ganhos de equalizador e/ou velocidade de reprodução atuais como um perfil associado a esse livro. Sempre que o livro (ou qualquer uma das suas partes) toca, as definições guardadas são aplicadas automaticamente, substituindo as predefinições globais. Isto funciona exatamente da mesma forma que o [Perfil de Áudio do Podcast](#perfil-de-áudio-do-podcast) acima, incluindo o mesmo conjunto de opções de guardar (volume, efeitos e/ou velocidade de reprodução, em qualquer combinação) e o mesmo comportamento de atualização parcial.
+
+**Limpar Perfil de Áudio** remove o perfil guardado do livro; só está ativo quando o livro tem atualmente um perfil guardado.
+
+### Descarregar Audiolivros
+
+Selecione um livro na sua biblioteca e escolha **Descarregar Livro** no seu menu de contexto para guardar cada parte na sua própria pasta (com o nome do livro) dentro da sua pasta de gravações (`Documentos\FreeRadio Recordings\` por predefinição). Os ficheiros são numerados para que as partes fiquem sempre ordenadas pela ordem de escuta, independentemente de como o próprio GETEM as designa. O NVDA anuncia quantas partes foram guardadas assim que o descarregamento termina; se uma parte falhar, o último erro é reportado juntamente com a contagem.
+
+### Armazenamento de Dados de Audiolivros
+
+Cada fonte mantém o seu próprio ficheiro de biblioteca, apesar de serem apresentadas fundidas no separador Audiolivros. A sua biblioteca GETEM (livros adicionados e o seu progresso de escuta) é armazenada em `freeradio_getem_library.json`, e a sua biblioteca LibriVox é armazenada separadamente em `freeradio_librivox_library.json`, ambas na pasta de configuração de utilizador do NVDA. As suas credenciais GETEM encriptadas são armazenadas separadamente em `freeradio_getem_credentials.bin` no mesmo local, e só podem ser desencriptadas pela mesma conta de utilizador do Windows que as guardou. O LibriVox não tem ficheiro de credenciais, uma vez que não requer conta.
+
 ## Definições
 
 As seguintes opções podem ser configuradas em Menu NVDA → Preferências → Definições → FreeRadio:
@@ -352,6 +590,7 @@ Quando a opção **Silenciar notificações** está ativada nas Definições, o 
 
 - Nome da estação quando uma nova estação começa a reproduzir
 - Alterações do estado de reprodução: reproduzir, pausar, parar
+- Modo Obligato: iniciado / parado
 - Eventos de gravação: iniciada, parada, concluída (gravações instantâneas, de canção e agendadas)
 - Anúncios de mudança de faixa, mesmo quando **Anunciar automaticamente mudanças de faixa** também está ativo
 
@@ -425,6 +664,13 @@ O FreeRadio verifica automaticamente a existência de novas versões através do
 - Se não estiver disponível uma ligação de descarregamento direto, é apresentado o botão **Abrir Página** e a página da versão do GitHub abre no browser predefinido.
 
 **Para desativar as verificações automáticas:** Desative a opção **Verificar atualizações automaticamente** em Menu NVDA → Preferências → Definições → FreeRadio.
+
+## Agradecimentos e Créditos
+
+* **Base e Conceitos Originais:** Um sincero agradecimento a **Gary Mp** ([GaryMp/freeradio](https://github.com/GaryMp/freeradio)) pelos conceitos originais do complemento de rádio e pelas estruturas centrais de gestão de favoritos que serviram de base fundacional para este projeto.
+* **Ferramentas de IA e LLM:** Reconhecimento grato às ferramentas modernas de Modelos de Linguagem de Grande Escala (LLM) (incluindo Claude, ChatGPT e Gemini) pela assistência durante as fases de desenvolvimento, refatoração de código e implementação de funcionalidades.
+* **Serviço de Diretório:** O diretório de estações é fornecido pela [Radio Browser API](https://www.radio-browser.info/).
+* **Comunidade:** Um sincero agradecimento a todos os membros da comunidade NVDA e tradutores pelo seu apoio contínuo, feedback e contribuições de localização.
 
 ## Licença
 

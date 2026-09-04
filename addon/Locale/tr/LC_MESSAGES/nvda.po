@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FreeRadio 2026.20.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-09-03 21:08+0300\n"
-"PO-Revision-Date: 2026-09-03 21:10+0300\n"
+"POT-Creation-Date: 2026-09-03 22:18+0300\n"
+"PO-Revision-Date: 2026-09-03 22:37+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -18,7 +18,7 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: addon/globalPlugins/freeradio/__init__.py:393
+#: addon/globalPlugins/freeradio/__init__.py:407
 msgid ""
 "Time-shift buffer: running low on disk space, the oldest audio is being "
 "dropped more aggressively."
@@ -26,28 +26,28 @@ msgstr ""
 "Zaman kaydırma tamponu: disk alanı azalıyor, en eski ses daha agresif bir "
 "şekilde düşürülüyor."
 
-#: addon/globalPlugins/freeradio/__init__.py:477
+#: addon/globalPlugins/freeradio/__init__.py:491
 #: addon/globalPlugins/freeradio/recordingMixin.py:193
 #, python-format
 msgid "Recording started: %s"
 msgstr "Kayıt başladı: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:480
+#: addon/globalPlugins/freeradio/__init__.py:494
 #, python-format
 msgid "Recording finished: %s"
 msgstr "Kayıt tamamlandı: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:484
+#: addon/globalPlugins/freeradio/__init__.py:498
 #, python-format
 msgid "Recording failed: could not connect to %s"
 msgstr "Kayıt başarısız oldu: %s'e bağlanılamadı"
 
-#: addon/globalPlugins/freeradio/__init__.py:488
+#: addon/globalPlugins/freeradio/__init__.py:502
 #, python-format
 msgid "Recording conversion failed. The original file was kept: %s"
 msgstr "Dönüştürme başarısız, Orijinal dosya kaydedildi: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:493
+#: addon/globalPlugins/freeradio/__init__.py:507
 #, python-format
 msgid ""
 "Could not use the selected folder for '%(station)s' (%(reason)s). Saved to "
@@ -56,44 +56,44 @@ msgstr ""
 "'%(station)s' için belirlenen klasör kullanılamadı. (%(reason)s). Bunun "
 "yerine varsayılan kayıtlar klasörüne kaydedildi."
 
-#: addon/globalPlugins/freeradio/__init__.py:558
+#: addon/globalPlugins/freeradio/__init__.py:580
 msgid "FreeRadio Stations"
 msgstr "FreeRadio İstasyonları"
 
-#: addon/globalPlugins/freeradio/__init__.py:578
+#: addon/globalPlugins/freeradio/__init__.py:600
 #, python-format
 msgid "Station no longer in favourites: %s"
 msgstr "İstasyon artık favorilerde değil: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:587
+#: addon/globalPlugins/freeradio/__init__.py:609
 #, python-format
 msgid "%s playback shortcut ()"
 msgstr "%s çalma kısayolu ()"
 
-#: addon/globalPlugins/freeradio/__init__.py:617
+#: addon/globalPlugins/freeradio/__init__.py:639
 msgid "Station &Browser...\tCtrl+Win+R"
 msgstr "İstasyon &Tarayıcısı...\tCtrl+Win+R"
 
-#: addon/globalPlugins/freeradio/__init__.py:626
+#: addon/globalPlugins/freeradio/__init__.py:648
 msgid "FreeRadio &Settings..."
 msgstr "&FreeRadio Ayarları..."
 
-#: addon/globalPlugins/freeradio/__init__.py:635
+#: addon/globalPlugins/freeradio/__init__.py:657
 msgid "Check for &Updates..."
 msgstr "&Güncellemeleri kontrol et..."
 
-#: addon/globalPlugins/freeradio/__init__.py:648
+#: addon/globalPlugins/freeradio/__init__.py:670
 msgid "&FreeRadio"
 msgstr "&FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:707
+#: addon/globalPlugins/freeradio/__init__.py:730
 msgid "Open FreeRadio station browser"
 msgstr "FreeRadio istasyon tarayıcısını aç"
 
-#: addon/globalPlugins/freeradio/__init__.py:708
-#: addon/globalPlugins/freeradio/__init__.py:717
-#: addon/globalPlugins/freeradio/__init__.py:726
-#: addon/globalPlugins/freeradio/__init__.py:735
+#: addon/globalPlugins/freeradio/__init__.py:731
+#: addon/globalPlugins/freeradio/__init__.py:740
+#: addon/globalPlugins/freeradio/__init__.py:749
+#: addon/globalPlugins/freeradio/__init__.py:758
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:30
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:156
 #: addon/globalPlugins/freeradio/audioFxMixin.py:33
@@ -108,6 +108,7 @@ msgstr "FreeRadio istasyon tarayıcısını aç"
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:48
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:71
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:90
+#: addon/globalPlugins/freeradio/obligatoMixin.py:196
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:43
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:140
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:192
@@ -125,15 +126,15 @@ msgstr "FreeRadio istasyon tarayıcısını aç"
 msgid "FreeRadio"
 msgstr "FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:716
+#: addon/globalPlugins/freeradio/__init__.py:739
 msgid "Open FreeRadio audio book library"
 msgstr "Sesli Kitaplığı aç"
 
-#: addon/globalPlugins/freeradio/__init__.py:725
+#: addon/globalPlugins/freeradio/__init__.py:748
 msgid "Open FreeRadio podcast subscriptions"
 msgstr "Podcast aboneliklerini aç"
 
-#: addon/globalPlugins/freeradio/__init__.py:734
+#: addon/globalPlugins/freeradio/__init__.py:757
 msgid ""
 "Add currently playing station to favourites, download the whole audio book "
 "if one is playing, or download the episode if a podcast is playing"
@@ -141,55 +142,55 @@ msgstr ""
 "İstasyon oynatılıyorsa favorilere ekle; podcast oynatılıyorsa bölümü, kitap "
 "oynatılıyorsa kitabın tamamını  indir"
 
-#: addon/globalPlugins/freeradio/__init__.py:741
+#: addon/globalPlugins/freeradio/__init__.py:764
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:167
 #: addon/globalPlugins/freeradio/recordingMixin.py:106
 #: addon/globalPlugins/freeradio/recordingMixin.py:187
 msgid "No station is playing"
 msgstr "Çalan bir istasyon yok"
 
-#: addon/globalPlugins/freeradio/__init__.py:763
+#: addon/globalPlugins/freeradio/__init__.py:786
 #, python-format
 msgid "Already in favourites: %s"
 msgstr "Zaten favorilerde: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:766
+#: addon/globalPlugins/freeradio/__init__.py:789
 #, python-format
 msgid "Added to favourites: %s"
 msgstr "Favorilere eklendi: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:780
+#: addon/globalPlugins/freeradio/__init__.py:803
 msgid "No audio book is playing"
 msgstr "Çalan sesli kitap yok"
 
-#: addon/globalPlugins/freeradio/__init__.py:786
+#: addon/globalPlugins/freeradio/__init__.py:809
 msgid "Could not download this audio book."
 msgstr "Bu sesli kitap indirilemedi."
 
-#: addon/globalPlugins/freeradio/__init__.py:859
+#: addon/globalPlugins/freeradio/__init__.py:882
 #, python-format
 msgid "Could not play %(name)s: %(reason)s"
 msgstr "%(name)s çalınamadı: %(reason)s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1041
+#: addon/globalPlugins/freeradio/__init__.py:1064
 msgid "No releases found on GitHub yet."
 msgstr "GitHub'da henüz bir sürüm bulunamadı."
 
-#: addon/globalPlugins/freeradio/__init__.py:1045
+#: addon/globalPlugins/freeradio/__init__.py:1068
 #, python-format
 msgid "Update check failed (HTTP %d)."
 msgstr "Güncelleme kontrolü başarısız (HTTP %d)."
 
-#: addon/globalPlugins/freeradio/__init__.py:1050
+#: addon/globalPlugins/freeradio/__init__.py:1073
 msgid "Update check failed. Please check your internet connection."
 msgstr ""
 "Güncelleme kontrolü başarısız. Lütfen internet bağlantınızı kontrol edin."
 
-#: addon/globalPlugins/freeradio/__init__.py:1065
+#: addon/globalPlugins/freeradio/__init__.py:1088
 msgid "Could not determine latest version."
 msgstr "En son sürüm belirlenemedi."
 
-#: addon/globalPlugins/freeradio/__init__.py:1084
+#: addon/globalPlugins/freeradio/__init__.py:1107
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -202,17 +203,17 @@ msgstr ""
 "\n"
 "Şimdi indirip yüklemek ister misiniz?"
 
-#: addon/globalPlugins/freeradio/__init__.py:1087
-#: addon/globalPlugins/freeradio/__init__.py:1095
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1110
+#: addon/globalPlugins/freeradio/__init__.py:1118
+#: addon/globalPlugins/freeradio/__init__.py:1179
 msgid "unknown"
 msgstr "Bilinmeyen"
 
-#: addon/globalPlugins/freeradio/__init__.py:1088
+#: addon/globalPlugins/freeradio/__init__.py:1111
 msgid "&Install"
 msgstr "&Yükle"
 
-#: addon/globalPlugins/freeradio/__init__.py:1092
+#: addon/globalPlugins/freeradio/__init__.py:1115
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -225,24 +226,24 @@ msgstr ""
 "\n"
 "İndirme sayfasını açmak ister misiniz?"
 
-#: addon/globalPlugins/freeradio/__init__.py:1096
+#: addon/globalPlugins/freeradio/__init__.py:1119
 msgid "&Open Page"
 msgstr "&Sayfayı Aç"
 
-#: addon/globalPlugins/freeradio/__init__.py:1101
+#: addon/globalPlugins/freeradio/__init__.py:1124
 msgid "FreeRadio Update Available"
 msgstr "FreeRadio Güncellemesi Mevcut"
 
-#: addon/globalPlugins/freeradio/__init__.py:1104
+#: addon/globalPlugins/freeradio/__init__.py:1127
 msgid "&Cancel"
 msgstr "&İptal"
 
-#: addon/globalPlugins/freeradio/__init__.py:1119
+#: addon/globalPlugins/freeradio/__init__.py:1142
 #, python-format
 msgid "Downloading FreeRadio %s…"
 msgstr "FreeRadio %s indiriliyor…"
 
-#: addon/globalPlugins/freeradio/__init__.py:1137
+#: addon/globalPlugins/freeradio/__init__.py:1160
 #: addon/globalPlugins/freeradio/radioDialog.py:4796
 #: addon/globalPlugins/freeradio/radioDialog.py:6115
 #: addon/globalPlugins/freeradio/recordingMixin.py:62
@@ -250,17 +251,17 @@ msgstr "FreeRadio %s indiriliyor…"
 msgid "Download failed: %s"
 msgstr "İndirme başarısız: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1147
+#: addon/globalPlugins/freeradio/__init__.py:1170
 #, python-format
 msgid "Could not launch installer. File saved to: %s"
 msgstr "Yükleyici başlatılamadı. Dosya şuraya kaydedildi: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1179
 #, python-format
 msgid "FreeRadio is up to date. Installed: %s"
 msgstr "FreeRadio güncel. Yüklenen: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1157
+#: addon/globalPlugins/freeradio/__init__.py:1180
 msgid "FreeRadio Update Check"
 msgstr "FreeRadio Güncelleme Kontrolü"
 
@@ -283,6 +284,7 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:67
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:151
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
 #: addon/globalPlugins/freeradio/radioDialog.py:1142
 #: addon/globalPlugins/freeradio/settingsPanel.py:522
 msgid "System default"
@@ -652,6 +654,94 @@ msgstr ""
 "indirin ve ffmpeg.exe'yi FreeRadio eklenti klasörüne yerleştirin veya "
 "bilgisayarınızda varsa ayarlardan yolu gösterin."
 
+#: addon/globalPlugins/freeradio/obligatoMixin.py:55
+msgid "Obligato Mode"
+msgstr "Sürekli fon modu"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:64
+#: addon/globalPlugins/freeradio/obligatoMixin.py:71
+#| msgid "%(count)d stations"
+msgid "Background station:"
+msgstr "Arka plan istasyonu:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:86
+#: addon/globalPlugins/freeradio/obligatoMixin.py:97
+msgid "Audio output:"
+msgstr "Ses çıkışı:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
+#| msgid "Select the main output device:"
+msgid "Same as main output"
+msgstr "Ana sesin kullandığı çıkışla aynı."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:123
+#: addon/globalPlugins/freeradio/obligatoMixin.py:137
+msgid "Background volume:"
+msgstr "Fon için ses seviyesi:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:131
+msgid "100% (same as main volume)"
+msgstr "%100 (ana sesle aynı)"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:135
+#, python-format
+msgid "%d%% of main volume"
+msgstr "Ana sesin %d%%'si"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:149
+msgid "&Start"
+msgstr "&Başlat"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:167
+#| msgid "Please select a station"
+msgid "Please select a station for the background music."
+msgstr "Lütfen fon müziği için bir istasyon seçin."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:195
+msgid "Toggle Obligato background music mode"
+msgstr "Sürekli fon müziği modunu aç/kapat   "
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:210
+msgid ""
+"No favourite stations. Add a station to favourites first to use Obligato "
+"mode."
+msgstr ""
+"Favori istasyon yok. Sürekli fon modunu kullanmak için önce bir istasyonu "
+"favorilere ekleyin."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:272
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
+msgid "No stream URL available for this station"
+msgstr "Bu istasyon için yayın adresi bulunamadı"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:286
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
+msgid "No internet connection. Please check your connection and try again."
+msgstr ""
+"İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edip tekrar deneyin."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:294
+#| msgid "Could not start song recording"
+msgid "Could not start Obligato mode."
+msgstr "Sürekli fon modu başlatılamadı."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:331
+#, python-format
+#| msgid "Song recording started: %s"
+msgid "Obligato mode started: %s"
+msgstr "Sürekli fon modu başlatıldı: %s"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:384
+#, python-format
+#| msgid "Could not play %(name)s: %(reason)s"
+msgid "Could not play %(name)s in Obligato mode: %(reason)s"
+msgstr "Sürekli fon modunda %(name)s oynatılamadı: %(reason)s"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:411
+#| msgid "Audio mirror stopped"
+msgid "Obligato mode stopped"
+msgstr "Sürekli fon modu durduruldu"
+
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:42
 msgid "Pause or resume FreeRadio playback"
 msgstr "FreeRadio oynatmayı duraklat veya devam ettir"
@@ -735,15 +825,6 @@ msgstr ""
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:528
 msgid "Unknown station"
 msgstr "Bilinmeyen istasyon"
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
-msgid "No stream URL available for this station"
-msgstr "Bu istasyon için yayın adresi bulunamadı"
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
-msgid "No internet connection. Please check your connection and try again."
-msgstr ""
-"İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edip tekrar deneyin."
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:653
 #, python-format
@@ -3030,132 +3111,185 @@ msgstr ""
 #: buildVars.py:26
 msgid ""
 "\n"
-"- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS is\n"
-"now the sole, mandatory playback backend. This removes the \"Disable BASS\n"
-"backend\" option and its VLC/wmplayer/PotPlayer path settings from the\n"
-"FreeRadio settings panel; if BASS itself fails to start, playback now\n"
-"fails with a clear error instead of silently switching to another\n"
-"player.\n"
-"- Internal cleanup: removed unused code paths and a dead\n"
-"\"player_paths\" field from scheduled recordings that was never actually\n"
-"used for playback.\n"
-"- **Seeking within a podcast or audio book now supports tap-to-jump "
-"amounts:** a single press seeks 12 seconds, two quick presses seek 1 minute, "
-"three quick presses seek 5 minutes. Holding the key down still seeks "
-"continuously in the original 5-second steps, unchanged.\n"
-"**Improved**\n"
-"- Station search now also matches on **codec**, **bitrate**, and "
-"**language**, in addition to name, country, and tags. For example, searching "
-"\"aac\" or \"320\" now finds stations using that codec or bitrate, and "
-"results can be combined with other terms (e.g. \"jazz 320\"). Partialy "
-"closing #30\n"
-"Add a new source for audio books\n"
-"- Added LibriVox as a second audio book source alongside GETEM. Both "
-"catalogs now share the same Audio Books tab: search, browse, play, and "
-"resume progress work the same way regardless of which source a book came "
-"from.\n"
-"- Searching the Audio Books tab now queries GETEM and LibriVox together, and "
-"results from both are combined into a single list.\n"
-"- Pasting a LibriVox or Getem book URL directly into the search field now "
-"resolves and adds that book.\n"
-"- Added an \"Audio book sources\" option to the settings panel: a checkbox "
-"list lets you choose which of GETEM and LibriVox are searched (both are "
-"enabled by default).\n"
-"- **GETEM catalog & detail-page parsing: replaced regex scraping with a real "
-"DOM parser**\n"
-"The HTML-scraping code that read GETEM's search results and work-detail "
-"pages relied on regexes over raw HTML and a literal string split to find "
-"each result row. That approach breaks silently the moment the site changes "
-"something cosmetic — element order, an extra wrapper tag, a label nested one "
-"level deeper — without changing what the page actually means.\n"
-"Replaced it with a small, dependency-free DOM builder on top of Python's "
-"standard `html.parser.HTMLParser`, then rewrote every scraping function to "
-"query that tree by tag/class instead of matching raw markup:\n"
-"- **Catalog search results**: each result row is now parsed as its own real "
-"subtree, so a field missing from one row can no longer leak text belonging "
-"to the next row — a risk the old row-splitting approach carried.\n"
-"- **Format-filter options, hidden form fields**: read directly from parsed "
-"`<select>`/`<option>` elements instead of locating them by substring "
-"search.\n"
-"- **Work-detail pages**: chapter links, title, and metadata fields (author/"
-"narrator/publisher/etc.) are now found by walking the tree rather than "
-"requiring an exact tag sequence; a field's own label text is excluded via "
-"nesting-depth-independent lookup instead of an assumed fixed `</div></div>` "
-"boundary.\n"
-"- **URL resolution**: relative/absolute link handling now goes through "
-"`urllib.parse.urljoin`, which correctly covers protocol-relative and query-"
-"only links the old hand-written checks didn't.\n"
-"- No public function signatures changed, so nothing else in the add-on "
-"needed touching. Verified against hand-built fixtures covering the exact "
-"failure modes the old code was vulnerable to (reordered attributes, div/span "
-"markup variance, a field missing mid-listing, a link wrapped in an extra "
-"tag, a deeply nested label) — all resolved correctly.\n"
+"### Added\n"
+"- **Obligato mode (background music)** — Play a favourite station quietly in "
+"the background, on its own independent audio output and volume, no matter "
+"what plays (or doesn't play) as the main media.\n"
+"  - New shortcut: `Ctrl+Win+Shift+M` toggles Obligato mode on and off.\n"
+"  - On first press, a dialog lets you choose the background station (from "
+"your favourites), the output device (**Same as main output** by default, "
+"**System default**, or any specific device), and the background volume as a "
+"percentage of the main player's current volume (25%–150%). Your choices are "
+"remembered for next time.\n"
+"  - Runs on a fully separate playback engine from the main player, so "
+"switching stations, podcasts, or audio books — or stopping the main player "
+"entirely — never interrupts it.\n"
+"  - Background volume automatically stays proportional to the main player's "
+"volume as it changes (`Ctrl+Win+↑`/`↓`).\n"
+"  - Pausing the main player (`Ctrl+Win+P`) pauses the background station "
+"too, and resuming the main player resumes it; a full stop of the main player "
+"is not treated as a pause.\n"
+"  - Requires at least one favourite station; if none exist, FreeRadio "
+"prompts you to add one first.\n"
+"  - Start/stop announcements respect the **Mute notifications** setting.\n"
 msgstr ""
 "\n"
-"- VLC / PotPlayer / Windows Media Player yedek desteği kaldırıldı. Artık tek "
-"ve zorunlu oynatma altyapısı BASS. Bu değişiklikle FreeRadio ayarlar "
-"panelinden “BASS altyapısını devre dışı bırak” seçeneği ve ilgili VLC/"
-"wmplayer/PotPlayer yol ayarları da kaldırıldı; BASS başlatılamazsa artık "
-"sessizce başka bir oynatıcıya geçmek yerine net bir hata mesajıyla oynatma "
-"işlemi sonlandırılır.\n"
-"- İçsel temizlik: Kullanılmayan kod yolları ve aslında hiçbir zaman oynatma "
-"için kullanılmayan “player_paths” alanı kaldırıldı.\n"
-"- **Podcast veya sesli kitap içinde ilerleme artık belirli miktarlarda "
-"atlama desteği sunuyor:** Tek bir dokunuşla 12 saniye, iki hızlı dokunuşla 1 "
-"dakika, üç hızlı dokunuşla 5 dakika ileri/geri sarılabilir. Tuşu basılı "
-"tutmak ise yine eskisi gibi 5 saniyelik adımlarla sürekli ilerlemeye devam "
-"eder.\n"
-"**Geliştirildi**\n"
-"- İstasyon araması artık isim, ülke ve etiketlerin yanı sıra **kodek**, "
-"**bit hızı** ve **dil** bilgilerine göre de eşleşme yapıyor. Örneğin “aac” "
-"veya “320” kelimeleriyle yapılan aramalar, bu kodek veya bit hızını kullanan "
-"istasyonları bulur ve sonuçlar diğer terimlerle birleştirilebilir (örneğin "
-"“jazz 320”). Kısmen #30 sorunu çözüldü.\n"
-"- Yeni bir sesli kitap kaynağı eklendi\n"
-"- GETEM’in yanı sıra LibriVox da ikinci sesli kitap kaynağı olarak eklendi. "
-"Artık her iki katalog da aynı Sesli Kitaplar sekmesini paylaşıyor: Arama, "
-"gözatma, oynatma ve kaldığı yerden devam ettirme işlemleri, kitabın hangi "
-"kaynaktan geldiğine bakılmaksızın aynı şekilde çalışıyor.\n"
-"- Sesli Kitaplar sekmesinde yapılan arama artık GETEM ve LibriVox’u birlikte "
-"sorgular ve her ikisinden gelen sonuçlar tek bir listede birleştirilir.\n"
-"- Bir LibriVox veya Getem kitabının URL’sini doğrudan arama alanına "
-"yapıştırmak artık o kitabı bulup ekler.\n"
-"- Ayarlar paneline “Sesli kitap kaynakları” seçeneği eklendi: Burada GETEM "
-"ve LibriVox’tan hangilerinin aranacağı seçilebilir (her ikisi de varsayılan "
-"olarak seçili durumdadır).\n"
-"- **GETEM kataloğu ve detay sayfası işleme: Düzenli ifadeler yerine gerçek "
-"bir DOM çözümleyici kullanıldı**\n"
-"- GETEM’in arama sonuçlarını ve eser detay sayfalarını okuyan HTML işleme "
-"kodu, her sonuç satırını bulmak için düzenli ifadeler ve metin bölme "
-"işlemlerine dayanıyordu. Bu yöntem, sitenin görsel açıdan bir şey "
-"değiştirmesi durumunda – örneğin öğe sırasının değişmesi, ekstra bir wrapper "
-"etiketi veya daha derin seviyede bir etiket – sayfanın anlamını değiştirmese "
-"bile sessizce bozuluyordu.\n"
-"Bunu, Python’un standart `html.parser.HTMLParser` modülü üzerine kurulu, "
-"bağımlılıksız küçük bir DOM oluşturucu ile değiştirdik ve her işleme "
-"fonksiyonunu ham işaretleme yerine etiket/sınıf bazında sorgulama yapacak "
-"şekilde yeniden yazdık:\n"
-"- **Katalog arama sonuçları**: Artık her sonuç satırı kendi alt ağacı olarak "
-"işleniyor; böylece bir satırdaki eksik bir alanın bir sonraki satıra ait "
-"metni sızdırması engellenmiş oldu – eski satır bölme yönteminde bu bir "
-"riskti.\n"
-"- **Biçim filtre seçenekleri, gizli form alanları**: Bunlar artık alt dizgi "
-"aramasıyla bulunmak yerine doğrudan ayrıştırılmış `<select>`/`<option>` "
-"öğelerinden okunuyor.\n"
-"- **Eser detay sayfaları**: Bölüm bağlantıları, başlık ve meta veri alanları "
-"(yazar/seslendiren/yayıncı vb.) artık tam bir etiket dizisi gerektirmeden "
-"ağaçta gezinerek bulunuyor; bir alanın etiket metni ise sabit bir `</div></"
-"div>` sınırı yerine derinlikten bağımsız olarak tespit ediliyor.\n"
-"- **URL çözümleme**: Göreceli/mutlak bağlantı işlemleri artık "
-"`urllib.parse.urljoin` aracılığıyla yapılıyor; bu da eski manuel "
-"kontrollerin ele alamadığı protokol-bağımlı ve yalnızca sorgu içeren "
-"bağlantıları doğru şekilde işliyor.\n"
-"- Herhangi bir genel fonksiyon imzası değişmediği için eklentinin başka "
-"hiçbir yeriyle ilgilenmeye gerek kalmadı. Eski kodun hassas olduğu durumları "
-"kapsayan özel testlerle doğrulama yapıldı (sıralanmış öznitelikler, farklı "
-"div/span işaretlemesi, liste ortasına eksik bir alan, ekstra bir etiketle "
-"sarılmış bağlantı, derinlemesine iç içe etiketler) – hepsi doğru şekilde "
-"çözüldü.\n"
+"### Eklenenler\n"
+"- **Fon modu (Obligato)** — Ana medyada ne çalıyor (ya da çalmıyor) olursa "
+"olsun, favori bir istasyonu kendi bağımsız ses çıkışında ve kendi ses "
+"seviyesinde fonda çalar.\n"
+"  - Yeni kısayol: `Ctrl+Win+Shift+M` fon modunu açıp kapatır.\n"
+"  - İlk basışta açılan iletişim kutusundan fon istasyonunu "
+"(favorilerinizden), çıkış aygıtını (varsayılan olarak **Ana çıkışla aynı**, "
+"**Sistem varsayılanı** veya belirli bir aygıt) ve fon ses seviyesini ana "
+"oynatıcının o anki ses seviyesine oranla (%25–%150) seçebilirsiniz. "
+"Seçimleriniz bir sonraki sefer için hatırlanır.\n"
+"  - Ana oynatıcıdan tamamen ayrı bir oynatma motorunda çalışır; bu nedenle "
+"ana oynatıcıda istasyon, podcast veya sesli kitap değiştirmek — hatta ana "
+"oynatıcıyı tamamen durdurmak — fon modunu asla kesintiye uğratmaz.\n"
+"  - Fon ses seviyesi, ana ses seviyesi değiştikçe (`Ctrl+Win+↑`/`↓`) "
+"otomatik olarak orantılı kalır.\n"
+"  - Ana oynatıcıyı duraklatmak (`Ctrl+Win+P`) fon istasyonunu da duraklatır, "
+"ana oynatıcıyı devam ettirmek fon istasyonunu da devam ettirir; ana "
+"oynatıcının tamamen durdurulması duraklatma sayılmaz.\n"
+"  - En az bir favori istasyon gerektirir; hiç yoksa FreeRadio önce bir "
+"istasyon eklemenizi ister.\n"
+"  - Başlama/durma anonsları **Bildirimleri sessize al** ayarına uyar.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS "
+#~ "is\n"
+#~ "now the sole, mandatory playback backend. This removes the \"Disable "
+#~ "BASS\n"
+#~ "backend\" option and its VLC/wmplayer/PotPlayer path settings from the\n"
+#~ "FreeRadio settings panel; if BASS itself fails to start, playback now\n"
+#~ "fails with a clear error instead of silently switching to another\n"
+#~ "player.\n"
+#~ "- Internal cleanup: removed unused code paths and a dead\n"
+#~ "\"player_paths\" field from scheduled recordings that was never actually\n"
+#~ "used for playback.\n"
+#~ "- **Seeking within a podcast or audio book now supports tap-to-jump "
+#~ "amounts:** a single press seeks 12 seconds, two quick presses seek 1 "
+#~ "minute, three quick presses seek 5 minutes. Holding the key down still "
+#~ "seeks continuously in the original 5-second steps, unchanged.\n"
+#~ "**Improved**\n"
+#~ "- Station search now also matches on **codec**, **bitrate**, and "
+#~ "**language**, in addition to name, country, and tags. For example, "
+#~ "searching \"aac\" or \"320\" now finds stations using that codec or "
+#~ "bitrate, and results can be combined with other terms (e.g. \"jazz "
+#~ "320\"). Partialy closing #30\n"
+#~ "Add a new source for audio books\n"
+#~ "- Added LibriVox as a second audio book source alongside GETEM. Both "
+#~ "catalogs now share the same Audio Books tab: search, browse, play, and "
+#~ "resume progress work the same way regardless of which source a book came "
+#~ "from.\n"
+#~ "- Searching the Audio Books tab now queries GETEM and LibriVox together, "
+#~ "and results from both are combined into a single list.\n"
+#~ "- Pasting a LibriVox or Getem book URL directly into the search field now "
+#~ "resolves and adds that book.\n"
+#~ "- Added an \"Audio book sources\" option to the settings panel: a "
+#~ "checkbox list lets you choose which of GETEM and LibriVox are searched "
+#~ "(both are enabled by default).\n"
+#~ "- **GETEM catalog & detail-page parsing: replaced regex scraping with a "
+#~ "real DOM parser**\n"
+#~ "The HTML-scraping code that read GETEM's search results and work-detail "
+#~ "pages relied on regexes over raw HTML and a literal string split to find "
+#~ "each result row. That approach breaks silently the moment the site "
+#~ "changes something cosmetic — element order, an extra wrapper tag, a label "
+#~ "nested one level deeper — without changing what the page actually means.\n"
+#~ "Replaced it with a small, dependency-free DOM builder on top of Python's "
+#~ "standard `html.parser.HTMLParser`, then rewrote every scraping function "
+#~ "to query that tree by tag/class instead of matching raw markup:\n"
+#~ "- **Catalog search results**: each result row is now parsed as its own "
+#~ "real subtree, so a field missing from one row can no longer leak text "
+#~ "belonging to the next row — a risk the old row-splitting approach "
+#~ "carried.\n"
+#~ "- **Format-filter options, hidden form fields**: read directly from "
+#~ "parsed `<select>`/`<option>` elements instead of locating them by "
+#~ "substring search.\n"
+#~ "- **Work-detail pages**: chapter links, title, and metadata fields "
+#~ "(author/narrator/publisher/etc.) are now found by walking the tree rather "
+#~ "than requiring an exact tag sequence; a field's own label text is "
+#~ "excluded via nesting-depth-independent lookup instead of an assumed fixed "
+#~ "`</div></div>` boundary.\n"
+#~ "- **URL resolution**: relative/absolute link handling now goes through "
+#~ "`urllib.parse.urljoin`, which correctly covers protocol-relative and "
+#~ "query-only links the old hand-written checks didn't.\n"
+#~ "- No public function signatures changed, so nothing else in the add-on "
+#~ "needed touching. Verified against hand-built fixtures covering the exact "
+#~ "failure modes the old code was vulnerable to (reordered attributes, div/"
+#~ "span markup variance, a field missing mid-listing, a link wrapped in an "
+#~ "extra tag, a deeply nested label) — all resolved correctly.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "- VLC / PotPlayer / Windows Media Player yedek desteği kaldırıldı. Artık "
+#~ "tek ve zorunlu oynatma altyapısı BASS. Bu değişiklikle FreeRadio ayarlar "
+#~ "panelinden “BASS altyapısını devre dışı bırak” seçeneği ve ilgili VLC/"
+#~ "wmplayer/PotPlayer yol ayarları da kaldırıldı; BASS başlatılamazsa artık "
+#~ "sessizce başka bir oynatıcıya geçmek yerine net bir hata mesajıyla "
+#~ "oynatma işlemi sonlandırılır.\n"
+#~ "- İçsel temizlik: Kullanılmayan kod yolları ve aslında hiçbir zaman "
+#~ "oynatma için kullanılmayan “player_paths” alanı kaldırıldı.\n"
+#~ "- **Podcast veya sesli kitap içinde ilerleme artık belirli miktarlarda "
+#~ "atlama desteği sunuyor:** Tek bir dokunuşla 12 saniye, iki hızlı "
+#~ "dokunuşla 1 dakika, üç hızlı dokunuşla 5 dakika ileri/geri sarılabilir. "
+#~ "Tuşu basılı tutmak ise yine eskisi gibi 5 saniyelik adımlarla sürekli "
+#~ "ilerlemeye devam eder.\n"
+#~ "**Geliştirildi**\n"
+#~ "- İstasyon araması artık isim, ülke ve etiketlerin yanı sıra **kodek**, "
+#~ "**bit hızı** ve **dil** bilgilerine göre de eşleşme yapıyor. Örneğin "
+#~ "“aac” veya “320” kelimeleriyle yapılan aramalar, bu kodek veya bit hızını "
+#~ "kullanan istasyonları bulur ve sonuçlar diğer terimlerle "
+#~ "birleştirilebilir (örneğin “jazz 320”). Kısmen #30 sorunu çözüldü.\n"
+#~ "- Yeni bir sesli kitap kaynağı eklendi\n"
+#~ "- GETEM’in yanı sıra LibriVox da ikinci sesli kitap kaynağı olarak "
+#~ "eklendi. Artık her iki katalog da aynı Sesli Kitaplar sekmesini "
+#~ "paylaşıyor: Arama, gözatma, oynatma ve kaldığı yerden devam ettirme "
+#~ "işlemleri, kitabın hangi kaynaktan geldiğine bakılmaksızın aynı şekilde "
+#~ "çalışıyor.\n"
+#~ "- Sesli Kitaplar sekmesinde yapılan arama artık GETEM ve LibriVox’u "
+#~ "birlikte sorgular ve her ikisinden gelen sonuçlar tek bir listede "
+#~ "birleştirilir.\n"
+#~ "- Bir LibriVox veya Getem kitabının URL’sini doğrudan arama alanına "
+#~ "yapıştırmak artık o kitabı bulup ekler.\n"
+#~ "- Ayarlar paneline “Sesli kitap kaynakları” seçeneği eklendi: Burada "
+#~ "GETEM ve LibriVox’tan hangilerinin aranacağı seçilebilir (her ikisi de "
+#~ "varsayılan olarak seçili durumdadır).\n"
+#~ "- **GETEM kataloğu ve detay sayfası işleme: Düzenli ifadeler yerine "
+#~ "gerçek bir DOM çözümleyici kullanıldı**\n"
+#~ "- GETEM’in arama sonuçlarını ve eser detay sayfalarını okuyan HTML işleme "
+#~ "kodu, her sonuç satırını bulmak için düzenli ifadeler ve metin bölme "
+#~ "işlemlerine dayanıyordu. Bu yöntem, sitenin görsel açıdan bir şey "
+#~ "değiştirmesi durumunda – örneğin öğe sırasının değişmesi, ekstra bir "
+#~ "wrapper etiketi veya daha derin seviyede bir etiket – sayfanın anlamını "
+#~ "değiştirmese bile sessizce bozuluyordu.\n"
+#~ "Bunu, Python’un standart `html.parser.HTMLParser` modülü üzerine kurulu, "
+#~ "bağımlılıksız küçük bir DOM oluşturucu ile değiştirdik ve her işleme "
+#~ "fonksiyonunu ham işaretleme yerine etiket/sınıf bazında sorgulama yapacak "
+#~ "şekilde yeniden yazdık:\n"
+#~ "- **Katalog arama sonuçları**: Artık her sonuç satırı kendi alt ağacı "
+#~ "olarak işleniyor; böylece bir satırdaki eksik bir alanın bir sonraki "
+#~ "satıra ait metni sızdırması engellenmiş oldu – eski satır bölme "
+#~ "yönteminde bu bir riskti.\n"
+#~ "- **Biçim filtre seçenekleri, gizli form alanları**: Bunlar artık alt "
+#~ "dizgi aramasıyla bulunmak yerine doğrudan ayrıştırılmış `<select>`/"
+#~ "`<option>` öğelerinden okunuyor.\n"
+#~ "- **Eser detay sayfaları**: Bölüm bağlantıları, başlık ve meta veri "
+#~ "alanları (yazar/seslendiren/yayıncı vb.) artık tam bir etiket dizisi "
+#~ "gerektirmeden ağaçta gezinerek bulunuyor; bir alanın etiket metni ise "
+#~ "sabit bir `</div></div>` sınırı yerine derinlikten bağımsız olarak tespit "
+#~ "ediliyor.\n"
+#~ "- **URL çözümleme**: Göreceli/mutlak bağlantı işlemleri artık "
+#~ "`urllib.parse.urljoin` aracılığıyla yapılıyor; bu da eski manuel "
+#~ "kontrollerin ele alamadığı protokol-bağımlı ve yalnızca sorgu içeren "
+#~ "bağlantıları doğru şekilde işliyor.\n"
+#~ "- Herhangi bir genel fonksiyon imzası değişmediği için eklentinin başka "
+#~ "hiçbir yeriyle ilgilenmeye gerek kalmadı. Eski kodun hassas olduğu "
+#~ "durumları kapsayan özel testlerle doğrulama yapıldı (sıralanmış "
+#~ "öznitelikler, farklı div/span işaretlemesi, liste ortasına eksik bir "
+#~ "alan, ekstra bir etiketle sarılmış bağlantı, derinlemesine iç içe "
+#~ "etiketler) – hepsi doğru şekilde çözüldü.\n"
 
 #~ msgid ""
 #~ "\n"

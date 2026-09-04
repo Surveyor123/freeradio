@@ -1,6 +1,20 @@
 # FreeRadio - doplněk NVDA
 
-FreeRadio je doplněk internetového rádia pro čtečku obrazovky NVDA. Jeho hlavním cílem je poskytnout uživatelům snadný přístup k tisícům internetových rozhlasových stanic a podcastů. Celé rozhraní a všechny funkce byly navrženy s ohledem na plnou přístupnost pro NVDA.
+FreeRadio je plnohodnotný doplněk internetového rádia, podcastů a audioknih pro čtečku obrazovky NVDA. Z jednoduchého způsobu poslechu internetových rozhlasových stanic se postupně vyvinul v kompletní, plně přístupné centrum poslechu - každá obrazovka, dialog a ovládací prvek je od základu navržen pro použití s klávesnicí a čtečkou obrazovky, bez nutnosti myši v kterémkoli kroku.
+
+## Co FreeRadio umí
+
+- **Internetové rádio** - Procházejte a vyhledávejte mezi více než 50 000 stanicemi z adresáře [Radio Browser](https://www.radio-browser.info/), doplněného o výsledky z TuneIn a iHeartRadio. Ukládejte oblíbené stanice, měňte jejich pořadí a přejděte přímo na kteroukoli z nich globální klávesovou zkratkou odkudkoli ve Windows - viz [Adresář Radio Browser](#adresář-radio-browser) a [Oblíbené](#oblíbené).
+- **Podcasty** - Přihlaste se k odběru libovolného kanálu RSS/Atom, nebo vyhledávejte v adresáři podcastů Apple a před přihlášením k odběru si poslechněte náhled epizod. Pozice přehrávání se ukládá automaticky a pokračuje tam, kde jste skončili - viz [Podcasty](#podcasty).
+- **Audioknihy** - Vyhledávejte a přehrávejte nebo stahujte knihy ze dvou zdrojů: [GETEM](https://getem.boun.edu.tr/), digitální knihovny Univerzity Boğaziçi pro zrakově postižené, a [LibriVox](https://librivox.org/), projektu audioknih z veřejné domény čtených dobrovolníky (bez nutnosti účtu), s automatickým pokračováním napříč vícedílnými díly - viz [Audioknihy (GETEM a LibriVox)](#audioknihy-getem-a-librivox).
+- **Nahrávání** - Nahrávejte právě hrající obsah okamžitě, automaticky zachyťte jednu skladbu při jejím začátku a konci, nebo naplánujte jednorázová či opakovaná nahrávání - to vše bez přerušení přehrávání - viz [Nahrávání](#nahrávání).
+- **Časový posun (přetočení živého rádia)** - Pozastavte a přetočte živou stanici jako DVR, a poté se kdykoli vraťte zpět k živému vysílání - viz [Časový posun (přetočení živého rádia)](#časový-posun-přetočení-živého-rádia).
+- **Rozpoznávání hudby a oblíbené skladby** - Rozpoznávejte skladby bez metadat pomocí technologie Shazam, ukládejte oblíbené skladby do textového souboru a vyhledávejte jejich texty - viz [Rozpoznávání hudby](#rozpoznávání-hudby) a [Oblíbené skladby](#oblíbené-skladby).
+- **Zvukové profily a efekty** - Ukládejte samostatná nastavení hlasitosti, efektů, ekvalizéru a rychlosti přehrávání pro každou stanici, podcast nebo audioknihu, a používejte efekty v reálném čase (Chorus, Reverb, zesílení ekvalizéru a další) prostřednictvím backendu BASS - viz [Zvukový profil stanice](#zvukový-profil-stanice).
+- **Zrcadlení zvuku** - Odesílejte stejný datový tok do dvou zvukových výstupních zařízení najednou, například do reproduktorů i sluchátek zároveň - viz [Zrcadlo zvuku](#zrcadlo-zvuku).
+- **Režim Obligato (hudba na pozadí)** - Opakovaně přehrávejte zvolenou oblíbenou stanici tiše na pozadí, na vlastním výstupním zařízení a s vlastní hlasitostí, bez ohledu na to, co (nebo zda vůbec něco) hraje jako hlavní médium - viz [Režim hudby na pozadí (Obligato)](#režim-hudby-na-pozadí-obligato).
+- **Časovače** - Naplánujte spuštění přehrávání oblíbené stanice, nebo naplánujte zastavení přehrávání, v konkrétní čas - viz [Časovač](#časovač).
+- **Rozsáhlý přístup z klávesnice a přes braillský řádek** - Ke každé funkci se dostanete zcela z klávesnice, s globálními zkratkami fungujícími odkudkoli ve Windows, přímými klávesovými zkratkami pro jednotlivé oblíbené stanice a volitelným braillským výstupem pro všechna mluvená oznámení FreeRadia.
 
 ## prohlížeč rádií
 
@@ -49,6 +63,7 @@ Všechny klávesové zkratky lze znovu přiřadit v nabídce NVDA → Předvolby
 | `Ctrl+Win+V` | Přidat k oblíbeným | Přidá aktuálně přehrávanou stanici do seznamu oblíbených. Oznámí, pokud je stanice již v seznamu. |
 | `Ctrl+Win+I` | Informace o stanici | Oznámí název aktuálně přehrávané stanice. Dvojím stisknutím zobrazíte v dialogovém okně podrobnosti, jako je země, žánr a datový tok. Třikrát stiskněte pro zkopírování informací o aktuální skladbě (metadata ICY) do schránky, pokud jsou k dispozici; pokud metadata nejsou k dispozici, spustí se místo toho rozpoznávání hudby Shazam. Čtyřnásobným stisknutím vynutíte rozpoznání hudby v případě nesprávných metadat ICY. |
 | `Ctrl+Win+M` | Zrcadlení zvuku | Zrcadlí aktuální datový tok na další výstupní zvukové zařízení současně. Dalším stisknutím zrcadlení zastavíte. |
+| `Ctrl+Win+Shift+M` | Režim Obligato (hudba na pozadí) | Opakovaně přehrává zvolenou oblíbenou stanici tiše na pozadí, na vlastním výstupním zařízení a s vlastní hlasitostí, bez ohledu na to, co hraje v hlavním přehrávači. První stisknutí otevře dialog pro výběr stanice, výstupního zařízení a relativní hlasitosti. Dalším stisknutím jej zastavíte. |
 | `Ctrl+Win+E` | Okamžité nahrávání | Jedním stisknutím spustíte nahrávání aktuální stanice; dalším stisknutím nahrávání zastavíte. Stisknutím **dvakrát** spustíte **nahrávání skladby** - soubor je pojmenován podle aktuální skladby a nahrávání se automaticky zastaví při změně skladby. Dalším dvojím stisknutím v době, kdy je nahrávání skladby aktivní, jej předčasně zastavíte. Přehrávání pokračuje bez přerušení ve všech režimech nahrávání. K dispozici pouze pro stanice, které vysílají metadata ICY. |
 | `Ctrl+Win+W` | Otevřít složku s nahrávkami | Otevře složku s nahranými soubory v Průzkumníku souborů. |
 | *(nepřiřazeno)* | Vybrat výstupní zařízení | Otevře na vyžádání seznam dostupných hlavních výstupních zařízení. Seznam se zobrazí pouze v případě, že BASS rozpozná více než jedno fyzické výstupní zařízení. Přiřazení kombinace kláves pomocí NVDA Menu → Předvolby → Vstupní gesta → FreeRadio. |
@@ -250,6 +265,23 @@ Při prvním stisknutí se zobrazí dialogové okno výběru se seznamem dostupn
 
 > **Poznámka:** Zrcadlení zvuku je k dispozici pouze v případě, že je aktivní backend BASS. Pokud dojde ke změně hlasitosti při aktivním zrcadlení, aktualizují se oba výstupy současně.
 
+## Režim hudby na pozadí (Obligato)
+
+Klávesová zkratka `Ctrl+Win+Shift+M` přehrává oblíbenou stanici tiše na pozadí, a to na zcela samostatném zvukovém enginu odděleném od hlavního přehrávače - jako jemná hudební kulisa běžící pod tím, co právě děláte.
+
+Při prvním stisknutí se otevře dialogové okno se třemi ovládacími prvky:
+
+- **Stanice na pozadí** - seznam vašich oblíbených stanic, ze kterého vyberete, která se bude na pozadí opakovaně přehrávat. Vyžaduje alespoň jednu oblíbenou položku; pokud je váš seznam oblíbených prázdný, FreeRadio vás vyzve, abyste nejprve přidali stanici (`Ctrl+Win+V` během přehrávání stanice).
+- **Zvukový výstup** - přes které zařízení se stanice na pozadí přehrává: **Stejné jako hlavní výstup** (výchozí), **Výchozí zařízení systému**, nebo libovolné konkrétní zařízení, které FreeRadio dokáže rozpoznat.
+- **Hlasitost na pozadí** - jak hlasitě se stanice na pozadí přehrává, vyjádřeno jako procento aktuální hlasitosti hlavního přehrávače (10 %, 25 %, 50 %, 75 %, 100 %, 125 % nebo 150 %). Vaše volby se uloží pro příště.
+
+Po spuštění pokračuje stanice na pozadí v přehrávání nezávisle na hlavním přehrávači - přepnutí stanice, podcastu nebo audioknihy v hlavním přehrávači, nebo jeho úplné zastavení, režim Obligato nijak nepřeruší. Automaticky zůstávají s hlavním přehrávačem propojené dvě věci:
+
+- **Hlasitost** - hlasitost na pozadí je průběžně udržována na zvoleném procentu aktuální hlasitosti hlavního přehrávače, takže zvýšení nebo snížení hlavní hlasitosti (`Ctrl+Win+↑`/`↓`) stejným poměrem změní i hudbu na pozadí.
+- **Pozastavení** - pozastavení hlavního přehrávače (`Ctrl+Win+P`) pozastaví i stanici na pozadí a obnovení hlavního přehrávače ji zase obnoví. Úplné zastavení hlavního přehrávače se za pozastavení nepovažuje, takže stanice na pozadí hraje dál.
+
+Kdykoli režim Obligato zastavíte opětovným stisknutím `Ctrl+Win+Shift+M`.
+
 ## Nahrávání
 
 Nahrávky se ve výchozím nastavení ukládají do složky `Dokumenty\VolnéRadioNahrávky\`. Název souboru obsahuje název stanice (nebo název skladby v režimu nahrávání skladeb) a čas zahájení nahrávání. Složku nahrávek lze kdykoli změnit v nabídce NVDA → Předvolby → Nastavení → FreeRadio → **Složka nahrávek**.
@@ -378,6 +410,7 @@ Jakmile přidáte několik kanálů, zobrazí se v seznamu **Odběry**. Každá 
 
 **Kontextová nabídka pro kanály:** Klepnutím pravým tlačítkem na kanál, případně jeho vybráním a stiskem klávesy Nabídka / `Shift+F10`, otevřete nabídku s těmito položkami:
 - **Obnovit kanál** — nyní načte nové epizody.
+- **Uložit zvukový profil pro tento podcast** / **Vymazat zvukový profil** — viz [Zvukový profil podcastu](#zvukový-profil-podcastu) níže.
 - **Odebrat kanál** — smaže odběr.
 - **Kopírovat adresu URL kanálu** — zkopíruje adresu URL kanálu do schránky.
 
@@ -402,6 +435,7 @@ Vyberte kanál v seznamu odběrů; jeho epizody se zobrazí v seznamu **Epizody*
 **Kontextová nabídka pro epizody:** Klepnutím pravým tlačítkem na epizodu, případně jejím vybráním a stiskem klávesy Nabídka / `Shift+F10`, otevřete nabídku s těmito položkami:
 - **Přehrát epizodu** — zahájí přehrávání.
 - **Stáhnout epizodu** — stáhne soubor epizody do vaší složky nahrávek.
+- **Uložit zvukový profil pro tento podcast** / **Vymazat zvukový profil** — stejné příkazy jako ve vlastní kontextové nabídce kanálu, dostupné i zde pro pohodlí, abyste se nemuseli vracet do seznamu odběrů. Vždy ukládají jeden profil pro celý podcast, ne samostatný profil pro tuto epizodu — viz [Zvukový profil podcastu](#zvukový-profil-podcastu) níže.
 - **Kopírovat adresu URL epizody** — zkopíruje přímou adresu URL zvuku do schránky.
 
 ### Stahování epizod
@@ -414,13 +448,124 @@ Nad seznamem epizod je pole **Filtr**. Během psaní se seznam epizod okamžitě
 
 ### Podrobnosti o přehrávání podcastů
 
-Epizody podcastů se přehrávají pomocí **backendu BASS** (stejný engine, který se používá pro rozhlasové streamy). Protože se epizody stahují postupně a lze v nich posouvat, můžete při přehrávání podcastu použít klávesové zkratky časového posunu vzad/vpřed (`Ctrl+Win+J`/`Ctrl+Win+K`) pro skok vzad nebo vpřed o **5 sekund** najednou (namísto 15sekundového posunu použitého u živého rádia). Pozice se automaticky ukládá, takže můžete později pokračovat.
+Epizody podcastů se přehrávají pomocí **backendu BASS** (stejný engine, který se používá pro rozhlasové streamy a od této verze jediný backend, který FreeRadio používá). Protože se epizody stahují postupně a lze v nich posouvat, můžete při přehrávání podcastu použít klávesové zkratky časového posunu vzad/vpřed (`Ctrl+Win+J`/`Ctrl+Win+K`) k posouvání v rámci epizody. Pozice se automaticky ukládá, takže můžete později pokračovat.
 
-Pokud je backend BASS deaktivován (nebo selže), přehrávání podcastu se přepne na stejný řetězec externích přehrávačů (VLC → PotPlayer → WMP) používaný pro rádio, ale v takovém případě **funkce posouvání a pokračování nebude fungovat** — epizoda se pokaždé přehraje od začátku. Pro plnohodnotný zážitek z podcastů ponechte backend BASS aktivní.
+**Odstupňované posouvání:** Na rozdíl od pevného 15sekundového přetočení u živého rádia se posouvání v rámci podcastu nebo audioknihy odstupňovává podle způsobu stisku klávesy, takže můžete provést malou opravu nebo skočit o velký kus bez opakovaného stiskávání:
+
+- **Podržení klávesy** (automatické opakování) posouvá o **5 sekund** za opakování — stejné malé množství, jaké tato zkratka vždy používala u souborů.
+- **Jedno záměrné stisknutí** posune o **12 sekund**.
+- **Dvě stisknutí** za sebou v rychlém sledu posunou o **1 minutu**.
+- **Tři a více stisknutí** posune o **5 minut**; další stisknutí ve stejné sérii už dál neeskalují.
+
+Záměrné stisknutí se krátce podrží, než se posun skutečně provede, pro případ, že přijde další stisknutí - k posunu dojde pouze jednou za sérii stisknutí, o velikosti odpovídající celkovému počtu stisknutí, nikoli součtu jednotlivých hodnot. Po posunu NVDA oznámí výslednou uplynulou/zbývající pozici v epizodě, nikoli jen „X sekund vpřed/vzad".
+
+**Rychlost přehrávání:** Rychlost přehrávání epizod podcastů můžete upravit pomocí `Ctrl+Win+Shift+K` (rychleji) a `Ctrl+Win+Shift+J` (pomaleji). Rychlost se mění v krocích po 0,1× v rozsahu od 0,5× do 2,0×, se zachováním výšky tónu. Tato funkce vyžaduje volitelnou knihovnu `bass_fx.dll` umístěnou ve složce doplňku. Pokud knihovna chybí, NVDA vás informuje, že funkce není k dispozici.
+
+> **Poznámka:** Knihovna `bass_fx.dll` není součástí FreeRadia ve výchozím stavu. Můžete ji stáhnout ze stránky [BASS FX](https://www.un4seen.com/bass-fx.html) a umístit do složky doplňku `bass/x64` (pro 64bitové NVDA) nebo `bass` (pro 32bitové NVDA), abyste tuto funkci zapnuli.
+
+**Zvukový efekt při pokračování:** Kdykoli epizoda pokračuje z uložené pozice, FreeRadio krátce přehraje na samostatném kanálu jemný zvukový efekt připomínající zavádění kazety, zatímco se posouvá zpět na vaše uložené místo, místo aby nechalo mezitím slyšitelně hrát vlastní zvuk epizody od 0:00. To se děje automaticky, kdykoli je aktivní backend BASS, a je to nezávislé na nastavení **Přechod při přepnutí stanice** - to nastavení ovlivňuje pouze přepínání mezi živými rozhlasovými stanicemi, nikoli pokračování podcastů nebo audioknih.
+
+### Zvukový profil podcastu
+
+Klepněte pravým tlačítkem na podcast v seznamu Odběry, nebo klepněte pravým tlačítkem na kteroukoli z jeho epizod, a zvolte **Uložit zvukový profil pro tento podcast**, čímž uložíte aktuální hlasitost, efekty, zisk ekvalizéru a/nebo rychlost přehrávání jako profil svázaný s tímto podcastem. Kdykoli se přehraje jakákoli epizoda tohoto podcastu, uložená nastavení se automaticky použijí a přepíší globální výchozí hodnoty. Protože je příkaz dostupný jak z kontextové nabídky kanálu, tak z kontextové nabídky epizody, můžete se k němu dostat, aniž byste se museli vracet do seznamu odběrů - v obou případech se vždy ukládá jeden profil pro celý podcast, ne samostatný profil pro každou epizodu.
+
+Dialogové okno vám umožní vybrat přesně, co chcete uložit:
+- **Pouze hlasitost**
+- **Pouze efekty**
+- **Hlasitost a efekty**
+- **Hlasitost a rychlost přehrávání**
+- **Efekty a rychlost přehrávání**
+- **Pouze rychlost přehrávání**
+- **Hlasitost, efekty a rychlost přehrávání**
+
+Do profilu se zapíší pouze vybrané položky; cokoli, co vynecháte, si ponechá to, co v něm již bylo uloženo. Například výběrem možnosti **Pouze rychlost přehrávání** u podcastu, který již má uložený profil hlasitosti/efektů, aktualizujete pouze rychlost a zbytek zůstane nedotčen.
+
+**Vymazat zvukový profil** odstraní uložený profil z podcastu, z kterékoli z obou nabídek. Je aktivní pouze tehdy, když má podcast aktuálně uložený profil.
 
 ### Ukládání dat podcastů
 
 Vaše odběry se ukládají do souboru `freeradio_podcasts.json` ve složce uživatelské konfigurace NVDA. Pozice epizod se ukládají samostatně do souboru `podcast_positions.json` na stejném místě. Oba soubory jsou ve formátu prostého JSON a lze je zálohovat nebo přenést do jiného počítače.
+
+## Audioknihy (GETEM a LibriVox)
+
+FreeRadio obsahuje přehrávač audioknih, který vyhledává, přehrává a stahuje knihy ze dvou zdrojů:
+
+- **[GETEM](https://getem.boun.edu.tr/)** - digitální knihovna provozovaná Centrem pro zrakově postižené Univerzity Boğaziçi. Ke streamování nebo stažení zvuku knihy vyžaduje bezplatné členství (procházení nikoli) - viz [Přihlášení](#přihlášení) níže.
+- **[LibriVox](https://librivox.org/)** - projekt audioknih z veřejné domény čtených dobrovolníky. Není potřeba žádný účet ani přihlášení; celý jeho katalog, včetně samotných zvukových souborů, je veřejnou doménou a volně dostupný.
+
+Výsledky z obou zdrojů se zobrazují společně v jednom sloučeném seznamu **Výsledky hledání** a jednom sloučeném seznamu **Knihovna** - není zde žádná samostatná karta ani rozevírací nabídka pro přepínání mezi nimi. Zdroj každé knihy (GETEM nebo LibriVox) je zobrazen jako popisek vedle jejího názvu a v jejích podrobnostech, takže vždy poznáte, na kterou se díváte. Knihy z kteréhokoli zdroje můžete vyhledávat, prohlížet náhled, přidávat, přehrávat a stahovat úplně stejným způsobem; přehrávat vícedílná díla s automatickým pokračováním napříč díly; a stahovat knihy pro poslech offline - to vše plně přístupně.
+
+Kterýkoli ze zdrojů lze vypnout v **NVDA Menu → Předvolby → Nastavení → FreeRadio** pomocí seznamu zaškrtávacích políček **Zdroje audioknih**, pokud chcete prohledávat pouze jeden z nich. Ve výchozím nastavení jsou zapnuté oba.
+
+> **Poznámka:** Poslech knihy z GETEM vyžaduje bezplatné členství v GETEM. Procházení katalogu GETEM účet nevyžaduje, ale přeložení a přehrání zvuku knihy z GETEM ano - viz [Přihlášení](#přihlášení) níže. Knihy z LibriVox nikdy nevyžadují účet.
+
+### Přístup na kartu Audioknihy
+
+Otevřete Průzkumníka stanic pomocí `Ctrl+Win+R` a přepněte na kartu **Audioknihy** pomocí `Ctrl+Tab` nebo `Alt+7`. Karta má tři hlavní oblasti:
+
+1. **Hledat** - textové pole pro prohledání obou zapnutých katalogů najednou, se seznamem výsledků, který se zobrazí po spuštění hledání.
+2. **Knihovna** - seznam knih, které jste přidali z kteréhokoli zdroje, kde je přehráváte, stahujete a spravujete.
+3. **Podrobnosti** - pole pouze pro čtení zobrazující zdroj, název, autora, vypravěče, vydavatele, formát, počet dílů, popis a adresu URL katalogu vybrané knihy, v kterémkoli ze seznamů.
+
+### Přihlášení
+
+GETEM vyžaduje registrované členství pro streamování nebo stahování skutečného zvuku knihy, ačkoli samotný katalog lze volně prohledávat. Zadejte své uživatelské jméno a heslo GETEM jednou v **NVDA Menu → Předvolby → Nastavení → FreeRadio**; uloží se zašifrovaně na disk (prostřednictvím Windows Data Protection API, svázané s vaším uživatelským účtem Windows) a poté se automaticky znovu použijí. Pokud se pokusíte přehrát nebo stáhnout knihu z GETEM před zadáním přihlašovacích údajů, FreeRadio vás vyzve, abyste je nejprve přidali v Nastavení.
+
+LibriVox nevyžaduje žádný krok přihlášení - jeho výsledky a zvuk lze okamžitě vyhledávat, poslechnout jako náhled, přehrávat a stahovat, bez zadávání jakýchkoli přihlašovacích údajů.
+
+### Vyhledávání audioknih
+
+Zadejte hledaný výraz do pole hledání a stiskněte `Enter`. FreeRadio prohledá zdroje zapnuté v Nastavení a sloučí výsledky do jednoho seznamu:
+
+- **GETEM** se prohledává podle názvu, autora, vypravěče, tématu a vydavatele najednou, protože vlastní vyhledávací formulář GETEM podporuje zúžení podle všech těchto polí dohromady, nikoli jediné hledání napříč jedním z nich. Zobrazují se pouze díla skutečně dostupná ve zvukové podobě (lidské nebo počítačové čtení, audiopopis, rozhlasová hra, mluvené knihy DAISY atd.); braillské, velkotiskové a jiné nezvukové formáty se automaticky vyfiltrují.
+- **LibriVox** se prohledává podle názvu nebo autora/čtenáře ve svém katalogu veřejné domény.
+
+NVDA oznámí, kolik audioknih bylo celkem nalezeno.
+
+Výběrem výsledku se zobrazí jeho podrobnosti - autor, vypravěč, vydavatel, formát a počet dílů - v poli podrobností níže.
+
+**Náhled:** Vyberte výsledek a stiskněte `Mezerník`, nebo otevřete jeho kontextovou nabídku (klávesa Nabídka / `Shift+F10`, případně kliknutí pravým tlačítkem) a zvolte **Náhled**, čímž ji začnete přehrávat od prvního dílu, aniž byste ji přidali do knihovny. Během náhledu knihy se ve stejné kontextové nabídce místo toho zobrazí **Zastavit náhled** - zvolte jej, nebo znovu stiskněte `Mezerník`, čímž náhled zastavíte. Náhled neukládá vaši pozici poslechu, protože ta se sleduje pouze u knih již ve vaší knihovně.
+
+**Přidání do knihovny:** Vyberte výsledek a stiskněte `Enter`, nebo použijte jeho kontextovou nabídku a zvolte **Přidat do knihovny**. FreeRadio vás informuje, pokud tam kniha již je.
+
+### Vaše knihovna
+
+Knihy, které jste přidali, se zobrazují v seznamu **Knihovna**, s názvem, autorem a formátem. Výběrem jedné se zobrazí její podrobnosti níže.
+
+- Stiskněte `Enter` nebo `Mezerník` pro přehrání vybrané knihy. Pokud není nic načteno, `Mezerník` ji spustí; pokud již něco hraje, `Mezerník` to místo toho pozastaví, v souladu se zbytkem přehrávače.
+- Použijte `F3` / `F4` na kartě Audioknihy pro přechod na předchozí / další **knihu** ve vaší knihovně a její spuštění. `Ctrl+←` / `Ctrl+→` dělají totéž, když je zaměřen seznam knihovny.
+- Použijte `Shift+F3` / `Shift+F4` pro přechod mezi **díly** aktuálně přehrávané knihy - opak karty Podcasty, kde F3/F4 přecházejí mezi epizodami a Shift+F3/F4 mezi kanály. Je to proto, že kniha je jedinou položkou knihovny i tehdy, když má více dílů, takže jemnější navigace „po dílech" je zde umístěna na klávesách se Shift.
+
+**Kontextová nabídka pro položky knihovny:** Klepnutím pravým tlačítkem na knihu, případně jejím vybráním a stiskem klávesy Nabídka / `Shift+F10`, otevřete nabídku s těmito položkami:
+- **Přehrát médium** - zahájí přehrávání, totéž co `Enter`.
+- **Stáhnout knihu** - stáhne všechny díly knihy; viz [Stahování audioknih](#stahování-audioknih) níže.
+- **Kopírovat adresu URL** - zkopíruje adresu URL stránky katalogu knihy do schránky (stránku katalogu GETEM u knihy z GETEM, nebo stránku podrobností archive.org u knihy z LibriVox).
+- **Uložit zvukový profil pro tuto knihu** / **Vymazat zvukový profil** - viz [Zvukový profil audioknihy](#zvukový-profil-audioknihy) níže.
+- **Odebrat z knihovny** - smaže knihu z vaší knihovny.
+
+### Přehrávání a pokračování
+
+Vícedílné dílo je v přehrávači považováno za jedinou položku, ne za samostatný řádek pro každý díl - stejně jako je epizoda podcastu jedinou položkou bez ohledu na to, jak je doručena. FreeRadio si pamatuje, který díl jste naposledy poslouchali, a při příštím přehrání této knihy v něm automaticky pokračuje, dokonce i po restartu NVDA.
+
+Když jeden díl skončí, FreeRadio automaticky spustí další díl téže knihy - nemusíte jej vybírat ručně. To se stane, i když je v danou chvíli okno Průzkumníka stanic zavřené; díl „nyní hraje" zobrazený v seznamu Knihovna se automaticky znovu synchronizuje při příštím otevření okna.
+
+Přehrávání probíhá prostřednictvím malého lokálního relé namísto stažení celého dílu předem, takže poslech začne, jakmile dorazí první bajty - stejné chování okamžitého startu jako u podcastů. Všechny obvyklé ovládací prvky přehrávače (pozastavení, hlasitost, časový posun, rychlost přehrávání, výstupní zařízení atd.) fungují u audioknihy stejně jako u stanice nebo epizody podcastu.
+
+Stejně jako u podcastů přehraje pokračování knihy z uložené pozice krátký zvukový efekt zavádění kazety, zatímco FreeRadio posouvá zpět na vaše uložené místo - viz poznámka **Zvukový efekt při pokračování** v [Podrobnosti o přehrávání podcastů](#podrobnosti-o-přehrávání-podcastů).
+
+### Zvukový profil audioknihy
+
+Klepněte pravým tlačítkem na knihu v seznamu Knihovna a zvolte **Uložit zvukový profil pro tuto knihu**, čímž uložíte aktuální hlasitost, efekty, zisk ekvalizéru a/nebo rychlost přehrávání jako profil svázaný s touto knihou. Kdykoli se kniha (nebo kterýkoli z jejích dílů) přehraje, uložená nastavení se automaticky použijí a přepíší globální výchozí hodnoty. Funguje to úplně stejně jako [Zvukový profil podcastu](#zvukový-profil-podcastu) výše, včetně stejné sady možností uložení (hlasitost, efekty a/nebo rychlost přehrávání, v jakékoli kombinaci) a stejného chování dílčí aktualizace.
+
+**Vymazat zvukový profil** odstraní uložený profil z knihy; je aktivní pouze tehdy, když má kniha aktuálně uložený profil.
+
+### Stahování audioknih
+
+Vyberte knihu ve své knihovně a zvolte **Stáhnout knihu** z její kontextové nabídky, čímž uložíte každý díl do vlastní složky (pojmenované podle knihy) uvnitř vaší složky nahrávek (ve výchozím nastavení `Dokumenty\FreeRadio Recordings\`). Soubory jsou očíslovány tak, aby se díly vždy řadily zpět do pořadí poslechu, bez ohledu na to, jak je pojmenovává samotný GETEM. NVDA po dokončení stahování oznámí, kolik dílů bylo uloženo; pokud se některý díl nezdaří, spolu s počtem se oznámí i poslední chyba.
+
+### Ukládání dat audioknih
+
+Každý zdroj si vede vlastní soubor knihovny, i když se na kartě Audioknihy zobrazují sloučené. Vaše knihovna GETEM (přidané knihy a postup poslechu) se ukládá do `freeradio_getem_library.json` a vaše knihovna LibriVox se ukládá samostatně do `freeradio_librivox_library.json`, obě ve složce uživatelské konfigurace NVDA. Vaše zašifrované přihlašovací údaje GETEM se ukládají samostatně do `freeradio_getem_credentials.bin` na stejném místě a lze je dešifrovat pouze stejným uživatelským účtem Windows, který je uložil. LibriVox nemá žádný soubor s přihlašovacími údaji, protože nevyžaduje žádný účet.
 
 ## Oblíbené skladby
 
@@ -491,6 +636,7 @@ Pokud je v Nastavení povoleno **Ztlumit oznámení**, NVDA ztiší následujíc
 
 - Název stanice, když se začne přehrávat nová stanice
 - Změny stavu přehrávání: přehrávání, pozastavení, zastavení
+- Režim Obligato: spuštěn / zastaven
 - události nahrávání: spuštěno, zastaveno, dokončeno (okamžité nahrávání, nahrávání skladeb a plánované nahrávání)
 - Oznámení o změně skladby ICY, i když je povolena také funkce **Automatické oznamování změn skladeb**.
 
@@ -531,6 +677,13 @@ FreeRadio automaticky kontroluje nové verze prostřednictvím služby GitHub.
 - Pokud není k dispozici přímý odkaz ke stažení, zobrazí se tlačítko **Otevřít stránku** a v výchozím prohlížeči se otevře stránka release na GitHubu.
 
 **Vypnutí automatických kontrol:** Vypněte možnost **Automaticky kontrolovat aktualizace** v NVDA Menu → Předvolby → Nastavení → FreeRadio.
+
+## Poděkování a zásluhy
+
+* **Původní základ a koncepty:** Upřímné díky **Gary Mp** ([GaryMp/freeradio](https://github.com/GaryMp/freeradio)) za původní koncepty rádiového doplňku a základní struktury pro správu oblíbených, které posloužily jako výchozí základ tohoto projektu.
+* **Nástroje AI a LLM:** Vděčné poděkování moderním nástrojům velkých jazykových modelů (LLM), včetně Claude, ChatGPT a Gemini, za pomoc během vývoje, refaktoringu kódu a implementace funkcí.
+* **Adresářová služba:** Adresář stanic je poháněn pomocí [Radio Browser API](https://www.radio-browser.info/).
+* **Komunita:** Upřímné díky všem členům komunity NVDA a překladatelům za jejich trvalou podporu, zpětnou vazbu a příspěvky k lokalizaci.
 
 ## Licence
 

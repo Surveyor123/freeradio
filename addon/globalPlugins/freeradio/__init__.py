@@ -288,6 +288,18 @@ def _init_config():
 		"result_limit":           "integer(default=1000, min=100, max=10000)",
 		"timeshift_enabled":      "boolean(default=False)",
 		"timeshift_buffer_seconds": "integer(default=600, min=600, max=18000)",
+		# Obligato mode - a favourite station played quietly in the
+		# background, independent of whatever is on the main player, until
+		# toggled off. See obligatoMixin.py.
+		"obligato_station_uuid":       "string(default='')",
+		"obligato_station_name":       "string(default='')",
+		"obligato_station_url":        "string(default='')",
+		# "same" (mirror the main output device), "default" (system
+		# default), or a BASS device index stored as a string.
+		"obligato_audio_device":       "string(default='same')",
+		"obligato_audio_device_name":  "string(default='')",
+		# Background volume as a percentage of the main player's volume.
+		"obligato_volume_ratio":       "integer(default=50, min=5, max=200)",
 	}
 
 _init_config()
@@ -323,9 +335,10 @@ from .audioFxMixin import AudioFxMixin
 from .recordingMixin import RecordingMixin
 from .trackInfoMixin import TrackInfoMixin
 from .miscTogglesMixin import MiscTogglesMixin
+from .obligatoMixin import ObligatoMixin
 
 
-class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixin, TimeshiftMixin, PlaybackCoreMixin, AudioDeviceMixin, globalPluginHandler.GlobalPlugin):
+class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixin, TimeshiftMixin, PlaybackCoreMixin, AudioDeviceMixin, globalPluginHandler.GlobalPlugin):
 
 	# Default gesture bindings for scripts defined on mixin base classes
 	# (AudioDeviceMixin, PlaybackCoreMixin, TimeshiftMixin, AudioFxMixin,
@@ -357,6 +370,7 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		"kb:control+windows+e": "toggleRecord",
 		"kb:control+windows+w": "openRecordingsFolder",
 		"kb:control+windows+i": "whatsPlaying",
+		"kb:control+shift+windows+m": "toggleObligato",
 	}
 
 	def __init__(self):
@@ -497,6 +511,14 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 		self._stations      = []
 		self._current_index = -1
 		self._dialog        = None
+		# Obligato mode (background music) - see obligatoMixin.py.
+		self._obligato_active      = False
+		self._obligato_dialog_open = False
+		self._obligato_player      = None
+		self._obligato_station     = None
+		self._obligato_ratio       = config.conf["freeradio"].get("obligato_volume_ratio", 50)
+		self._obligato_sync_stop   = None
+		self._obligato_sync_thread = None
 		gui.NVDASettingsDialog.categoryClasses.append(FreeRadioSettingsPanel)
 		_timers_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "timers.json")
 		self._timer_manager = TimerManager(
@@ -689,6 +711,7 @@ class GlobalPlugin(MiscTogglesMixin, TrackInfoMixin, RecordingMixin, AudioFxMixi
 			pass
 
 		self._icy_poll_stop.set()
+		self._terminate_obligato()
 		self._timer_manager.terminate()
 		self._player.terminate()
 		self._recorder.terminate()

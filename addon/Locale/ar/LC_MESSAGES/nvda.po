@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: FreeRadio 2026.23.0\n"
+"Project-Id-Version: FreeRadio 2026.23.5\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-09-01 20:27+0300\n"
-"PO-Revision-Date: 2026-09-02 07:56+0300\n"
+"POT-Creation-Date: 2026-09-04 12:00+0300\n"
+"PO-Revision-Date: 2026-09-04 16:35+0300\n"
 "Last-Translator: \n"
 "Language-Team: Arabic\n"
 "Language: ar\n"
@@ -19,82 +19,82 @@ msgstr ""
 "X-Poedit-Basepath: ../../../..\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: addon/globalPlugins/freeradio/__init__.py:393
+#: addon/globalPlugins/freeradio/__init__.py:407
 msgid ""
-"Time-shift buffer: running low on disk space, the oldest audio is being dropped "
-"more aggressively."
+"Time-shift buffer: running low on disk space, the oldest audio is being dropped more "
+"aggressively."
 msgstr ""
-"التخزين المؤقت للرجوع الزمني: أوشكت مساحة القرص على النفاد، لذلك يجري حذف أقدم "
-"المقاطع الصوتية بوتيرة أكبر."
+"التخزين المؤقت للرجوع الزمني: أوشكت مساحة القرص على النفاد، لذلك يجري حذف أقدم المقاطع "
+"الصوتية بوتيرة أكبر."
 
-#: addon/globalPlugins/freeradio/__init__.py:477
+#: addon/globalPlugins/freeradio/__init__.py:491
 #: addon/globalPlugins/freeradio/recordingMixin.py:193
 #, python-format
 msgid "Recording started: %s"
 msgstr "بدأ التسجيل: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:480
+#: addon/globalPlugins/freeradio/__init__.py:494
 #, python-format
 msgid "Recording finished: %s"
 msgstr "اكتمل التسجيل: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:484
+#: addon/globalPlugins/freeradio/__init__.py:498
 #, python-format
 msgid "Recording failed: could not connect to %s"
 msgstr "فشل التسجيل: تعذّر الاتصال بـ %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:488
+#: addon/globalPlugins/freeradio/__init__.py:502
 #, python-format
 msgid "Recording conversion failed. The original file was kept: %s"
 msgstr "فشل تحويل التسجيل. تم الاحتفاظ بالملف الأصلي: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:493
+#: addon/globalPlugins/freeradio/__init__.py:507
 #, python-format
 msgid ""
-"Could not use the selected folder for '%(station)s' (%(reason)s). Saved to the "
-"default recordings folder instead."
+"Could not use the selected folder for '%(station)s' (%(reason)s). Saved to the default "
+"recordings folder instead."
 msgstr ""
 "تعذّر استخدام المجلد المحدد للمحطة «%(station)s» (%(reason)s). حُفظ التسجيل في مجلد "
 "التسجيلات الافتراضي بدلًا منه."
 
-#: addon/globalPlugins/freeradio/__init__.py:558
+#: addon/globalPlugins/freeradio/__init__.py:580
 msgid "FreeRadio Stations"
 msgstr "محطات FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:578
+#: addon/globalPlugins/freeradio/__init__.py:600
 #, python-format
 msgid "Station no longer in favourites: %s"
 msgstr "لم تعد المحطة في المفضلة: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:587
+#: addon/globalPlugins/freeradio/__init__.py:609
 #, python-format
 msgid "%s playback shortcut ()"
 msgstr "اختصار تشغيل %s ()"
 
-#: addon/globalPlugins/freeradio/__init__.py:617
+#: addon/globalPlugins/freeradio/__init__.py:639
 msgid "Station &Browser...\tCtrl+Win+R"
 msgstr "متصفح الم&حطات...\tCtrl+Win+R"
 
-#: addon/globalPlugins/freeradio/__init__.py:626
+#: addon/globalPlugins/freeradio/__init__.py:648
 msgid "FreeRadio &Settings..."
 msgstr "إع&دادات FreeRadio..."
 
-#: addon/globalPlugins/freeradio/__init__.py:635
+#: addon/globalPlugins/freeradio/__init__.py:657
 msgid "Check for &Updates..."
 msgstr "التحقق من وجود ت&حديثات..."
 
-#: addon/globalPlugins/freeradio/__init__.py:648
+#: addon/globalPlugins/freeradio/__init__.py:670
 msgid "&FreeRadio"
 msgstr "&FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:707
+#: addon/globalPlugins/freeradio/__init__.py:730
 msgid "Open FreeRadio station browser"
 msgstr "فتح متصفح محطات FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:708
-#: addon/globalPlugins/freeradio/__init__.py:717
-#: addon/globalPlugins/freeradio/__init__.py:726
-#: addon/globalPlugins/freeradio/__init__.py:735
+#: addon/globalPlugins/freeradio/__init__.py:731
+#: addon/globalPlugins/freeradio/__init__.py:740
+#: addon/globalPlugins/freeradio/__init__.py:749
+#: addon/globalPlugins/freeradio/__init__.py:758
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:30
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:156
 #: addon/globalPlugins/freeradio/audioFxMixin.py:33
@@ -109,6 +109,7 @@ msgstr "فتح متصفح محطات FreeRadio"
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:48
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:71
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:90
+#: addon/globalPlugins/freeradio/obligatoMixin.py:196
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:43
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:140
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:192
@@ -126,71 +127,70 @@ msgstr "فتح متصفح محطات FreeRadio"
 msgid "FreeRadio"
 msgstr "FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:716
+#: addon/globalPlugins/freeradio/__init__.py:739
 msgid "Open FreeRadio audio book library"
-msgstr ""
+msgstr "فتح مكتبة الكتب الصوتية في FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:725
+#: addon/globalPlugins/freeradio/__init__.py:748
 msgid "Open FreeRadio podcast subscriptions"
-msgstr ""
+msgstr "فتح اشتراكات البودكاست في FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:734
+#: addon/globalPlugins/freeradio/__init__.py:757
 msgid ""
-"Add currently playing station to favourites, download the whole audio book if one "
-"is playing, or download the episode if a podcast is playing"
+"Add currently playing station to favourites, download the whole audio book if one is "
+"playing, or download the episode if a podcast is playing"
 msgstr ""
-"إضافة المحطة المشغلة حاليًا إلى المفضلة، أو تنزيل الكتاب الصوتي كاملًا إذا كان قيد "
-"التشغيل، أو تنزيل الحلقة إذا كان بودكاست قيد التشغيل"
+"إضافة المحطة المشغلة حاليًا إلى المفضلة، أو تنزيل الكتاب الصوتي كاملًا إذا كان قيد التشغيل، "
+"أو تنزيل الحلقة إذا كان بودكاست قيد التشغيل"
 
-#: addon/globalPlugins/freeradio/__init__.py:741
+#: addon/globalPlugins/freeradio/__init__.py:764
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:167
 #: addon/globalPlugins/freeradio/recordingMixin.py:106
 #: addon/globalPlugins/freeradio/recordingMixin.py:187
 msgid "No station is playing"
 msgstr "لا توجد محطة قيد التشغيل"
 
-#: addon/globalPlugins/freeradio/__init__.py:763
+#: addon/globalPlugins/freeradio/__init__.py:786
 #, python-format
 msgid "Already in favourites: %s"
 msgstr "موجودة مسبقاً في المفضلة: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:766
+#: addon/globalPlugins/freeradio/__init__.py:789
 #, python-format
 msgid "Added to favourites: %s"
 msgstr "أُضيفت إلى المفضلة: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:780
+#: addon/globalPlugins/freeradio/__init__.py:803
 msgid "No audio book is playing"
 msgstr "لا يوجد كتاب صوتي قيد التشغيل"
 
-#: addon/globalPlugins/freeradio/__init__.py:786
+#: addon/globalPlugins/freeradio/__init__.py:809
 msgid "Could not download this audio book."
 msgstr "تعذّر تنزيل هذا الكتاب الصوتي."
 
-#: addon/globalPlugins/freeradio/__init__.py:859
+#: addon/globalPlugins/freeradio/__init__.py:882
 #, python-format
-#| msgid "Could not play station: %s"
 msgid "Could not play %(name)s: %(reason)s"
-msgstr ""
+msgstr "تعذّر تشغيل %(name)s: %(reason)s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1041
+#: addon/globalPlugins/freeradio/__init__.py:1064
 msgid "No releases found on GitHub yet."
 msgstr "لم يتم العثور على أي إصدارات على GitHub بعد."
 
-#: addon/globalPlugins/freeradio/__init__.py:1045
+#: addon/globalPlugins/freeradio/__init__.py:1068
 #, python-format
 msgid "Update check failed (HTTP %d)."
 msgstr "فشل التحقق من التحديث (خطأ HTTP %d)."
 
-#: addon/globalPlugins/freeradio/__init__.py:1050
+#: addon/globalPlugins/freeradio/__init__.py:1073
 msgid "Update check failed. Please check your internet connection."
 msgstr "فشل التحقق من التحديث. يرجى التحقق من اتصالك بالإنترنت."
 
-#: addon/globalPlugins/freeradio/__init__.py:1065
+#: addon/globalPlugins/freeradio/__init__.py:1088
 msgid "Could not determine latest version."
 msgstr "تعذر تحديد الإصدار الأحدث."
 
-#: addon/globalPlugins/freeradio/__init__.py:1084
+#: addon/globalPlugins/freeradio/__init__.py:1107
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -203,17 +203,17 @@ msgstr ""
 "\n"
 "هل ترغب في تنزيله وتثبيته الآن؟"
 
-#: addon/globalPlugins/freeradio/__init__.py:1087
-#: addon/globalPlugins/freeradio/__init__.py:1095
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1110
+#: addon/globalPlugins/freeradio/__init__.py:1118
+#: addon/globalPlugins/freeradio/__init__.py:1179
 msgid "unknown"
 msgstr "غير معروف"
 
-#: addon/globalPlugins/freeradio/__init__.py:1088
+#: addon/globalPlugins/freeradio/__init__.py:1111
 msgid "&Install"
 msgstr "ت&ثبيت"
 
-#: addon/globalPlugins/freeradio/__init__.py:1092
+#: addon/globalPlugins/freeradio/__init__.py:1115
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -226,24 +226,24 @@ msgstr ""
 "\n"
 "هل ترغب في فتح صفحة التنزيل؟"
 
-#: addon/globalPlugins/freeradio/__init__.py:1096
+#: addon/globalPlugins/freeradio/__init__.py:1119
 msgid "&Open Page"
 msgstr "&فتح الصفحة"
 
-#: addon/globalPlugins/freeradio/__init__.py:1101
+#: addon/globalPlugins/freeradio/__init__.py:1124
 msgid "FreeRadio Update Available"
 msgstr "يتوفر تحديث لـ FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:1104
+#: addon/globalPlugins/freeradio/__init__.py:1127
 msgid "&Cancel"
 msgstr "إل&غاء"
 
-#: addon/globalPlugins/freeradio/__init__.py:1119
+#: addon/globalPlugins/freeradio/__init__.py:1142
 #, python-format
 msgid "Downloading FreeRadio %s…"
 msgstr "جارٍ تنزيل FreeRadio %s…"
 
-#: addon/globalPlugins/freeradio/__init__.py:1137
+#: addon/globalPlugins/freeradio/__init__.py:1160
 #: addon/globalPlugins/freeradio/radioDialog.py:4796
 #: addon/globalPlugins/freeradio/radioDialog.py:6115
 #: addon/globalPlugins/freeradio/recordingMixin.py:62
@@ -251,17 +251,17 @@ msgstr "جارٍ تنزيل FreeRadio %s…"
 msgid "Download failed: %s"
 msgstr "فشل التنزيل: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1147
+#: addon/globalPlugins/freeradio/__init__.py:1170
 #, python-format
 msgid "Could not launch installer. File saved to: %s"
 msgstr "تعذر تشغيل أداة التثبيت. تم حفظ الملف في: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1179
 #, python-format
 msgid "FreeRadio is up to date. Installed: %s"
 msgstr "FreeRadio محدّث بالكامل. الإصدار المثبت: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1157
+#: addon/globalPlugins/freeradio/__init__.py:1180
 msgid "FreeRadio Update Check"
 msgstr "التحقق من تحديثات FreeRadio"
 
@@ -276,12 +276,13 @@ msgstr "لم يتم العثور على أجهزة إخراج صوتية"
 
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:60
 msgid ""
-"Only one physical audio output device is available. FreeRadio uses the system "
-"default output."
+"Only one physical audio output device is available. FreeRadio uses the system default "
+"output."
 msgstr "يتوفر جهاز إخراج صوت فعلي واحد فقط. تستخدم FreeRadio إخراج النظام الافتراضي."
 
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:67
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:151
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
 #: addon/globalPlugins/freeradio/radioDialog.py:1142
 #: addon/globalPlugins/freeradio/settingsPanel.py:522
 msgid "System default"
@@ -371,8 +372,7 @@ msgid "Rate %.1f"
 msgstr "سرعة التشغيل %.1f"
 
 #: addon/globalPlugins/freeradio/audioFxMixin.py:79
-msgid ""
-"Playback speed control needs the bass_fx add-on library — see the FreeRadio docs."
+msgid "Playback speed control needs the bass_fx add-on library — see the FreeRadio docs."
 msgstr "يتطلب التحكم في سرعة التشغيل مكتبة bass_fx الإضافية — راجع توثيق FreeRadio."
 
 #: addon/globalPlugins/freeradio/audioFxMixin.py:81
@@ -473,10 +473,8 @@ msgstr "تلاشي متقاطع عادي (ثانيتان)"
 msgid "Station tuning sound effect"
 msgstr "تأثير صوت ضبط المحطة"
 
-#: addon/globalPlugins/freeradio/getem.py:429
-#: addon/globalPlugins/freeradio/getem.py:457
-#: addon/globalPlugins/freeradio/getem.py:983
-#: addon/globalPlugins/freeradio/librivox.py:151
+#: addon/globalPlugins/freeradio/getem.py:429 addon/globalPlugins/freeradio/getem.py:457
+#: addon/globalPlugins/freeradio/getem.py:983 addon/globalPlugins/freeradio/librivox.py:151
 #: addon/globalPlugins/freeradio/librivox.py:246
 #: addon/globalPlugins/freeradio/radioDialog.py:2915
 #: addon/globalPlugins/freeradio/utils.py:335
@@ -487,7 +485,7 @@ msgstr "غير معروف"
 #: addon/globalPlugins/freeradio/radioDialog.py:5218
 #: addon/globalPlugins/freeradio/settingsPanel.py:405
 msgid "GETEM"
-msgstr ""
+msgstr "GETEM"
 
 #: addon/globalPlugins/freeradio/getem.py:611
 msgid "Please enter your GETEM username and password in FreeRadio's settings."
@@ -501,8 +499,7 @@ msgstr "فشل تسجيل الدخول إلى GETEM. يرجى التحقق من 
 msgid "Please enter your GETEM username and password in FreeRadio's settings first."
 msgstr "يرجى أولًا إدخال اسم المستخدم وكلمة المرور لحساب GETEM في إعدادات FreeRadio."
 
-#: addon/globalPlugins/freeradio/getem.py:712
-#: addon/globalPlugins/freeradio/librivox.py:187
+#: addon/globalPlugins/freeradio/getem.py:712 addon/globalPlugins/freeradio/librivox.py:187
 #: addon/globalPlugins/freeradio/radioDialog.py:4834
 #: addon/globalPlugins/freeradio/radioDialog.py:5433
 msgid "Please enter a search term."
@@ -517,18 +514,17 @@ msgstr "تعذّر الوصول إلى فهرس GETEM. يرجى التحقق م�
 msgid "{0} - Part {1}"
 msgstr "{0} - الجزء {1}"
 
-#: addon/globalPlugins/freeradio/getem.py:866
-#: addon/globalPlugins/freeradio/getem.py:995
+#: addon/globalPlugins/freeradio/getem.py:866 addon/globalPlugins/freeradio/getem.py:995
 msgid ""
 "No playable audio file was found on this work's GETEM page. It may require manual "
 "download from the site."
 msgstr ""
-"لم يُعثر على ملف صوتي قابل للتشغيل في صفحة هذا العمل على GETEM. قد يتطلب تنزيله "
-"يدويًا من الموقع."
+"لم يُعثر على ملف صوتي قابل للتشغيل في صفحة هذا العمل على GETEM. قد يتطلب تنزيله يدويًا من "
+"الموقع."
 
 #: addon/globalPlugins/freeradio/getem.py:967
 msgid "This doesn't look like a GETEM work link."
-msgstr ""
+msgstr "لا يبدو هذا رابط عمل لـ GETEM."
 
 #: addon/globalPlugins/freeradio/getem.py:1092
 msgid "The downloaded file was empty. Please check your GETEM login."
@@ -543,11 +539,9 @@ msgstr "لم يُرجع GETEM صوتًا لهذا الجزء: %s"
 msgid "GETEM did not return a playable audio file for this part."
 msgstr "لم يُرجع GETEM ملفًا صوتيًا قابلًا للتشغيل لهذا الجزء."
 
-#: addon/globalPlugins/freeradio/getem.py:1358
-#: addon/globalPlugins/freeradio/librivox.py:538
+#: addon/globalPlugins/freeradio/getem.py:1358 addon/globalPlugins/freeradio/librivox.py:538
 #: addon/globalPlugins/freeradio/librivox.py:636
-#: addon/globalPlugins/freeradio/podcast.py:437
-#: addon/globalPlugins/freeradio/podcast.py:487
+#: addon/globalPlugins/freeradio/podcast.py:437 addon/globalPlugins/freeradio/podcast.py:487
 msgid "Untitled"
 msgstr "بلا عنوان"
 
@@ -555,39 +549,38 @@ msgstr "بلا عنوان"
 #: addon/globalPlugins/freeradio/radioDialog.py:5218
 #: addon/globalPlugins/freeradio/settingsPanel.py:405
 msgid "LibriVox"
-msgstr ""
+msgstr "LibriVox"
 
 #: addon/globalPlugins/freeradio/librivox.py:405
 msgid "This doesn't look like an archive.org book link."
-msgstr ""
+msgstr "لا يبدو هذا رابط كتاب على archive.org."
 
 #: addon/globalPlugins/freeradio/librivox.py:423
 msgid "Could not find a book at this address on archive.org."
-msgstr ""
+msgstr "تعذّر العثور على كتاب في هذا العنوان على archive.org."
 
 #: addon/globalPlugins/freeradio/librivox.py:483
 msgid "No playable audio file was found for this book on archive.org."
-msgstr ""
+msgstr "لم يُعثر على ملف صوتي قابل للتشغيل لهذا الكتاب على archive.org."
 
 #: addon/globalPlugins/freeradio/librivox.py:520
 msgid "This book has no LibriVox RSS feed to read chapters from."
-msgstr ""
+msgstr "لا يحتوي هذا الكتاب على خلاصة RSS من LibriVox لقراءة الفصول منها."
 
 #: addon/globalPlugins/freeradio/librivox.py:534
 msgid "Could not read this book's chapter list."
-msgstr ""
+msgstr "تعذّرت قراءة قائمة فصول هذا الكتاب."
 
 #: addon/globalPlugins/freeradio/librivox.py:546
 msgid "No playable audio file was found in this book's LibriVox feed."
-msgstr ""
+msgstr "لم يُعثر على ملف صوتي قابل للتشغيل في خلاصة LibriVox لهذا الكتاب."
 
 #: addon/globalPlugins/freeradio/librivox.py:597
 msgid "The downloaded file was empty."
-msgstr ""
+msgstr "كان الملف الذي تم تنزيله فارغًا."
 
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:31
-msgid ""
-"Toggle mute notifications (station changes, playback, recording, volume level)"
+msgid "Toggle mute notifications (station changes, playback, recording, volume level)"
 msgstr "تبديل كتم الإشعارات (تغيير المحطة، والتشغيل، والتسجيل، ومستوى الصوت)"
 
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:40
@@ -630,11 +623,87 @@ msgstr "لم يتم التعرف على الأغنية"
 
 #: addon/globalPlugins/freeradio/musicRecognizer.py:691
 msgid ""
-"ffmpeg.exe not found. Download ffmpeg from https://ffmpeg.org/download.html and "
-"place ffmpeg.exe in the FreeRadio addon folder, or set the path in settings."
+"ffmpeg.exe not found. Download ffmpeg from https://ffmpeg.org/download.html and place "
+"ffmpeg.exe in the FreeRadio addon folder, or set the path in settings."
 msgstr ""
-"لم يتم العثور على ffmpeg.exe. قم بتنزيله من https://ffmpeg.org/download.html وضعه "
-"في مجلد إضافة FreeRadio، أو قم بتعيين مساره في الإعدادات."
+"لم يتم العثور على ffmpeg.exe. قم بتنزيله من https://ffmpeg.org/download.html وضعه في مجلد "
+"إضافة FreeRadio، أو قم بتعيين مساره في الإعدادات."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:55
+msgid "Obligato Mode"
+msgstr "وضع الخلفية"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:64
+#: addon/globalPlugins/freeradio/obligatoMixin.py:71
+msgid "Background station:"
+msgstr "المحطة الخلفية:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:86
+#: addon/globalPlugins/freeradio/obligatoMixin.py:97
+msgid "Audio output:"
+msgstr "مخرج الصوت:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
+msgid "Same as main output"
+msgstr "نفس المخرج الرئيسي"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:123
+#: addon/globalPlugins/freeradio/obligatoMixin.py:137
+msgid "Background volume:"
+msgstr "مستوى صوت الخلفية:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:131
+msgid "100% (same as main volume)"
+msgstr "100% (نفس مستوى الصوت الرئيسي)"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:135
+#, python-format
+msgid "%d%% of main volume"
+msgstr "%d%% من مستوى الصوت الرئيسي"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:149
+msgid "&Start"
+msgstr "&بدء"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:167
+msgid "Please select a station for the background music."
+msgstr "يرجى تحديد محطة لموسيقى الخلفية."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:195
+msgid "Toggle Obligato background music mode"
+msgstr "تبديل وضع موسيقى الخلفية"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:210
+msgid "No favourite stations. Add a station to favourites first to use Obligato mode."
+msgstr "لا توجد محطات في المفضلة. أضف محطة إلى المفضلة أولاً لاستخدام وضع الخلفية."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:272
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
+msgid "No stream URL available for this station"
+msgstr "لا يتوفر رابط بث لهذه المحطة"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:286
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
+msgid "No internet connection. Please check your connection and try again."
+msgstr "لا يوجد اتصال بالإنترنت. يُرجى التحقق من اتصالك والمحاولة مجددًا."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:294
+msgid "Could not start Obligato mode."
+msgstr "تعذّر بدء وضع الخلفية."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:331
+#, python-format
+msgid "Obligato mode started: %s"
+msgstr "بدأ وضع الخلفية: %s"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:384
+#, python-format
+msgid "Could not play %(name)s in Obligato mode: %(reason)s"
+msgstr "تعذّر تشغيل %(name)s في وضع الخلفية: %(reason)s"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:411
+msgid "Obligato mode stopped"
+msgstr "توقف وضع الخلفية"
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:42
 msgid "Pause or resume FreeRadio playback"
@@ -708,21 +777,12 @@ msgid "Play previous station"
 msgstr "تشغيل المحطة السابقة"
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:491
-msgid ""
-"Could not resume the last audio book - it may have been removed from your library."
-msgstr ""
+msgid "Could not resume the last audio book - it may have been removed from your library."
+msgstr "تعذّر استئناف آخر كتاب صوتي - ربما أُزيل من مكتبتك."
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:528
 msgid "Unknown station"
 msgstr "محطة غير معروفة"
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
-msgid "No stream URL available for this station"
-msgstr "لا يتوفر رابط بث لهذه المحطة"
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
-msgid "No internet connection. Please check your connection and try again."
-msgstr "لا يوجد اتصال بالإنترنت. يُرجى التحقق من اتصالك والمحاولة مجددًا."
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:653
 #, python-format
@@ -745,8 +805,7 @@ msgstr "لم يتم العثور على حلقات في هذه الخلاصة."
 msgid "Feed not found."
 msgstr "لم يتم العثور على الخلاصة."
 
-#: addon/globalPlugins/freeradio/podcast.py:388
-#: addon/globalPlugins/freeradio/podcast.py:410
+#: addon/globalPlugins/freeradio/podcast.py:388 addon/globalPlugins/freeradio/podcast.py:410
 msgid "No new episodes (304)."
 msgstr "لا توجد حلقات جديدة (304)."
 
@@ -806,7 +865,7 @@ msgstr "خطأ في الشبكة: %s"
 #: addon/globalPlugins/freeradio/radioDialog.py:250
 #, python-format
 msgid "Source: %s"
-msgstr ""
+msgstr "المصدر: %s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:252
 #, python-format
@@ -985,11 +1044,10 @@ msgstr "تح&ديث قائمة المحطات"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:475
 msgid ""
-"Re-downloads the full station list from the server, so search and browsing use the "
-"latest data."
+"Re-downloads the full station list from the server, so search and browsing use the latest "
+"data."
 msgstr ""
-"يُعيد تنزيل قائمة المحطات الكاملة من الخادم، بحيث يستخدم البحث والتصفح أحدث "
-"البيانات."
+"يُعيد تنزيل قائمة المحطات الكاملة من الخادم، بحيث يستخدم البحث والتصفح أحدث البيانات."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:477
 #: addon/globalPlugins/freeradio/radioDialog.py:6143
@@ -1227,11 +1285,11 @@ msgstr "إزالة المؤ&قت المحدد"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:1329
 msgid ""
-"Press comma to pick a station, navigate to the target position, then press comma "
-"again to drop."
+"Press comma to pick a station, navigate to the target position, then press comma again to "
+"drop."
 msgstr ""
-"اضغط مفتاح الفاصلة لاختيار محطة، وانتقل إلى الموضع الهدف، ثم اضغط مفتاح الفاصلة "
-"مجددًا لإفلاتها."
+"اضغط مفتاح الفاصلة لاختيار محطة، وانتقل إلى الموضع الهدف، ثم اضغط مفتاح الفاصلة مجددًا "
+"لإفلاتها."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:1344
 msgid "No favourites found"
@@ -1417,19 +1475,19 @@ msgstr "مستوى الصوت والتأثيرات"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2475
 msgid "Volume and playback speed"
-msgstr ""
+msgstr "مستوى الصوت وسرعة التشغيل"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2477
 msgid "Effects and playback speed"
-msgstr ""
+msgstr "التأثيرات وسرعة التشغيل"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2479
 msgid "Playback speed only"
-msgstr ""
+msgstr "سرعة التشغيل فقط"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2481
 msgid "Volume, effects, and playback speed"
-msgstr ""
+msgstr "مستوى الصوت والتأثيرات وسرعة التشغيل"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2489
 msgid "What would you like to save in the audio profile?"
@@ -1505,11 +1563,11 @@ msgstr "اكتمل التصدير"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2620
 msgid ""
-"Supported files (*.json;*.m3u)|*.json;*.m3u|JSON favourites (*.json)|*.json|M3U "
-"playlist (*.m3u)|*.m3u"
+"Supported files (*.json;*.m3u)|*.json;*.m3u|JSON favourites (*.json)|*.json|M3U playlist "
+"(*.m3u)|*.m3u"
 msgstr ""
-"الملفات المدعومة (*.json;*.m3u)|*.json;*.m3u|المفضلة بصيغة JSON (*.json)|*.json|"
-"قائمة تشغيل M3U (*.m3u)|*.m3u"
+"الملفات المدعومة (*.json;*.m3u)|*.json;*.m3u|المفضلة بصيغة JSON (*.json)|*.json|قائمة "
+"تشغيل M3U (*.m3u)|*.m3u"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:2626
 #: addon/globalPlugins/freeradio/radioDialog.py:2643
@@ -1978,12 +2036,12 @@ msgstr "أُضيفت الخلاصة: %s"
 #: addon/globalPlugins/freeradio/radioDialog.py:4470
 #, python-format
 msgid "Audio profile saved for %(feed)s"
-msgstr ""
+msgstr "حُفظ ملف تعريف الصوت للخلاصة %(feed)s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4479
 #, python-format
 msgid "Audio profile cleared for %(feed)s"
-msgstr ""
+msgstr "مُسح ملف تعريف الصوت للخلاصة %(feed)s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:4491
 #: addon/globalPlugins/freeradio/radioDialog.py:4556
@@ -2125,7 +2183,7 @@ msgstr "إ&زالة الخلاصة"
 #: addon/globalPlugins/freeradio/radioDialog.py:5106
 #: addon/globalPlugins/freeradio/radioDialog.py:5150
 msgid "Save Audio Pr&ofile for This Podcast"
-msgstr ""
+msgstr "حفظ ملف تعر&يف الصوت لهذا البودكاست"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5116
 msgid "&Copy Feed URL"
@@ -2145,13 +2203,14 @@ msgstr "تم النسخ إلى الحافظة"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5230
 msgid ""
-"Search audio books by title, author, narrator, subject, or publisher. Press enter "
-"to search"
+"Search audio books by title, author, narrator, subject, or publisher. Press enter to "
+"search"
 msgstr ""
+"ابحث عن الكتب الصوتية حسب العنوان، المؤلف، الراوي، الموضوع، أو الناشر. اضغط Enter للبحث"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5263
 msgid "Audio book search results"
-msgstr ""
+msgstr "نتائج البحث عن الكتب الصوتية"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5273
 msgid "My Library:"
@@ -2168,11 +2227,11 @@ msgstr "تفاصيل الكتاب الصوتي"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5439
 msgid "No audio book sources are enabled. Enable at least one in FreeRadio settings."
-msgstr ""
+msgstr "لا توجد مصادر كتب صوتية مُمكّنة. فعّل مصدرًا واحدًا على الأقل في إعدادات FreeRadio."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5480
 msgid "Searching..."
-msgstr ""
+msgstr "جارٍ البحث..."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5524
 msgid "No audio books found."
@@ -2247,7 +2306,7 @@ msgstr "نسخ ال&رابط"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5941
 msgid "Save Audio Pr&ofile for This Book"
-msgstr ""
+msgstr "حفظ ملف تعر&يف الصوت لهذا الكتاب"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5951
 msgid "&Remove from the Library"
@@ -2256,12 +2315,12 @@ msgstr "إزا&لة من المكتبة"
 #: addon/globalPlugins/freeradio/radioDialog.py:5974
 #, python-format
 msgid "Audio profile saved for %(book)s"
-msgstr ""
+msgstr "حُفظ ملف تعريف الصوت للكتاب %(book)s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:5988
 #, python-format
 msgid "Audio profile cleared for %(book)s"
-msgstr ""
+msgstr "مُسح ملف تعريف الصوت للكتاب %(book)s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:6012
 #, python-format
@@ -2288,10 +2347,8 @@ msgstr "جارٍ تنزيل الكتاب: %s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:6113
 #, python-format
-msgid ""
-"Downloaded %(saved)d of %(total)d parts of %(book.title)s. Last error: %(error)s"
-msgstr ""
-"تم تنزيل %(saved)d من أصل %(total)d جزءًا من %(book.title)s. آخر خطأ: %(error)s"
+msgid "Downloaded %(saved)d of %(total)d parts of %(book.title)s. Last error: %(error)s"
+msgstr "تم تنزيل %(saved)d من أصل %(total)d جزءًا من %(book.title)s. آخر خطأ: %(error)s"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:6124
 #, python-format
@@ -2395,11 +2452,10 @@ msgstr "توقف تسجيل الأغنية"
 msgid ""
 "Podcast or audiobook cannot be recorded. To download the episode or book, press "
 "Ctrl+Win+V."
-msgstr ""
+msgstr "لا يمكن تسجيل البودكاست أو الكتاب الصوتي. لتنزيل الحلقة أو الكتاب، اضغط Ctrl+Win+V."
 
 #: addon/globalPlugins/freeradio/recordingMixin.py:134
-msgid ""
-"This station does not broadcast track metadata. Song recording is not available."
+msgid "This station does not broadcast track metadata. Song recording is not available."
 msgstr "هذه المحطة لا تبث البيانات الوصفية للمقاطع. تسجيل الأغاني غير متاح."
 
 #: addon/globalPlugins/freeradio/recordingMixin.py:146
@@ -2434,10 +2490,10 @@ msgid "Could not open recordings folder: %s"
 msgstr "تعذر فتح مجلد التسجيلات: %s"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:61
-msgid ""
-"&Enable time-shift buffer (rewind live radio, no effect on potcasts and audio "
-"books)"
+msgid "&Enable time-shift buffer (rewind live radio, no effect on potcasts and audio books)"
 msgstr ""
+"&تمكين التخزين المؤقت للرجوع الزمني (إعادة الراديو المباشر، لا تأثير على البودكاست والكتب "
+"الصوتية)"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:68
 msgid "Time-shift buffer duration:"
@@ -2465,11 +2521,11 @@ msgstr "5 ساعات"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:86
 msgid ""
-"Longer buffers use more temporary disk space, especially for high-bitrate stations "
-"— a 5-hour buffer can use several gigabytes."
+"Longer buffers use more temporary disk space, especially for high-bitrate stations — a 5-"
+"hour buffer can use several gigabytes."
 msgstr ""
-"تستهلك مدد التخزين الأطول مساحة مؤقتة أكبر على القرص، خاصةً مع المحطات ذات معدل "
-"البت المرتفع — فقد يستهلك التخزين لمدة 5 ساعات عدة غيغابايت."
+"تستهلك مدد التخزين الأطول مساحة مؤقتة أكبر على القرص، خاصةً مع المحطات ذات معدل البت "
+"المرتفع — فقد يستهلك التخزين لمدة 5 ساعات عدة غيغابايت."
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:94
 msgid "Audio output device (BASS backend):"
@@ -2640,7 +2696,7 @@ msgstr "اس&تعراض المجلد..."
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:408
 msgid "Audio book &sources:"
-msgstr ""
+msgstr "م&صادر الكتب الصوتية:"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:421
 msgid "GETEM Audio Books Account:"
@@ -2656,11 +2712,11 @@ msgstr "كلمة مرور GETEM:"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:438
 msgid ""
-"Stored encrypted on this computer, for this Windows user only. Leave both fields "
-"empty and save to remove them."
+"Stored encrypted on this computer, for this Windows user only. Leave both fields empty "
+"and save to remove them."
 msgstr ""
-"تُحفظ هذه البيانات مشفّرة على هذا الحاسوب ولمستخدم Windows الحالي فقط. اترك الحقلين "
-"فارغين ثم احفظ لإزالتهما."
+"تُحفظ هذه البيانات مشفّرة على هذا الحاسوب ولمستخدم Windows الحالي فقط. اترك الحقلين فارغين "
+"ثم احفظ لإزالتهما."
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:444
 msgid "Recording output format:"
@@ -2683,8 +2739,7 @@ msgid "MP3 recording bitrate:"
 msgstr "معدل بت تسجيل MP3:"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:477
-msgid ""
-"&Disable internet connectivity check before playing (recommended if DNS is blocked)"
+msgid "&Disable internet connectivity check before playing (recommended if DNS is blocked)"
 msgstr "ت&عطيل فحص الاتصال بالإنترنت قبل التشغيل (يُوصى به إذا كان DNS محظورًا)"
 
 #: addon/globalPlugins/freeradio/settingsPanel.py:487
@@ -2737,18 +2792,17 @@ msgstr "تعذّر الانتقال إلى الموضع"
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:93
 #, python-format
 msgid "Forwarded %d seconds"
-msgstr ""
+msgstr "تم التقديم %d ثانية"
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:94
 #, python-format
 msgid "Rewound %d seconds"
-msgstr ""
+msgstr "تم الرجوع %d ثانية"
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:185
 msgid "Time-shift: rewind 15 seconds (enters time-shift mode if not already active)"
 msgstr ""
-"الرجوع الزمني: إرجاع التشغيل 15 ثانية (يدخل وضع الرجوع الزمني إن لم يكن نشطًا "
-"بالفعل)"
+"الرجوع الزمني: إرجاع التشغيل 15 ثانية (يدخل وضع الرجوع الزمني إن لم يكن نشطًا بالفعل)"
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:198
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:208
@@ -2769,16 +2823,15 @@ msgid ""
 "Time-shift is not supported for this station's stream (no seekable audio could be "
 "extracted)."
 msgstr ""
-"الرجوع الزمني غير مدعوم لبث هذه المحطة (تعذّر استخراج صوت يمكن التقديم والإرجاع "
-"فيه)."
+"الرجوع الزمني غير مدعوم لبث هذه المحطة (تعذّر استخراج صوت يمكن التقديم والإرجاع فيه)."
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:211
 msgid ""
-"Not enough buffered audio to rewind yet. Wait a few seconds after the station "
-"starts playing and try again."
+"Not enough buffered audio to rewind yet. Wait a few seconds after the station starts "
+"playing and try again."
 msgstr ""
-"لا توجد بيانات صوتية مخزنة مؤقتًا تكفي للرجوع بعد. انتظر بضع ثوانٍ بعد بدء تشغيل "
-"المحطة ثم أعد المحاولة."
+"لا توجد بيانات صوتية مخزنة مؤقتًا تكفي للرجوع بعد. انتظر بضع ثوانٍ بعد بدء تشغيل المحطة ثم "
+"أعد المحاولة."
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:212
 msgid "Time-shift buffer file is not ready yet."
@@ -2799,8 +2852,7 @@ msgstr "تم الرجوع إلى موضع يبعد %.0f ثانية عن البث
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:220
 msgid "Time-shift: fast-forward 15 seconds, or return to live if already caught up"
-msgstr ""
-"الرجوع الزمني: تقديم 15 ثانية، أو العودة إلى البث المباشر إذا كنت قد لحقت به بالفعل"
+msgstr "الرجوع الزمني: تقديم 15 ثانية، أو العودة إلى البث المباشر إذا كنت قد لحقت به بالفعل"
 
 #: addon/globalPlugins/freeradio/timeshiftMixin.py:236
 msgid "Already listening live"
@@ -2835,11 +2887,11 @@ msgstr "فشل التعرف: %s"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:106
 msgid ""
-"Announce currently playing station. Press twice for full details, three times to "
-"copy track info, four times to force music recognition."
+"Announce currently playing station. Press twice for full details, three times to copy "
+"track info, four times to force music recognition."
 msgstr ""
-"الإعلان عن المحطة الحالية. اضغط مرتين للتفاصيل الكاملة، وثلاث مرات لنسخ معلومات "
-"المقطع، وأربع مرات لفرض التعرف على الموسيقى."
+"الإعلان عن المحطة الحالية. اضغط مرتين للتفاصيل الكاملة، وثلاث مرات لنسخ معلومات المقطع، "
+"وأربع مرات لفرض التعرف على الموسيقى."
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:118
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:393
@@ -2911,10 +2963,8 @@ msgid "Show details of the currently playing station"
 msgstr "عرض تفاصيل المحطة الحالية"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:310
-msgid ""
-"Copy current track info to clipboard, or start music recognition if unavailable"
-msgstr ""
-"نسخ معلومات المقطع الحالي إلى الحافظة، أو بدء التعرف على الموسيقى إذا لم تكن متوفرة"
+msgid "Copy current track info to clipboard, or start music recognition if unavailable"
+msgstr "نسخ معلومات المقطع الحالي إلى الحافظة، أو بدء التعرف على الموسيقى إذا لم تكن متوفرة"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:355
 msgid "Force music recognition for the currently playing stream"
@@ -2927,24 +2977,24 @@ msgstr "قيد التشغيل الآن"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:750
 msgid "Podcast"
-msgstr ""
+msgstr "بودكاست"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:764
 msgid "Episode URL"
-msgstr ""
+msgstr "رابط الحلقة"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:789
 msgid "Book"
-msgstr ""
+msgstr "كتاب"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:797
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:801
 msgid "Chapter"
-msgstr ""
+msgstr "فصل"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:817
 msgid "Book link"
-msgstr ""
+msgstr "رابط الكتاب"
 
 #: addon/globalPlugins/freeradio/trackInfoMixin.py:973
 #, python-format
@@ -2972,65 +3022,69 @@ msgstr "freeRadio"
 
 #: buildVars.py:19
 msgid ""
-"FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that "
-"provides seamless access to thousands of internet radio stations via the Radio "
-"Browser open directory, RSS/Atom podcast feeds, and the GETEM digital library for "
-"the visually impaired. It features a fully accessible station browser with search, "
-"country filter, favourites management, and per-station, per-podcast, and per-audio-"
-"book audio profiles. Podcast episodes and audio book chapters resume automatically "
-"from where you left off, with adjustable pitch-preserving playback speed. Playback "
-"is handled by a prioritised backend chain (BASS, VLC, PotPlayer, Windows Media "
-"Player) with support for volume control, audio effects, output device selection, "
-"and simultaneous audio mirroring to a second device. Additional features include "
-"instant and scheduled recording, time-shift rewind of live radio, sleep and alarm "
-"timers, automatic ICY metadata announcements, Shazam-based music recognition, and "
-"a liked-songs log with lyrics lookup. All controls and shortcuts are designed for "
-"NVDA accessibility."
+"FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that provides "
+"seamless access to thousands of internet radio stations via the Radio Browser open "
+"directory, RSS/Atom podcast feeds, and the libriVox + GETEM digital library for the "
+"visually impaired. It features a fully accessible station browser with search, country "
+"filter, favourites management, and per-station, per-podcast, and per-audio-book audio "
+"profiles. Podcast episodes and audio book chapters resume automatically from where you "
+"left off, with adjustable pitch-preserving playback speed. Playback is handled by BASS, "
+"with support for volume control, audio effects, output device selection, and simultaneous "
+"audio mirroring to a second device. Additional features include instant and scheduled "
+"recording, time-shift rewind of live radio, sleep and alarm timers, automatic ICY "
+"metadata announcements, Shazam-based music recognition, and a liked-songs log with lyrics "
+"lookup. All controls and shortcuts are designed for NVDA accessibility."
 msgstr ""
+"FreeRadio هي إضافة لـ NVDA توفر راديو إنترنت وبودكاست وكتبًا صوتية، وتتيح الوصول السلس إلى "
+"آلاف محطات الراديو عبر الإنترنت من خلال دليل Radio Browser المفتوح، وخلاصات RSS/Atom "
+"للبودكاست، والمكتبة الرقمية LibriVox + GETEM للمكفوفين. تتميز الإضافة بمتصفح محطات يمكن "
+"الوصول إليه بالكامل مع البحث، وتصفية حسب البلد، وإدارة المفضلة، وملفات تعريف صوتية لكل "
+"محطة، ولكل بودكاست، ولكل كتاب صوتي على حدة. تستأنف حلقات البودكاست وفصول الكتب الصوتية "
+"التشغيل تلقائيًا من حيث توقفت، مع سرعة تشغيل قابلة للتعديل مع الحفاظ على طبقة الصوت. يتم "
+"التشغيل عبر محرك BASS، مع دعم التحكم في مستوى الصوت، والتأثيرات الصوتية، واختيار جهاز "
+"الإخراج، ونسخ الصوت المتزامن إلى جهاز ثانٍ. تشمل الميزات الإضافية التسجيل الفوري والمجدول، "
+"والرجوع الزمني للراديو المباشر، ومؤقتات النوم والمنبه، والإعلان التلقائي عن بيانات ICY "
+"الوصفية، والتعرف على الموسيقى عبر Shazam، وسجل الأغاني المعجب بها مع البحث عن كلمات "
+"الأغنية. جميع عناصر التحكم والاختصارات مصممة لتكون متاحة بالكامل مع NVDA."
 
 #: buildVars.py:26
 msgid ""
 "\n"
-"**Security**\n"
-"- Certificate verification for streaming connections (live playback, recording, "
-"and time-shift) is now enabled by default, closing a gap where every station's "
-"stream could previously be intercepted or substituted without warning. Stations "
-"with known broken/expired certificates automatically fall back to an unverified "
-"connection so they keep working — nothing else changes for those stations, and "
-"only they pay a small extra delay the first time they're opened each session.\n"
-"**Fixed**\n"
-"- **Audio books:** Fixed a rare timing issue where, right as one chapter finished "
-"and the next was about to start automatically, playback could occasionally jump "
-"backward to an already-heard chapter instead of continuing forward. Most "
-"noticeable during long unattended listening sessions.\n"
-"- **Scheduled recordings:** Recurring recordings now recover much more reliably "
-"after your PC wakes from sleep or when NVDA was closed for a while:\n"
-"  - A missed recurring recording on a multi-day schedule (e.g. Mon/Wed/Fri) no "
-"longer skips ahead by a full week — it correctly finds the next eligible day.\n"
-"  - Old, incorrectly saved schedule dates from earlier versions are automatically "
-"fixed on load — no need to recreate them.\n"
-"  - If a recording's start was delayed (e.g. by sleep), it now records only the "
-"time actually remaining in its original window, instead of starting a full-length "
-"recording late.\n"
-"  - Schedule data is now saved more safely, preventing rare cases of a damaged or "
-"incomplete schedule file.\n"
-"  - While a scheduled recording is in progress, Windows is prevented from going "
-"into idle sleep automatically.\n"
-"**Added**\n"
-"- New keyboard shortcuts for quick access:\n"
-"  - `Ctrl+Windows+L` — jumps straight to the Audio Books tab (focus on your "
-"library).\n"
-"  - `Ctrl+Windows+O` — jumps straight to the Podcasts tab (focus on your "
-"subscriptions).\n"
-"  - Both open the FreeRadio window if it's closed, or bring it to the front if "
-"it's already open.\n"
-"- More audio profile options when saving a profile for a podcast or audiobook: "
-"**Volume and playback speed**, **Effects and playback speed**, and **Playback "
-"speed only**, alongside the existing Volume only / Effects only / Volume and "
-"effects / Volume, effects, and playback speed choices.\n"
-"- The **Save Audio Profile for This Podcast** and **Clear Audio Profile** commands "
-"are now also available from the episode context menu, so you don't need to switch "
-"back to the podcast list to reach them. They still apply to the whole podcast, not "
-"to a single episode.\n"
-"\n"
+"### Added\n"
+"- **Obligato mode (background music)** — Play a favourite station quietly in the "
+"background, on its own independent audio output and volume, no matter what plays (or "
+"doesn't play) as the main media.\n"
+"  - New shortcut: `Ctrl+Win+Shift+M` toggles Obligato mode on and off.\n"
+"  - On first press, a dialog lets you choose the background station (from your "
+"favourites), the output device (**Same as main output** by default, **System default**, "
+"or any specific device), and the background volume as a percentage of the main player's "
+"current volume (25%–150%). Your choices are remembered for next time.\n"
+"  - Runs on a fully separate playback engine from the main player, so switching stations, "
+"podcasts, or audio books — or stopping the main player entirely — never interrupts it.\n"
+"  - Background volume automatically stays proportional to the main player's volume as it "
+"changes (`Ctrl+Win+↑`/`↓`).\n"
+"  - Pausing the main player (`Ctrl+Win+P`) pauses the background station too, and "
+"resuming the main player resumes it; a full stop of the main player is not treated as a "
+"pause.\n"
+"  - Requires at least one favourite station; if none exist, FreeRadio prompts you to add "
+"one first.\n"
+"  - Start/stop announcements respect the **Mute notifications** setting.\n"
 msgstr ""
+"\n"
+"### الإضافات\n"
+"- **وضع الخلفية (Obligato)** — تشغيل محطة مفضلة بهدوء في الخلفية، بمخرج صوت ومستوى صوت "
+"مستقلين تمامًا، بغض النظر عن الوسائط الرئيسية المشغلة (أو غير المشغلة).\n"
+"  - اختصار جديد: `Ctrl+Win+Shift+M` لتبديل وضع الخلفية.\n"
+"  - عند الضغط أول مرة، يظهر حوار لتختار المحطة الخلفية (من مفضلتك)، وجهاز الإخراج (**نفس "
+"المخرج الرئيسي** افتراضيًا، أو **افتراضي النظام**، أو أي جهاز محدد)، ومستوى صوت الخلفية "
+"كنسبة مئوية من مستوى الصوت الحالي للمشغل الرئيسي (25%–150%). تُحفظ اختياراتك للاستخدام "
+"التالي.\n"
+"  - يعمل على محرك تشغيل منفصل تمامًا عن المشغل الرئيسي، لذا فإن تبديل المحطات أو البودكاست "
+"أو الكتب الصوتية — أو إيقاف المشغل الرئيسي بالكامل — لا يقطعه أبدًا.\n"
+"  - يظل مستوى صوت الخلفية متناسبًا تلقائيًا مع مستوى صوت المشغل الرئيسي عند تغيره "
+"(`Ctrl+Win+↑`/`↓`).\n"
+"  - إيقاف المشغل الرئيسي مؤقتًا (`Ctrl+Win+P`) يوقف المحطة الخلفية أيضًا، واستئناف المشغل "
+"الرئيسي يستأنفها؛ الإيقاف الكامل للمشغل الرئيسي لا يُعتبر إيقافًا مؤقتًا.\n"
+"  - يتطلب وجود محطة مفضلة واحدة على الأقل؛ إذا لم توجد، تطلب منك FreeRadio إضافة واحدة "
+"أولاً.\n"
+"  - الإعلانات عند البدء/الإيقاف تلتزم بإعداد **كتم الإشعارات**.\n"

@@ -1,0 +1,54 @@
+--- a/README.md
++++ b/README.md
+@@ -11,7 +11,8 @@
+ - **Time-shift (rewind live radio)** — Pause and rewind a live station like a DVR, then catch back up to live whenever you want — see [Time-Shift (Rewind Live Radio)](#time-shift-rewind-live-radio).
+ - **Music recognition and liked songs** — Identify tracks with no metadata using Shazam-based recognition, save liked songs to a text file, and look up their lyrics — see [Music Recognition](#music-recognition) and [Liked Songs](#liked-songs).
+ - **Audio profiles and effects** — Save separate volume, effects, EQ, and playback-speed settings per station, per podcast, or per audio book, and apply real-time effects (Chorus, Reverb, EQ boosts, and more) through the BASS backend — see [Station Audio Profile](#station-audio-profile).
+-- **Audio mirroring** — Send the same stream to two audio output devices at once, such as speakers and headphones simultaneously — see [Audio Mirror](#audio-mirror).
++- **Audio mirroring** — Send the same stream to two audio output devices at once, such as speakers and headphones simultaneously — see [Audio Mirror](#audio-mirror).
++- **Obligato mode (background music)** — Loop a chosen favourite station quietly in the background, on its own output device and volume, no matter what plays (or doesn't play) as your main media — see [Obligato Mode](#obligato-mode).
+ - **Timers** — Schedule a favourite station to start playing, or schedule playback to stop, at a specific time — see [Timer](#timer).
+ - **Deep keyboard and braille access** — Every feature is reachable entirely from the keyboard, with global shortcuts that work from anywhere in Windows, direct hotkeys for individual favourite stations, and optional braille output for all of FreeRadio's spoken notifications.
+ 
+@@ -65,7 +66,8 @@
+ | `Ctrl+Win+Shift+K` | Increase playback speed | Increases the playback speed of a podcast episode or audio book by 0.1x (pitch-preserving). Range: 0.5x to 2.0x. Requires `bass_fx.dll` to be placed in the add‑on folder. |
+ | `Ctrl+Win+Shift+J` | Decrease playback speed | Decreases the playback speed of a podcast episode or audio book by 0.1x. Requires `bass_fx.dll`. |
+ | `Ctrl+Win+I` | Station info | Announces the currently playing station name or podcast episode or audio book. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
+-| `Ctrl+Win+M` | Audio mirror | Mirrors the current stream or media to an additional audio output device simultaneously. Press again to stop mirroring. |
++| `Ctrl+Win+M` | Audio mirror | Mirrors the current stream or media to an additional audio output device simultaneously. Press again to stop mirroring. |
++| `Ctrl+Win+Shift+M` | Obligato mode (background music) | Loops a chosen favourite station quietly in the background, on its own output device and volume, no matter what plays as the main media. First press opens a dialog to pick the station, output device, and relative volume. Press again to stop it. |
+ | `Ctrl+Win+E` | Instant recording | Press once to start recording the current station; press again to stop. Press **twice** to start a **song recording** — the file is named after the current track and the recording stops automatically when the track changes. Press twice again while a song recording is active to stop it early. Playback continues uninterrupted in all recording modes. Only available for stations that broadcast ICY metadata. |
+ | `Ctrl+Win+W` | Open recordings folder | Opens the folder containing recorded files in File Explorer. |
+ | `Ctrl+Win+J` | Time-shift rewind / podcast & audio book seek back | For live radio: rewinds 15 seconds. The first press enters time-shift mode; each further press moves 15 seconds further back, up to the buffer limit set in the FreeRadio settings. Requires the time-shift buffer to be enabled in Settings. For a podcast or audio book, this key seeks within the file instead, and scales with how you press it: **holding it down** keeps stepping back 5 seconds per repeat, exactly as before; a **single deliberate tap** seeks back 12 seconds; **two taps** in quick succession seek back 1 minute; **three or more taps** seek back 5 minutes. Only one seek happens per tap sequence, sized for however many taps were made — taps don't add up. Works regardless of the time-shift setting. |
+@@ -270,6 +272,23 @@
+ 
+ > **Note:** Audio mirroring is only available when the BASS backend is active. If the volume is changed while mirroring is active, both outputs are updated simultaneously.
+ 
++## Obligato Mode
++
++The `Ctrl+Win+Shift+M` shortcut plays a favourite station quietly in the background on a completely separate audio engine from the main player — like a soft musical backdrop running underneath whatever you're actually doing.
++
++On first press, a dialog opens with three controls:
++
++- **Background station** — a list of your favourite stations to choose which one loops in the background. Requires at least one favourite; if your favourites list is empty, FreeRadio tells you to add a station first (`Ctrl+Win+V` while a station is playing).
++- **Audio output** — which device the background station plays through: **Same as main output** (the default), **System default**, or any specific device FreeRadio can see.
++- **Background volume** — how loud the background station plays, as a percentage of the main player's current volume (25%, 50%, 75%, 100%, 125%, or 150%). Your choices are remembered for next time.
++
++Once started, the background station keeps playing independently of the main player — switching stations, podcasts, or audio books on the main player, or stopping it altogether, does not interrupt Obligato mode. Two things stay linked to the main player automatically:
++
++- **Volume** — the background volume is continuously kept at the chosen percentage of whatever the main player's volume currently is, so raising or lowering the main volume (`Ctrl+Win+↑`/`↓`) scales the background music the same way.
++- **Pause** — pausing the main player (`Ctrl+Win+P`) pauses the background station too, and resuming the main player resumes it. A full stop of the main player is not treated as a pause, so the background station keeps playing through it.
++
++Press `Ctrl+Win+Shift+M` again at any time to stop Obligato mode.
++
+ ## Recording
+ 
+ Recordings are saved to `Documents\FreeRadio Recordings\` by default. The filename includes the station name (or song title, in song recording mode) and the recording start time. The recordings folder can be changed at any time from NVDA Menu → Preferences → Settings → FreeRadio → **Recordings folder**.
+@@ -637,6 +656,7 @@
+ 
+ - Station name when a new station starts playing
+ - Playback state changes: play, pause, stop
++- Obligato mode: started / stopped
+ - Recording events: started, stopped, finished (instant, song and scheduled recordings)
+ - ICY track change announcements, even when **Auto-announce track changes** is also enabled
+ 

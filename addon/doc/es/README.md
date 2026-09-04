@@ -12,6 +12,7 @@ FreeRadio es un complemento completo para el lector de pantalla NVDA que incluye
 - **Reconocimiento de música y canciones favoritas** — Identifica pistas sin metadatos mediante el reconocimiento basado en Shazam, guarda las canciones favoritas en un archivo de texto y busca sus letras — consulta las secciones [Reconocimiento de Música](#music-recognition) y [Canciones favoritas](#liked-songs).
 - **Perfiles de audio y efectos** — Guarda por separado los ajustes de volumen, de los efectos, de los ecualizadores y  de la velocidad de reproducción para cada estación, para podcast, o para audiolibro, y aplica efectos en tiempo real (Coro, Reverberación, EQ boosts, y más) a través del BASS backend — consulta la sección [Perfil de Audio de la Estación](#station-audio-profile).
 - **Espejo de audio** — Envia la misma transmision a dos dispositivos de salida de audio a la vez, tales como altavoces y auriculares — consulta la sección [Espejo de Audio](#audio-mirror).
+- **Modo Obligato (música de fondo)** — Reproduce discretamente tu emisora favorita en segundo plano, con su propio dispositivo de salida y volumen, independientemente de lo que se esté reproduciendo (o no) independientemente del medio principal — consulta la sección [Modo Obligato](#obligato-mode).
 - **Temporizadores** — Programa tu emisora ​​favorita para que empiece a reproducirse, o programa que la reproducción se detenga, a una hora específica — consulta la sección [Temporizador](#timer).
 - **Acceso al teclado extendido y braille** — Todas las funciones son accesibles completamente desde el teclado, con accesos directos globales que funcionan desde cualquier lugar de Windows, Teclas de acceso directo para cada emisora ​​favorita y salida de braille opcional para todas las notificaciones habladas de FreeRadio.
 
@@ -65,7 +66,8 @@ Todos los atajos se pueden reasignar desde el Menú NVDA → Preferencias → Ge
 | `Ctrl+Win+Shift+K` | Aumentar la velocidad de reproducción | Aumenta la velocidad de reproducción de un episodio de podcast de 0.1x (preservación de la altura). Rango: 0.5x a 2.0x. Requiere el `bass_fx.dll` para colocarlo en la carpeta del complemento. |
 | `Ctrl+Win+Shift+J` | Disminuir la velocidad de reproducción | Disminuye la velocidad de reproducción de un episodio de podcast de 0.1x. Requiere el `bass_fx.dll`. |
 | `Ctrl+Win+I` | Información de la Estación | Anuncia el nombre de la estación que se está reproduciendo actualmente. Pulsa dos veces para mostrar los detalles como el país, el género y el bitrate en un diálogo. Pulsa tres veces para copiar la información de la pista actual (metadatos ICY) al portapapeles si está disponible; Si no hay metadatos presentes, inicia el reconocimiento de música de Shazam en su lugar. Pulsa cuatro veces para forzar el reconocimiento de música en caso de metadatos ICY incorrectos. |
-| `Ctrl+Win+M` | Espejo de audio | Poner en espejo el flujo actual hacia un dispositivo de salida de audio adicional simultáneamente. Pulsa nuevamente para detener la puesta en espejo. |
+| `Ctrl+Win+M` | Espejo de audio | Poner en espejo el flujo actual o medio hacia un dispositivo de salida de audio adicional simultáneamente. Pulsa nuevamente para detener la puesta en espejo. |
+| `Ctrl+Win+Shift+M` | Modo Obligato (música de fondo) | Reproduce en bucle una emisora ​​favorita de forma silenciosa en segundo plano, con su propio dispositivo de salida y volumen, independientemente de lo que esté sonando como medio principal. Al pulsar por primera vez, se abrirá un cuadro de diálogo para seleccionar la emisora, el dispositivo de salida y el volumen. Vuelva a pulsar para detenerlo. |
 | `Ctrl+Win+E` | Grabación instantánea | Pulsa una vez para comenzar a grabar la estación actual; pulsa nuevamente para detener. Pulsa **dos veces** para comenzar una **grabación de la canción**: El archivo lleva el nombre de la pista actual y la grabación se detiene automáticamente cuando cambia la pista. Pulsa nuevamente dos veces mientras la grabación de una canción está activa para detenerla antes de tiempo. La reproducción continúa sin interrupción en todos los modos de grabación. Solo disponible para estaciones que transmiten metadatos ICY. |
 | `Ctrl+Win+W` | Abrir la carpeta de grabaciones | Abre la carpeta que contiene los archivos guardados en el Explorador de archivos. |
 | `Ctrl+Win+J` | Retroceso del desplazamiento temporal / podcast & audiolibro buscar hacia atrás | Para la radio en directo: retrocede 15 segundos. La primera pulsación entra en el modo de desplazamiento temporal; cada pulsación adicional retrocede 15 segundos más, hasta el límite del búfer configurado en los ajustes de FreeRadio. Requiere que el búfer de desplazamiento temporal esté habilitado en Ajustes. Para un podcast o audiolibro, Esta tecla busca dentro del archivo y se ajusta según cómo la pulses: **manteniéndola pulsada** retrocede 5 segundos por repetición, igual que antes; **una sola pulsación deliberada** retrocede 12 segundos; **dos pulsaciones rápidas** retroceden 1 minuto; **tres o más pulsaciones** retroceden 5 minutos. Solo se realiza una búsqueda por secuencia de pulsaciones, cuyo tamaño corresponde a la cantidad de pulsaciones realizadas — las pulsaciones no se suman. Funciona independientemente de la configuración del desplazamiento temporal. |
@@ -269,6 +271,23 @@ Al pulsar por primera vez, aparece un cuadro de diálogo de selección que enume
 - **Monitoreo remoto** — En una sesión de pantalla compartida o de escritorio remoto, tanto el lado local como el remoto pueden escuchar el mismo flujo simultáneamente.
 
 > **Nota:** La puesta en espejo de audio solo está disponible cuando el BASS backend está activo. Si se cambia el volumen mientras la puesta en espejo está activo, ambas salidas se actualizan simultáneamente.
+
+## Modo Obligato
+
+El atajo `Ctrl+Win+Shift+M` reproduce tu emisora favorita en segundo plano, con un motor de audio completamente independiente del reproductor principal, como una suave música de fondo que suena de fondo mientras haces lo que haces.
+
+Al pulsar por primera vez, se abre un cuadro de diálogo con tres controles:
+
+- **Estación de fondo** — una lista de tus emisoras favoritas para elegir cuál se reproduce en segundo plano. Requiere al menos una emisora ​​favorita; si tu lista de favoritas está vacía, FreeRadio te indicará que primero añadas una emisora (`Ctrl+Win+V` mientras se reproduce una emisora).
+- **Salida de audio** — dispositivo a través del cual se reproduce la estación de fondo: **Igual que la salida principal** (predeterminado), **Predeterminado del sistema** o cualquier dispositivo específico que FreeRadio pueda detectar.
+- **Volumen de fondo** — el volumen de la emisora de fondo se expresa como un porcentaje del volumen actual de la emisora principal (25 %, 50 %, 75 %, 100 %, 125 % o 150 %). Sus preferencias se guardarán para la próxima vez.
+
+Una vez iniciada, la emisora de fondo sigue funcionando independientemente del reproductor principal — cambiar de emisora, escuchar podcasts o audiolibros en el reproductor principal, o apagarlo por completo, no interrumpe el modo Obligato. Dos elementos permanecen vinculados automáticamente al reproductor principal:
+
+- **Volumen** — el volumen de fondo se mantiene continuamente en el porcentaje elegido del volumen actual del reproductor principal, por lo que subir o bajar el volumen principal (`Ctrl+Win+↑`/`↓`) ajusta la música de fondo de la misma manera.
+- **Pausar** — al pausar el reproductor principal (`Ctrl+Win+P`) también se pausa la emisora de fondo, y al reanudar el reproductor principal, esta se reanuda. Si se detiene completamente el reproductor principal, no se considera una pausa, por lo que la emisora de fondo continúa reproduciéndose.
+
+Vuelva a pulsar `Ctrl+Win+Shift+M` en cualquier momento para detener el modo Obligato.
 
 ## Grabación
 
@@ -636,6 +655,7 @@ Cuando **Silenciar notificaciones** está habilitado en las Opciones, NVDA silen
 
 - Nombre de la estación cuando comienza a reproducirse una nueva estación
 - Cambios de estado de reproducción: reproducir, pausar, detener
+- Modo Obligato: iniciado / detenido
 - Eventos de grabación: iniciado, detenido, terminado (grabaciones instantáneas, de canciones y programadas)
 - Anuncios de cambio de pista ICY, incluso cuando **Anunciar automáticamente los cambios de pista**   también está habilitado
 

@@ -12,6 +12,7 @@ FreeRadio est une extension complète pour le lecteur d'écran NVDA, comprenant 
 - **Reconnaissance musicale et morceaux aimés** — Identifiez les morceaux sans métadonnées à l'aide de Shazam basée sur la reconnaissance, enregistrez les morceaux aimés dans un fichier texte et consultez leurs paroles — consultez les sections [Reconnaissance Musicale](#music-recognition) et [Morceaux aimés](#liked-songs).
 - **Profils audio et effets** — Enregistrez des réglages distincts de volume, d'effets, d'égalisation et de vitesse de lecture pour chaque station, podcast ou livre audio, et appliquez des effets en temps réel (Chœur, Réverbération, EQ boosts, et plus encore) à travers du BASS backend — consultez la section [Profil Audio de la Station](#station-audio-profile).
 - **Miroir audio** — Diffuser le même flux audio simultanément vers deux périphériques de sortie, tels que des haut-parleurs et écouteurs — consultez la section [Miroir Audio](#audio-mirror).
+- **Mode Obligato (musique de fond)** — Diffuser discrètement une station favorite en arrière-plan, sur son propre périphérique de sortie et à son propre volume, quel que soit le média principal diffusé (ou non) — consultez la section [Mode Obligato](#obligato-mode).
 - **Minuteries** — Planifiez le démarrage d'une station favorite ou l'arrêt de la lecture à une heure précise — consultez la section [Minuterie](#timer).
 - **Accès au clavier étendu et au braille** — Toutes les fonctionnalités sont accessibles entièrement au clavier, grâce à des raccourcis globaux fonctionnant partout sous Windows, des touches de raccourci directes pour vos stations favorites et une sortie braille optionnelle pour toutes les notifications vocales de FreeRadio.
 
@@ -65,7 +66,8 @@ Tous les raccourcis peuvent être réassignés depuis le Menu NVDA → Préfére
 | `Ctrl+Win+Shift+K` | Augmenter la vitesse de lecture | Augmente la vitesse de lecture d'un épisode de podcast de 0.1x (préservation de la hauteur). Gamme: 0.5x à 2.0x. Nécessite le `bass_fx.dll` pour le placer dans le dossier de l'extension. |
 | `Ctrl+Win+Shift+J` | Diminuer la vitesse de lecture | Diminue la vitesse de lecture d'un épisode de podcast de 0.1x. Nécessite le `bass_fx.dll`. |
 | `Ctrl+Win+I` | Informations sur la Station | Annonce le nom de la station en cours de lecture. Appuyez deux fois pour afficher des détails tels que le pays, le genre et le bitrate dans un dialogue. Appuyez trois fois pour copier les informations de la piste actuelle (métadonnées ICY) dans le presse-papiers si disponible ; si aucune métadonnée n'est présente, démarre la reconnaissance musicale Shazam à la place. Appuyez quatre fois pour forcer la reconnaissance musicale en cas de métadonnées ICY erronées. |
-| `Ctrl+Win+M` | Miroir audio | Mettre en miroir le flux actuel vers un périphérique de sortie audio supplémentaire simultanément. Appuyez à nouveau pour arrêter la mise en miroir. |
+| `Ctrl+Win+M` | Miroir audio | Mettre en miroir le flux actuel ou média vers un périphérique de sortie audio supplémentaire simultanément. Appuyez à nouveau pour arrêter la mise en miroir. |
+| `Ctrl+Win+Shift+M` | Mode Obligato (musique de fond) | Diffuse en boucle une station favorite choisie en arrière-plan, discrètement, sur son propre périphérique de sortie et à son propre volume, quel que soit le média principal diffusé. Lorsque vous appuyez  pour la première fois, une boîte de dialogue s'ouvrira permettant de sélectionner la station, le périphérique de sortie et le volume. Appuyez de nouveau pour l'arrêter. |
 | `Ctrl+Win+E` | Enregistrement instantané | Appuyez une fois pour commencer à enregistrer la station actuelle ; appuyez à nouveau pour arrêter. Appuyez **deux fois** pour démarrer un **enregistrement d'un morceau**: le fichier porte le nom de la piste actuelle et l'enregistrement s'arrête automatiquement lorsque la piste change. Appuyez à nouveau deux fois pendant qu'un enregistrement d'un morceau est actif pour l'arrêter plus tôt. La lecture continue sans interruption dans tous les modes d'enregistrement. Uniquement disponible pour les stations qui diffusent des métadonnées ICY. |
 | `Ctrl+Win+W` | Ouvrir le dossier des enregistrements | Ouvre le dossier contenant les fichiers enregistrés dans l'Explorateur de fichiers. |
 | `Ctrl+Win+J` | Retour en arrière du décalage temporel / podcast & livre audio chercher en arrière | Pour la radio en direct: recule de 15 secondes. La première pulsation entre en mode décalage temporel ; chaque pulsation supplémentaire recule de 15 secondes de plus, jusqu'à la limite de la mémoire tampon défini dans les paramètres de FreeRadio. Nécessite que la mémoire tampon de décalage temporel soit activée dans les Paramètres.Pour un podcast ou un livre audio, cette touche permet de naviguer dans le fichier, et la durée de la recherche dépend de la pulsation exercée : **maintenir la touche enfoncée** permet de revenir en arrière de 5 secondes par répétition, comme auparavant ; **une simple pulsation** permet de revenir en arrière de 12 secondes ; **deux pulsations rapides** permettent de revenir en arrière d'une minute ; **trois pulsations ou plus** permettent de revenir en arrière de 5 minutes. Une seule recherche est effectuée par séquence de pulsations, la durée correspondant au nombre de pulsations effectuées (les pulsations ne s'additionnent pas). Fonctionne quel que soit le réglage du décalage temporel. |
@@ -270,6 +272,23 @@ Au premier appui, une boîte de dialogue de sélection répertoriant les périph
 
 > **Note:** La mise en miroir audio n'est disponible que lorsque le BASS backend est actif. Si le volume est modifié alors que la mise en miroir est active, les deux sorties sont mises à jour simultanément.
 
+## Mode Obligato
+
+Le raccourci `Ctrl+Win+Shift+M` permet de diffuser discrètement une station favorite en arrière-plan, via un moteur audio distinct du lecteur principal — ainsi, vous profitez d'une douce musique de fond, quelle que soit votre activité.
+
+À la première pulsation, une boîte de dialogue s'ouvre avec trois contrôles:
+
+- **Station de fond** — une liste de vos stations favorites pour choisir celle qui sera diffusée en boucle. Vous devez avoir au moins une station favorite ; si votre liste est vide, FreeRadio vous invite à en ajouter une (`Ctrl+Win+V` pendant la lecture d'une station).
+- **Sortie audio** — périphérique sur lequel la station de fond est diffusée: **Identique à la sortie principale** (par défaut), **Par défaut du système** ou tout périphérique spécifique que FreeRadio peut détecter.
+- **Volume de fond** — le volume de la station de fond, exprimé en pourcentage du volume actuel de la station principale (25 %, 50 %, 75 %, 100 %, 125 % ou 150 %). Vos préférences sont mémorisées pour la prochaine fois.
+
+Une fois lancée, la station de fond continue de fonctionner indépendamment du lecteur principal — changer de station, écouter des podcasts ou des livres audio sur le lecteur principal, ou l'arrêter complètement, n'interrompt pas le mode Obligato. Deux éléments restent automatiquement liés au lecteur principal:
+
+- **Volume** — Le volume de fond est maintenu en permanence au pourcentage choisi du volume actuel du lecteur principal, ce qui permet d'augmenter ou de diminuer le volume principal (`Ctrl+Win+↑`/`↓`) ajuste la musique de fond de la même manière.
+- **Mettre en pause** — en mettons en pause le lecteur principal (`Ctrl+Win+P`) met également en pause la station de fond, et lorsque le lecteur principal reprend, cela reprend. Un arrêt complet du lecteur principal n'est pas considéré comme une pause, la station de fond continue donc à jouer.
+
+Appuyez de nouveau sur `Ctrl+Win+Shift+M` à tout moment pour arrêter le mode Obligato.
+
 ## Enregistrement
 
 Les enregistrements sont enregistrés par défaut dans `Documents\FreeRadio Recordings\`. Le nom du fichier inclut le nom de la station (ou le titre du morceau, en mode enregistrement de morceau) et l'heure de début de l'enregistrement. Le dossier des enregistrements peut être modifié à tout moment depuis NVDA Menu → Préférences → Paramètres → FreeRadio → **Dossier des enregistrements**.
@@ -446,7 +465,7 @@ Au-dessus de la liste des épisodes se trouve un champ  **Filtrer**. Au fur et �
 
 Les épisodes de podcast sont lus à l'aide du **BASS backend** (le même moteur que celui utilisé pour les flux radio et, à partir de cette version, le seul système de lecture utilisé par FreeRadio). Étant donné que les épisodes sont téléchargés progressivement et peuvent être recherchés, vous pouvez utiliser les raccourcis du décalage temporel: reculer/avancer (`Ctrl+Win+J`/`Ctrl+Win+K`) pendant la lecture d'un podcast pour effectuer une recherche dans l'épisode. La position est enregistrée automatiquement afin que vous puissiez la reprendre plus tard.
 
-**Recherche par paliers:** Contrairement au retour en arrière fixe de 15 secondes de la radio en direct, la recherche dans un podcast ou un livre audio s’adapte à la façon dont vous appuyez sur la touche, ce qui vous permet d’effectuer une petite correction ou de faire un grand saut sans avoir à appuyer plusieurs fois:
+**Recherche par paliers:** Contrairement au retour en arrière fixe de 15 secondes de la radio en direct, la recherche dans un podcast ou un livre audio s'adapte à la façon dont vous appuyez sur la touche, ce qui vous permet d'effectuer une petite correction ou de faire un grand saut sans avoir à appuyer plusieurs fois:
 
 - **Maintenir la touche enfoncée** (répétition automatique) permet de reculer ou d'avancer de **5 secondes** par répétition — la même petite durée que ce raccourci a toujours utilisée pour les fichiers.
 - **Une pulsation délibérée** permet de rechercher **12 secondes**.
@@ -636,6 +655,7 @@ Lorsque **Notifications muettes ** est activé dans les Paramètres, NVDA fait t
 
 - Nom de la station quand une nouvelle station commence à jouer
 - Changements d'état de lecture : lecture, pause, arrêt
+- Mode Obligato: démarré / arrêté
 - Événements d'enregistrement : démarré, arrêté, terminé (enregistrements instantanés, de morceaux et planifiés)
 - Annonces de changement de piste ICY, même lorsque **Annoncer automatiquement les changements de piste** est également activé
 

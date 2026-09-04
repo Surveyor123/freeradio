@@ -12,6 +12,7 @@ FreeRadio, ekran okuyucu NVDA için geliştirilmiş, tüm özellikleriyle donan�
 - **Müzik tanıma ve beğenilen şarkılar** — Metadata bulunmayan parçaları Shazam tabanlı tanıma ile belirleyin, beğendiğiniz şarkıları bir metin dosyasına kaydedin ve sözlerini bulun — bkz. [Müzik Tanıma](#müzik-tanıma) ve [Beğenilen Şarkılar](#beğenilen-şarkılar).
 - **Ses profilleri ve efektler** — İstasyon, podcast veya sesli kitap başına ayrı ses seviyesi, efekt, EQ ve oynatma hızı ayarları kaydedin; BASS arka ucu üzerinden gerçek zamanlı efektler (Chorus, Reverb, EQ artırmaları ve daha fazlası) uygulayın — bkz. [İstasyon Ses Profili](#i̇stasyon-ses-profili).
 - **Ses yansıtma** — Aynı akışı, hoparlör ve kulaklık gibi iki ses çıkış aygıtına eş zamanlı olarak gönderin — bkz. [Ses Yansıtma](#ses-yansıtma).
+- **Obligato modu (fon müziği)** — Seçtiğiniz bir favori istasyonu, kendi çıkış aygıtında ve kendi ses seviyesinde, ana medyada ne çalıyor (ya da çalmıyor) olursa olsun fonda sessizce çalın — bkz. [Obligato Modu](#obligato-modu).
 - **Zamanlayıcılar** — Favori bir istasyonun belirli bir saatte çalmaya başlamasını veya oynatmanın durmasını planlayın — bkz. [Zamanlayıcı](#zamanlayıcı).
 - **Derinlemesine klavye ve braille erişimi** — Her özelliğe tamamen klavyeden ulaşılabilir; Windows'ta her yerden çalışan genel kısayollar, tek tek favori istasyonlar için doğrudan kısayollar ve FreeRadio'nun tüm sesli bildirimleri için isteğe bağlı braille çıkışı bulunur.
 
@@ -66,6 +67,7 @@ Tüm kısayollar NVDA Menüsü → Tercihler → Girdi Hareketleri → FreeRadio
 | `Ctrl+Win+Shift+J` | Oynatma hızını azalt | Bir podcast bölümünün veya sesli kitabın oynatma hızını 0.1x azaltır. `bass_fx.dll` gerektirir. |
 | `Ctrl+Win+İ` | İstasyon bilgisi | O an çalan istasyon adını, podcast bölümünü veya sesli kitabı seslendirir. İki kez basıldığında ülke, tür, bit hızı gibi ayrıntıları bir iletişim kutusunda gösterir. Üç kez basıldığında çalan parça bilgisi (ICY metadata) varsa panoya kopyalar; yoksa Shazam ile müzik tanıma başlatır. Dört kez basıldığında çalan parça bilgisi (ICY metadata) yanlışsa müzik tanıma servisini başlatmaya zorlar. |
 | `Ctrl+Win+M` | Ses yansıtma | O an çalan akışı veya medyayı eş zamanlı olarak ek bir ses çıkış aygıtına yansıtır. Yansıtmayı durdurmak için tekrar basın. |
+| `Ctrl+Win+Shift+M` | Obligato modu (fon müziği) | Seçtiğiniz bir favori istasyonu, ana medyada ne çalarsa çalsın, kendi çıkış aygıtında ve kendi ses seviyesinde fonda çalar. İlk basışta istasyon, çıkış aygıtı ve göreli ses seviyesini seçebileceğiniz bir iletişim kutusu açılır. Durdurmak için tekrar basın. |
 | `Ctrl+Win+E` | Anlık kayıt | Bir kez basıldığında çalan istasyonu kaydetmeye başlar; tekrar basıldığında durdurur. **İki kez** basıldığında **şarkı kaydı** başlar — dosya o anki parça adıyla adlandırılır ve parça değiştiğinde kayıt otomatik olarak durur. Şarkı kaydı aktifken tekrar iki kez basılması kaydı erken sonlandırır. Oynatma tüm kayıt modlarında kesintisiz sürer. Yalnızca ICY metadata yayınlayan istasyonlarda kullanılabilir. |
 | `Ctrl+Win+W` | Kayıt klasörünü aç | Kaydedilen dosyaların bulunduğu klasörü Dosya Gezgini'nde açar. |
 | `Ctrl+Win+J` | Zaman kaydırma geri sarma / podcast ve sesli kitapta geri atlama | Canlı radyoda: 15 saniye geri sarar. İlk basış zaman kaydırma moduna girer; her ek basış FreeRadio ayarlarında belirlenen tampon sınırına kadar 15 saniye daha geri gider. Zaman kaydırma tamponunun Ayarlar'dan etkinleştirilmesi gerekir. Podcast veya sesli kitapta ise bu tuş dosya içinde atlama yapar ve basış şekline göre ölçeklenir: **basılı tutmak** öncekiyle aynı şekilde tekrar başına 5 saniye geri gider; **tek bir dokunuş** 12 saniye geri sarar; hızlıca **iki dokunuş** 1 dakika geri sarar; **üç veya daha fazla dokunuş** 5 dakika geri sarar. Bir dokunuş dizisinde yalnızca bir atlama gerçekleşir ve bu, ulaşılan dokunuş sayısına göre boyutlandırılır — dokunuşlar toplanmaz. Zaman kaydırma ayarından bağımsız çalışır. |
@@ -269,6 +271,23 @@ Tanıma şu şekilde çalışır: ffmpeg kullanılarak akıştan kısa bir ses �
 - **Uzaktan izleme** — Ekran paylaşımı veya uzak masaüstü oturumunda hem yerel hem de uzak taraf aynı akışı eş zamanlı duyabilir.
 
 > **Not:** Ses yansıtma yalnızca BASS arka ucu aktifken kullanılabilir. Yansıtma aktifken ses seviyesi değiştirilirse her iki çıkış da eş zamanlı güncellenir.
+
+## Obligato Modu
+
+`Ctrl+Win+Shift+M` kısayolu, favori bir istasyonu ana oynatıcıdan tamamen ayrı bir ses motorunda fonda çalar — yaptığınız asıl işin altında akan yumuşak bir müzik zemini gibi.
+
+İlk basışta üç denetim içeren bir iletişim kutusu açılır:
+
+- **Fon istasyonu** — fonda hangi favori istasyonun döngüye alınacağını seçtiğiniz liste. En az bir favori gerektirir; favori listeniz boşsa FreeRadio önce bir istasyon eklemenizi ister (bir istasyon çalarken `Ctrl+Win+V`).
+- **Ses çıkışı** — fon istasyonunun hangi aygıttan çalacağı: **Ana çıkışla aynı** (varsayılan), **Sistem varsayılanı** veya FreeRadio'nun gördüğü belirli bir aygıt.
+- **Fon ses seviyesi** — fon istasyonunun, ana oynatıcının o anki ses seviyesine oranla ne kadar yüksek çalacağı (%5, %10, %25, %50, %75, %100, %125 veya %150). Seçimleriniz bir sonraki sefer için hatırlanır.
+
+Başladıktan sonra fon istasyonu ana oynatıcıdan bağımsız olarak çalmaya devam eder — ana oynatıcıda istasyon, podcast veya sesli kitap değiştirmek, hatta oynatmayı tamamen durdurmak Obligato modunu kesintiye uğratmaz. Buna karşın iki şey otomatik olarak ana oynatıcıya bağlı kalır:
+
+- **Ses seviyesi** — fon sesi, ana oynatıcının o anki ses seviyesinin seçtiğiniz yüzdesinde sürekli tutulur; bu nedenle ana ses seviyesini artırıp azaltmak (`Ctrl+Win+↑`/`↓`) fon müziğini de aynı oranda değiştirir.
+- **Duraklatma** — ana oynatıcıyı duraklatmak (`Ctrl+Win+P`) fon istasyonunu da duraklatır, ana oynatıcıyı devam ettirmek fon istasyonunu da devam ettirir. Ana oynatıcının tamamen durdurulması bir duraklatma sayılmaz; bu durumda fon istasyonu çalmaya devam eder.
+
+Obligato modunu durdurmak için istediğiniz an tekrar `Ctrl+Win+Shift+M` tuşlarına basın.
 
 ## Kayıt
 
@@ -636,6 +655,7 @@ Ayarlar'dan **Bildirimleri sessize al** seçeneği açıldığında NVDA aşağ�
 
 - Yeni istasyon çalmaya başladığında istasyon adı
 - Oynatma durumu değişiklikleri: çal, duraklat, durdur
+- Obligato modu: başladı / durdu
 - Kayıt olayları: başladı, durdu, bitti (anlık, şarkı ve zamanlanmış kayıtlar)
 - Parça değişimi anonsları — **Parça değişimlerini otomatik seslendir** seçeneği açık olsa bile
 
@@ -676,4 +696,4 @@ FreeRadio, yeni sürüm olup olmadığını GitHub üzerinden otomatik olarak ko
 
 ## Lisans
 
-GPL v2
+GPL v2

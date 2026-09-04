@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: FreeRadio 2026.23.4\n"
+"Project-Id-Version: FreeRadio 2026.23.5\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-09-03 19:36+0300\n"
-"PO-Revision-Date: 2026-09-03 19:33+0200\n"
+"POT-Creation-Date: 2026-09-03 22:09+0300\n"
+"PO-Revision-Date: 2026-09-04 10:35+0200\n"
 "Last-Translator: Rémy Ruiz <remyruiz@gmail.com>\n"
 "Language-Team: Rémy Ruiz <remyruiz@gmail.com>\n"
 "Language: fr\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: buildVars.py\n"
 
-#: addon/globalPlugins/freeradio/__init__.py:393
+#: addon/globalPlugins/freeradio/__init__.py:407
 msgid ""
 "Time-shift buffer: running low on disk space, the oldest audio is being "
 "dropped more aggressively."
@@ -28,30 +28,30 @@ msgstr ""
 "Mémoire tampon de décalage temporel: à court d'espace disque, l'audio le "
 "plus ancien est supprimé de manière plus agressive."
 
-#: addon/globalPlugins/freeradio/__init__.py:477
+#: addon/globalPlugins/freeradio/__init__.py:491
 #: addon/globalPlugins/freeradio/recordingMixin.py:193
 #, python-format
 msgid "Recording started: %s"
 msgstr "Enregistrement démarré: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:480
+#: addon/globalPlugins/freeradio/__init__.py:494
 #, python-format
 msgid "Recording finished: %s"
 msgstr "Enregistrement terminé: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:484
+#: addon/globalPlugins/freeradio/__init__.py:498
 #, python-format
 msgid "Recording failed: could not connect to %s"
 msgstr "L'enregistrement a échoué: impossible de se connecter à %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:488
+#: addon/globalPlugins/freeradio/__init__.py:502
 #, python-format
 msgid "Recording conversion failed. The original file was kept: %s"
 msgstr ""
 "La conversion de l'enregistrement a échoué. Le fichier original a été "
 "conservé: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:493
+#: addon/globalPlugins/freeradio/__init__.py:507
 #, python-format
 msgid ""
 "Could not use the selected folder for '%(station)s' (%(reason)s). Saved to "
@@ -60,44 +60,44 @@ msgstr ""
 "Impossible d'utiliser le dossier sélectionné pour '%(station)s' "
 "(%(reason)s). Enregistré dans le dossier d'enregistrements par défaut."
 
-#: addon/globalPlugins/freeradio/__init__.py:558
+#: addon/globalPlugins/freeradio/__init__.py:580
 msgid "FreeRadio Stations"
 msgstr "Stations FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:578
+#: addon/globalPlugins/freeradio/__init__.py:600
 #, python-format
 msgid "Station no longer in favourites: %s"
 msgstr "La station n'est plus dans les favoris: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:587
+#: addon/globalPlugins/freeradio/__init__.py:609
 #, python-format
 msgid "%s playback shortcut ()"
 msgstr "%s raccourci de lecture ()"
 
-#: addon/globalPlugins/freeradio/__init__.py:617
+#: addon/globalPlugins/freeradio/__init__.py:639
 msgid "Station &Browser...\tCtrl+Win+R"
 msgstr "&Navigateur de Stations...\tCtrl+Win+R"
 
-#: addon/globalPlugins/freeradio/__init__.py:626
+#: addon/globalPlugins/freeradio/__init__.py:648
 msgid "FreeRadio &Settings..."
 msgstr "&Paramètres de FreeRadio..."
 
-#: addon/globalPlugins/freeradio/__init__.py:635
+#: addon/globalPlugins/freeradio/__init__.py:657
 msgid "Check for &Updates..."
 msgstr "Rechercher des &mises à jour..."
 
-#: addon/globalPlugins/freeradio/__init__.py:648
+#: addon/globalPlugins/freeradio/__init__.py:670
 msgid "&FreeRadio"
 msgstr "&FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:707
+#: addon/globalPlugins/freeradio/__init__.py:730
 msgid "Open FreeRadio station browser"
 msgstr "Ouvrir le navigateur de stations FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:708
-#: addon/globalPlugins/freeradio/__init__.py:717
-#: addon/globalPlugins/freeradio/__init__.py:726
-#: addon/globalPlugins/freeradio/__init__.py:735
+#: addon/globalPlugins/freeradio/__init__.py:731
+#: addon/globalPlugins/freeradio/__init__.py:740
+#: addon/globalPlugins/freeradio/__init__.py:749
+#: addon/globalPlugins/freeradio/__init__.py:758
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:30
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:156
 #: addon/globalPlugins/freeradio/audioFxMixin.py:33
@@ -112,6 +112,7 @@ msgstr "Ouvrir le navigateur de stations FreeRadio"
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:48
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:71
 #: addon/globalPlugins/freeradio/miscTogglesMixin.py:90
+#: addon/globalPlugins/freeradio/obligatoMixin.py:196
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:43
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:140
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:192
@@ -129,15 +130,15 @@ msgstr "Ouvrir le navigateur de stations FreeRadio"
 msgid "FreeRadio"
 msgstr "FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:716
+#: addon/globalPlugins/freeradio/__init__.py:739
 msgid "Open FreeRadio audio book library"
 msgstr "Ouvrir la bibliothèque de livres audio de FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:725
+#: addon/globalPlugins/freeradio/__init__.py:748
 msgid "Open FreeRadio podcast subscriptions"
 msgstr "Ouvrir les abonnements aux podcasts de FreeRadio"
 
-#: addon/globalPlugins/freeradio/__init__.py:734
+#: addon/globalPlugins/freeradio/__init__.py:757
 msgid ""
 "Add currently playing station to favourites, download the whole audio book "
 "if one is playing, or download the episode if a podcast is playing"
@@ -146,56 +147,56 @@ msgstr ""
 "l'intégralité du livre audio si l'un d'entre eux est en cours de lecture ou "
 "télécharger l'épisode si un podcast est en cours de lecture"
 
-#: addon/globalPlugins/freeradio/__init__.py:741
+#: addon/globalPlugins/freeradio/__init__.py:764
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:167
 #: addon/globalPlugins/freeradio/recordingMixin.py:106
 #: addon/globalPlugins/freeradio/recordingMixin.py:187
 msgid "No station is playing"
 msgstr "Aucune station n'est en cours de lecture"
 
-#: addon/globalPlugins/freeradio/__init__.py:763
+#: addon/globalPlugins/freeradio/__init__.py:786
 #, python-format
 msgid "Already in favourites: %s"
 msgstr "Déjà dans les favoris: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:766
+#: addon/globalPlugins/freeradio/__init__.py:789
 #, python-format
 msgid "Added to favourites: %s"
 msgstr "Ajouté aux favoris: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:780
+#: addon/globalPlugins/freeradio/__init__.py:803
 msgid "No audio book is playing"
 msgstr "Aucun livre audio n'est en cours de lecture"
 
-#: addon/globalPlugins/freeradio/__init__.py:786
+#: addon/globalPlugins/freeradio/__init__.py:809
 msgid "Could not download this audio book."
 msgstr "Impossible de télécharger ce livre audio."
 
-#: addon/globalPlugins/freeradio/__init__.py:859
+#: addon/globalPlugins/freeradio/__init__.py:882
 #, python-format
 msgid "Could not play %(name)s: %(reason)s"
 msgstr "Impossible de lire %(name)s: %(reason)s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1041
+#: addon/globalPlugins/freeradio/__init__.py:1064
 msgid "No releases found on GitHub yet."
 msgstr "Aucune version trouvée sur GitHub pour le moment."
 
-#: addon/globalPlugins/freeradio/__init__.py:1045
+#: addon/globalPlugins/freeradio/__init__.py:1068
 #, python-format
 msgid "Update check failed (HTTP %d)."
 msgstr "La vérification de la mise à jour a échoué (HTTP %d)."
 
-#: addon/globalPlugins/freeradio/__init__.py:1050
+#: addon/globalPlugins/freeradio/__init__.py:1073
 msgid "Update check failed. Please check your internet connection."
 msgstr ""
 "La vérification de la mise à jour a échoué. Veuillez vérifier votre "
 "connexion Internet."
 
-#: addon/globalPlugins/freeradio/__init__.py:1065
+#: addon/globalPlugins/freeradio/__init__.py:1088
 msgid "Could not determine latest version."
 msgstr "Impossible de déterminer la dernière version."
 
-#: addon/globalPlugins/freeradio/__init__.py:1084
+#: addon/globalPlugins/freeradio/__init__.py:1107
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -208,17 +209,17 @@ msgstr ""
 "\n"
 "Souhaitez-vous le télécharger et l'installer maintenant ?"
 
-#: addon/globalPlugins/freeradio/__init__.py:1087
-#: addon/globalPlugins/freeradio/__init__.py:1095
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1110
+#: addon/globalPlugins/freeradio/__init__.py:1118
+#: addon/globalPlugins/freeradio/__init__.py:1179
 msgid "unknown"
 msgstr "inconnu"
 
-#: addon/globalPlugins/freeradio/__init__.py:1088
+#: addon/globalPlugins/freeradio/__init__.py:1111
 msgid "&Install"
 msgstr "&Installer"
 
-#: addon/globalPlugins/freeradio/__init__.py:1092
+#: addon/globalPlugins/freeradio/__init__.py:1115
 #, python-format
 msgid ""
 "A new version of FreeRadio is available: %(new)s.\n"
@@ -231,24 +232,24 @@ msgstr ""
 "\n"
 "Souhaitez-vous ouvrir la page de téléchargement ?"
 
-#: addon/globalPlugins/freeradio/__init__.py:1096
+#: addon/globalPlugins/freeradio/__init__.py:1119
 msgid "&Open Page"
 msgstr "&Ouvrir la page"
 
-#: addon/globalPlugins/freeradio/__init__.py:1101
+#: addon/globalPlugins/freeradio/__init__.py:1124
 msgid "FreeRadio Update Available"
 msgstr "Mise à jour de FreeRadio disponible"
 
-#: addon/globalPlugins/freeradio/__init__.py:1104
+#: addon/globalPlugins/freeradio/__init__.py:1127
 msgid "&Cancel"
 msgstr "&Annuler"
 
-#: addon/globalPlugins/freeradio/__init__.py:1119
+#: addon/globalPlugins/freeradio/__init__.py:1142
 #, python-format
 msgid "Downloading FreeRadio %s…"
 msgstr "Téléchargement de FreeRadio %s …"
 
-#: addon/globalPlugins/freeradio/__init__.py:1137
+#: addon/globalPlugins/freeradio/__init__.py:1160
 #: addon/globalPlugins/freeradio/radioDialog.py:4796
 #: addon/globalPlugins/freeradio/radioDialog.py:6115
 #: addon/globalPlugins/freeradio/recordingMixin.py:62
@@ -256,17 +257,17 @@ msgstr "Téléchargement de FreeRadio %s …"
 msgid "Download failed: %s"
 msgstr "Le téléchargement a échoué: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1147
+#: addon/globalPlugins/freeradio/__init__.py:1170
 #, python-format
 msgid "Could not launch installer. File saved to: %s"
 msgstr "Impossible de lancer l'installateur. Fichier enregistré dans: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1156
+#: addon/globalPlugins/freeradio/__init__.py:1179
 #, python-format
 msgid "FreeRadio is up to date. Installed: %s"
 msgstr "FreeRadio est à jour. Installé: %s"
 
-#: addon/globalPlugins/freeradio/__init__.py:1157
+#: addon/globalPlugins/freeradio/__init__.py:1180
 msgid "FreeRadio Update Check"
 msgstr "Vérification des mises à jour de FreeRadio"
 
@@ -289,6 +290,7 @@ msgstr ""
 
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:67
 #: addon/globalPlugins/freeradio/audioDeviceMixin.py:151
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
 #: addon/globalPlugins/freeradio/radioDialog.py:1142
 #: addon/globalPlugins/freeradio/settingsPanel.py:522
 msgid "System default"
@@ -670,6 +672,94 @@ msgstr ""
 "download.html et placez ffmpeg.exe dans le dossier de l'extension FreeRadio, "
 "ou définissez le chemin dans les paramètres."
 
+#: addon/globalPlugins/freeradio/obligatoMixin.py:55
+msgid "Obligato Mode"
+msgstr "Mode Obligato"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:64
+#: addon/globalPlugins/freeradio/obligatoMixin.py:71
+#| msgid "%(count)d stations"
+msgid "Background station:"
+msgstr "Station de fond:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:86
+#: addon/globalPlugins/freeradio/obligatoMixin.py:97
+msgid "Audio output:"
+msgstr "Sortie audio:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:91
+#| msgid "Select the main output device:"
+msgid "Same as main output"
+msgstr "Identique à la sortie principale"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:123
+#: addon/globalPlugins/freeradio/obligatoMixin.py:137
+msgid "Background volume:"
+msgstr "Volume de fond:"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:131
+msgid "100% (same as main volume)"
+msgstr "100% (identique au volume principal)"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:135
+#, python-format
+msgid "%d%% of main volume"
+msgstr "%d%% du volume principal"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:149
+msgid "&Start"
+msgstr "&Démarrer"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:167
+#| msgid "Please select a station"
+msgid "Please select a station for the background music."
+msgstr "Veuillez sélectionner une station pour la musique de fond."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:195
+msgid "Toggle Obligato background music mode"
+msgstr "Activer/désactiver le Mode musique de fond Obligato"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:210
+msgid ""
+"No favourite stations. Add a station to favourites first to use Obligato "
+"mode."
+msgstr ""
+"Aucune station favorite. Ajoutez d'abord une station à vos favoris pour "
+"utiliser le mode Obligato."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:272
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
+msgid "No stream URL available for this station"
+msgstr "Aucun flux URL disponible pour cette station"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:286
+#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
+msgid "No internet connection. Please check your connection and try again."
+msgstr ""
+"Pas de connexion Internet. Veuillez vérifier votre connexion et réessayer."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:294
+#| msgid "Could not start song recording"
+msgid "Could not start Obligato mode."
+msgstr "Impossible de démarrer le mode Obligato."
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:331
+#, python-format
+#| msgid "Song recording started: %s"
+msgid "Obligato mode started: %s"
+msgstr "Mode Obligato démarré: %s"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:384
+#, python-format
+#| msgid "Could not play %(name)s: %(reason)s"
+msgid "Could not play %(name)s in Obligato mode: %(reason)s"
+msgstr "Impossible de jouer %(name)s en mode Obligato: %(reason)s"
+
+#: addon/globalPlugins/freeradio/obligatoMixin.py:411
+#| msgid "Audio mirror stopped"
+msgid "Obligato mode stopped"
+msgstr "Mode Obligato arrêté"
+
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:42
 msgid "Pause or resume FreeRadio playback"
 msgstr "Mettre en pause ou reprendre la lecture de FreeRadio"
@@ -754,15 +844,6 @@ msgstr ""
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:528
 msgid "Unknown station"
 msgstr "Station inconnue"
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:534
-msgid "No stream URL available for this station"
-msgstr "Aucun flux URL disponible pour cette station"
-
-#: addon/globalPlugins/freeradio/playbackCoreMixin.py:541
-msgid "No internet connection. Please check your connection and try again."
-msgstr ""
-"Pas de connexion Internet. Veuillez vérifier votre connexion et réessayer."
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:653
 #, python-format
@@ -3060,152 +3141,208 @@ msgstr ""
 #: buildVars.py:26
 msgid ""
 "\n"
-"- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS is\n"
-"now the sole, mandatory playback backend. This removes the \"Disable BASS\n"
-"backend\" option and its VLC/wmplayer/PotPlayer path settings from the\n"
-"FreeRadio settings panel; if BASS itself fails to start, playback now\n"
-"fails with a clear error instead of silently switching to another\n"
-"player.\n"
-"- Internal cleanup: removed unused code paths and a dead\n"
-"\"player_paths\" field from scheduled recordings that was never actually\n"
-"used for playback.\n"
-"- **Seeking within a podcast or audio book now supports tap-to-jump "
-"amounts:** a single press seeks 12 seconds, two quick presses seek 1 minute, "
-"three quick presses seek 5 minutes. Holding the key down still seeks "
-"continuously in the original 5-second steps, unchanged.\n"
-"**Improved**\n"
-"- Station search now also matches on **codec**, **bitrate**, and "
-"**language**, in addition to name, country, and tags. For example, searching "
-"\"aac\" or \"320\" now finds stations using that codec or bitrate, and "
-"results can be combined with other terms (e.g. \"jazz 320\"). Partialy "
-"closing #30\n"
-"Add a new source for audio books\n"
-"- Added LibriVox as a second audio book source alongside GETEM. Both "
-"catalogs now share the same Audio Books tab: search, browse, play, and "
-"resume progress work the same way regardless of which source a book came "
-"from.\n"
-"- Searching the Audio Books tab now queries GETEM and LibriVox together, and "
-"results from both are combined into a single list.\n"
-"- Pasting a LibriVox or Getem book URL directly into the search field now "
-"resolves and adds that book.\n"
-"- Added an \"Audio book sources\" option to the settings panel: a checkbox "
-"list lets you choose which of GETEM and LibriVox are searched (both are "
-"enabled by default).\n"
-"- **GETEM catalog & detail-page parsing: replaced regex scraping with a real "
-"DOM parser**\n"
-"The HTML-scraping code that read GETEM's search results and work-detail "
-"pages relied on regexes over raw HTML and a literal string split to find "
-"each result row. That approach breaks silently the moment the site changes "
-"something cosmetic — element order, an extra wrapper tag, a label nested one "
-"level deeper — without changing what the page actually means.\n"
-"Replaced it with a small, dependency-free DOM builder on top of Python's "
-"standard `html.parser.HTMLParser`, then rewrote every scraping function to "
-"query that tree by tag/class instead of matching raw markup:\n"
-"- **Catalog search results**: each result row is now parsed as its own real "
-"subtree, so a field missing from one row can no longer leak text belonging "
-"to the next row — a risk the old row-splitting approach carried.\n"
-"- **Format-filter options, hidden form fields**: read directly from parsed "
-"`<select>`/`<option>` elements instead of locating them by substring "
-"search.\n"
-"- **Work-detail pages**: chapter links, title, and metadata fields (author/"
-"narrator/publisher/etc.) are now found by walking the tree rather than "
-"requiring an exact tag sequence; a field's own label text is excluded via "
-"nesting-depth-independent lookup instead of an assumed fixed `</div></div>` "
-"boundary.\n"
-"- **URL resolution**: relative/absolute link handling now goes through "
-"`urllib.parse.urljoin`, which correctly covers protocol-relative and query-"
-"only links the old hand-written checks didn't.\n"
-"- No public function signatures changed, so nothing else in the add-on "
-"needed touching. Verified against hand-built fixtures covering the exact "
-"failure modes the old code was vulnerable to (reordered attributes, div/span "
-"markup variance, a field missing mid-listing, a link wrapped in an extra "
-"tag, a deeply nested label) — all resolved correctly.\n"
+"### Added\n"
+"- **Obligato mode (background music)** — Play a favourite station quietly in "
+"the background, on its own independent audio output and volume, no matter "
+"what plays (or doesn't play) as the main media.\n"
+"  - New shortcut: `Ctrl+Win+Shift+M` toggles Obligato mode on and off.\n"
+"  - On first press, a dialog lets you choose the background station (from "
+"your favourites), the output device (**Same as main output** by default, "
+"**System default**, or any specific device), and the background volume as a "
+"percentage of the main player's current volume (25%–150%). Your choices are "
+"remembered for next time.\n"
+"  - Runs on a fully separate playback engine from the main player, so "
+"switching stations, podcasts, or audio books — or stopping the main player "
+"entirely — never interrupts it.\n"
+"  - Background volume automatically stays proportional to the main player's "
+"volume as it changes (`Ctrl+Win+↑`/`↓`).\n"
+"  - Pausing the main player (`Ctrl+Win+P`) pauses the background station "
+"too, and resuming the main player resumes it; a full stop of the main player "
+"is not treated as a pause.\n"
+"  - Requires at least one favourite station; if none exist, FreeRadio "
+"prompts you to add one first.\n"
+"  - Start/stop announcements respect the **Mute notifications** setting.\n"
 msgstr ""
 "\n"
-"- Suppression de la prise en charge de VLC/PotPlayer/Windows Media Player. "
-"BASS est désormais le seul et unique lecteur audio. L'option « Désactiver le "
-"lecteur BASS » et ses paramètres de chemin VLC/wmplayer/PotPlayer sont donc "
-"supprimés du panneau de configuration de FreeRadio. Si BASS ne parvient pas "
-"à démarrer, la lecture échouera avec un message d'erreur clair au lieu de "
-"basculer silencieusement vers un autre lecteur.\n"
-"\n"
-"- Nettoyage interne : suppression des chemins de code inutilisés et d'un "
-"champ « player_paths » mort dans les enregistrements programmés, car il "
-"n'était jamais utilisé pour la lecture.\n"
-"\n"
-"- **La recherche dans un podcast ou un livre audio prend désormais en charge "
-"les sauts par pression :** une simple pression permet d'avancer de "
-"12 secondes, deux pressions rapides d'une minute et trois pressions rapides "
-"de 5 minutes. Maintenir la touche enfoncée permet toujours une recherche "
-"continue par incréments de 5 secondes.\n"
-"\n"
-"**Amélioration**\n"
-"\n"
-"- La recherche de stations prend désormais en charge le **codec**, le "
-"**débit** et la **langue**, en plus du nom, du pays et des tags. Par "
-"exemple, la recherche de « aac » ou « 320 » permet désormais de trouver des "
-"stations utilisant ce codec ou ce débit binaire, et les résultats peuvent "
-"être combinés avec d'autres termes (par exemple, « jazz 320 »). Clôture "
-"partielle du ticket n° 30 : Ajout d'une nouvelle source de livres audio.\n"
-"\n"
-"- LibriVox a été ajouté comme deuxième source de livres audio, en plus de "
-"GETEM. Les deux catalogues partagent désormais le même onglet « Livres "
-"audio » : la recherche, la navigation, la lecture et la reprise de la "
-"lecture fonctionnent de la même manière, quelle que soit la source du "
-"livre.\n"
-"\n"
-"- La recherche dans l'onglet « Livres audio » interroge désormais GETEM et "
-"LibriVox simultanément, et les résultats sont combinés dans une seule "
-"liste.- Coller directement l'URL d'un livre LibriVox ou Getem dans le champ "
-"de recherche permet désormais de le résoudre et de l'ajouter.\n"
-"\n"
-"- Ajout d'une option « Sources de livres audio » dans le panneau des "
-"paramètres : une liste de cases à cocher permet de choisir entre Getem et "
-"LibriVox (les deux sont activés par défaut).\n"
-"\n"
-"- **Analyse du catalogue Getem et des pages de détails : remplacement de "
-"l'extraction par expressions régulières par un véritable analyseur DOM.** Le "
-"code d'extraction HTML qui lisait les résultats de recherche et les pages de "
-"détails des œuvres de Getem utilisait des expressions régulières au lieu du "
-"code HTML brut et d'une segmentation littérale des chaînes de caractères "
-"pour trouver chaque ligne de résultat. Cette méthode cesse de fonctionner "
-"silencieusement dès que le site subit une modification d'ordre esthétique "
-"(ordre des éléments, balise conteneur supplémentaire, étiquette imbriquée "
-"d'un niveau), sans que le contenu de la page ne soit altéré. Nous l'avons "
-"remplacé par un petit constructeur DOM sans dépendances, basé sur la "
-"fonction standard `html.parser.HTMLParser` de Python, puis nous avons "
-"réécrit toutes les fonctions d'extraction de données pour interroger cet "
-"arbre par balise/classe au lieu de rechercher directement dans le "
-"balisage :\n"
-"\n"
-"- **Résultats de recherche du catalogue** : chaque ligne de résultat est "
-"désormais analysée comme un sous-arbre distinct. Ainsi, un champ manquant "
-"dans une ligne ne peut plus divulguer de texte appartenant à la ligne "
-"suivante, un risque inhérent à l'ancienne méthode de division des lignes.\n"
-"\n"
-"- **Options de formatage et de filtrage, champs de formulaire cachés** : "
-"lecture directe à partir des éléments `<select>`/`<option>` analysés, au "
-"lieu de les localiser par recherche de sous-chaînes.\n"
-"\n"
-"- **Pages de détails d'œuvre** : les liens vers les chapitres, le titre et "
-"les champs de métadonnées (auteur/narrateur/éditeur, etc.) sont désormais "
-"trouvés en parcourant l'arbre, sans nécessiter une séquence de balises "
-"exacte.Le texte propre à l'étiquette d'un champ est exclu grâce à une "
-"recherche indépendante de la profondeur d'imbrication, au lieu d'une limite "
-"fixe supposée `</div></div>`.\n"
-"\n"
-"- **Résolution des URL** : la gestion des liens relatifs/absolus passe "
-"désormais par `urllib.parse.urljoin`, qui couvre correctement les liens "
-"relatifs au protocole et les liens de requête uniquement, contrairement aux "
-"anciennes vérifications manuelles.\n"
-"\n"
-"- Aucune signature de fonction publique n'a été modifiée ; par conséquent, "
-"aucune autre modification du module complémentaire n'a été nécessaire. Le "
-"code a été vérifié à l'aide de tests manuels couvrant les modes de "
-"défaillance précis auxquels l'ancien code était vulnérable (attributs "
-"réorganisés, variations de balisage div/span, champ manquant au milieu d'une "
-"liste, lien inclus dans une balise supplémentaire, étiquette profondément "
-"imbriquée) ; tous ces cas ont été résolus correctement.\n"
+"### Ajouté\n"
+"- **Mode Obligato (musique de fond)**: Écoutez votre station préférée en "
+"arrière-plan, discrètement, avec sa propre sortie audio et son propre "
+"volume, quel que soit le contenu multimédia principal (en lecture ou non).\n"
+"  - Nouveau raccourci : `Ctrl+Win+Shift+M` active/désactive le mode "
+"Obligato.\n"
+"  - À la première utilisation, une boîte de dialogue vous permet de choisir "
+"la station de fond (parmi vos favoris), le périphérique de sortie "
+"(**Identique à la sortie principale** par défaut, **Par défaut du système** "
+"ou un périphérique spécifique) et le volume de fond en pourcentage du volume "
+"actuel du lecteur principal (25 % à 150 %). Vos choix sont mémorisés.\n"
+"  - Fonctionne avec un moteur de lecture totalement indépendant du lecteur "
+"principal. Ainsi, changer de station, de podcast ou de livre audio, ou même "
+"arrêter complètement le lecteur principal, ne l'interrompt jamais.\n"
+"  - Le volume de fond reste automatiquement proportionnel au volume du "
+"lecteur principal (`Ctrl+Win+↑`/`↓`). - Mettre en pause le lecteur principal "
+"(Ctrl+Win+P) met également en pause la station en arrière-plan, et reprendre "
+"la lecture du lecteur principal la reprend également ; l'arrêt complet du "
+"lecteur principal n'est pas considéré comme une pause.\n"
+"  - Nécessite au moins une station favorite ; si vous n'en avez aucune, "
+"FreeRadio vous invite à en ajouter une.\n"
+"  - Les annonces de démarrage et d'arrêt respectent le paramètre "
+"**Désactiver les notifications**.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "- Removed VLC / PotPlayer / Windows Media Player fallback support. BASS "
+#~ "is\n"
+#~ "now the sole, mandatory playback backend. This removes the \"Disable "
+#~ "BASS\n"
+#~ "backend\" option and its VLC/wmplayer/PotPlayer path settings from the\n"
+#~ "FreeRadio settings panel; if BASS itself fails to start, playback now\n"
+#~ "fails with a clear error instead of silently switching to another\n"
+#~ "player.\n"
+#~ "- Internal cleanup: removed unused code paths and a dead\n"
+#~ "\"player_paths\" field from scheduled recordings that was never actually\n"
+#~ "used for playback.\n"
+#~ "- **Seeking within a podcast or audio book now supports tap-to-jump "
+#~ "amounts:** a single press seeks 12 seconds, two quick presses seek 1 "
+#~ "minute, three quick presses seek 5 minutes. Holding the key down still "
+#~ "seeks continuously in the original 5-second steps, unchanged.\n"
+#~ "**Improved**\n"
+#~ "- Station search now also matches on **codec**, **bitrate**, and "
+#~ "**language**, in addition to name, country, and tags. For example, "
+#~ "searching \"aac\" or \"320\" now finds stations using that codec or "
+#~ "bitrate, and results can be combined with other terms (e.g. \"jazz "
+#~ "320\"). Partialy closing #30\n"
+#~ "Add a new source for audio books\n"
+#~ "- Added LibriVox as a second audio book source alongside GETEM. Both "
+#~ "catalogs now share the same Audio Books tab: search, browse, play, and "
+#~ "resume progress work the same way regardless of which source a book came "
+#~ "from.\n"
+#~ "- Searching the Audio Books tab now queries GETEM and LibriVox together, "
+#~ "and results from both are combined into a single list.\n"
+#~ "- Pasting a LibriVox or Getem book URL directly into the search field now "
+#~ "resolves and adds that book.\n"
+#~ "- Added an \"Audio book sources\" option to the settings panel: a "
+#~ "checkbox list lets you choose which of GETEM and LibriVox are searched "
+#~ "(both are enabled by default).\n"
+#~ "- **GETEM catalog & detail-page parsing: replaced regex scraping with a "
+#~ "real DOM parser**\n"
+#~ "The HTML-scraping code that read GETEM's search results and work-detail "
+#~ "pages relied on regexes over raw HTML and a literal string split to find "
+#~ "each result row. That approach breaks silently the moment the site "
+#~ "changes something cosmetic — element order, an extra wrapper tag, a label "
+#~ "nested one level deeper — without changing what the page actually means.\n"
+#~ "Replaced it with a small, dependency-free DOM builder on top of Python's "
+#~ "standard `html.parser.HTMLParser`, then rewrote every scraping function "
+#~ "to query that tree by tag/class instead of matching raw markup:\n"
+#~ "- **Catalog search results**: each result row is now parsed as its own "
+#~ "real subtree, so a field missing from one row can no longer leak text "
+#~ "belonging to the next row — a risk the old row-splitting approach "
+#~ "carried.\n"
+#~ "- **Format-filter options, hidden form fields**: read directly from "
+#~ "parsed `<select>`/`<option>` elements instead of locating them by "
+#~ "substring search.\n"
+#~ "- **Work-detail pages**: chapter links, title, and metadata fields "
+#~ "(author/narrator/publisher/etc.) are now found by walking the tree rather "
+#~ "than requiring an exact tag sequence; a field's own label text is "
+#~ "excluded via nesting-depth-independent lookup instead of an assumed fixed "
+#~ "`</div></div>` boundary.\n"
+#~ "- **URL resolution**: relative/absolute link handling now goes through "
+#~ "`urllib.parse.urljoin`, which correctly covers protocol-relative and "
+#~ "query-only links the old hand-written checks didn't.\n"
+#~ "- No public function signatures changed, so nothing else in the add-on "
+#~ "needed touching. Verified against hand-built fixtures covering the exact "
+#~ "failure modes the old code was vulnerable to (reordered attributes, div/"
+#~ "span markup variance, a field missing mid-listing, a link wrapped in an "
+#~ "extra tag, a deeply nested label) — all resolved correctly.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "- Suppression de la prise en charge de VLC/PotPlayer/Windows Media "
+#~ "Player. BASS est désormais le seul et unique lecteur audio. L'option "
+#~ "« Désactiver le lecteur BASS » et ses paramètres de chemin VLC/wmplayer/"
+#~ "PotPlayer sont donc supprimés du panneau de configuration de FreeRadio. "
+#~ "Si BASS ne parvient pas à démarrer, la lecture échouera avec un message "
+#~ "d'erreur clair au lieu de basculer silencieusement vers un autre "
+#~ "lecteur.\n"
+#~ "\n"
+#~ "- Nettoyage interne : suppression des chemins de code inutilisés et d'un "
+#~ "champ « player_paths » mort dans les enregistrements programmés, car il "
+#~ "n'était jamais utilisé pour la lecture.\n"
+#~ "\n"
+#~ "- **La recherche dans un podcast ou un livre audio prend désormais en "
+#~ "charge les sauts par pression :** une simple pression permet d'avancer de "
+#~ "12 secondes, deux pressions rapides d'une minute et trois pressions "
+#~ "rapides de 5 minutes. Maintenir la touche enfoncée permet toujours une "
+#~ "recherche continue par incréments de 5 secondes.\n"
+#~ "\n"
+#~ "**Amélioration**\n"
+#~ "\n"
+#~ "- La recherche de stations prend désormais en charge le **codec**, le "
+#~ "**débit** et la **langue**, en plus du nom, du pays et des tags. Par "
+#~ "exemple, la recherche de « aac » ou « 320 » permet désormais de trouver "
+#~ "des stations utilisant ce codec ou ce débit binaire, et les résultats "
+#~ "peuvent être combinés avec d'autres termes (par exemple, « jazz 320 »). "
+#~ "Clôture partielle du ticket n° 30 : Ajout d'une nouvelle source de livres "
+#~ "audio.\n"
+#~ "\n"
+#~ "- LibriVox a été ajouté comme deuxième source de livres audio, en plus de "
+#~ "GETEM. Les deux catalogues partagent désormais le même onglet « Livres "
+#~ "audio » : la recherche, la navigation, la lecture et la reprise de la "
+#~ "lecture fonctionnent de la même manière, quelle que soit la source du "
+#~ "livre.\n"
+#~ "\n"
+#~ "- La recherche dans l'onglet « Livres audio » interroge désormais GETEM "
+#~ "et LibriVox simultanément, et les résultats sont combinés dans une seule "
+#~ "liste.- Coller directement l'URL d'un livre LibriVox ou Getem dans le "
+#~ "champ de recherche permet désormais de le résoudre et de l'ajouter.\n"
+#~ "\n"
+#~ "- Ajout d'une option « Sources de livres audio » dans le panneau des "
+#~ "paramètres : une liste de cases à cocher permet de choisir entre Getem et "
+#~ "LibriVox (les deux sont activés par défaut).\n"
+#~ "\n"
+#~ "- **Analyse du catalogue Getem et des pages de détails : remplacement de "
+#~ "l'extraction par expressions régulières par un véritable analyseur DOM.** "
+#~ "Le code d'extraction HTML qui lisait les résultats de recherche et les "
+#~ "pages de détails des œuvres de Getem utilisait des expressions régulières "
+#~ "au lieu du code HTML brut et d'une segmentation littérale des chaînes de "
+#~ "caractères pour trouver chaque ligne de résultat. Cette méthode cesse de "
+#~ "fonctionner silencieusement dès que le site subit une modification "
+#~ "d'ordre esthétique (ordre des éléments, balise conteneur supplémentaire, "
+#~ "étiquette imbriquée d'un niveau), sans que le contenu de la page ne soit "
+#~ "altéré. Nous l'avons remplacé par un petit constructeur DOM sans "
+#~ "dépendances, basé sur la fonction standard `html.parser.HTMLParser` de "
+#~ "Python, puis nous avons réécrit toutes les fonctions d'extraction de "
+#~ "données pour interroger cet arbre par balise/classe au lieu de rechercher "
+#~ "directement dans le balisage :\n"
+#~ "\n"
+#~ "- **Résultats de recherche du catalogue** : chaque ligne de résultat est "
+#~ "désormais analysée comme un sous-arbre distinct. Ainsi, un champ manquant "
+#~ "dans une ligne ne peut plus divulguer de texte appartenant à la ligne "
+#~ "suivante, un risque inhérent à l'ancienne méthode de division des "
+#~ "lignes.\n"
+#~ "\n"
+#~ "- **Options de formatage et de filtrage, champs de formulaire cachés** : "
+#~ "lecture directe à partir des éléments `<select>`/`<option>` analysés, au "
+#~ "lieu de les localiser par recherche de sous-chaînes.\n"
+#~ "\n"
+#~ "- **Pages de détails d'œuvre** : les liens vers les chapitres, le titre "
+#~ "et les champs de métadonnées (auteur/narrateur/éditeur, etc.) sont "
+#~ "désormais trouvés en parcourant l'arbre, sans nécessiter une séquence de "
+#~ "balises exacte.Le texte propre à l'étiquette d'un champ est exclu grâce à "
+#~ "une recherche indépendante de la profondeur d'imbrication, au lieu d'une "
+#~ "limite fixe supposée `</div></div>`.\n"
+#~ "\n"
+#~ "- **Résolution des URL** : la gestion des liens relatifs/absolus passe "
+#~ "désormais par `urllib.parse.urljoin`, qui couvre correctement les liens "
+#~ "relatifs au protocole et les liens de requête uniquement, contrairement "
+#~ "aux anciennes vérifications manuelles.\n"
+#~ "\n"
+#~ "- Aucune signature de fonction publique n'a été modifiée ; par "
+#~ "conséquent, aucune autre modification du module complémentaire n'a été "
+#~ "nécessaire. Le code a été vérifié à l'aide de tests manuels couvrant les "
+#~ "modes de défaillance précis auxquels l'ancien code était vulnérable "
+#~ "(attributs réorganisés, variations de balisage div/span, champ manquant "
+#~ "au milieu d'une liste, lien inclus dans une balise supplémentaire, "
+#~ "étiquette profondément imbriquée) ; tous ces cas ont été résolus "
+#~ "correctement.\n"
 
 #~ msgid ""
 #~ "\n"

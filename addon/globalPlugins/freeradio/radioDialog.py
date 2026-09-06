@@ -3279,9 +3279,6 @@ class RadioDialog(wx.Dialog):
 			if focused == self._podcast_search:
 				self._on_podcast_search(event)
 				return
-			if focused == self._podcast_url:
-				self._on_podcast_add(event)
-				return
 			if focused == self._episode_list:
 				self._on_episode_play(None)
 				return
@@ -4209,7 +4206,7 @@ class RadioDialog(wx.Dialog):
 		search_sizer = wx.BoxSizer(wx.HORIZONTAL)
 		search_sizer.Add(wx.StaticText(panel, label=_("Search:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
 		self._podcast_search = wx.TextCtrl(panel)
-		self._podcast_search.SetName(_("Search podcasts. Press enter to search"))
+		self._podcast_search.SetName(_("Search podcasts, or enter a podcast feed URL. Press enter to search or add"))
 		search_sizer.Add(self._podcast_search, 1, wx.EXPAND)
 		sizer.Add(search_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
@@ -4242,16 +4239,6 @@ class RadioDialog(wx.Dialog):
 
 		# --- Separator ---
 		sizer.Add(wx.StaticLine(panel), 0, wx.EXPAND | wx.ALL, 4)
-
-		# --- Add feed row (manual) ---
-		add_sizer = wx.BoxSizer(wx.HORIZONTAL)
-		add_sizer.Add(wx.StaticText(panel, label=_("Or enter podcast URL:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
-		self._podcast_url = wx.TextCtrl(panel)
-		self._podcast_url.SetName(_("Podcast URL"))
-		add_sizer.Add(self._podcast_url, 1, wx.EXPAND | wx.RIGHT, 4)
-		self._podcast_add_btn = wx.Button(panel, label=_("&Add Feed"))
-		add_sizer.Add(self._podcast_add_btn, 0)
-		sizer.Add(add_sizer, 0, wx.EXPAND | wx.ALL, 8)
 
 		# --- Subscriptions list ---
 		sizer.Add(wx.StaticText(panel, label=_("Subscriptions:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
@@ -4303,7 +4290,6 @@ class RadioDialog(wx.Dialog):
 		# --- Bind events ---
 		self._podcast_search.Bind(wx.EVT_KEY_DOWN, self._on_podcast_search_key)
 		self._podcast_results.Bind(wx.EVT_LISTBOX, self._on_podcast_result_selected)
-		self._podcast_add_btn.Bind(wx.EVT_BUTTON, self._on_podcast_add)
 		self._podcast_list.Bind(wx.EVT_LISTBOX, self._on_podcast_selected)
 		self._podcast_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._podcast_list.Bind(wx.EVT_KEY_DOWN, self._on_podcast_list_key)
@@ -4313,8 +4299,6 @@ class RadioDialog(wx.Dialog):
 		self._episode_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._episode_list.Bind(wx.EVT_KEY_DOWN, self._on_episode_key)
 		self._episode_download_btn.Bind(wx.EVT_BUTTON, self._on_episode_download)
-
-		self._podcast_url.Bind(wx.EVT_KEY_DOWN, self._on_podcast_url_key)
 
 		self._refresh_podcast_list()
 
@@ -4399,23 +4383,11 @@ class RadioDialog(wx.Dialog):
 		self._refresh_podcast_list()
 		ui.message(_("Podcast feeds updated."))
 
-	def _on_podcast_url_key(self, event):
-		if event.GetKeyCode() == wx.WXK_RETURN:
-			self._on_podcast_add(event)
-		else:
-			event.Skip()
-
-	def _on_podcast_add(self, event):
-		url = self._podcast_url.GetValue().strip()
-		if not url:
-			ui.message(_("Please enter a podcast URL."))
-			return
-		if not url.startswith(("http://", "https://")):
-			ui.message(_("URL must start with http:// or https://"))
-			return
-
-		self._podcast_add_btn.Disable()
-		self._podcast_url.Disable()
+	def _on_podcast_add(self, url):
+		"""Add a feed directly from a URL typed into the search field - see
+		_on_podcast_search(), which routes here instead of doing an iTunes
+		search whenever the field's contents look like a URL."""
+		self._podcast_search.Disable()
 		ui.message(_("Fetching podcast feed..."))
 
 		def _do_add():
@@ -4425,12 +4397,12 @@ class RadioDialog(wx.Dialog):
 		threading.Thread(target=_do_add, daemon=True).start()
 
 	def _on_podcast_add_done(self, feed, error):
-		self._podcast_add_btn.Enable()
-		self._podcast_url.Enable()
+		self._podcast_search.Enable()
 		if error:
 			ui.message(_("Could not add feed: %s") % error)
 			return
-		self._podcast_url.SetValue("")
+		self._podcast_search.SetValue("")
+		self._set_podcast_results_visible(False)
 		ui.message(_("Feed added: %s") % feed.title)
 		self._refresh_podcast_list()
 
@@ -4831,7 +4803,13 @@ class RadioDialog(wx.Dialog):
 	def _on_podcast_search(self, event):
 		query = self._podcast_search.GetValue().strip()
 		if not query:
-			ui.message(_("Please enter a search term."))
+			ui.message(_("Please enter a search term or podcast feed URL."))
+			return
+
+		# A pasted/typed feed URL is added directly instead of being run
+		# through the iTunes search API - see _on_podcast_add().
+		if query.startswith(("http://", "https://")):
+			self._on_podcast_add(query)
 			return
 
 		self._set_podcast_results_visible(True)

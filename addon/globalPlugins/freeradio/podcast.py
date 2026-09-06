@@ -174,10 +174,13 @@ class PodcastEpisode:
 	def display_label(self, player=None):
 		"""Return string for listbox display: episode number, "[Listened]"
 		prefix if completed, elapsed/total duration if partially played, or
-		just the total duration for episodes that have never been played."""
+		just the total duration for episodes that have never been played.
+
+		Deliberately omits the published date - it's still shown in the
+		episode-details box (see _format_podcast_episode_lines()) for
+		whoever wants it, but repeating it on every row of the list just
+		adds noise."""
 		label = self.title
-		if self.published:
-			label = f"{self.published} - {label}"
 		if self.number is not None:
 			label = f"{self.number}. {label}"
 
@@ -198,10 +201,9 @@ class PodcastEpisode:
 		to disk) position/listened pair - e.g. from
 		RadioPlayer.get_live_podcast_progress(). Used for per-second episode
 		list updates during playback, since the disk-backed position is only
-		saved periodically."""
+		saved periodically. Also omits the published date - see
+		display_label()."""
 		label = self.title
-		if self.published:
-			label = f"{self.published} - {label}"
 		if self.number is not None:
 			label = f"{self.number}. {label}"
 

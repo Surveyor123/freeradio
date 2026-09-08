@@ -116,7 +116,7 @@ class PlaybackCoreMixin:
 			if _has_media:
 				if _is_playing:
 					self._player.pause()
-					_notify(_("Radio paused"))
+					_notify(_("Paused"))
 				else:
 					self._player.resume()
 					_notify(_("Playing"))

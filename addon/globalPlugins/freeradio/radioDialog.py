@@ -2740,7 +2740,7 @@ class RadioDialog(wx.Dialog):
 	def _on_play_clicked(self, event):
 		if self._player.is_playing():
 			self._player.pause()
-			_notify(_("Radio paused"))
+			_notify(_("Paused"))
 			return
 		station, idx = self._get_selected_station()
 		if not station:
@@ -3178,7 +3178,7 @@ class RadioDialog(wx.Dialog):
 		if key == wx.WXK_F7:
 			if self._player.is_playing():
 				self._player.pause()
-				_notify(_("Radio paused"))
+				_notify(_("Paused"))
 			else:
 				if self._player.has_media():
 					self._player.resume()
@@ -3569,7 +3569,7 @@ class RadioDialog(wx.Dialog):
 		elif key == wx.WXK_SPACE:
 			if self._player.is_playing():
 				self._player.pause()
-				_notify(_("Radio paused"))
+				_notify(_("Paused"))
 			else:
 				station, idx = self._get_selected_station()
 				if station:
@@ -3623,7 +3623,7 @@ class RadioDialog(wx.Dialog):
 		elif key == wx.WXK_SPACE:
 			if self._player.is_playing():
 				self._player.pause()
-				_notify(_("Radio paused"))
+				_notify(_("Paused"))
 			else:
 				station, idx = self._get_selected_station()
 				if station:

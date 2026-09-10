@@ -577,7 +577,14 @@ class PlaybackCoreMixin:
 
 		# Apply station-specific audio profile if one exists, else restore global settings
 		station_audio = station.get("station_audio")
-		is_podcast_like = "podcast" in station.get("tags", "")
+		# "jukebox" is included alongside "podcast" here for the same reason
+		# GETEM audiobook chapters carry "podcast" in their tags (see the
+		# comment above): this flag just means "tempo-capable local-ish
+		# media that speed/transpose apply to", and "jukebox" - like
+		# "podcast" - is only ever set internally (jukebox.JukeboxTrack.to_dict()),
+		# never derived from external data, so it's just as safe a marker.
+		is_podcast_like = ("podcast" in station.get("tags", "")
+		                    or "jukebox" in station.get("tags", ""))
 		if station_audio:
 			vol = station_audio.get("volume", config.conf["freeradio"]["volume"])
 			fx  = station_audio.get("fx", "none")
@@ -627,6 +634,16 @@ class PlaybackCoreMixin:
 				self._player.set_playback_rate_value(speed if speed else 1.0)
 			except Exception:
 				pass
+			# Pitch transpose follows the same per-item, falls-back-to-normal
+			# rule as speed just above, for the same reason: leaving a
+			# transposed track for one with no saved transpose of its own
+			# must land back on 0.0 (no shift), not carry the previous
+			# track's shift over.
+			transpose = station_audio.get("transpose") if station_audio else None
+			try:
+				self._player.set_transpose_value(transpose if transpose else 0.0)
+			except Exception:
+				pass
 
 		self._icy_last_title  = None        # None = station just changed; suppress first read
 		# station is passed as an explicit argument (not stashed on self and
@@ -645,6 +662,46 @@ class PlaybackCoreMixin:
 		if announce:
 			if not _notifications_muted():
 				wx.CallAfter(ui.message, name)
+
+	def _format_transpose(self, semitones):
+		"""Format a transpose value for announcement, e.g. "+1.25 semitones",
+		"-0.5 semitones", or "Normal pitch" for 0.0."""
+		if abs(semitones) < 0.001:
+			return _("Normal pitch")
+		# Translators: %.2f = signed semitone value, e.g. "+1.25 semitones"
+		return _("%+.2f semitones") % semitones
+
+	@script(
+		description=_("Raise pitch transpose (podcasts, audio books and jukebox tracks)"),
+		category=_("FreeRadio"),
+		gesture="kb:shift+windows+k",
+	)
+	def script_transposeUp(self, gesture):
+		applied, value, reason = self._player.increase_transpose()
+		if applied:
+			_notify(self._format_transpose(value))
+		elif reason == "not_tempo_stream":
+			_notify(_("Transpose only applies to podcasts, audio books and jukebox tracks"))
+		elif reason == "bass_fx_unavailable":
+			_notify(_("Transpose requires the bass_fx audio component, which isn't available"))
+		else:
+			_notify(self._format_transpose(value))
+
+	@script(
+		description=_("Lower pitch transpose (podcasts, audio books and jukebox tracks)"),
+		category=_("FreeRadio"),
+		gesture="kb:shift+windows+j",
+	)
+	def script_transposeDown(self, gesture):
+		applied, value, reason = self._player.decrease_transpose()
+		if applied:
+			_notify(self._format_transpose(value))
+		elif reason == "not_tempo_stream":
+			_notify(_("Transpose only applies to podcasts, audio books and jukebox tracks"))
+		elif reason == "bass_fx_unavailable":
+			_notify(_("Transpose requires the bass_fx audio component, which isn't available"))
+		else:
+			_notify(self._format_transpose(value))
 
 	def _start_playing(self, url, name, url_resolved="", station=None):
 		try:

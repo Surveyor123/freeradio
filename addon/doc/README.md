@@ -1,16 +1,18 @@
 # FreeRadio — NVDA Add-on
 
-FreeRadio is a full-featured internet radio, podcast, and audio-book add-on for the NVDA screen reader. What began as a simple way to stream internet radio stations has grown into a complete, fully accessible listening hub — every screen, dialog, and control is designed from the ground up for keyboard and screen-reader use, with no mouse required at any point.
+FreeRadio is a full-featured internet radio, podcast, audio-book, and local-jukebox add-on for the NVDA screen reader. What began as a simple way to stream internet radio stations has grown into a complete, fully accessible listening hub — every screen, dialog, and control is designed from the ground up for keyboard and screen-reader use, with no mouse required at any point.
 
 ## What FreeRadio Can Do
 
 - **Internet radio** — Browse and search over 50,000 stations from the [Radio Browser](https://www.radio-browser.info/) directory, with results supplemented by TuneIn and iHeartRadio. Save favourites, reorder them, and jump straight to any of them with a global keyboard shortcut from anywhere in Windows — see [Radio Browser Directory](#radio-browser-directory) and [Favourites](#favourites).
 - **Podcasts** — Subscribe to any RSS/Atom feed, or search Apple's podcast directory and preview episodes before subscribing. Playback position is saved automatically and resumes where you left off — see [Podcasts](#podcasts).
 - **Audio books** — Search and stream or download books from two sources: [GETEM](https://getem.boun.edu.tr/), Boğaziçi University's digital library for the visually impaired, and [LibriVox](https://librivox.org/), the volunteer-read public-domain audiobook project (no account needed), with automatic resume across multi-part works — see [Audio Books (GETEM and LibriVox)](#audio-books-getem-and-librivox).
+- **Local Jukebox** — Search audio files stored on any attached drive by filename, or build a personal library of files and folders, and play them back with the same resume, seek, speed and pitch tools podcasts and audio books use — see [Local Jukebox](#local-jukebox).
 - **Recording** — Record what's playing instantly, capture a single song automatically when it starts and stops, or schedule one-off and recurring recordings — all without interrupting playback — see [Recording](#recording).
 - **Time-shift (rewind live radio)** — Pause and rewind a live station like a DVR, then catch back up to live whenever you want — see [Time-Shift (Rewind Live Radio)](#time-shift-rewind-live-radio).
 - **Music recognition and liked songs** — Identify tracks with no metadata using Shazam-based recognition, save liked songs to a text file, and look up their lyrics — see [Music Recognition](#music-recognition) and [Liked Songs](#liked-songs).
-- **Audio profiles and effects** — Save separate volume, effects, EQ, and playback-speed settings per station, per podcast, or per audio book, and apply real-time effects (Chorus, Reverb, EQ boosts, and more) through the BASS backend — see [Station Audio Profile](#station-audio-profile).
+- **Audio profiles and effects** — Save separate volume, effects, EQ, and playback-speed settings per station, per podcast, per audio book, or per jukebox track, and apply real-time effects (Chorus, Reverb, EQ boosts, and more) through the BASS backend — see [Station Audio Profile](#station-audio-profile).
+- **Transpose (pitch shift)** — Shift the pitch of podcasts, audio books and jukebox tracks up or down without changing their speed, using the bundled `bass_fx` component — see [Transpose (Pitch Shift)](#transpose-pitch-shift).
 - **Audio mirroring** — Send the same stream to two audio output devices at once, such as speakers and headphones simultaneously — see [Audio Mirror](#audio-mirror).
 - **Obligato mode (background music)** — Loop a chosen favourite station quietly in the background, on its own output device and volume, no matter what plays (or doesn't play) as your main media — see [Obligato Mode](#obligato-mode).
 - **Timers** — Schedule a favourite station to start playing, or schedule playback to stop, at a specific time — see [Timer](#timer).
@@ -56,23 +58,26 @@ All shortcuts can be reassigned from NVDA Menu → Preferences → Input Gesture
 | `Ctrl+Win+R` | Open station browser | Opens the browser window if closed, or brings it to the foreground if already open. |
 | `Ctrl+Win+O` | Open Podcasts tab | Opens the station browser (if closed) or brings it to the foreground, and switches directly to the **Podcasts** tab. |
 | `Ctrl+Win+L` | Open Audio Books tab | Opens the station browser (if closed) or brings it to the foreground, and switches directly to the **Audio Books** tab. |
+| `Ctrl+Win+U` | Open Jukebox tab | Opens the station browser (if closed) or brings it to the foreground, and switches directly to the **Jukebox** tab, focused on the disk search box. |
 | `Ctrl+Win+P` | Pause / resume | Pauses the current station if playing; resumes if paused. If nothing is playing, starts the last station or opens the favourites list depending on your setting. Pressing twice in quick succession jumps directly to a tab of your choice. Pressing three times can trigger a separate action depending on your setting. |
 | `Ctrl+Win+S` | Stop | Fully stops the current station and resets the player. |
 | `Ctrl+Win+→` | Next favourite | Moves to the next station in the favourites list. Wraps around to the beginning at the end of the list. |
 | `Ctrl+Win+←` | Previous favourite | Moves to the previous station in the favourites list. Jumps to the end when at the beginning. |
 | `Ctrl+Win+↑` | Volume up | Increases volume by 5; maximum 200. |
 | `Ctrl+Win+↓` | Volume down | Decreases volume by 5; minimum 0. |
-| `Ctrl+Win+V` | Add to favourites / Download the Media | Adds the currently playing station to the favourites list or downloads the currently playing podcast episode or audio book. Announces if the station is already in the list or if the media was  already downloaded. |
-| `Ctrl+Win+Shift+K` | Increase playback speed | Increases the playback speed of a podcast episode or audio book by 0.1x (pitch-preserving). Range: 0.5x to 2.0x. Requires `bass_fx.dll` to be placed in the add‑on folder. |
-| `Ctrl+Win+Shift+J` | Decrease playback speed | Decreases the playback speed of a podcast episode or audio book by 0.1x. Requires `bass_fx.dll`. |
-| `Ctrl+Win+I` | Station info | Announces the currently playing station name or podcast episode or audio book. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
+| `Ctrl+Win+V` | Add to favourites / Download the Media | Adds the currently playing station to the favourites list or downloads the currently playing podcast episode or audio book. Announces if the station is already in the list or if the media was already downloaded. Not applicable when a jukebox track is playing: FreeRadio tells you the shortcut is only for stations, podcasts or audio books. |
+| `Ctrl+Win+Shift+K` | Increase playback speed | Increases the playback speed of a podcast episode, audio book, or jukebox track by 0.1x (pitch-preserving). Range: 0.5x to 2.0x. Requires `bass_fx.dll` to be placed in the add‑on folder. |
+| `Ctrl+Win+Shift+J` | Decrease playback speed | Decreases the playback speed of a podcast episode, audio book, or jukebox track by 0.1x. Requires `bass_fx.dll`. |
+| `Shift+Win+K` | Transpose up | Raises the pitch of a podcast episode, audio book, or jukebox track in 1/8 whole-tone (0.25 semitone) steps, without changing its speed. Range: −12.00 to +12.00 semitones. Requires `bass_fx.dll`. See [Transpose (Pitch Shift)](#transpose-pitch-shift). |
+| `Shift+Win+J` | Transpose down | Lowers the pitch by 1/8 whole-tone steps, without changing speed. Requires `bass_fx.dll`. |
+| `Ctrl+Win+I` | Station info | Announces the currently playing station name, podcast episode, audio book or jukebox track. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
 | `Ctrl+Win+M` | Audio mirror | Mirrors the current stream or media to an additional audio output device simultaneously. Press again to stop mirroring. |
 | `Ctrl+Win+Shift+M` | Obligato mode (background music) | Loops a chosen favourite station quietly in the background, on its own output device and volume, no matter what plays as the main media. First press opens a dialog to pick the station, output device, and relative volume. Press again to stop it. |
 | `Ctrl+Win+E` | Instant recording | Press once to start recording the current station; press again to stop. Press **twice** to start a **song recording** — the file is named after the current track and the recording stops automatically when the track changes. Press twice again while a song recording is active to stop it early. Playback continues uninterrupted in all recording modes. Only available for stations that broadcast ICY metadata. |
 | `Ctrl+Win+W` | Open recordings folder | Opens the folder containing recorded files in File Explorer. |
-| `Ctrl+Win+J` | Time-shift rewind / podcast & audio book seek back | For live radio: rewinds 15 seconds. The first press enters time-shift mode; each further press moves 15 seconds further back, up to the buffer limit set in the FreeRadio settings. Requires the time-shift buffer to be enabled in Settings. For a podcast or audio book, this key seeks within the file instead, and scales with how you press it: **holding it down** keeps stepping back 5 seconds per repeat, exactly as before; a **single deliberate tap** seeks back 12 seconds; **two taps** in quick succession seek back 1 minute; **three or more taps** seek back 5 minutes. Only one seek happens per tap sequence, sized for however many taps were made — taps don't add up. Works regardless of the time-shift setting. |
-| `Ctrl+Win+K` | Time-shift fast-forward / podcast & audio book seek forward | For live radio: moves forward 15 seconds while time-shifted. Once the live edge is reached, playback automatically returns to live and this becomes a no-op until you rewind again. For a podcast or audio book, this key seeks forward within the file using the same tap/hold scaling as `Ctrl+Win+J` above (hold = 5 seconds per repeat; 1 tap = 12 seconds; 2 taps = 1 minute; 3+ taps = 5 minutes). Works regardless of the time-shift setting. |
-| `Ctrl+Win+T` | Toggle time-shift buffer | Enables or disables the time-shift buffer on the fly, mirroring the Settings checkbox. Disabling immediately returns to live playback if time-shifted and stops the background capture. No effect on podcast or audio book playbacks. |
+| `Ctrl+Win+J` | Time-shift rewind / podcast, audio book & jukebox seek back | For live radio: rewinds 15 seconds. The first press enters time-shift mode; each further press moves 15 seconds further back, up to the buffer limit set in the FreeRadio settings. Requires the time-shift buffer to be enabled in Settings. For a podcast, audio book, or jukebox track, this key seeks within the file instead, and scales with how you press it: **holding it down** keeps stepping back 5 seconds per repeat, exactly as before; a **single deliberate tap** seeks back 12 seconds; **two taps** in quick succession seek back 1 minute; **three or more taps** seek back 5 minutes. Only one seek happens per tap sequence, sized for however many taps were made — taps don't add up. Works regardless of the time-shift setting. |
+| `Ctrl+Win+K` | Time-shift fast-forward / podcast, audio book & jukebox seek forward | For live radio: moves forward 15 seconds while time-shifted. Once the live edge is reached, playback automatically returns to live and this becomes a no-op until you rewind again. For a podcast, audio book, or jukebox track, this key seeks forward within the file using the same tap/hold scaling as `Ctrl+Win+J` above (hold = 5 seconds per repeat; 1 tap = 12 seconds; 2 taps = 1 minute; 3+ taps = 5 minutes). Works regardless of the time-shift setting. |
+| `Ctrl+Win+T` | Toggle time-shift buffer | Enables or disables the time-shift buffer on the fly, mirroring the Settings checkbox. Disabling immediately returns to live playback if time-shifted and stops the background capture. No effect on podcast, audio book or jukebox playbacks. |
 | *(unassigned)* | Select output device | Opens an on-demand list of the available main output devices. The list is shown only when BASS detects more than one physical output device. Assign a key combination via NVDA Menu → Preferences → Input Gestures → FreeRadio. |
 | *(unassigned)* | Toggle mute notifications | Toggles the Mute Notifications setting on the fly. Assign a key combination via NVDA Menu → Preferences → Input Gestures → FreeRadio. |
 | *(unassigned)* | Play favourite station directly | Each station in your favourites list appears as a separate entry in NVDA Menu → Preferences → Input Gestures → **FreeRadio Stations**. Assign any keyboard shortcut to a station to start playing it instantly from anywhere, without opening the browser. |
@@ -83,7 +88,7 @@ Next / previous shortcuts only navigate the favourites list; they do not work wi
 
 FreeRadio also adds a **FreeRadio** submenu to the NVDA Tools menu. From there you can directly open the Station Browser and FreeRadio Settings.
 
-The window opened with `Ctrl+Win+R` contains seven tabs: All Stations, Favourites, Recording, Timer, Liked Songs, Podcasts and Audio Books. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+7`.
+The window opened with `Ctrl+Win+R` contains eight tabs: All Stations, Favourites, Recording, Timer, Liked Songs, Podcasts, Audio Books and Jukebox. You can navigate between tabs with `Ctrl+Tab` or using `Alt+1` through `Alt+8`.
 
 When the All Stations tab opens, the top 1,000 most-voted stations are automatically loaded from Radio Browser. Selecting a country from the dropdown updates the list to show that country's stations. Typing in the search field instantly performs a full search across the entire Radio Browser database simultaneously by name, country and genre.
 
@@ -123,10 +128,10 @@ The following keys work only while the Station Browser window is active.
 |---|---|---|
 | `F1` | Help guide | Opens the add-on's help file in the default browser. The guide for the active NVDA language is searched first; if not found, the default guide is opened. |
 | `F2` | What's playing | Announces the currently playing station and track name. Press twice to show details such as country, genre and bitrate in a dialog. Press three times to copy the current track info (ICY metadata) to the clipboard if available; if no metadata is present, starts Shazam music recognition instead. Press four times to force music recognition in case of wrong ICY metadata. |
-| `F3` | Previous item | On All Stations or Favourites tabs: moves to the previous station and starts playing immediately. On Podcasts tab: moves to the previous episode in the episode list and plays it. |
-| `F4` | Next item | On All Stations or Favourites tabs: moves to the next station and starts playing immediately. On Podcasts tab: moves to the next episode and plays it. |
-| `Shift+F3` | Previous feed | On Podcasts tab only: moves up one feed in the subscriptions list. |
-| `Shift+F4` | Next feed | On Podcasts tab only: moves down one feed in the subscriptions list. |
+| `F3` | Previous item | On All Stations or Favourites tabs: moves to the previous station and starts playing immediately. On Podcasts tab: moves to the previous episode in the episode list and plays it. On Audio Books tab: moves to the previous book and starts playing it. On Jukebox tab: moves to the previous track in the selected jukebox item and plays it. |
+| `F4` | Next item | On All Stations or Favourites tabs: moves to the next station and starts playing immediately. On Podcasts tab: moves to the next episode and plays it. On Audio Books tab: moves to the next book and starts playing it. On Jukebox tab: moves to the next track in the selected jukebox item and plays it. |
+| `Shift+F3` | Previous feed / part / item | On Podcasts tab: moves up one feed in the subscriptions list. On Audio Books tab: moves to the previous part of the currently playing book. On Jukebox tab: moves up one jukebox entry (file or folder) in the main list. |
+| `Shift+F4` | Next feed / part / item | On Podcasts tab: moves down one feed in the subscriptions list. On Audio Books tab: moves to the next part of the currently playing book. On Jukebox tab: moves down one jukebox entry in the main list. |
 | `F5` | Volume down | Decreases volume by 5 (minimum 0). |
 | `F6` | Volume up | Increases volume by 5 (maximum 200). |
 | `F7` | Pause / resume | Pauses if a station is playing; resumes if paused and media is loaded. |
@@ -140,11 +145,11 @@ The following keys work only while the Station Browser window is active.
 |---|---|---|
 | `→` | Next item | When a station list is focused (All Stations / Favourites), moves to the next station and plays it immediately. When the episode list is focused (Podcasts), moves to the next episode and plays it. Wraps to the beginning at the end of the list. |
 | `←` | Previous item | When a station list is focused, moves to the previous station and plays it. When the episode list is focused, moves to the previous episode and plays it. Jumps to the end when at the beginning. |
-| `Ctrl+→` | Next episode | When the Podcasts tab is active, moves to the next episode and plays it (same as `→` while episode list is focused). |
-| `Ctrl+←` | Previous episode | When the Podcasts tab is active, moves to the previous episode and plays it (same as `←` while episode list is focused). |
-| `Enter` | Play | When a station or episode list is focused, starts playing the selected item immediately. Switches to the selected station even if another station is already playing. |
-| `Space` | Play / Pause | Pauses if a station is playing; otherwise starts playing the selected item. |
-| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts → Audio Books). |
+| `Ctrl+→` | Next episode / book / track | On Podcasts tab: moves to the next episode and plays it. On Audio Books tab (library list focused): moves to the next book. On Jukebox tab (either the entries list or the tracks list focused): moves to the next track in the selected jukebox item and plays it. |
+| `Ctrl+←` | Previous episode / book / track | On Podcasts tab: moves to the previous episode and plays it. On Audio Books tab: moves to the previous book. On Jukebox tab: moves to the previous track in the selected jukebox item and plays it. |
+| `Enter` | Play / Add | On a station or episode list: starts playing the selected item immediately. On the Jukebox tab's search results: adds the selected file to the jukebox. On the Jukebox tab's entries or tracks list: plays the focused item directly. |
+| `Space` | Play / Pause / Preview | Pauses if something is playing; otherwise starts playing the selected item. On the Jukebox tab's search results: toggles preview (play/stop) of the selected file. On the Jukebox tab's entries or tracks list: pauses if playing, otherwise plays the focused item. |
+| `Ctrl+Tab` | Next tab | Switches to the next tab (All Stations → Favourites → Recording → Timer → Liked Songs → Podcasts → Audio Books → Jukebox). |
 | `Ctrl+Shift+Tab` | Previous tab | Switches to the previous tab. |
 | `Escape` | Hide | Hides the window; the add-on continues playing in the background. |
 
@@ -185,6 +190,7 @@ Each shortcut mirrors checking or unchecking the corresponding entry in the **Ef
 | `Alt+5` | Liked Songs | Switches to the Liked Songs tab. |
 | `Alt+6` | Podcasts | Switches to the Podcasts tab. |
 | `Alt+7` | Audio Books | Switches to the Audio Books tab. |
+| `Alt+8` | Jukebox | Switches to the Jukebox tab, focused on the disk search box. |
 | `Alt+K` | Close | Closes the window; the add-on continues playing in the background. |
 
 ## Favourites
@@ -466,7 +472,7 @@ Above the episode list is a **Filter** field. As you type, the episode list is f
 
 Podcast episodes are played using the **BASS backend** (the same engine used for radio streams and, as of this version, the only playback backend FreeRadio uses). Because episodes are downloaded progressively and are seekable, you can use the time-shift rewind/forward shortcuts (`Ctrl+Win+J`/`Ctrl+Win+K`) while playing a podcast to seek within the episode. The position is saved automatically so you can resume later.
 
-**Tiered seeking:** Unlike live radio's fixed 15-second rewind, seeking within a podcast or audio book scales with how you press the key, so you can make a small correction or jump a long way without repeated presses:
+**Tiered seeking:** Unlike live radio's fixed 15-second rewind, seeking within a podcast, audio book, or jukebox track scales with how you press the key, so you can make a small correction or jump a long way without repeated presses:
 
 - **Holding the key down** (auto-repeat) steps back or forward **5 seconds** per repeat — the same small amount this shortcut has always used for files.
 - **One deliberate tap** seeks **12 seconds**.
@@ -475,9 +481,11 @@ Podcast episodes are played using the **BASS backend** (the same engine used for
 
 A deliberate tap is held for a brief moment before it actually seeks, in case another tap is still coming — only one seek happens per tap sequence, sized for however many taps were ultimately made, not the sum of each tap's amount. After a seek, NVDA announces the resulting elapsed/remaining position in the episode rather than just "X seconds forward/back".
 
-**Playback speed:** You can adjust the playback speed of podcast episodes using `Ctrl+Win+Shift+K` (faster) and `Ctrl+Win+Shift+J` (slower). The speed changes in 0.1x increments, ranging from 0.5x to 2.0x, with pitch preserved. This requires the optional `bass_fx.dll` library to be placed in the add‑on's folder. If the library is missing, NVDA will inform you that the feature is unavailable.
+**Playback speed:** You can adjust the playback speed of podcast episodes, audio books, and jukebox tracks using `Ctrl+Win+Shift+K` (faster) and `Ctrl+Win+Shift+J` (slower). The speed changes in 0.1x increments, ranging from 0.5x to 2.0x, with pitch preserved. This requires the optional `bass_fx.dll` library to be placed in the add‑on's folder. If the library is missing, NVDA will inform you that the feature is unavailable.
 
-> **Note:** `bass_fx.dll` is not bundled with FreeRadio by default. You can download it from the [BASS FX page](https://www.un4seen.com/bass-fx.html) and place it in the add‑on's `bass/x64` (for 64‑bit NVDA) or `bass` (for 32‑bit NVDA) folder to enable this feature.
+**Transpose (pitch shift):** Independent of playback speed, you can shift the pitch of a podcast episode, audio book, or jukebox track up or down with `Shift+Win+K` / `Shift+Win+J` — see [Transpose (Pitch Shift)](#transpose-pitch-shift). Transpose also requires `bass_fx.dll`.
+
+> **Note:** `bass_fx.dll` is not bundled with FreeRadio by default. You can download it from the [BASS FX page](https://www.un4seen.com/bass-fx.html) and place it in the add‑on's `bass/x64` (for 64‑bit NVDA) or `bass` (for 32‑bit NVDA) folder to enable these features.
 
 **Resume sound effect:** Whenever an episode resumes from a saved position, FreeRadio briefly plays a soft cassette-loading sound effect on a separate channel while it seeks back to your saved spot, instead of letting the episode's own audio play audibly from 0:00 in the meantime. This happens automatically whenever the BASS backend is active and is independent of the **Station switch transition** setting — that setting only affects switching between live radio stations, not resuming podcasts or audio books.
 
@@ -565,7 +573,7 @@ A multi-part work is treated as a single item in the player, not one row per par
 
 When one part finishes, FreeRadio automatically starts the next part of the same book — you don't need to select it manually. This happens even if the Station Browser window is closed at the time; the "now playing" part shown in the Library list is resynced automatically the next time the window is opened.
 
-Playback streams through a small local relay rather than downloading the whole part first, so listening starts as soon as the first bytes arrive — the same immediate-start behaviour podcasts use. All the usual player controls (pause, volume, time-shift, playback speed, output device, etc.) work on an audio book exactly as they would on a station or podcast episode.
+Playback streams through a small local relay rather than downloading the whole part first, so listening starts as soon as the first bytes arrive — the same immediate-start behaviour podcasts use. All the usual player controls (pause, volume, time-shift, playback speed, transpose, output device, etc.) work on an audio book exactly as they would on a station or podcast episode.
 
 Like podcasts, resuming a book from its saved position plays a brief cassette-loading sound effect while FreeRadio seeks to your saved spot — see the **Resume sound effect** note in [Podcast Playback Details](#podcast-playback-details).
 
@@ -582,6 +590,75 @@ Select a book in your library and choose **Download Book** from its context menu
 ### Audio Book Data Storage
 
 Each source keeps its own library file, even though they're displayed merged in the Audio Books tab. Your GETEM library (added books and their listening progress) is stored in `freeradio_getem_library.json`, and your LibriVox library is stored separately in `freeradio_librivox_library.json`, both in the NVDA user configuration folder. Your encrypted GETEM credentials are stored separately in `freeradio_getem_credentials.bin` in the same location, and can only be decrypted by the same Windows user account that saved them. LibriVox has no credentials file, since it requires no account.
+
+## Local Jukebox
+
+FreeRadio's **Jukebox** tab gives you two ways to play audio files that are already on your computer: search every attached drive for files by name, or build a persistent personal library of files and folders. Whatever you play from here gets the same treatment as a podcast or audio book — automatic resume, tiered rewind/fast-forward, playback speed, pitch transpose, and per-item audio profiles all work exactly the same way.
+
+### Accessing the Jukebox Tab
+
+Open the station browser with `Ctrl+Win+R` and switch to the **Jukebox** tab with `Ctrl+Tab` or `Alt+8`, or open it directly from anywhere with the global shortcut `Ctrl+Win+U`. The tab is organised into three main areas:
+
+1. **Search disk** — a text field that searches every locally attached, ready drive for audio files whose filename contains the typed text. Press `Enter` to start the search.
+2. **Search results** — a list that appears once a search has been run, showing the matching files. Hidden until then, so the tab stays uncluttered when there's nothing to search.
+3. **Jukebox and Tracks** — the persistent list of items you've added, followed by the list of tracks in whichever entry is selected (for a file entry, just that one file; for a folder entry, every audio file found inside it).
+
+The **Add File…**, **Add Folder…** and **Remove** buttons sit below the Tracks list.
+
+### Searching for Files on Disk
+
+Type any part of a filename into the **Search disk** field and press `Enter`. FreeRadio walks every locally attached drive — fixed disks, USB drives, memory cards, mapped network drives — looking for audio files (`.mp3`, `.wav`, `.ogg`, `.flac`, `.m4a`, `.m4b`, `.aac`, `.wma`, `.opus`, and several more) whose filename contains the search text. The search runs in the background, so NVDA stays responsive.
+
+- **Space** on a search result previews it — starts playback through the normal player. Press **Space** again on the same file to stop the preview.
+- **Enter** on a search result adds it to your jukebox.
+- The context menu (Applications key / `Shift+F10`, or right‑click) offers the same two actions: **Preview** / **Stop Preview** and **Add to Jukebox**.
+- Starting a new search cancels any search still running, so a slow search on a large drive never delays a fresh one.
+
+### Building Your Jukebox
+
+The Jukebox list is your persistent personal library. Two kinds of item can be added:
+
+- **Add File…** — opens a file picker that lets you add one or more individual audio files. All chosen files are added in one go.
+- **Add Folder…** — opens a folder picker. Every audio file found inside the chosen folder, including in its subfolders, is treated as one of that folder's **tracks**. The folder itself is a single entry in your Jukebox list; the files inside it are listed in the Tracks list when the folder is selected.
+- **Remove** — deletes the currently selected entry from your Jukebox. Removing a folder entry does not delete any files from disk; it just forgets the folder.
+
+Your Jukebox list is saved automatically, so it survives NVDA restarts. Folder contents are scanned on demand and cached, so adding a folder is instantaneous even for very large collections — the full scan happens the first time you select that folder. If you add files to a folder outside FreeRadio, use the **Rescan Folder** item in the folder's context menu to pick them up.
+
+### Playing from the Jukebox
+
+- **Enter** on a Jukebox entry plays it directly: for a file entry, the file itself; for a folder entry, its first track.
+- **Space** on a Jukebox entry pauses playback if anything is playing; otherwise it plays the focused entry.
+- **Enter** or **Space** on the Tracks list plays the focused track. **Space** pauses first if something is already playing.
+- **F3 / F4** on the Jukebox tab move between tracks within the currently selected entry and play immediately.
+- **Shift+F3 / Shift+F4** move between entries in the Jukebox list (files and folders), mirroring how these keys move between feeds on the Podcasts tab.
+- **Ctrl+← / Ctrl+→** while the entries or tracks list is focused do the same as F3/F4 on the tracks list — previous / next track.
+
+### Jukebox Playback Details
+
+Every track played from the Jukebox gets the full local-media treatment:
+
+- **Resume:** FreeRadio remembers your position in each track, saves it on pause and periodically while playing, and resumes from that point when you play it again — even across an NVDA restart.
+- **Tiered seeking:** `Ctrl+Win+J` / `Ctrl+Win+K` seek within the track using the same tap/hold scaling as podcasts and audio books — hold for 5 seconds per repeat, one tap for 12 seconds, two taps for 1 minute, three or more taps for 5 minutes.
+- **Playback speed:** `Ctrl+Win+Shift+J` / `Ctrl+Win+Shift+K` adjust speed in 0.1x steps from 0.5x to 2.0x, with pitch preserved. Requires `bass_fx.dll`.
+- **Transpose:** `Shift+Win+J` / `Shift+Win+K` shift pitch without changing speed — see [Transpose (Pitch Shift)](#transpose-pitch-shift). Also requires `bass_fx.dll`.
+- **Audio profile:** A track's volume, effects, EQ and speed can be saved globally by playing a track while the appropriate settings are set — the Jukebox does not currently expose a per-track profile menu, so the current global settings apply.
+
+> **Note:** The time-shift buffer (used for rewinding live radio) is deliberately **not** started for Jukebox tracks — they're already seekable local files, so a background capture has no purpose and would only consume disk space. Rewind and fast-forward still work because they act directly on the file being played.
+
+## Transpose (Pitch Shift)
+
+Transpose shifts the **pitch** of what's playing up or down without changing its **speed** — the opposite of the "chipmunk effect" you'd get from simply speeding a track up. It's useful for matching the natural range of a particular narrator, transposing music to a friendlier key, or just adjusting a recording to sit more comfortably on your ears.
+
+Transpose is available for **podcasts**, **audio books** and **jukebox tracks** — the same "local, seekable, tempo-capable media" the playback-speed shortcuts already apply to. It is not available for live radio stations, which have no fixed pitch to shift.
+
+- **`Shift+Win+K`** — Raises the pitch by one step.
+- **`Shift+Win+J`** — Lowers the pitch by one step.
+
+Each step is **one eighth of a whole tone** — that is, **0.25 semitones** (a whole tone is 2 semitones, so 8 steps make a whole tone, and 48 steps make an octave). The range is **−12.00 to +12.00 semitones**, i.e. one full octave up or down. NVDA announces the new value after each step, for example "**+1.25 semitones**"; returning to 0.0 announces "**Normal pitch**".
+
+Transpose is remembered across tracks, the same way playback speed is: setting it once while a track is playing means the next tempo-capable track you play starts with the same shift, unless that track's own saved audio profile overrides it. Playing a track with no saved transpose value resets the shift back to 0.0 (Normal pitch), just like the same rule already applies to speed.
+
+**Requirement:** Like playback speed, transpose requires the optional **`bass_fx.dll`** library to be placed in the add-on's `bass/x64` (64-bit NVDA) or `bass` (32-bit NVDA) folder. If the library is missing, NVDA tells you the feature is unavailable, and the value you set is still remembered for the next tempo-capable stream.
 
 ## Liked Songs
 
@@ -630,7 +707,7 @@ The following options can be configured from NVDA Menu → Preferences → Setti
 | Volume | Sets the add-on's starting volume (0–200). Changes made during playback with `Ctrl+Win+↑` / `Ctrl+Win+↓` are also reflected here. |
 | Audio effects | Sets which effects (Chorus, Compressor, Distortion, Echo, Flanger, Gargle, Reverb, and the three EQ boosts) are active when NVDA starts or a station begins playing. Multiple effects can be checked at once, matching the Effects list in the Station Browser. Only active when the BASS backend is in use. |
 | EQ gain (Bass / Treble / Vocal) | Sets the gain level in dB for each EQ band (−15 to +15). These values apply when the corresponding EQ effect is active and are saved globally. Per-station overrides can be stored using the **Save Audio Profile** button in the Favourites tab. Only active when the BASS backend is in use. |
-| Station switch transition (BASS backend) | Controls the transition behaviour when switching between **live radio stations**. **Instant cut** (default) stops the previous station immediately before the new one starts. **Short crossfade (1 second)** and **Normal crossfade (2 seconds)** start the new station immediately with no gap, then gradually fade out the previous station in the background once the new stream is confirmed active. **Station tuning sound effect** stops the previous station immediately and plays a station tuner sound effect before the new one starts. Has no effect and no performance impact when set to Instant cut. Only available when the BASS backend is in use. Does not apply to podcasts or audio books — resuming those always plays its own brief cassette sound effect regardless of this setting; see [Podcast Playback Details](#podcast-playback-details). |
+| Station switch transition (BASS backend) | Controls the transition behaviour when switching between **live radio stations**. **Instant cut** (default) stops the previous station immediately before the new one starts. **Short crossfade (1 second)** and **Normal crossfade (2 seconds)** start the new station immediately with no gap, then gradually fade out the previous station in the background once the new stream is confirmed active. **Station tuning sound effect** stops the previous station immediately and plays a station tuner sound effect before the new one starts. Has no effect and no performance impact when set to Instant cut. Only available when the BASS backend is in use. Does not apply to podcasts, audio books, or jukebox tracks — resuming those always plays its own brief cassette sound effect regardless of this setting; see [Podcast Playback Details](#podcast-playback-details). |
 | Resume last station on NVDA startup | When enabled, the last played station automatically restarts every time NVDA starts. |
 | Auto-announce track changes (ICY metadata) | When enabled, NVDA automatically reads the new track name each time it changes on a station that broadcasts ICY metadata. The first track is also announced immediately when switching to a new station. Disabled by default. |
 | Mute notifications | When enabled, NVDA does not announce station changes, playback state changes (play, pause, stop), or recording events (started, stopped, finished). Error messages, favourites feedback, music recognition results, and update notifications are not affected. Can also be toggled on the fly via an unassigned input gesture. Disabled by default. |
@@ -674,11 +751,11 @@ This feature is disabled by default and can be toggled from NVDA Menu → Prefer
 
 ## Playback
 
-FreeRadio uses **BASS** as its sole playback backend for everything — internet radio, podcasts and audio books. No separate installation is required; it is bundled with the add-on. Support for VLC, PotPlayer and Windows Media Player as fallback backends has been removed; BASS is always used.
+FreeRadio uses **BASS** as its sole playback backend for everything — internet radio, podcasts, audio books, and jukebox tracks. No separate installation is required; it is bundled with the add-on. Support for VLC, PotPlayer and Windows Media Player as fallback backends has been removed; BASS is always used.
 
 BASS sends audio directly to the Windows audio stack and appears in the Windows volume mixer as an independent audio source named "pythonw.exe", separate from NVDA. This means FreeRadio audio flows on a completely separate channel from NVDA speech: the radio does not cut out, mix with, or get affected by NVDA's own audio settings while NVDA is speaking. The user can adjust the radio volume independently from NVDA in the Windows Volume Mixer. Supports HTTP, HTTPS and most embedded stream formats.
 
-Podcast episodes and audio book chapters are played through BASS because it can open the stream as a seekable file (even while downloading), allowing precise position tracking, tiered rewind/fast-forward, and resuming. Audio mirroring, time-shift, and podcast/audio-book seek and resume all depend on BASS and are always available.
+Podcast episodes, audio book chapters, and jukebox tracks are played through BASS because it can open the stream as a seekable file (even while downloading), allowing precise position tracking, tiered rewind/fast-forward, playback speed, pitch transpose, and resuming. Audio mirroring, time-shift, and podcast/audio-book/jukebox seek and resume all depend on BASS and are always available.
 
 ## Update Check
 

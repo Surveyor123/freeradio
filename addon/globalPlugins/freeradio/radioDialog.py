@@ -22,6 +22,7 @@ import gui
 from . import podcast
 from . import getem
 from . import librivox
+from . import jukebox
 import urllib.parse
 import urllib.request
 from gui import nvdaControls
@@ -336,6 +337,15 @@ class RadioDialog(wx.Dialog):
 		self._podcast_manager = podcast.PodcastManager()
 		self._getem_library   = getem.GetemLibrary()
 		self._librivox_library = librivox.LibrivoxLibrary()
+		self._jukebox_manager = jukebox.JukeboxManager()
+		# Cancels an in-flight disk search (see jukebox.search_disk_for_audio)
+		# as soon as a newer one is requested, so a slow, stale search can't
+		# overwrite fresher results after the fact.
+		self._jukebox_search_cancel = None
+		self._jukebox_search_seq = 0     # bumped on every new search; used to
+		                                  # discard replies from superseded ones
+		self._jukebox_results = []       # list of absolute file paths, current search results
+		self._jukebox_selected_tracks = []  # tracks of the currently-focused jukebox entry (file: itself; folder: its scanned tracks)
 		self._all_stations    = []
 		self._extra_stations  = []   # additional stations from country selection
 		self._search_stations = []   # Stations from API text search
@@ -375,8 +385,9 @@ class RadioDialog(wx.Dialog):
 		self._liked_panel  = wx.Panel(self._notebook)
 		self._podcast_panel = wx.Panel(self._notebook)
 		self._getem_panel   = wx.Panel(self._notebook)
+		self._jukebox_panel = wx.Panel(self._notebook)
 		# Tab labels no longer carry letter accelerators; numeric shortcuts
-		# Alt+1..5 are handled in _on_char_hook via an accelerator table.
+		# Alt+1..8 are handled in _on_char_hook via an accelerator table.
 		self._notebook.AddPage(self._all_panel,   _("All Stations"))
 		self._notebook.AddPage(self._fav_panel,   _("Favourites"))
 		self._notebook.AddPage(self._rec_panel,   _("Recording"))
@@ -384,6 +395,7 @@ class RadioDialog(wx.Dialog):
 		self._notebook.AddPage(self._liked_panel, _("Liked Songs"))
 		self._notebook.AddPage(self._podcast_panel, _("Podcasts"))
 		self._notebook.AddPage(self._getem_panel, _("Audio Books"))
+		self._notebook.AddPage(self._jukebox_panel, _("Jukebox"))
 		self._notebook.SetSelection(0)  # Start on the All Stations tab
 		main_sizer.Add(self._notebook, 1, wx.EXPAND | wx.ALL, 5)
 
@@ -500,6 +512,7 @@ class RadioDialog(wx.Dialog):
 		self._build_liked_tab()
 		self._build_podcast_tab()
 		self._build_audiobooks_tab()
+		self._build_jukebox_tab()
 
 		self._play_btn.Bind(wx.EVT_BUTTON,    self._on_play_clicked)
 		self._del_btn.Bind(wx.EVT_BUTTON,     self._on_delete_station)
@@ -571,7 +584,7 @@ class RadioDialog(wx.Dialog):
 	def focus_tab(self, tab_index):
 		"""Switch to the specified tab and focus on the first focusable item.
 		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs,
-		5=Podcasts, 6=Audio Books.
+		5=Podcasts, 6=Audio Books, 7=Jukebox.
 
 		Called from _open_dialog() via wx.CallLater(0).
 		Guards against a corrupted notebook as a safety net.
@@ -628,6 +641,23 @@ class RadioDialog(wx.Dialog):
 		if books and self._getem_library_ctrl.GetSelection() == wx.NOT_FOUND:
 			self._getem_library_ctrl.SetSelection(0)
 		self._getem_library_ctrl.SetFocus()
+
+	def focus_jukebox(self):
+		"""Switch to the Jukebox tab and give the search box focus.
+
+		Called from _open_dialog() via wx.CallLater(0) - see
+		script_openJukebox (Ctrl+Windows+U) in __init__.py. Guards against
+		a corrupted notebook as a safety net."""
+		if not self:
+			return
+		try:
+			if self._notebook.GetPageCount() == 0:
+				return
+			self._notebook.SetSelection(7)  # Jukebox tab index
+		except Exception:
+			return
+		self._jukebox_search.SetFocus()
+		self._jukebox_search.SelectAll()
 
 	def _build_fav_tab(self):
 		sizer = wx.BoxSizer(wx.VERTICAL)
@@ -1049,7 +1079,7 @@ class RadioDialog(wx.Dialog):
 		population runs.  Without this deferral the Clear()+Append() calls block
 		the wx paint cycle and the tab switch feels sluggish.
 		"""
-		on_rec_or_timer = (sel in (2, 3, 4, 5, 6))
+		on_rec_or_timer = (sel in (2, 3, 4, 5, 6, 7))
 		self._play_btn.Show(not on_rec_or_timer)
 		self._fav_btn.Show(not on_rec_or_timer)
 		self._del_btn.Show(not on_rec_or_timer)
@@ -1073,6 +1103,8 @@ class RadioDialog(wx.Dialog):
 			wx.CallLater(0, self._refresh_all_podcast_feeds)
 		elif sel == 6:
 			wx.CallLater(0, self._refresh_getem_library_list)
+		elif sel == 7:
+			wx.CallLater(0, self._refresh_jukebox_list)
 		if sel != 1 and hasattr(self, "_save_audio_btn"):
 			self._save_audio_btn.Enable(False)
 
@@ -2445,19 +2477,27 @@ class RadioDialog(wx.Dialog):
 	def _prompt_and_build_audio_profile(self, existing, allow_speed=False):
 		"""Shared "what would you like to save" dialog for audio profiles -
 		used by favourites (_on_save_audio_profile), podcast feeds
-		(_on_save_feed_audio_profile), and GETEM library books
-		(_on_save_getem_audio_profile). Reads the live volume/effects/EQ
-		(and, when *allow_speed* is True, the live playback speed) straight
-		off the current UI/player state and merges them into *existing*
-		according to the option the user picks, so a choice that doesn't
-		touch a given field (e.g. "Volume only") leaves whatever was
-		already saved for the others untouched.
+		(_on_save_feed_audio_profile), GETEM/LibriVox library books
+		(_on_save_getem_audio_profile), and jukebox files
+		(_save_jukebox_file_profile). Reads the live volume/effects/EQ
+		(and, when *allow_speed* is True, the live playback speed and
+		pitch transpose) straight off the current UI/player state and
+		merges them into *existing* according to the option the user
+		picks, so a choice that doesn't touch a given field (e.g.
+		"Volume only") leaves whatever was already saved for the others
+		untouched.
 
 		Each entry in *combos* pairs a translated label with the set of
-		fields it saves ("volume", "effects", and/or "speed"). "speed" is
-		only offered when *allow_speed* is True, since regular station
-		favourites don't support a saved playback speed - only podcasts
-		and GETEM audio books do.
+		fields it saves ("volume", "effects", "speed", and/or
+		"transpose"). "speed" and "transpose" are only offered when
+		*allow_speed* is True, since regular station favourites don't
+		support a saved playback speed or pitch shift - only podcasts,
+		audio books and jukebox tracks do.
+
+		The original options (Volume only / Effects only / Volume and
+		effects / ... ) are preserved exactly as before; the pitch-
+		transpose combinations are appended after them so a saved profile
+		can carry transpose alone or alongside any of the other fields.
 
 		Returns the new profile dict, or None if the user cancelled.
 		"""
@@ -2479,6 +2519,22 @@ class RadioDialog(wx.Dialog):
 				(_("Playback speed only"), {"speed"}),
 				# Translators: Option in audio profile save dialog: save volume, effects, and the current playback speed
 				(_("Volume, effects, and playback speed"), {"volume", "effects", "speed"}),
+				# Translators: Option in audio profile save dialog: save the current pitch transpose only
+				(_("Pitch transpose only"), {"transpose"}),
+				# Translators: Option in audio profile save dialog: save volume level and the current pitch transpose
+				(_("Volume and pitch transpose"), {"volume", "transpose"}),
+				# Translators: Option in audio profile save dialog: save effects (FX/EQ) and the current pitch transpose
+				(_("Effects and pitch transpose"), {"effects", "transpose"}),
+				# Translators: Option in audio profile save dialog: save the current playback speed and pitch transpose
+				(_("Playback speed and pitch transpose"), {"speed", "transpose"}),
+				# Translators: Option in audio profile save dialog: save volume, effects, and the current pitch transpose
+				(_("Volume, effects, and pitch transpose"), {"volume", "effects", "transpose"}),
+				# Translators: Option in audio profile save dialog: save volume, playback speed, and pitch transpose
+				(_("Volume, playback speed, and pitch transpose"), {"volume", "speed", "transpose"}),
+				# Translators: Option in audio profile save dialog: save effects, playback speed, and pitch transpose
+				(_("Effects, playback speed, and pitch transpose"), {"effects", "speed", "transpose"}),
+				# Translators: Option in audio profile save dialog: save volume, effects, playback speed, and pitch transpose
+				(_("Volume, effects, playback speed, and pitch transpose"), {"volume", "effects", "speed", "transpose"}),
 			])
 
 		choices = [label for label, _fields in combos]
@@ -2525,6 +2581,8 @@ class RadioDialog(wx.Dialog):
 			profile["eq_gains"] = eq_gains
 		if "speed" in fields:
 			profile["speed"] = self._player.get_playback_rate()
+		if "transpose" in fields:
+			profile["transpose"] = self._player.get_transpose()
 		return profile
 
 	def _on_save_audio_profile(self, event):
@@ -3231,6 +3289,15 @@ class RadioDialog(wx.Dialog):
 		if is_context_key and focused == self._getem_library_ctrl:
 			self._show_getem_library_context_menu()
 			return
+		if is_context_key and focused == self._jukebox_search_results:
+			self._show_jukebox_result_context_menu()
+			return
+		if is_context_key and focused == self._jukebox_list:
+			self._show_jukebox_entry_context_menu()
+			return
+		if is_context_key and focused == self._jukebox_tracks_list:
+			self._show_jukebox_track_context_menu()
+			return
 
 		if key == wx.WXK_TAB and event.ControlDown() and not event.AltDown():
 			count = self._notebook.GetPageCount()
@@ -3297,6 +3364,27 @@ class RadioDialog(wx.Dialog):
 			if focused == self._getem_library_ctrl:
 				self._on_getem_play(None)
 				return
+			if focused == self._jukebox_search:
+				self._on_jukebox_search(event)
+				return
+			if focused == self._jukebox_search_results:
+				self._on_jukebox_add_from_results(None)
+				return
+			if focused == self._jukebox_list:
+				self._on_jukebox_entry_play(None)
+				return
+			if focused == self._jukebox_tracks_list:
+				self._on_jukebox_track_play(None)
+				return
+			if focused == self._jukebox_add_file_btn:
+				self._on_jukebox_add_file(event)
+				return
+			if focused == self._jukebox_add_folder_btn:
+				self._on_jukebox_add_folder(event)
+				return
+			if focused == self._jukebox_remove_btn and self._jukebox_remove_btn.IsEnabled():
+				self._on_jukebox_remove_entry(event)
+				return
 			# For any other widget (country combo, search box, fav filter,
 			# timer/sched/liked lists, SpinCtrl, RadioButton, etc.) Enter must
 			# NOT bubble up to the default button (Play/Pause).  Consume it here.
@@ -3346,10 +3434,10 @@ class RadioDialog(wx.Dialog):
 				self.Hide()
 				gui.mainFrame.postPopup()
 				return
-			# Numeric tab shortcuts: Alt+1..7 switch to the corresponding tab.
-			# Tab order: 1=All Stations, 2=Favourites, 3=Recording, 4=Timer, 5=Liked Songs, 6=Podcasts, 7=Audio Books
-			if ord("1") <= key <= ord("7"):
-				tab_index = key - ord("1")   # 1->0, 2->1, ..., 7->6
+			# Numeric tab shortcuts: Alt+1..8 switch to the corresponding tab.
+			# Tab order: 1=All Stations, 2=Favourites, 3=Recording, 4=Timer, 5=Liked Songs, 6=Podcasts, 7=Audio Books, 8=Jukebox
+			if ord("1") <= key <= ord("8"):
+				tab_index = key - ord("1")   # 1->0, 2->1, ..., 8->7
 				self._notebook.SetSelection(tab_index)
 				self._on_tab_changed_index(tab_index)
 				return
@@ -3434,6 +3522,33 @@ class RadioDialog(wx.Dialog):
 					return
 				if key == wx.WXK_RIGHT and event.ControlDown():
 					self._play_next_getem_book()
+					return
+
+		# --- Unique shortcuts to the Jukebox tab ---
+		# It's the same logic as in the Podcasts tab: F3/F4 = previous/next track
+		# (Episode equivalent), Shift+F3/F4 = previous/next jukebox entry
+		# (feed equivalent), Ctrl+Left/Right to select previous/next in the track list.
+		# Plays the track
+		if self._notebook.GetSelection() == 7:  # Jukebox tab
+			focused = wx.Window.FindFocus()
+			if key == wx.WXK_F3 and event.ShiftDown():
+				self._select_prev_jukebox_entry()
+				return
+			if key == wx.WXK_F4 and event.ShiftDown():
+				self._select_next_jukebox_entry()
+				return
+			if key == wx.WXK_F3:
+				self._play_prev_jukebox_track()
+				return
+			if key == wx.WXK_F4:
+				self._play_next_jukebox_track()
+				return
+			if focused in (self._jukebox_tracks_list, self._jukebox_list):
+				if key == wx.WXK_LEFT and event.ControlDown():
+					self._play_prev_jukebox_track()
+					return
+				if key == wx.WXK_RIGHT and event.ControlDown():
+					self._play_next_jukebox_track()
 					return
 
 		event.Skip()
@@ -4663,6 +4778,35 @@ class RadioDialog(wx.Dialog):
 					pass
 				break
 
+	def refresh_jukebox_track_progress(self, url):
+		"""Refresh a single jukebox track row's [Listened]/duration
+		display right after its position was saved due to a pause or the
+		track finishing - the jukebox counterpart of
+		refresh_episode_progress(). Called from the same
+		on_podcast_progress_saved callback: jukebox tracks share the
+		podcast positions store with podcast episodes and audio-book
+		chapters (see radioPlayer._is_seekable_media(), which includes
+		"jukebox"), and the URL the callback carries for a jukebox track
+		is just its file path (JukeboxTrack.to_dict() sets "url" to
+		path).
+
+		SetString() is used rather than rebuilding the list, for the same
+		reason as refresh_episode_progress(): a Clear()+Append() would
+		drop the current selection, and SetSelection() afterwards would
+		make NVDA re-announce the focused row."""
+		if not url:
+			return
+		tracks = getattr(self, "_jukebox_selected_tracks", None) or []
+		for i, track in enumerate(tracks):
+			if track.path == url:
+				try:
+					new_label = track.display_label(self._player)
+					if self._jukebox_tracks_list.GetString(i) != new_label:
+						self._jukebox_tracks_list.SetString(i, new_label)
+				except Exception:
+					pass
+				break
+
 	def _on_episode_key(self, event):
 		key = event.GetKeyCode()
 		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
@@ -5096,6 +5240,71 @@ class RadioDialog(wx.Dialog):
 
 		self.PopupMenu(menu, self._podcast_list.GetScreenPosition() - self.GetScreenPosition())
 		menu.Destroy()
+
+	def _play_prev_jukebox_track(self):
+		"""Play the previous track (the previous item in the playlist)."""
+		idx = self._jukebox_tracks_list.GetSelection()
+		if idx == wx.NOT_FOUND or idx <= 0:
+			ui.message(_("Already at first track"))
+			return
+		self._jukebox_tracks_list.SetSelection(idx - 1)
+		self._jukebox_tracks_list.SetFocus()
+		self._on_jukebox_track_play(None)
+
+	def _play_next_jukebox_track(self):
+		"""Play the next track."""
+		idx = self._jukebox_tracks_list.GetSelection()
+		count = self._jukebox_tracks_list.GetCount()
+		if idx == wx.NOT_FOUND:
+			if count > 0:
+				self._jukebox_tracks_list.SetSelection(0)
+				self._jukebox_tracks_list.SetFocus()
+				self._on_jukebox_track_play(None)
+			return
+		if idx >= count - 1:
+			ui.message(_("Already at last track"))
+			return
+		self._jukebox_tracks_list.SetSelection(idx + 1)
+		self._jukebox_tracks_list.SetFocus()
+		self._on_jukebox_track_play(None)
+
+	def _select_prev_jukebox_entry(self):
+		"""Select the previous jukebox entry (file or folder)."""
+		idx = self._jukebox_list.GetSelection()
+		if idx == wx.NOT_FOUND or idx <= 0:
+			ui.message(_("Already at first item"))
+			return
+		new_idx = idx - 1
+		self._jukebox_list.SetSelection(new_idx)
+		was_focused = wx.Window.FindFocus() == self._jukebox_list
+		self._jukebox_list.SetFocus()
+		self._on_jukebox_entry_selected(None)
+		if not was_focused:
+			ui.message(self._jukebox_list.GetString(new_idx))
+
+	def _select_next_jukebox_entry(self):
+		"""Select the next jukebox entry."""
+		idx = self._jukebox_list.GetSelection()
+		count = self._jukebox_list.GetCount()
+		if idx == wx.NOT_FOUND:
+			if count > 0:
+				self._jukebox_list.SetSelection(0)
+				was_focused = wx.Window.FindFocus() == self._jukebox_list
+				self._jukebox_list.SetFocus()
+				self._on_jukebox_entry_selected(None)
+				if not was_focused:
+					ui.message(self._jukebox_list.GetString(0))
+			return
+		if idx >= count - 1:
+			ui.message(_("Already at last item"))
+			return
+		new_idx = idx + 1
+		self._jukebox_list.SetSelection(new_idx)
+		was_focused = wx.Window.FindFocus() == self._jukebox_list
+		self._jukebox_list.SetFocus()
+		self._on_jukebox_entry_selected(None)
+		if not was_focused:
+			ui.message(self._jukebox_list.GetString(new_idx))
 
 	def _show_episode_context_menu(self):
 		"""Context menu for the selected episode in the episode list."""
@@ -6091,6 +6300,533 @@ class RadioDialog(wx.Dialog):
 			ui.message(_("Downloaded %(saved)d of %(total)d parts of %(book.title)s. Last error: %(error)s") % (saved, total, book.title, error))
 		else:
 			ui.message(_("Download failed: %s") % (error or book.title))
+
+	# ------------------------------------------------------------------
+	# Jukebox tab
+	# ------------------------------------------------------------------
+
+	def _build_jukebox_tab(self):
+		"""Local jukebox tab: an on-demand filename search across all
+		locally attached drives, plus a manually curated library of
+		individually added audio files and folders. Modeled on the
+		Podcast tab's shape (search/results above a separator, the
+		persisted list below) so the two tabs feel consistent - see
+		_build_podcast_tab()."""
+		panel = self._jukebox_panel
+		sizer = wx.BoxSizer(wx.VERTICAL)
+
+		# --- Disk search row ---
+		search_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		search_sizer.Add(wx.StaticText(panel, label=_("Search disk:")), 0, wx.ALIGN_CENTER_VERTICAL | wx.RIGHT, 4)
+		self._jukebox_search = wx.TextCtrl(panel)
+		self._jukebox_search.SetName(_("Search audio files on your computer by filename. Press enter to search"))
+		search_sizer.Add(self._jukebox_search, 1, wx.EXPAND)
+		sizer.Add(search_sizer, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Search results list ---
+		# Hidden until a search is actually performed - see
+		# _set_jukebox_results_visible(), mirroring
+		# _set_podcast_results_visible()'s reasoning exactly.
+		self._jukebox_results_label = wx.StaticText(panel, label=_("Search results:"))
+		sizer.Add(self._jukebox_results_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._jukebox_search_results = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._jukebox_search_results.SetName(_("Audio files found on disk"))
+		self._jukebox_search_results.SetMinSize((-1, 100))
+		sizer.Add(self._jukebox_search_results, 0, wx.EXPAND | wx.ALL, 8)
+		self._jukebox_search_sizer = sizer
+		self._set_jukebox_results_visible(False)
+
+		# --- Separator ---
+		sizer.Add(wx.StaticLine(panel), 0, wx.EXPAND | wx.ALL, 4)
+
+		# --- Jukebox entries (manually added files/folders) ---
+		sizer.Add(wx.StaticText(panel, label=_("Jukebox:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._jukebox_list = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._jukebox_list.SetName(_("Files and folders in your jukebox"))
+		self._jukebox_list.SetMinSize((-1, 100))
+		sizer.Add(self._jukebox_list, 0, wx.EXPAND | wx.ALL, 8)
+
+		# --- Tracks in the selected entry (podcast-episode-style side
+		# list) - for a "file" entry this is just that one file; for a
+		# "folder" entry it's every audio file found inside it. See
+		# jukebox.JukeboxEntry.tracks(). ---
+		sizer.Add(wx.StaticText(panel, label=_("Tracks:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._jukebox_tracks_list = wx.ListBox(panel, style=wx.LB_SINGLE)
+		self._jukebox_tracks_list.SetName(_("Tracks in the selected jukebox item"))
+		self._jukebox_tracks_list.SetMinSize((-1, 120))
+		sizer.Add(self._jukebox_tracks_list, 1, wx.EXPAND | wx.ALL, 8)
+
+		add_btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+		self._jukebox_add_file_btn = wx.Button(panel, label=_("Add &File..."))
+		self._jukebox_add_folder_btn = wx.Button(panel, label=_("Add F&older..."))
+		self._jukebox_remove_btn = wx.Button(panel, label=_("&Remove"))
+		self._jukebox_remove_btn.Enable(False)
+		for btn in (self._jukebox_add_file_btn, self._jukebox_add_folder_btn, self._jukebox_remove_btn):
+			add_btn_sizer.Add(btn, 0, wx.RIGHT, 8)
+		sizer.Add(add_btn_sizer, 0, wx.LEFT | wx.BOTTOM, 8)
+
+
+
+		panel.SetSizer(sizer)
+
+		# --- Bind events ---
+		self._jukebox_search.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_key)
+		self._jukebox_search_results.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_results_key)
+		self._jukebox_list.Bind(wx.EVT_LISTBOX, self._on_jukebox_entry_selected)
+		self._jukebox_list.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._jukebox_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_list_key)
+		self._jukebox_tracks_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_tracks_key)
+		self._jukebox_add_file_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_file)
+		self._jukebox_add_folder_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_folder)
+		self._jukebox_remove_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_remove_entry)
+
+		self._refresh_jukebox_list()
+
+	def _set_jukebox_results_visible(self, visible):
+		"""Show or hide the disk-search results list (with its label) in
+		the Jukebox tab - mirrors _set_podcast_results_visible()."""
+		sizer = getattr(self, "_jukebox_search_sizer", None)
+		widgets = (self._jukebox_results_label, self._jukebox_search_results)
+		for widget in widgets:
+			if sizer:
+				sizer.Show(widget, visible)
+			else:
+				widget.Show(visible)
+		try:
+			if sizer:
+				sizer.Layout()
+			else:
+				self._jukebox_panel.Layout()
+		except Exception:
+			pass
+
+	def _on_jukebox_search_key(self, event):
+		if event.GetKeyCode() in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+			self._on_jukebox_search(event)
+		else:
+			event.Skip()
+
+	def _on_jukebox_search(self, event):
+		"""Search every locally attached drive for audio files whose
+		filename contains the typed text - see
+		jukebox.search_disk_for_audio(). Runs on a background thread;
+		a fresh search cancels whichever one is still in flight via
+		self._jukebox_search_cancel, and self._jukebox_search_seq guards
+		against a superseded search's results overwriting a newer one."""
+		query = self._jukebox_search.GetValue().strip()
+		if not query:
+			ui.message(_("Please enter a search term."))
+			return
+
+		if self._jukebox_search_cancel is not None:
+			self._jukebox_search_cancel.set()
+		cancel_event = threading.Event()
+		self._jukebox_search_cancel = cancel_event
+		self._jukebox_search_seq += 1
+		seq = self._jukebox_search_seq
+
+		self._jukebox_results = []
+		self._set_jukebox_results_visible(True)
+		self._jukebox_search_results.Clear()
+		self._jukebox_search_results.Append(_("Searching..."))
+		ui.message(_("Searching disks for \"%s\"...") % query)
+
+		def _do_search():
+			results = jukebox.search_disk_for_audio(query, cancel_event=cancel_event)
+			wx.CallAfter(self._on_jukebox_search_done, results, seq)
+
+		threading.Thread(target=_do_search, daemon=True).start()
+
+	def _on_jukebox_search_done(self, results, seq):
+		if not self or seq != self._jukebox_search_seq:
+			# A newer search has since been started - discard this reply.
+			return
+		self._jukebox_search_results.Clear()
+		self._jukebox_results = results
+		if not results:
+			self._jukebox_search_results.Append(_("No matching audio files found."))
+			ui.message(_("No matching audio files found."))
+			return
+		for path in results:
+			self._jukebox_search_results.Append(os.path.basename(path))
+		self._jukebox_search_results.SetSelection(0)
+		ui.message(ngettext("%d file found.", "%d files found.", len(results)) % len(results))
+
+	def _is_previewing_jukebox_path(self, path):
+		"""Whether *path* is the file currently loaded in the player,
+		regardless of whether it's playing or paused - mirrors
+		_is_previewing() for the Podcast tab's preview list."""
+		if not path or not self._player.has_media():
+			return False
+		current = self._player.get_current_station() or {}
+		return current.get("url") == path
+
+	def _on_jukebox_search_results_key(self, event):
+		key = event.GetKeyCode()
+		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+			self._on_jukebox_add_from_results(None)
+			return
+		if key == wx.WXK_SPACE:
+			self._on_jukebox_preview_toggle(None)
+			return
+		event.Skip()
+
+	def _on_jukebox_preview_toggle(self, event):
+		idx = self._jukebox_search_results.GetSelection()
+		if idx == wx.NOT_FOUND or idx >= len(self._jukebox_results):
+			return
+		path = self._jukebox_results[idx]
+
+		if self._is_previewing_jukebox_path(path):
+			if self._plugin:
+				wx.CallAfter(self._plugin._stop_from_dialog)
+			return
+
+		station_dict = jukebox.JukeboxTrack(path).to_dict()
+		profile = self._jukebox_manager.get_track_profile(path)
+		if profile:
+			station_dict["station_audio"] = profile
+		self._play_callback(station_dict, [station_dict], 0, announce=True)
+
+	def _on_jukebox_add_from_results(self, event):
+		"""Add the selected disk-search result to the jukebox - reached
+		via the search results' context menu or Enter."""
+		idx = self._jukebox_search_results.GetSelection()
+		if idx == wx.NOT_FOUND or idx >= len(self._jukebox_results):
+			return
+		path = self._jukebox_results[idx]
+		entry, error = self._jukebox_manager.add_file(path)
+		if error:
+			ui.message(error)
+			return
+		ui.message(_("Added to jukebox: %s") % entry.title)
+		self._refresh_jukebox_list(select_path=path)
+
+	def _show_jukebox_result_context_menu(self):
+		"""Context menu for the selected item in the disk-search results list."""
+		idx = self._jukebox_search_results.GetSelection()
+		if idx == wx.NOT_FOUND or idx >= len(self._jukebox_results):
+			return
+
+		menu = wx.Menu()
+		label = _("&Stop Preview") if self._is_previewing_jukebox_path(self._jukebox_results[idx]) else _("&Preview")
+		item_preview = menu.Append(wx.ID_ANY, label)
+		self.Bind(wx.EVT_MENU, self._on_jukebox_preview_toggle, item_preview)
+
+		item_add = menu.Append(wx.ID_ANY, _("&Add to Jukebox"))
+		self.Bind(wx.EVT_MENU, self._on_jukebox_add_from_results, item_add)
+
+		self.PopupMenu(menu, self._jukebox_search_results.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _refresh_jukebox_list(self, select_path=None):
+		"""Populate the jukebox entries listbox, preserving whichever
+		entry is selected at the moment this runs (or selecting
+		*select_path* if given) - mirrors _refresh_podcast_list()'s
+		selection-preservation reasoning."""
+		current_path = select_path
+		if current_path is None:
+			idx = self._jukebox_list.GetSelection()
+			entries_before = self._jukebox_manager.get_entries()
+			if idx != wx.NOT_FOUND and idx < len(entries_before):
+				current_path = entries_before[idx].path
+
+		self._jukebox_list.Clear()
+		entries = self._jukebox_manager.get_entries()
+		for entry in entries:
+			self._jukebox_list.Append(entry.display_label())
+
+		restore_idx = wx.NOT_FOUND
+		if current_path:
+			for i, entry in enumerate(entries):
+				if entry.path == current_path:
+					restore_idx = i
+					break
+
+		if restore_idx != wx.NOT_FOUND:
+			self._jukebox_list.SetSelection(restore_idx)
+		elif entries:
+			self._jukebox_list.SetSelection(0)
+		self._on_jukebox_entry_selected(None)
+
+	def _get_selected_jukebox_entry(self):
+		idx = self._jukebox_list.GetSelection()
+		entries = self._jukebox_manager.get_entries()
+		if idx == wx.NOT_FOUND or idx >= len(entries):
+			return None
+		return entries[idx]
+
+	def _on_jukebox_entry_selected(self, event):
+		entry = self._get_selected_jukebox_entry()
+		self._jukebox_remove_btn.Enable(entry is not None)
+		self._jukebox_tracks_list.Clear()
+		self._jukebox_selected_tracks = entry.tracks() if entry else []
+		for track in self._jukebox_selected_tracks:
+			self._jukebox_tracks_list.Append(track.display_label(self._player))
+
+	def _play_jukebox_track(self, track, announce=True):
+		"""Play *track*. Its per-file audio profile (if the user saved
+		one) is looked up here by absolute path and attached to the
+		station dict as "station_audio", so playbackCoreMixin._play_station()
+		applies it - the same mechanism podcasts and audio books use.
+		Every playback path funnels through here (Enter/Space on the
+		entries list, Enter/Space on the tracks list, F3/F4, and
+		Ctrl+Left/Right), so the profile is applied consistently
+		whichever way the track was started."""
+		station_dict = track.to_dict()
+		profile = self._jukebox_manager.get_track_profile(track.path)
+		if profile:
+			station_dict["station_audio"] = profile
+		self._play_callback(station_dict, [station_dict], 0, announce=announce)
+
+	def _on_jukebox_entry_play(self, event):
+		"""Play the selected jukebox entry directly: for a file, the file
+		itself; for a folder, its first track - a folder isn't playable
+		on its own, see jukebox.JukeboxEntry's docstring."""
+		entry = self._get_selected_jukebox_entry()
+		if not entry:
+			return
+		tracks = entry.tracks()
+		if not tracks:
+			ui.message(_("No playable audio in this item."))
+			return
+		self._play_jukebox_track(tracks[0])
+
+	def _on_jukebox_list_key(self, event):
+		"""Jukebox entries list - Space pauses if something is playing,
+		otherwise plays the focused entry; Enter always plays directly.
+		Mirrors _on_episode_key()'s Space/Enter handling."""
+		key = event.GetKeyCode()
+		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+			self._on_jukebox_entry_play(event)
+			return
+		if key == wx.WXK_SPACE:
+			if self._player.is_playing():
+				self._player.pause()
+				_notify(_("Paused"))
+			else:
+				self._on_jukebox_entry_play(None)
+			return
+		event.Skip()
+
+	def _on_jukebox_track_play(self, event):
+		idx = self._jukebox_tracks_list.GetSelection()
+		tracks = getattr(self, "_jukebox_selected_tracks", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(tracks):
+			return
+		self._play_jukebox_track(tracks[idx])
+
+	def _on_jukebox_tracks_key(self, event):
+		key = event.GetKeyCode()
+		if key in (wx.WXK_RETURN, wx.WXK_NUMPAD_ENTER):
+			self._on_jukebox_track_play(event)
+			return
+		if key == wx.WXK_SPACE:
+			if self._player.is_playing():
+				self._player.pause()
+				_notify(_("Paused"))
+			else:
+				self._on_jukebox_track_play(None)
+			return
+		event.Skip()
+
+	def _show_jukebox_track_context_menu(self):
+		"""Context menu for the selected track. Save/Clear Audio Profile
+		act on this exact file (its absolute path), so two tracks inside
+		the same folder entry carry independent profiles."""
+		idx = self._jukebox_tracks_list.GetSelection()
+		tracks = getattr(self, "_jukebox_selected_tracks", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(tracks):
+			return
+		track = tracks[idx]
+		has_profile = bool(self._jukebox_manager.get_track_profile(track.path))
+
+		menu = wx.Menu()
+		item_play = menu.Append(wx.ID_ANY, _("&Play"))
+		self.Bind(wx.EVT_MENU, self._on_jukebox_track_play, item_play)
+
+		menu.AppendSeparator()
+
+		# Translators: Jukebox track context menu item - saves an audio profile (volume/effects/speed/transpose) that applies to this file
+		item_save_profile = menu.Append(wx.ID_ANY, _("Save Audio Pr&ofile for This File"))
+		self.Bind(wx.EVT_MENU, self._on_save_jukebox_track_audio_profile, item_save_profile)
+
+		# Translators: Jukebox track context menu item - removes the saved audio profile from this file
+		item_clear_profile = menu.Append(wx.ID_ANY, _("Clear Audio Prof&ile"))
+		item_clear_profile.Enable(has_profile)
+		self.Bind(wx.EVT_MENU, self._on_clear_jukebox_track_audio_profile, item_clear_profile)
+
+		menu.AppendSeparator()
+		item_copy_path = menu.Append(wx.ID_ANY, _("&Copy Path"))
+		self.Bind(wx.EVT_MENU, lambda e: self._copy_to_clipboard(track.path), item_copy_path)
+
+		self.PopupMenu(menu, self._jukebox_tracks_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
+
+	def _on_jukebox_add_file(self, event):
+		ext_pattern = ";".join("*" + ext for ext in jukebox.AUDIO_EXTENSIONS)
+		wildcard = _("Audio files (%s)") % ext_pattern + "|" + ext_pattern
+		dlg = wx.FileDialog(
+			self,
+			message=_("Add audio files to the jukebox"),
+			wildcard=wildcard,
+			style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST | wx.FD_MULTIPLE,
+		)
+		if dlg.ShowModal() != wx.ID_OK:
+			dlg.Destroy()
+			return
+		paths = dlg.GetPaths()
+		dlg.Destroy()
+
+		added = 0
+		last_path = None
+		errors = []
+		for path in paths:
+			entry, error = self._jukebox_manager.add_file(path)
+			if error:
+				errors.append("%s: %s" % (os.path.basename(path), error))
+			else:
+				added += 1
+				last_path = entry.path
+		if added:
+			self._refresh_jukebox_list(select_path=last_path)
+		if errors:
+			ui.message("; ".join(errors))
+		elif added:
+			ui.message(ngettext("%d file added.", "%d files added.", added) % added)
+
+	def _on_jukebox_add_folder(self, event):
+		dlg = wx.DirDialog(self, _("Add a folder to the jukebox"))
+		if dlg.ShowModal() != wx.ID_OK:
+			dlg.Destroy()
+			return
+		path = dlg.GetPath()
+		dlg.Destroy()
+
+		entry, error = self._jukebox_manager.add_folder(path)
+		if error:
+			ui.message(error)
+			return
+		ui.message(_("Added to jukebox: %s") % entry.title)
+		self._refresh_jukebox_list(select_path=entry.path)
+
+	def _on_jukebox_remove_entry(self, event):
+		entry = self._get_selected_jukebox_entry()
+		if not entry:
+			return
+		title = entry.title
+		self._jukebox_manager.remove_entry(entry.path)
+		ui.message(_("Removed from jukebox: %s") % title)
+		self._refresh_jukebox_list()
+
+	def _on_jukebox_rescan_folder(self, event):
+		entry = self._get_selected_jukebox_entry()
+		if not entry or entry.kind != "folder":
+			return
+		self._jukebox_manager.rescan_folder(entry.path)
+		ui.message(_("Rescanned: %s") % entry.title)
+		self._refresh_jukebox_list(select_path=entry.path)
+
+	def _save_jukebox_file_profile(self, path, display_name):
+		"""Shared body of the Save Audio Profile actions - both the
+		single-file entry's context menu and the track list's context
+		menu funnel through here so the two views behave identically for
+		what is, in both cases, the same underlying file."""
+		existing = self._jukebox_manager.get_track_profile(path)
+		profile = self._prompt_and_build_audio_profile(existing, allow_speed=True)
+		if profile is None:
+			return
+		self._jukebox_manager.set_track_profile(path, profile)
+		ui.message(_("Audio profile saved for %(file)s") % {"file": display_name})
+
+	def _clear_jukebox_file_profile(self, path, display_name):
+		"""Shared body of the Clear Audio Profile actions - see
+		_save_jukebox_file_profile()."""
+		if not self._jukebox_manager.get_track_profile(path):
+			return
+		self._jukebox_manager.set_track_profile(path, None)
+		ui.message(_("Audio profile cleared for %(file)s") % {"file": display_name})
+
+	def _on_save_jukebox_entry_audio_profile(self, event):
+		"""Save an audio profile for the selected *file* jukebox entry.
+		A folder entry has no profile of its own - profiles are per file
+		and saved from the Tracks list (or from that folder's own
+		individual track context menus) - so this is a no-op for folders,
+		and the menu item is disabled for them accordingly."""
+		entry = self._get_selected_jukebox_entry()
+		if not entry or entry.kind != "file":
+			return
+		self._save_jukebox_file_profile(entry.path, entry.title)
+
+	def _on_clear_jukebox_entry_audio_profile(self, event):
+		"""Remove the saved profile from the selected *file* jukebox entry."""
+		entry = self._get_selected_jukebox_entry()
+		if not entry or entry.kind != "file":
+			return
+		self._clear_jukebox_file_profile(entry.path, entry.title)
+
+	def _on_save_jukebox_track_audio_profile(self, event):
+		"""Save an audio profile for the selected track (this exact file)."""
+		idx = self._jukebox_tracks_list.GetSelection()
+		tracks = getattr(self, "_jukebox_selected_tracks", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(tracks):
+			return
+		track = tracks[idx]
+		self._save_jukebox_file_profile(track.path, track.title)
+
+	def _on_clear_jukebox_track_audio_profile(self, event):
+		"""Remove the saved profile from the selected track."""
+		idx = self._jukebox_tracks_list.GetSelection()
+		tracks = getattr(self, "_jukebox_selected_tracks", None) or []
+		if idx == wx.NOT_FOUND or idx >= len(tracks):
+			return
+		track = tracks[idx]
+		self._clear_jukebox_file_profile(track.path, track.title)
+
+	def _show_jukebox_entry_context_menu(self):
+		"""Context menu for the selected item in the jukebox entries list.
+
+		The Save/Clear Audio Profile items apply to *single-file* entries
+		only - a folder has no profile of its own (profiles are per file
+		and saved from the Tracks list), so they're shown disabled for
+		folder entries to make that visible rather than hiding them and
+		leaving the menu looking inconsistent between the two kinds."""
+		entry = self._get_selected_jukebox_entry()
+		if not entry:
+			return
+
+		menu = wx.Menu()
+		item_play = menu.Append(wx.ID_ANY, _("&Play"))
+		self.Bind(wx.EVT_MENU, self._on_jukebox_entry_play, item_play)
+
+		if entry.kind == "folder":
+			item_rescan = menu.Append(wx.ID_ANY, _("&Rescan Folder"))
+			self.Bind(wx.EVT_MENU, self._on_jukebox_rescan_folder, item_rescan)
+
+		item_remove = menu.Append(wx.ID_ANY, _("Re&move"))
+		self.Bind(wx.EVT_MENU, self._on_jukebox_remove_entry, item_remove)
+
+		menu.AppendSeparator()
+
+		is_file = (entry.kind == "file")
+		has_profile = bool(is_file and self._jukebox_manager.get_track_profile(entry.path))
+
+		# Translators: Jukebox context menu item - saves an audio profile (volume/effects/speed/transpose) that applies to this file
+		item_save_profile = menu.Append(wx.ID_ANY, _("Save Audio Pr&ofile for This File"))
+		item_save_profile.Enable(is_file)
+		self.Bind(wx.EVT_MENU, self._on_save_jukebox_entry_audio_profile, item_save_profile)
+
+		# Translators: Jukebox context menu item - removes the saved audio profile from this file
+		item_clear_profile = menu.Append(wx.ID_ANY, _("Clear Audio Prof&ile"))
+		item_clear_profile.Enable(has_profile)
+		self.Bind(wx.EVT_MENU, self._on_clear_jukebox_entry_audio_profile, item_clear_profile)
+
+		menu.AppendSeparator()
+		item_copy_path = menu.Append(wx.ID_ANY, _("&Copy Path"))
+		self.Bind(wx.EVT_MENU, lambda e: self._copy_to_clipboard(entry.path), item_copy_path)
+
+		self.PopupMenu(menu, self._jukebox_list.GetScreenPosition() - self.GetScreenPosition())
+		menu.Destroy()
 
 
 class LyricsDialog(wx.Dialog):

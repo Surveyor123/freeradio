@@ -21,6 +21,7 @@ Supported commands:
   volume     {"cmd":"volume",     "value":0.0-2.0}
   bass_boost {"cmd":"bass_boost", "value":0.0-1.0}
   set_playback_rate {"cmd":"set_playback_rate", "rate":0.5-3.0}  # pitch-preserving, podcasts only (needs bass_fx.dll)
+  set_transpose {"cmd":"set_transpose", "semitones":-12.0-12.0}  # pitch shift independent of rate, podcasts only (needs bass_fx.dll)
   ping       {"cmd":"ping"}
   quit       {"cmd":"quit"}
 
@@ -80,6 +81,8 @@ _BASS_STREAM_BLOCK        = 0x100000
 _BASS_STREAM_DECODE       = 0x200000  # source-only stream, feeds into BASS_FX_TempoCreate
 _BASS_FX_FREESOURCE       = 0x10000   # BASS_FX_TempoCreate: free the source stream when the tempo one is freed
 _BASS_ATTRIB_TEMPO        = 0x10000   # BASS_FX attribute id: tempo change in % (-95..+5000, 0 = normal)
+_BASS_ATTRIB_TEMPO_PITCH  = 0x10001   # BASS_FX attribute id: pitch shift in semitones (-60..+60, 0 = normal),
+                                       # applied independently of tempo/rate - this is what "transpose" uses.
 _BASS_ACTIVE_STOPPED      = 0
 _BASS_ACTIVE_PLAYING      = 1
 _BASS_ACTIVE_STALLED      = 2
@@ -252,6 +255,7 @@ class BassHost:
         self._tempo_active = False  # True while self._handle is a BASS_FX
                                      # tempo-wrapped stream (podcasts only)
         self._playback_rate = 1.0   # persists across episodes, like volume
+        self._transpose_semitones = 0.0  # pitch shift, independent of rate; persists like volume
         self._handle   = 0
         self._lock     = threading.RLock()
         self._meta_stop   = threading.Event()
@@ -650,6 +654,14 @@ class BassHost:
                         )
                     except Exception:
                         pass
+                if self._transpose_semitones != 0.0:
+                    try:
+                        self._dll.BASS_ChannelSetAttribute(
+                            stream, _BASS_ATTRIB_TEMPO_PITCH,
+                            ctypes.c_float(self._transpose_semitones),
+                        )
+                    except Exception:
+                        pass
             else:
                 # Wrap failed - the decode-only stream is unplayable on
                 # its own; drop it and get a normal (non-decode) file
@@ -845,6 +857,14 @@ class BassHost:
                                 self._dll.BASS_ChannelSetAttribute(
                                     stream, _BASS_ATTRIB_TEMPO,
                                     ctypes.c_float((self._playback_rate - 1.0) * 100.0),
+                                )
+                            except Exception:
+                                pass
+                        if self._transpose_semitones != 0.0:
+                            try:
+                                self._dll.BASS_ChannelSetAttribute(
+                                    stream, _BASS_ATTRIB_TEMPO_PITCH,
+                                    ctypes.c_float(self._transpose_semitones),
                                 )
                             except Exception:
                                 pass
@@ -1943,6 +1963,39 @@ class BassHost:
     def get_playback_rate(self):
         return self._playback_rate
 
+    def set_transpose(self, semitones):
+        """Set pitch transpose in semitones, independent of playback speed
+        (podcasts, audio books and jukebox tracks). 0.0 = no shift; positive
+        shifts up, negative shifts down. Persists across tracks (like
+        playback rate) so it's reapplied automatically the next time a
+        tempo-capable stream is opened.
+
+        Returns (ok, actual_semitones, reason) — mirrors set_playback_rate()
+        exactly: ok is False when either bass_fx.dll isn't available, or the
+        current stream isn't a tempo-wrapped one, in both cases the value is
+        still remembered for next time but has no effect right now.
+        """
+        semitones = max(-12.0, min(12.0, float(semitones)))
+        with self._lock:
+            self._transpose_semitones = semitones
+            if not self._bass_fx_dll:
+                return False, semitones, "bass_fx_unavailable"
+            if not (self._tempo_active and self._handle and self._dll):
+                return False, semitones, "not_tempo_stream"
+            try:
+                ok = self._dll.BASS_ChannelSetAttribute(
+                    self._handle, _BASS_ATTRIB_TEMPO_PITCH,
+                    ctypes.c_float(semitones),
+                )
+            except Exception:
+                ok = False
+            if not ok:
+                return False, semitones, "set_attribute_failed"
+            return True, semitones, ""
+
+    def get_transpose(self):
+        return self._transpose_semitones
+
     def unload(self):
         self._cancel_pending_play()
         self._stop_meta_thread()
@@ -2202,6 +2255,12 @@ def main():
             _ok(cmd="set_playback_rate", rate_applied=ok,
                 rate=actual_rate, reason=reason)
 
+        elif cmd == "set_transpose":
+            semitones = float(cmd_obj.get("semitones", 0.0))
+            ok, actual_semitones, reason = host.set_transpose(semitones)
+            _ok(cmd="set_transpose", transpose_applied=ok,
+                semitones=actual_semitones, reason=reason)
+
         elif cmd == "set_fx":
             fx = cmd_obj.get("fx", "none")
             host.set_fx(fx)
@@ -2248,4 +2307,5 @@ if __name__ == "__main__":
     # Use line-buffered stdout so JSON lines flush immediately
     sys.stdout = open(sys.stdout.fileno(), mode="w", buffering=1,
                       encoding="utf-8", errors="replace", closefd=False)
+
     main()

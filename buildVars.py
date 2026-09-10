@@ -19,14 +19,24 @@ addon_info = AddonInfo(
 	addon_description=_("""FreeRadio is an internet radio, podcast, and audio-book add-on for NVDA that provides seamless access to thousands of internet radio stations via the Radio Browser open directory, RSS/Atom podcast feeds, and the libriVox + GETEM digital library for the visually impaired. It features a fully accessible station browser with search, country filter, favourites management, and per-station, per-podcast, and per-audio-book audio profiles. Podcast episodes and audio book chapters resume automatically from where you left off, with adjustable pitch-preserving playback speed. Playback is handled by BASS, with support for volume control, audio effects, output device selection, and simultaneous audio mirroring to a second device. Additional features include instant and scheduled recording, time-shift rewind of live radio, sleep and alarm timers, automatic ICY metadata announcements, Shazam-based music recognition, and a liked-songs log with lyrics lookup. All controls and shortcuts are designed for NVDA accessibility."""),
 	
 	# version
-	addon_version="2026.23.6",
+	addon_version="2026.24.0",
 	
 	# Brief changelog for this version
 	# Translators: what's new content for the add-on version
 	addon_changelog=_("""
-- Shorten paused notification message to correctly use it for all tyipes of media that freeradio can play.
-- Podcast episode list rows no longer show the publish date (it's still available in the episode details box).
-- Merged the podcast "Search" field and the "Enter podcast URL" field into one: paste or type a feed URL and press Enter to subscribe directly, or type a term to search iTunes as before. Removed the separate URL field and "Add Feed" button.
+## New features:
+- Local Jukebox tab: search audio files stored on any attached drive by filename, or build a persistent personal library of files and folders. Jukebox tracks get the same treatment as podcasts and audio books: automatic resume, tiered rewind/fast-forward, playback speed, pitch transpose, and per-item audio profiles. Open the Jukebox tab from anywhere with Ctrl+Win+U, or from the Station Browser with Alt+8.
+- Transpose (pitch shift): shift the pitch of podcasts, audio books, and jukebox tracks up or down without changing their speed, using Shift+Win+K (raise) and Shift+Win+J (lower). Each step is one eighth of a whole tone (0.25 semitones); the range is -12.00 to +12.00 semitones. Requires bass_fx.dll.
+- Jukebox tab keyboard shortcuts: F3 / F4 move between tracks within the selected jukebox item; Shift+F3 / Shift+F4 move between jukebox entries; Ctrl+Left / Ctrl+Right do the same as F3 / F4 while the tracks or entries list is focused. Space previews a disk-search result or pauses the current playback; Enter adds a disk-search result to the jukebox or plays the focused item directly.
+
+Improvements:
+- Playback speed shortcuts (Ctrl+Win+Shift+K / Ctrl+Win+Shift+J) now also apply to jukebox tracks, not just podcasts and audio books.
+- Ctrl+Win+V (Add to Favourites / Download Media) now tells the user explicitly that the shortcut only applies to stations, podcasts, and audio books when a jukebox track is currently playing, instead of silently treating the jukebox track as a station.
+- The Station Browser now contains eight tabs instead of seven; tab navigation shortcuts run from Alt+1 through Alt+8.
+- Ctrl+Tab / Ctrl+Shift+Tab tab cycling now includes the Jukebox tab.
+- Ctrl+Win+I (What's playing) now also announces jukebox track names.
+- Ctrl+Win+J and Ctrl+Win+K (tiered seek) now also work on jukebox tracks.
+- Ctrl+Win+T (Toggle time-shift buffer) now clarifies that it has no effect on podcast, audio book, or jukebox playback.
 """),
 	
 	# Author(s)

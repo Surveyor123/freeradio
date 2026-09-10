@@ -367,6 +367,8 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 		"kb:control+windows+downArrow": "volumeDown",
 		"kb:control+windows+shift+k": "playbackRateUp",
 		"kb:control+windows+shift+j": "playbackRateDown",
+		"kb:shift+windows+k": "transposeUp",
+		"kb:shift+windows+j": "transposeDown",
 		"kb:control+windows+e": "toggleRecord",
 		"kb:control+windows+w": "openRecordingsFolder",
 		"kb:control+windows+i": "whatsPlaying",
@@ -754,6 +756,15 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 
 
 	@script(
+		description=_("Open FreeRadio local jukebox"),
+		category=_("FreeRadio"),
+		gesture="kb:control+windows+u",
+	)
+	def script_openJukebox(self, gesture):
+		wx.CallAfter(self._open_dialog_on_jukebox)
+
+
+	@script(
 		description=_("Add currently playing station to favourites, download the whole audio book if one is playing, or download the episode if a podcast is playing"),
 		category=_("FreeRadio"),
 		gesture="kb:control+windows+v",
@@ -764,6 +775,16 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 			ui.message(_("No station is playing"))
 			return
 		media_kind = station.get("media_kind")
+		# Jukebox tracks have no equivalent "save" action for this
+		# shortcut - they're already local files, so there's nothing to
+		# add to favourites (they aren't radio-browser stations) and
+		# nothing to download (they're already on disk). Tell the user
+		# explicitly rather than silently falling through to the
+		# favourites branch below, which would have wrongly treated a
+		# jukebox track as a station.
+		if media_kind == "jukebox":
+			ui.message(_("The shortcut is only for stations, podcasts or audio books"))
+			return
 		# Checked ahead of the plain "podcast" branch below: GETEM/LibriVox
 		# chapters carry media_kind="audiobook" (see getem.GetemBook.to_dict()/
 		# librivox.LibriVoxBook.to_dict()), and a whole-book download - into
@@ -836,6 +857,10 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 		if self._dialog and self._dialog.IsShown():
 			try:
 				self._dialog.refresh_episode_progress(url)
+			except Exception:
+				pass
+			try:
+				self._dialog.refresh_jukebox_track_progress(url)
 			except Exception:
 				pass
 
@@ -998,6 +1023,8 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 					self._dialog.focus_podcasts()
 				elif focus == "audiobooks":
 					self._dialog.focus_audiobooks()
+				elif focus == "jukebox":
+					self._dialog.focus_jukebox()
 				elif isinstance(focus, int):
 					self._dialog.focus_tab(focus)
 			except Exception:
@@ -1020,9 +1047,13 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 		"""Open the dialog and switch to the Audio Books tab, focused on the library list."""
 		self._open_dialog(focus="audiobooks")
 
+	def _open_dialog_on_jukebox(self):
+		"""Open the dialog and switch to the Jukebox tab, focused on the search box."""
+		self._open_dialog(focus="jukebox")
+
 	def _open_dialog_on_tab(self, tab_index):
 		"""Open the dialog and switch to the given tab.
-		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs, 5=Podcasts, 6=Audio Books.
+		Indices: 0=All Stations, 1=Favourites, 2=Recording, 3=Timer, 4=Liked Songs, 5=Podcasts, 6=Audio Books, 7=Jukebox.
 		"""
 		self._open_dialog(focus=tab_index)
 

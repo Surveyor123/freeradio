@@ -99,7 +99,7 @@ def _is_seekable_media(station):
 	casette.mp3 resume-wait effect while the seek retry loop spent up to
 	15 seconds failing over and over. "media_kind" is never derived from
 	external data, so it can't collide with a real station's own tags."""
-	return bool(station) and station.get("media_kind") in ("podcast", "audiobook")
+	return bool(station) and station.get("media_kind") in ("podcast", "audiobook", "jukebox")
 
 
 def _read_icy_title(url):
@@ -589,6 +589,44 @@ class _BassSubprocessEngine:
 		self._on_playback_rate_reply = old_on_reply
 		return result[0]
 
+	def set_transpose(self, semitones, timeout=3.0):
+		"""Set pitch transpose, independent of playback speed (podcasts,
+		audio books and jukebox tracks). semitones: 0.0 = no shift; positive
+		shifts up, negative shifts down (clamped to -12.0..12.0 on the host
+		side). Persists across tracks (like playback rate) so it re-applies
+		automatically the next time a tempo-capable stream is opened.
+
+		Returns (applied, actual_semitones, reason) - applied is False when
+		bass_fx.dll isn't available or the current stream can't be
+		tempo-adjusted; the value is still remembered on the host for the
+		next tempo-capable stream either way.
+		"""
+		if not self.ready():
+			return False, semitones, "not_ready"
+		evt = threading.Event()
+		result = [(False, semitones, "timeout")]
+
+		old_on_reply = getattr(self, "_on_transpose_reply", None)
+
+		def _on_reply(applied, actual_semitones, reason):
+			result[0] = (applied, actual_semitones, reason)
+			evt.set()
+
+		self._on_transpose_reply = _on_reply
+		self._send({"cmd": "set_transpose", "semitones": float(semitones)})
+		evt.wait(timeout=timeout)
+		self._on_transpose_reply = old_on_reply
+		return result[0]
+
+	def adjust_transpose(self, delta, timeout=3.0):
+		"""Nudge transpose by *delta* semitones relative to the last value
+		sent (tracked in self._transpose, mirroring self._playback_rate).
+		Returns (applied, actual_semitones, reason): see set_transpose()."""
+		return self.set_transpose(getattr(self, "_transpose", 0.0) + delta, timeout=timeout)
+
+	def get_transpose(self):
+		return getattr(self, "_transpose", 0.0)
+
 	def set_fx(self, fx_name):
 		"""Adjust DirectX 8 effect.
 
@@ -698,6 +736,15 @@ class _BassSubprocessEngine:
 						except Exception:
 							pass
 					continue
+				if reply_cmd == "set_transpose":
+					cb = getattr(self, "_on_transpose_reply", None)
+					if cb:
+						try:
+							cb(bool(msg.get("transpose_applied", False)),
+							   msg.get("semitones", 0.0), msg.get("reason", ""))
+						except Exception:
+							pass
+					continue
 
 				# Play result — route to waiting play() call
 				seq = msg.get("seq")
@@ -755,6 +802,7 @@ class RadioPlayer:
 		self._volume = 100
 		self._bass_boost = 0.0   # bass boost level: 0.0–1.0
 		self._playback_rate = 1.0  # pitch-preserving speed for podcasts: 1.0 = normal
+		self._transpose = 0.0  # pitch shift in semitones, independent of speed: 0.0 = no shift
 		self._audio_fx   = "none"  # active DirectX 8 effect name
 		self._intentional_stop = False
 		self._play_lock = threading.RLock()  # Prevent concurrent play operations
@@ -1179,6 +1227,12 @@ class RadioPlayer:
 			if is_podcast and self._playback_rate != 1.0:
 				try:
 					self._bass_engine.set_playback_rate(self._playback_rate)
+				except Exception:
+					pass
+			# Reapply pitch transpose the same way, for the same reason.
+			if is_podcast and self._transpose != 0.0:
+				try:
+					self._bass_engine.set_transpose(self._transpose)
 				except Exception:
 					pass
 			# Resume podcasts from where they were left off - podcasts are
@@ -2094,6 +2148,53 @@ class RadioPlayer:
 	def get_playback_rate(self):
 		return self._playback_rate
 
+	_TRANSPOSE_STEP = 0.25  # one eighth of a whole tone (a whole tone = 2 semitones)
+	_TRANSPOSE_MIN  = -12.0
+	_TRANSPOSE_MAX  = 12.0
+
+	def _step_transpose(self, delta):
+		"""Raise/lower the pitch transpose by *delta* semitones (rounded to
+		2 decimal places so repeated 0.25 steps land cleanly instead of
+		drifting from float addition). Returns (applied, actual_semitones,
+		reason): see set_transpose_value()."""
+		return self.set_transpose_value(self._transpose + delta)
+
+	def set_transpose_value(self, semitones):
+		"""Set the pitch transpose to an absolute value in semitones,
+		independent of playback speed - the counterpart to
+		_step_transpose()'s delta-based stepping, used to restore a saved
+		per-feed/per-book transpose the moment a track starts playing.
+
+		Returns (applied, actual_semitones, reason):
+		- applied=True  -> the shift is actually in effect right now.
+		- applied=False -> not currently possible (wrong backend, bass_fx.dll
+		  not installed, or the current stream isn't tempo-wrapped, e.g. a
+		  live station) - the requested value is still remembered and will
+		  apply automatically to the next tempo-capable stream that opens.
+		"""
+		new_semitones = round(float(semitones), 2)
+		new_semitones = max(self._TRANSPOSE_MIN, min(self._TRANSPOSE_MAX, new_semitones))
+		if self._backend == self.BACKEND_BASS and self._bass_engine:
+			try:
+				applied, actual, reason = self._bass_engine.set_transpose(new_semitones)
+			except Exception:
+				applied, actual, reason = False, new_semitones, "engine_error"
+			self._transpose = actual if applied else new_semitones
+			if applied:
+				self._sync_mirror_transpose(self._transpose)
+			return applied, self._transpose, reason
+		self._transpose = new_semitones
+		return False, new_semitones, "wrong_backend"
+
+	def increase_transpose(self):
+		return self._step_transpose(self._TRANSPOSE_STEP)
+
+	def decrease_transpose(self):
+		return self._step_transpose(-self._TRANSPOSE_STEP)
+
+	def get_transpose(self):
+		return self._transpose
+
 	def get_bass_boost(self):
 		return getattr(self, "_bass_boost", 0.0)
 
@@ -2657,6 +2758,21 @@ class RadioPlayer:
 
 		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-rate").start()
 
+	def _sync_mirror_transpose(self, semitones):
+		"""Reapply a just-changed pitch transpose on the mirror engine too,
+		so both outputs stay at the same pitch."""
+		mirror = self._get_ready_mirror()
+		if mirror is None:
+			return
+
+		def _do(m=mirror, s=semitones):
+			try:
+				m.set_transpose(s)
+			except Exception:
+				pass
+
+		threading.Thread(target=_do, daemon=True, name="FreeRadio-mirror-transpose").start()
+
 	def get_audio_devices(self, fresh=None):
 		"""Zwróć listę (indeks, nazwa) dostępnych urządzeń wyjściowych BASS.
 
@@ -2771,6 +2887,11 @@ class RadioPlayer:
 		if is_podcast and self._playback_rate != 1.0:
 			try:
 				mirror_engine.set_playback_rate(self._playback_rate)
+			except Exception:
+				pass
+		if is_podcast and self._transpose != 0.0:
+			try:
+				mirror_engine.set_transpose(self._transpose)
 			except Exception:
 				pass
 		if not timeshifted and is_podcast and current_pos > 1.0:

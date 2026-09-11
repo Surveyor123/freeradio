@@ -22,6 +22,7 @@ import gui
 from . import podcast
 from . import getem
 from . import librivox
+from . import gutenberg_audiobooks
 from . import jukebox
 import urllib.parse
 import urllib.request
@@ -297,16 +298,16 @@ def _format_podcast_episode_lines(author="", published="", duration="", descript
 
 
 def _enabled_audiobook_sources():
-	"""Which audio book sources (currently "getem"/"librivox") the user has
-	enabled in Settings - see FreeRadioSettingsPanel's "Audio book
-	sources" checklist, which is what edits config.conf["freeradio"]
-	["audiobook_sources"]. Returns a set of the enabled keys - both are
-	enabled by default (the confspec default is "getem,librivox"), so an
-	upgrade from a version before this option existed searches exactly as
-	before. An empty set is a legitimate result (the user unchecked
-	everything), not a fallback case - _on_getem_search() handles that by
-	simply finding nothing rather than searching everything."""
-	raw = config.conf["freeradio"].get("audiobook_sources", "getem,librivox")
+	"""Which audio book sources (currently "getem"/"librivox"/"gutenberg")
+	the user has enabled in Settings - see FreeRadioSettingsPanel's "Audio
+	book sources" checklist, which is what edits config.conf["freeradio"]
+	["audiobook_sources"]. Returns a set of the enabled keys - all three are
+	enabled by default (the confspec default is "getem,librivox,gutenberg"),
+	so an upgrade from a version before this option existed searches
+	exactly as before. An empty set is a legitimate result (the user
+	unchecked everything), not a fallback case - _on_getem_search() handles
+	that by simply finding nothing rather than searching everything."""
+	raw = config.conf["freeradio"].get("audiobook_sources", "getem,librivox,gutenberg")
 	return {s.strip() for s in raw.split(",") if s.strip()}
 
 
@@ -337,6 +338,7 @@ class RadioDialog(wx.Dialog):
 		self._podcast_manager = podcast.PodcastManager()
 		self._getem_library   = getem.GetemLibrary()
 		self._librivox_library = librivox.LibrivoxLibrary()
+		self._gutenberg_library = gutenberg_audiobooks.GutenbergLibrary()
 		self._jukebox_manager = jukebox.JukeboxManager()
 		# Cancels an in-flight disk search (see jukebox.search_disk_for_audio)
 		# as soon as a newer one is requested, so a slow, stale search can't
@@ -2237,8 +2239,6 @@ class RadioDialog(wx.Dialog):
 			id(self._timer_list):        "_list_search_timer",
 			id(self._timer_station_cb):  "_list_search_timer_station",
 			id(self._liked_list):        "_list_search_liked",
-			id(self._jukebox_tracks_list): "_list_search_jukebox_tracks",
-			id(self._jukebox_search_results): "_list_search_jukebox_results",
 		}
 		state_attr = _list_state_map.get(id(listbox), "_list_search_all")
 		self._typeahead(
@@ -5391,26 +5391,43 @@ class RadioDialog(wx.Dialog):
 	# _audiobook_module_for()/_audiobook_library_for() below - rather than
 	# from any "currently selected" state.
 	def _audiobook_module_for(self, book):
-		"""Which of getem/librivox produced *book* - LibrivoxBook is a
-		distinct class from GetemBook (see librivox.py's module docstring
-		for why they're attribute-compatible but still separate classes),
-		so this is a plain isinstance check."""
-		return librivox if isinstance(book, librivox.LibrivoxBook) else getem
+		"""Which of getem/librivox/gutenberg_audiobooks produced *book* -
+		each source's book class is distinct (see librivox.py's module
+		docstring for why they're attribute-compatible but still separate
+		classes), so this is a plain isinstance check."""
+		if isinstance(book, librivox.LibrivoxBook):
+			return librivox
+		if isinstance(book, gutenberg_audiobooks.GutenbergAudiobook):
+			return gutenberg_audiobooks
+		return getem
 
 	def _audiobook_library_for(self, book):
-		"""Which of self._getem_library/self._librivox_library *book*
-		belongs to - the library-side equivalent of
-		_audiobook_module_for()."""
-		return self._librivox_library if isinstance(book, librivox.LibrivoxBook) else self._getem_library
+		"""Which of self._getem_library/self._librivox_library/
+		self._gutenberg_library *book* belongs to - the library-side
+		equivalent of _audiobook_module_for()."""
+		if isinstance(book, librivox.LibrivoxBook):
+			return self._librivox_library
+		if isinstance(book, gutenberg_audiobooks.GutenbergAudiobook):
+			return self._gutenberg_library
+		return self._getem_library
 
 	def _audiobook_source_label_for(self, book):
-		return _("LibriVox") if isinstance(book, librivox.LibrivoxBook) else _("GETEM")
+		if isinstance(book, librivox.LibrivoxBook):
+			return _("LibriVox")
+		if isinstance(book, gutenberg_audiobooks.GutenbergAudiobook):
+			return _("Project Gutenberg")
+		return _("GETEM")
 
 	def _merged_library_books(self):
-		"""Every saved audio book across both GETEM and LibriVox, combined
-		into one list and sorted by title so the Library list reads as one
-		shelf rather than two concatenated ones."""
-		books = self._getem_library.get_books() + self._librivox_library.get_books()
+		"""Every saved audio book across GETEM, LibriVox, and Project
+		Gutenberg, combined into one list and sorted by title so the
+		Library list reads as one shelf rather than three concatenated
+		ones."""
+		books = (
+			self._getem_library.get_books()
+			+ self._librivox_library.get_books()
+			+ self._gutenberg_library.get_books()
+		)
 		books.sort(key=lambda b: (b.title or "").casefold())
 		return books
 
@@ -5515,6 +5532,7 @@ class RadioDialog(wx.Dialog):
 		resync and for the same underlying reason."""
 		self._getem_library = getem.GetemLibrary()
 		self._librivox_library = librivox.LibrivoxLibrary()
+		self._gutenberg_library = gutenberg_audiobooks.GutenbergLibrary()
 
 	def _sync_getem_now_playing_from_player(self):
 		"""If an audio book chapter (GETEM or LibriVox) is already playing
@@ -5637,7 +5655,8 @@ class RadioDialog(wx.Dialog):
 		search_id = self._getem_search_id
 
 		# A pasted book link - e.g. an archive.org "details" URL for a
-		# LibriVox recording, or a GETEM catalog page URL - is resolved
+		# LibriVox recording or a Project Gutenberg Open Audiobook
+		# Collection title, or a GETEM catalog page URL - is resolved
 		# directly to that one book instead of being treated as a keyword
 		# search, and fed through the same _on_getem_search_done() path as
 		# an ordinary search result (as a one-item list), so "Add to
@@ -5646,19 +5665,36 @@ class RadioDialog(wx.Dialog):
 		# added) their GETEM equivalents. Gated on enabled_sources the
 		# same as the keyword-search path below, so disabling a source in
 		# Settings also stops a pasted link for it from being resolved.
-		is_librivox_url = "librivox" in enabled_sources and librivox.looks_like_book_url(query)
+		#
+		# LibriVox and Project Gutenberg links are both bare archive.org
+		# "details" URLs, indistinguishable by shape alone - so when both
+		# sources are enabled, gutenberg_audiobooks.get_book_by_url() is
+		# tried first, since it actually checks the resolved item's
+		# uploader before accepting it (see its docstring), and only
+		# falls through to librivox.get_book_by_url() - which accepts any
+		# archive.org details URL unconditionally - if that rejects it or
+		# the source is disabled. This is the disambiguation
+		# gutenberg_audiobooks.py's own module docstring says a caller
+		# would need to do itself, done here rather than there since only
+		# this tab has both sources enabled at once to disambiguate between.
+		is_archive_org_url = librivox.looks_like_book_url(query)
+		is_librivox_url = "librivox" in enabled_sources and is_archive_org_url
+		is_gutenberg_url = "gutenberg" in enabled_sources and is_archive_org_url
 		is_getem_url = (
 			"getem" in enabled_sources
 			and hasattr(getem, "looks_like_book_url")
 			and getem.looks_like_book_url(query)
 		)
-		if is_librivox_url or is_getem_url:
+		if is_librivox_url or is_gutenberg_url or is_getem_url:
 			ui.message(_("Loading..."))
 
 			def _do_url_lookup():
-				if is_librivox_url:
+				book, error = None, None
+				if is_gutenberg_url:
+					book, error = gutenberg_audiobooks.get_book_by_url(query)
+				if not book and is_librivox_url:
 					book, error = librivox.get_book_by_url(query)
-				else:
+				if not book and is_getem_url:
 					book, error = getem.get_book_by_url(query)
 				books = [book] if book else []
 				wx.CallAfter(self._on_getem_search_done, books, error, search_id)
@@ -5669,17 +5705,17 @@ class RadioDialog(wx.Dialog):
 		ui.message(_("Searching..."))
 
 		def _do_search():
-			# search_getem()/search_librivox() are the one genuine
-			# source-specific call in this tab (see the note near
-			# _audiobook_module_for() above) - GETEM's search needs an
-			# authenticated session, LibriVox's doesn't, so the two aren't
-			# unified under one function name. Both are searched every time
-			# a source is enabled now that there's no "Source" dropdown to
-			# pick just one - results are merged into a single list, each
-			# row still tagged with its own source via
-			# _format_getem_result_label(). Only a source the user has
-			# checked in Settings (see _enabled_audiobook_sources()) is
-			# searched at all.
+			# search_getem()/search_librivox()/search_gutenberg_audiobooks()
+			# are the one genuine source-specific call in this tab (see the
+			# note near _audiobook_module_for() above) - GETEM's search
+			# needs an authenticated session, the other two don't, so
+			# they aren't unified under one function name. All enabled
+			# sources are searched every time now that there's no
+			# "Source" dropdown to pick just one - results are merged
+			# into a single list, each row still tagged with its own
+			# source via _format_getem_result_label(). Only a source the
+			# user has checked in Settings (see
+			# _enabled_audiobook_sources()) is searched at all.
 			if "getem" in enabled_sources:
 				getem_books, getem_error = getem.search_getem(query)
 			else:
@@ -5688,14 +5724,18 @@ class RadioDialog(wx.Dialog):
 				librivox_books, librivox_error = librivox.search_librivox(query)
 			else:
 				librivox_books, librivox_error = [], None
-			books = list(getem_books or []) + list(librivox_books or [])
-			# Only surface an error message if NEITHER source returned any
-			# results - a real result from one source is shown even if the
-			# other one genuinely failed, rather than hiding a working
-			# result behind the other source's error.
+			if "gutenberg" in enabled_sources:
+				gutenberg_books, gutenberg_error = gutenberg_audiobooks.search_gutenberg_audiobooks(query)
+			else:
+				gutenberg_books, gutenberg_error = [], None
+			books = list(getem_books or []) + list(librivox_books or []) + list(gutenberg_books or [])
+			# Only surface an error message if NONE of the sources
+			# returned any results - a real result from one source is
+			# shown even if another one genuinely failed, rather than
+			# hiding a working result behind another source's error.
 			error = None
 			if not books:
-				error = getem_error or librivox_error
+				error = getem_error or librivox_error or gutenberg_error
 			wx.CallAfter(self._on_getem_search_done, books, error, search_id)
 
 		threading.Thread(target=_do_search, daemon=True).start()
@@ -6373,12 +6413,10 @@ class RadioDialog(wx.Dialog):
 
 		# --- Bind events ---
 		self._jukebox_search.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_key)
-		self._jukebox_search_results.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_search_results.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_results_key)
 		self._jukebox_list.Bind(wx.EVT_LISTBOX, self._on_jukebox_entry_selected)
 		self._jukebox_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_list_key)
-		self._jukebox_tracks_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_tracks_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_tracks_key)
 		self._jukebox_add_file_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_file)
 		self._jukebox_add_folder_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_folder)
@@ -6454,7 +6492,6 @@ class RadioDialog(wx.Dialog):
 		for path in results:
 			self._jukebox_search_results.Append(os.path.basename(path))
 		self._jukebox_search_results.SetSelection(0)
-		self._jukebox_search_results.SetFocus()
 		ui.message(ngettext("%d file found.", "%d files found.", len(results)) % len(results))
 
 	def _is_previewing_jukebox_path(self, path):

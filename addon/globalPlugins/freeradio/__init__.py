@@ -260,12 +260,12 @@ def _init_config():
 		"hotkey_p_triple":  "string(default='none')",
 		"ffmpeg_path":       "string(default='')",
 		"audio_fx":          "string(default='none')",
-		# Comma-separated subset of {"getem","librivox"} - which audio book
-		# sources are actually searched from the Audio Books tab (see
-		# radioDialog._enabled_audiobook_sources()). Both enabled by
-		# default; FreeRadioSettingsPanel's "Audio book sources" checklist
+		# Comma-separated subset of {"getem","librivox","gutenberg"} - which
+		# audio book sources are actually searched from the Audio Books tab
+		# (see radioDialog._enabled_audiobook_sources()). All three enabled
+		# by default; FreeRadioSettingsPanel's "Audio book sources" checklist
 		# is what edits this, in settingsPanel.py.
-		"audiobook_sources": "string(default='getem,librivox')",
+		"audiobook_sources": "string(default='getem,librivox,gutenberg')",
 		"audio_device":      "integer(default=-1)",
 		"audio_device_name": "string(default='')",
 		"audio_device_refresh_mode": "string(default='reliable')",

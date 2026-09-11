@@ -2237,6 +2237,8 @@ class RadioDialog(wx.Dialog):
 			id(self._timer_list):        "_list_search_timer",
 			id(self._timer_station_cb):  "_list_search_timer_station",
 			id(self._liked_list):        "_list_search_liked",
+			id(self._jukebox_tracks_list): "_list_search_jukebox_tracks",
+			id(self._jukebox_search_results): "_list_search_jukebox_results",
 		}
 		state_attr = _list_state_map.get(id(listbox), "_list_search_all")
 		self._typeahead(
@@ -6371,10 +6373,12 @@ class RadioDialog(wx.Dialog):
 
 		# --- Bind events ---
 		self._jukebox_search.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_key)
+		self._jukebox_search_results.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_search_results.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_results_key)
 		self._jukebox_list.Bind(wx.EVT_LISTBOX, self._on_jukebox_entry_selected)
 		self._jukebox_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_list_key)
+		self._jukebox_tracks_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_tracks_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_tracks_key)
 		self._jukebox_add_file_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_file)
 		self._jukebox_add_folder_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_folder)
@@ -6450,6 +6454,7 @@ class RadioDialog(wx.Dialog):
 		for path in results:
 			self._jukebox_search_results.Append(os.path.basename(path))
 		self._jukebox_search_results.SetSelection(0)
+		self._jukebox_search_results.SetFocus()
 		ui.message(ngettext("%d file found.", "%d files found.", len(results)) % len(results))
 
 	def _is_previewing_jukebox_path(self, path):

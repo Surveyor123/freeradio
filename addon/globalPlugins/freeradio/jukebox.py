@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 # from bass_host.py since that module only runs inside the separate host
 # process and isn't importable from the main NVDA process.
 AUDIO_EXTENSIONS = (
-	".mp3", ".wav", ".ogg", ".oga", ".flac", ".m4a", ".m4b", ".aac",
+	".mp3", ".wav", ".mp4", ".avi", ".mpeg", ".ogg", ".oga", ".flac", ".m4a", ".m4b", ".aac",
 	".wma", ".opus", ".ape", ".mpc", ".mp2", ".mp1", ".aiff", ".aif",
 )
 
@@ -749,7 +749,7 @@ def _list_drive_roots():
 	return roots
 
 
-def search_disk_for_audio(query, limit=200, roots=None, cancel_event=None):
+def search_disk_for_audio(query, limit=10000, roots=None, cancel_event=None):
 	"""Walk every attached drive (or *roots*, if given) looking for audio
 	files whose filename contains *query* (case-insensitive). Stops early
 	once *limit* matches are found. If *cancel_event* is given and gets

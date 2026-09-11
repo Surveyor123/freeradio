@@ -655,7 +655,11 @@ class RadioDialog(wx.Dialog):
 		self._getem_library_ctrl.SetFocus()
 
 	def focus_jukebox(self):
-		"""Switch to the Jukebox tab and give the search box focus.
+		"""Switch to the Jukebox tab. On the very first open (nothing in
+		this tab has had focus yet), gives the search box focus. On later
+		opens, restores focus to whichever control in this tab was last
+		focused - see _on_jukebox_child_focus() - so re-opening the dialog
+		doesn't keep bouncing focus back to the search box.
 
 		Called from _open_dialog() via wx.CallLater(0) - see
 		script_openJukebox (Ctrl+Windows+U) in __init__.py. Guards against
@@ -672,8 +676,18 @@ class RadioDialog(wx.Dialog):
 		# focus_podcasts() for the same note) - refresh the entries listbox
 		# explicitly so it isn't left empty/stale.
 		self._refresh_jukebox_list()
-		self._jukebox_search.SetFocus()
-		self._jukebox_search.SelectAll()
+		target = getattr(self, "_jukebox_last_focused", None)
+		try:
+			restorable = bool(target) and target.IsShown() and target.IsEnabled()
+		except RuntimeError:
+			# Underlying C++ object was destroyed (e.g. a since-removed
+			# control) - fall back to the search box below.
+			restorable = False
+		if restorable:
+			target.SetFocus()
+		else:
+			self._jukebox_search.SetFocus()
+			self._jukebox_search.SelectAll()
 
 	def _build_fav_tab(self):
 		sizer = wx.BoxSizer(wx.VERTICAL)
@@ -6454,6 +6468,12 @@ class RadioDialog(wx.Dialog):
 		self._jukebox_add_folder_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_folder)
 		self._jukebox_remove_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_remove_entry)
 
+		# Remember whichever control in this tab last had focus, so
+		# focus_jukebox() can restore it on the next open instead of always
+		# jumping to the search box - see _on_jukebox_child_focus().
+		self._jukebox_last_focused = None
+		panel.Bind(wx.EVT_CHILD_FOCUS, self._on_jukebox_child_focus)
+
 		# Deferred: populated lazily the first time this tab becomes active,
 		# either via tab-switch (_apply_tab_side_effects, sel == 7) or via
 		# focus_jukebox() when the dialog is opened straight to this tab -
@@ -6461,6 +6481,12 @@ class RadioDialog(wx.Dialog):
 		# since _refresh_jukebox_list() ends up calling entry.tracks() on
 		# the selected entry, which for a folder entry can mean scanning the
 		# whole folder on disk.
+
+	def _on_jukebox_child_focus(self, event):
+		"""Track whichever control inside the Jukebox tab last had focus,
+		so focus_jukebox() can restore it on the next open."""
+		self._jukebox_last_focused = event.GetWindow()
+		event.Skip()
 
 	def _set_jukebox_results_visible(self, visible):
 		"""Show or hide the disk-search results list (with its label) in
@@ -6639,10 +6665,29 @@ class RadioDialog(wx.Dialog):
 	def _on_jukebox_entry_selected(self, event):
 		entry = self._get_selected_jukebox_entry()
 		self._jukebox_remove_btn.Enable(entry is not None)
+
+		# Preserve whichever track is currently selected before the list
+		# gets rebuilt (this runs on every _refresh_jukebox_list() call,
+		# not just when the user actually switches entries) - mirrors how
+		# _refresh_jukebox_list() itself preserves the entries selection.
+		# Without this, restoring keyboard focus to this list (see
+		# focus_jukebox()) always landed on a list with nothing selected.
+		current_track_path = None
+		tidx = self._jukebox_tracks_list.GetSelection()
+		prev_tracks = getattr(self, "_jukebox_selected_tracks", None) or []
+		if tidx != wx.NOT_FOUND and tidx < len(prev_tracks):
+			current_track_path = prev_tracks[tidx].path
+
 		self._jukebox_tracks_list.Clear()
 		self._jukebox_selected_tracks = entry.tracks() if entry else []
 		for track in self._jukebox_selected_tracks:
 			self._jukebox_tracks_list.Append(track.display_label(self._player))
+
+		if current_track_path:
+			for i, track in enumerate(self._jukebox_selected_tracks):
+				if track.path == current_track_path:
+					self._jukebox_tracks_list.SetSelection(i)
+					break
 
 	def _play_jukebox_track(self, track, announce=True):
 		"""Play *track*. Its per-file audio profile (if the user saved

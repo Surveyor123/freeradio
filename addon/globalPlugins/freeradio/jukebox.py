@@ -563,18 +563,20 @@ class JukeboxTrack:
 		return d
 
 	def display_label(self, player=None):
-		"""Mirrors podcast.PodcastEpisode.display_label(): shows elapsed/
-		total duration and a "[Listened]" prefix once resume tracking has
-		something to report for this track.
+		"""Mirrors podcast.PodcastEpisode.display_label() for the elapsed/
+		total duration display, but deliberately skips the "[Listened]"
+		prefix: that marker fits podcast episodes, which are normally
+		consumed once, but not jukebox tracks, which are expected to be
+		replayed - flagging a song "[Listened]" after one pass would just
+		be noise (or misleading, once the user plays it again).
 
 		The total duration comes from _get_track_duration() (a header
 		probe of the file itself, cached by path - see the "Track
 		duration probing" section above), since jukebox tracks have no
-		feed metadata to supply it the way podcast episodes do. Three
-		cases, matching how the total duration should read next to a
-		track name: never played shows just the total; partially played
-		shows elapsed / total; fully listened keeps the existing
-		"[Listened]" prefix (with the total alongside, for reference)."""
+		feed metadata to supply it the way podcast episodes do. Two
+		cases: never played (or fully played through - pos == -1.0 is
+		folded into this case too) shows just the total; partially
+		played shows elapsed / total."""
 		from .__init__ import _format_duration
 		label = self.title
 		duration = _get_track_duration(self.path)
@@ -582,12 +584,6 @@ class JukeboxTrack:
 		if not player:
 			return label + (" (%s)" % total_str if total_str else "")
 		pos = player.get_podcast_position(self.path)
-		with player._podcast_positions_lock:
-			entry = player._podcast_positions.get(self.path, {})
-		listened = bool(entry.get("listened"))
-		if listened or pos == -1.0:
-			suffix = " (%s)" % total_str if total_str else ""
-			return _("[Listened]") + " " + label + suffix
 		if pos and pos > 0.0:
 			if total_str:
 				return label + " (%s / %s)" % (_format_duration(pos), total_str)
@@ -851,7 +847,7 @@ def _list_drive_roots():
 	return roots
 
 
-def search_disk_for_audio(query, limit=200, roots=None, cancel_event=None):
+def search_disk_for_audio(query, limit=10000, roots=None, cancel_event=None):
 	"""Walk every attached drive (or *roots*, if given) looking for audio
 	files whose filename contains *query* (case-insensitive). Stops early
 	once *limit* matches are found. If *cancel_event* is given and gets

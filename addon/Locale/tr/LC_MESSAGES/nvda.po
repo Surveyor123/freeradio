@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: FreeRadio 2026.20.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
 "POT-Creation-Date: 2026-09-11 00:28+0300\n"
-"PO-Revision-Date: 2026-09-11 00:28+0300\n"
+"PO-Revision-Date: 2026-09-11 06:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -877,7 +877,7 @@ msgstr "Normal perde"
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:672
 #, python-format
 msgid "%+.2f semitones"
-msgstr "Perde değişimi %+.2f"
+msgstr "%+.2f yarım ton"
 
 #: addon/globalPlugins/freeradio/playbackCoreMixin.py:675
 msgid "Raise pitch transpose (podcasts, audio books and jukebox tracks)"
@@ -2587,7 +2587,7 @@ msgstr[1] "%d dosya eklendi."
 
 #: addon/globalPlugins/freeradio/radioDialog.py:6699
 msgid "Add a folder to the jukebox"
-msgstr "Jukebox'a bir klasör ekleyin"
+msgstr "Müzik Kutusu'na bir klasör ekleyin"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:6719
 #, python-format
@@ -2602,7 +2602,7 @@ msgstr "Yeniden tarandı: %s"
 #: addon/globalPlugins/freeradio/radioDialog.py:6740
 #, python-format
 msgid "Audio profile saved for %(file)s"
-msgstr "Ses profili %(file)s dosyası için kaydedildi"
+msgstr "Ses profili %(file)s için kaydedildi"
 
 #: addon/globalPlugins/freeradio/radioDialog.py:6748
 #, python-format
@@ -3401,11 +3401,11 @@ msgstr ""
 "ileri sarma, oynatma hızı, perde değiştirme ve öğe bazlı ses profilleri. "
 "Müzik Kutusu sekmesini her yerden Ctrl+Win+U ile veya İstasyon "
 "Tarayıcısı’ndan Alt+8 ile açabilirsiniz.\n"
-"- Perde değiştirme: Podcast’lerin, sesli kitapların ve Jukebox parçalarının "
-"perdesini hızlarını değiştirmeden yukarı veya aşağı ayarlayın; Shift+Win+K "
-"(yükselt) ve Shift+Win+J (düşür) tuşlarını kullanın. Her adım bir tam tonun "
-"sekizde biridir (0,25 ton); aralık -12,00 ila +12,00 tonları arasındadır. "
-"bass_fx.dll gereklidir.\n"
+"- Perde değiştirme: Podcast’lerin, sesli kitapların ve müzik kutusu "
+"parçalarının perdesini hızlarını değiştirmeden yukarı veya aşağı ayarlayın; "
+"Shift+Win+K (yükselt) ve Shift+Win+J (düşür) tuşlarını kullanın. Her adım "
+"bir tam tonun sekizde biridir (0,25 ton); aralık -12,00 ila +12,00 tonları "
+"arasındadır. bass_fx.dll gereklidir.\n"
 "- Müzik Kutusu sekmesi klavye kısayolları: F3/F4 seçili Müzik Kutusu öğesi "
 "içindeki parçalar arasında geçiş yapar; Shift+F3/Shift+F4 Müzik Kutusu "
 "girişleri arasında geçiş yapar; parça veya giriş listesi seçiliyken Ctrl+Sol/"

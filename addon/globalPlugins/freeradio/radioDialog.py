@@ -620,6 +620,12 @@ class RadioDialog(wx.Dialog):
 			self._notebook.SetSelection(5)  # Podcasts tab index
 		except Exception:
 			return
+		# SetSelection() here is programmatic, so it does not fire the
+		# wx.EVT_NOTEBOOK_PAGE_CHANGED handler that would normally populate
+		# this tab's list (see _apply_tab_side_effects) - populate it here
+		# explicitly instead, same as focus_favorites() does for the
+		# Favourites tab.
+		self._refresh_podcast_list()
 		feeds = self._podcast_manager.get_feeds()
 		if feeds and self._podcast_list.GetSelection() == wx.NOT_FOUND:
 			self._podcast_list.SetSelection(0)
@@ -639,6 +645,10 @@ class RadioDialog(wx.Dialog):
 			self._notebook.SetSelection(6)  # Audio Books tab index
 		except Exception:
 			return
+		# Programmatic SetSelection() bypasses _apply_tab_side_effects (see
+		# focus_podcasts() for the same note) - refresh the library listbox
+		# explicitly before reading from it below.
+		self._refresh_getem_library_list()
 		books = self._merged_library_books()
 		if books and self._getem_library_ctrl.GetSelection() == wx.NOT_FOUND:
 			self._getem_library_ctrl.SetSelection(0)
@@ -658,6 +668,10 @@ class RadioDialog(wx.Dialog):
 			self._notebook.SetSelection(7)  # Jukebox tab index
 		except Exception:
 			return
+		# Programmatic SetSelection() bypasses _apply_tab_side_effects (see
+		# focus_podcasts() for the same note) - refresh the entries listbox
+		# explicitly so it isn't left empty/stale.
+		self._refresh_jukebox_list()
 		self._jukebox_search.SetFocus()
 		self._jukebox_search.SelectAll()
 
@@ -1102,6 +1116,12 @@ class RadioDialog(wx.Dialog):
 		elif sel == 4:
 			wx.CallLater(0, self._refresh_liked_list)
 		elif sel == 5:
+			# Populate the list from whatever is already on disk/in memory
+			# first (fast, local, no network) so the tab never appears
+			# empty while _refresh_all_podcast_feeds()'s background network
+			# refresh (which only repopulates the list once it finishes) is
+			# still in flight.
+			wx.CallLater(0, self._refresh_podcast_list)
 			wx.CallLater(0, self._refresh_all_podcast_feeds)
 		elif sel == 6:
 			wx.CallLater(0, self._refresh_getem_library_list)
@@ -4074,7 +4094,10 @@ class RadioDialog(wx.Dialog):
 		]
 		self._liked_panel.SetAcceleratorTable(wx.AcceleratorTable(accel_entries))
 
-		self._refresh_liked_list()
+		# Deferred: populated lazily the first time this tab becomes active
+		# (see _apply_tab_side_effects, sel == 4), not eagerly at dialog
+		# construction time. There is no direct hotkey that jumps straight
+		# to this tab, so the tab-switch path always covers it.
 
 	def _refresh_liked_list(self):
 		"""Read likedSongs.txt, apply the filter field, and populate the listbox."""
@@ -4417,7 +4440,10 @@ class RadioDialog(wx.Dialog):
 		self._episode_list.Bind(wx.EVT_KEY_DOWN, self._on_episode_key)
 		self._episode_download_btn.Bind(wx.EVT_BUTTON, self._on_episode_download)
 
-		self._refresh_podcast_list()
+		# Deferred: populated lazily the first time this tab becomes active,
+		# either via tab-switch (_apply_tab_side_effects, sel == 5) or via
+		# focus_podcasts() when the dialog is opened straight to this tab -
+		# not eagerly at dialog construction time.
 
 	def _refresh_podcast_list(self):
 		"""Populate the podcast subscription listbox.
@@ -5500,7 +5526,13 @@ class RadioDialog(wx.Dialog):
 		self._getem_library_ctrl.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._getem_library_ctrl.Bind(wx.EVT_KEY_DOWN, self._on_getem_library_key)
 
-		self._refresh_getem_library_list()
+		# _refresh_getem_library_list() is deliberately not called here:
+		# _open_dialog() in __init__.py already calls it unconditionally
+		# right after constructing the dialog (to also cover a background
+		# auto-advanced GETEM chapter), so calling it again here just
+		# duplicated that work on every first open. Tab-switch
+		# (_apply_tab_side_effects, sel == 6) and focus_audiobooks() also
+		# call it explicitly when needed.
 		self._sync_getem_now_playing_from_player()
 
 	def refresh_getem_libraries_from_disk(self):
@@ -6422,7 +6454,13 @@ class RadioDialog(wx.Dialog):
 		self._jukebox_add_folder_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_folder)
 		self._jukebox_remove_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_remove_entry)
 
-		self._refresh_jukebox_list()
+		# Deferred: populated lazily the first time this tab becomes active,
+		# either via tab-switch (_apply_tab_side_effects, sel == 7) or via
+		# focus_jukebox() when the dialog is opened straight to this tab -
+		# not eagerly at dialog construction time. This matters most here,
+		# since _refresh_jukebox_list() ends up calling entry.tracks() on
+		# the selected entry, which for a folder entry can mean scanning the
+		# whole folder on disk.
 
 	def _set_jukebox_results_visible(self, visible):
 		"""Show or hide the disk-search results list (with its label) in

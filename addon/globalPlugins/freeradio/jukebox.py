@@ -33,8 +33,10 @@ log = logging.getLogger(__name__)
 # from bass_host.py since that module only runs inside the separate host
 # process and isn't importable from the main NVDA process.
 AUDIO_EXTENSIONS = (
-	".mp3", ".wav", ".mp4", ".avi", ".mpeg", ".ogg", ".oga", ".flac", ".m4a", ".m4b", ".aac",
+	".mp3", ".wav", ".ogg", ".oga", ".flac", ".m4a", ".m4b", ".aac",
 	".wma", ".opus", ".ape", ".mpc", ".mp2", ".mp1", ".aiff", ".aif",
+	".mp4", ".avi", ".mpeg", ".mpg",
+	".mov", ".3gp", ".3g2", ".wmv", ".asf",
 )
 
 
@@ -94,9 +96,13 @@ def _probe_audio_duration(path):
 		return _flac_duration(path)
 	if ext in (".ogg", ".oga", ".opus"):
 		return _ogg_duration(path)
-	if ext in (".m4a", ".m4b"):
+	if ext in (".m4a", ".m4b", ".mp4", ".mov", ".3gp", ".3g2"):
 		return _mp4_duration(path)
-	if ext == ".wma":
+	if ext == ".avi":
+		return _avi_duration(path)
+	if ext in (".mpeg", ".mpg"):
+		return _mpeg_ps_duration(path)
+	if ext in (".wma", ".wmv", ".asf"):
 		return _wma_duration(path)
 	if ext in (".mp3", ".mp2", ".mp1"):
 		return _mpeg_duration(path)
@@ -367,6 +373,102 @@ def _parse_mpeg_frame_header(b):
 		"samples_per_frame": samples_per_frame,
 		"frame_size": frame_size,
 	}
+
+
+def _avi_duration(path):
+	"""AVI (RIFF container): the Main AVI Header ("avih" chunk, inside
+	the "hdrl" LIST near the start of the file) has a frame count and a
+	microseconds-per-frame value for the file's main stream - together
+	they give the overall duration, the same value AVI-aware players use."""
+	with open(path, "rb") as f:
+		riff = f.read(12)
+		if len(riff) < 12 or riff[:4] != b"RIFF" or riff[8:12] != b"AVI ":
+			return None
+		while True:
+			header = f.read(8)
+			if len(header) < 8:
+				return None
+			chunk_id = header[:4]
+			chunk_size = struct.unpack("<I", header[4:8])[0]
+			if chunk_id != b"LIST":
+				f.seek(chunk_size + (chunk_size % 2), 1)
+				continue
+			list_type = f.read(4)
+			list_end = f.tell() + chunk_size - 4
+			if list_type != b"hdrl":
+				f.seek(list_end)
+				continue
+			while f.tell() < list_end:
+				sub_header = f.read(8)
+				if len(sub_header) < 8:
+					return None
+				sub_id = sub_header[:4]
+				sub_size = struct.unpack("<I", sub_header[4:8])[0]
+				if sub_id == b"avih":
+					avih = f.read(sub_size)
+					if len(avih) < 20:
+						return None
+					micros_per_frame = struct.unpack("<I", avih[0:4])[0]
+					total_frames = struct.unpack("<I", avih[16:20])[0]
+					if not micros_per_frame or not total_frames:
+						return None
+					return total_frames * micros_per_frame / 1000000.0
+				f.seek(sub_size + (sub_size % 2), 1)
+			return None
+	return None
+
+
+def _scan_mpeg_pts(data):
+	"""Return every presentation timestamp (a 90kHz clock value) found in
+	MPEG-2 Program Stream PES packet headers within *data*, in the order
+	encountered. Used by _mpeg_ps_duration() to estimate an MPEG program
+	stream's duration from its first and last timestamps."""
+	pts_values = []
+	i = 0
+	n = len(data)
+	while i < n - 9:
+		if data[i] == 0 and data[i + 1] == 0 and data[i + 2] == 1:
+			stream_id = data[i + 3]
+			if 0xC0 <= stream_id <= 0xEF:  # audio (C0-DF) or video (E0-EF) stream
+				flags = data[i + 7]
+				pts_dts_flags = (flags >> 6) & 0x3
+				header_len = data[i + 8]
+				if pts_dts_flags in (0x2, 0x3) and i + 9 + 5 <= n:
+					pb = data[i + 9:i + 14]
+					pts = (
+						((pb[0] & 0x0E) << 29) | (pb[1] << 22) |
+						((pb[2] & 0xFE) << 14) | (pb[3] << 7) | (pb[4] >> 1)
+					)
+					pts_values.append(pts)
+				i += 9 + header_len
+				continue
+		i += 1
+	return pts_values
+
+
+def _mpeg_ps_duration(path):
+	"""MPEG-1/2 Program Stream (.mpeg/.mpg): unlike the other containers
+	there's no compact duration field to read, so this scans PES packet
+	headers near the start and end of the file for presentation
+	timestamps and takes the difference. Works for MPEG-2 program
+	streams, which is what modern encoders (ffmpeg included) produce;
+	plain MPEG-1 streams use a slightly different PES header layout and
+	are simply left without a duration rather than risking a wrong one."""
+	file_size = os.path.getsize(path)
+	chunk = min(file_size, 2 * 1024 * 1024)
+	with open(path, "rb") as f:
+		head = f.read(chunk)
+		f.seek(max(0, file_size - chunk))
+		tail = f.read()
+	first_ptses = _scan_mpeg_pts(head)
+	last_ptses = _scan_mpeg_pts(tail)
+	if not first_ptses or not last_ptses:
+		return None
+	first_pts = min(first_ptses)
+	last_pts = max(last_ptses)
+	if last_pts <= first_pts:
+		return None
+	return (last_pts - first_pts) / 90000.0
 
 
 def _mpeg_duration(path):
@@ -749,7 +851,7 @@ def _list_drive_roots():
 	return roots
 
 
-def search_disk_for_audio(query, limit=10000, roots=None, cancel_event=None):
+def search_disk_for_audio(query, limit=200, roots=None, cancel_event=None):
 	"""Walk every attached drive (or *roots*, if given) looking for audio
 	files whose filename contains *query* (case-insensitive). Stops early
 	once *limit* matches are found. If *cancel_event* is given and gets

@@ -1295,7 +1295,7 @@ class BassHost:
 			pass
 		return 0
 
-	def play(self, url, volume_0_1=1.0, seq=None, seekable=False):
+	def play(self, url, volume_0_1=1.0, seq=None, seekable=False, rate=None, transpose=None):
 		# Cancel any existing play operation first
 		self._cancel_pending_play()
 
@@ -1305,6 +1305,31 @@ class BassHost:
 		# Store seq for this play attempt
 		with self._lock:
 			self._current_play_seq = seq
+			# Bake the desired playback rate/transpose for *this* track
+			# directly into the play() call, atomically with everything
+			# else it does under this lock, rather than relying on the
+			# caller having sent a separate prior "set_playback_rate"/
+			# "set_transpose" command and trusting it landed before this
+			# one. self._playback_rate/self._transpose_semitones persist
+			# across tracks by design (see their own docstrings) so that a
+			# chosen podcast speed carries over episode to episode - but
+			# that means a caller who explicitly wants THIS track to start
+			# at a specific rate/transpose (e.g. FreeRadio resetting to
+			# normal for a jukebox track with no saved profile - see
+			# playbackCoreMixin._play_station()) needs a way to set it
+			# that can't be raced or silently dropped by a separate,
+			# earlier round-trip. _try_create_url()/_try_create_local_file()
+			# read these same attributes when the new stream opens just
+			# below, so setting them here - before that happens, under the
+			# same lock - guarantees the new stream starts at exactly the
+			# value the caller asked for, every time. rate=None/
+			# transpose=None (the default) leaves whatever was last set in
+			# place, preserving the existing across-episode persistence for
+			# callers that don't pass them.
+			if rate is not None:
+				self._playback_rate = max(0.5, min(3.0, float(rate)))
+			if transpose is not None:
+				self._transpose_semitones = max(-12.0, min(12.0, float(transpose)))
 
 		time.sleep(0.05)  # Small delay to ensure previous stream is freed
 
@@ -2215,12 +2240,19 @@ def main():
 			vol = float(cmd_obj.get("volume", 1.0))
 			seq = cmd_obj.get("seq", None)
 			seekable = bool(cmd_obj.get("seekable", False))
+			# Optional - see BassHost.play()'s rate/transpose docstring for
+			# why these ride along with "play" itself instead of always
+			# requiring a separate prior "set_playback_rate"/"set_transpose"
+			# command. Absent (None) when the caller didn't send them, which
+			# leaves the host's existing persisted rate/transpose untouched.
+			rate = cmd_obj.get("rate", None)
+			transpose = cmd_obj.get("transpose", None)
 			host._cancel_pending_play()
 			prev = host._current_play_thread
 			if prev and prev.is_alive():
 				prev.join(timeout=1.0)
-			def _do_play(u=url, v=vol, s=seq, sk=seekable):
-				ok, reason = host.play(u, v, seq=s, seekable=sk)
+			def _do_play(u=url, v=vol, s=seq, sk=seekable, r=rate, t=transpose):
+				ok, reason = host.play(u, v, seq=s, seekable=sk, rate=r, transpose=t)
 				_send({"ok": ok, "error": reason if not ok else None, "seq": s})
 			t = threading.Thread(target=_do_play, daemon=True, name="bass-play")
 			host._current_play_thread = t

@@ -417,13 +417,22 @@ class _BassSubprocessEngine:
 				evt.set()
 				self._pending_play = None
 
-	def play(self, url, volume_0_1=1.0, seekable=False):
+	def play(self, url, volume_0_1=1.0, seekable=False, rate=None, transpose=None):
 		"""Send play command and block until the host confirms success/failure.
 		
 		If a previous play is still pending, it is cancelled first.
 		seekable=True asks the host to open the URL without BASS_STREAM_BLOCK
 		so seek_relative() actually works (podcasts); live radio should
 		leave this False.
+
+		rate/transpose (optional) are applied by bass_host.py atomically as
+		part of this same play() call, before the new stream opens - see
+		BassHost.play()'s docstring. Pass the exact value this track should
+		start at (e.g. 1.0/0.0 to reset a jukebox track with no saved
+		profile) rather than relying on a separate, earlier
+		set_playback_rate()/set_transpose() call having already landed.
+		Leave as None to keep whatever rate/transpose the host already has
+		(the normal case for a live station, which doesn't need either).
 
 		On failure, the reason bass_host.py gave (e.g. "StreamCreateURL
 		failed (err=41)") is left on self.last_play_error for the caller
@@ -446,7 +455,12 @@ class _BassSubprocessEngine:
 			self._pending_play = (seq, evt, [None, None])   # [ok, error]
 			result_slot = self._pending_play[2]
 
-		self._send({"cmd": "play", "url": url, "volume": volume_0_1, "seq": seq, "seekable": seekable})
+		payload = {"cmd": "play", "url": url, "volume": volume_0_1, "seq": seq, "seekable": seekable}
+		if rate is not None:
+			payload["rate"] = float(rate)
+		if transpose is not None:
+			payload["transpose"] = float(transpose)
+		self._send(payload)
 
 		# If there is no response in the first 5 seconds, give the "connecting" signal, then wait another 25 seconds.
 		got_reply = evt.wait(timeout=5)
@@ -1182,7 +1196,23 @@ class RadioPlayer:
 				resume_wait_stop   = None
 
 		play_volume = 0.0 if resume_wait_engine else (volume / 100.0)
-		success = self._bass_engine.play(url, play_volume, seekable=is_podcast)
+		# Bake the current rate/transpose into this same play() call so the
+		# new stream is guaranteed to start at exactly self._playback_rate/
+		# self._transpose - see _BassSubprocessEngine.play()'s docstring
+		# for why this matters more than it looks: playbackCoreMixin.
+		# _play_station() already updates self._playback_rate/self._transpose
+		# via set_playback_rate_value()/set_transpose_value() before this
+		# runs (e.g. resetting a jukebox track with no saved profile back
+		# to 1.0/0.0), but that update is a separate, earlier round-trip to
+		# the same reused bass_host.py subprocess - passing the values
+		# again here removes any dependency on that earlier command having
+		# already been fully processed before this new stream opens.
+		# None for a live station (not is_podcast): nothing to reset, and
+		# rate/transpose don't apply to live streams anyway.
+		launch_rate	  = self._playback_rate if is_podcast else None
+		launch_transpose = self._transpose	  if is_podcast else None
+		success = self._bass_engine.play(url, play_volume, seekable=is_podcast,
+										  rate=launch_rate, transpose=launch_transpose)
 
 		def _stop_resume_wait():
 			if resume_wait_stop:

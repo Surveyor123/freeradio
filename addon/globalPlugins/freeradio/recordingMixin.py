@@ -112,9 +112,18 @@ class RecordingMixin:
 
 				station = self._player.get_current_station()
 				is_podcast_or_audiobook = station and ("podcast" in station.get("tags", "") or "audiobook" in station.get("tags", ""))
+				is_jukebox = station and "jukebox" in station.get("tags", "")
 
 				if is_podcast_or_audiobook:
 					wx.CallAfter(ui.message, _("Podcast or audiobook cannot be recorded. To download the episode or book, press Ctrl+Win+V."))
+					return
+
+				# Jukebox tracks are local files already on disk - there is
+				# nothing to record, and unlike podcasts/audiobooks there is
+				# no Ctrl+Win+V download alternative to point the user to
+				# (script_addToFavorites already refuses jukebox tracks too).
+				if is_jukebox:
+					wx.CallAfter(ui.message, _("Jukebox tracks are already local files and cannot be recorded."))
 					return
 
 				# Try the fast in-memory title first; fall back to a live HTTP probe.
@@ -166,6 +175,7 @@ class RecordingMixin:
 
 			station = self._player.get_current_station()
 			is_podcast_or_audiobook = station and ("podcast" in station.get("tags", "") or "audiobook" in station.get("tags", ""))
+			is_jukebox = station and "jukebox" in station.get("tags", "")
 
 			# If a recording is already running, stop it (user may want to end it)
 			if self._recorder.is_recording():
@@ -181,6 +191,13 @@ class RecordingMixin:
 			# No recording; if it's a podcast/audiobook, warn and abort
 			if is_podcast_or_audiobook:
 				wx.CallAfter(ui.message, _("Podcast or audiobook cannot be recorded. To download the episode or book, press Ctrl+Win+V."))
+				return
+
+			# No recording; a jukebox track is already a local file, so
+			# there's nothing to record - warn and abort rather than
+			# starting a pointless recording of a local file.
+			if is_jukebox:
+				wx.CallAfter(ui.message, _("Jukebox tracks are already local files and cannot be recorded."))
 				return
 
 			if not self._player.has_media():

@@ -2224,6 +2224,35 @@ class RadioDialog(wx.Dialog):
 				fire_evt()
 		setattr(self, timer_attr, wx.CallLater(600, _reset))
 
+	def _typeahead_listboxes(self):
+		"""Return every listbox that supports type-ahead, paired with its
+		own state attribute name.
+
+		Kept as a single central list because both _do_list_typeahead() and
+		_on_char_hook() read from the same mapping; adding a new listbox
+		only requires one line here. Each listbox having its own state
+		attribute means a character typed in one list never pollutes
+		another list's search buffer / current index / anchor.
+		"""
+		return (
+			(self._all_list,               "_list_search_all"),
+			(self._fav_list,               "_list_search_fav"),
+			(self._sched_list,             "_list_search_sched"),
+			(self._sched_station_cb,       "_list_search_sched_station"),
+			(self._timer_list,             "_list_search_timer"),
+			(self._timer_station_cb,       "_list_search_timer_station"),
+			(self._liked_list,             "_list_search_liked"),
+			(self._podcast_list,           "_list_search_podcast"),
+			(self._podcast_results,        "_list_search_podcast_results"),
+			(self._podcast_preview_list,   "_list_search_podcast_preview"),
+			(self._episode_list,           "_list_search_episode"),
+			(self._getem_results,          "_list_search_getem_results"),
+			(self._getem_library_ctrl,     "_list_search_getem_library"),
+			(self._jukebox_search_results, "_list_search_jukebox_results"),
+			(self._jukebox_list,           "_list_search_jukebox"),
+			(self._jukebox_tracks_list,    "_list_search_jukebox_tracks"),
+		)
+
 	def _on_country_char(self, event):
 		"""Type-ahead search for the country combo box.
 
@@ -2260,21 +2289,19 @@ class RadioDialog(wx.Dialog):
 		self._country_search_timer = None
 
 	def _do_list_typeahead(self, listbox, ch):
-		"""Core type-ahead dispatch shared by _on_list_char and _on_char_hook.
+		"""Core type-ahead dispatch shared by _on_list_char and
+		_on_char_hook.
 
-		Each listbox gets its own isolated state so that typing in one list
-		never pollutes the search string, current index, or anchor of another.
+		Each listbox gets its own isolated state so that typing in one
+		list never pollutes the search string, current index, or anchor
+		of another. See _typeahead_listboxes() for the authoritative
+		mapping.
 		"""
-		_list_state_map = {
-			id(self._all_list):          "_list_search_all",
-			id(self._fav_list):          "_list_search_fav",
-			id(self._sched_list):        "_list_search_sched",
-			id(self._sched_station_cb):  "_list_search_sched_station",
-			id(self._timer_list):        "_list_search_timer",
-			id(self._timer_station_cb):  "_list_search_timer_station",
-			id(self._liked_list):        "_list_search_liked",
-		}
-		state_attr = _list_state_map.get(id(listbox), "_list_search_all")
+		state_attr = "_list_search_all"
+		for lb, attr in self._typeahead_listboxes():
+			if lb is listbox:
+				state_attr = attr
+				break
 		self._typeahead(
 			ch         = ch,
 			get_count  = listbox.GetCount,
@@ -3478,26 +3505,26 @@ class RadioDialog(wx.Dialog):
 				self._on_tab_changed_index(tab_index)
 				return
 
-		# Type-ahead for lists where EVT_CHAR is unreliable because the native
-		# Windows ListBox control can consume WM_CHAR before wxPython dispatches
-		# EVT_CHAR.  _sched_list / _timer_list / _liked_list have no EVT_KEY_DOWN
-		# handler (unlike _all_list / _fav_list), making them more susceptible.
-		# Intercepting here — before event.Skip() — ensures the character is
-		# consumed entirely by our handler and never reaches the native control.
-		if (not event.ControlDown() and not event.AltDown()
-				and focused in (self._sched_list, self._sched_station_cb,
-				                self._timer_list, self._timer_station_cb,
-				                self._liked_list)):
-			ukey = event.GetUnicodeKey()
-			if ukey != wx.WXK_NONE and ukey >= 32:
-				ch = chr(ukey).lower()
-			elif 32 <= key <= 126:
-				ch = chr(key).lower()
-			else:
-				ch = None
-			if ch and ch.isprintable():
-				self._do_list_typeahead(focused, ch)
-				return
+		# Type-ahead for every listbox that supports it. EVT_CHAR is
+		# unreliable on some native Windows ListBox controls (they can
+		# consume WM_CHAR before wxPython dispatches EVT_CHAR); intercepting
+		# here, before event.Skip(), guarantees our handler sees the
+		# character first and the native control never gets a chance to
+		# interfere. See _typeahead_listboxes() for the authoritative list
+		# of widgets this covers.
+		if not event.ControlDown() and not event.AltDown():
+			typeahead_widgets = tuple(lb for lb, _ in self._typeahead_listboxes())
+			if focused in typeahead_widgets:
+				ukey = event.GetUnicodeKey()
+				if ukey != wx.WXK_NONE and ukey >= 32:
+					ch = chr(ukey).lower()
+				elif 32 <= key <= 126:
+					ch = chr(key).lower()
+				else:
+					ch = None
+				if ch and ch.isprintable():
+					self._do_list_typeahead(focused, ch)
+					return
 
 		# --- Unique shortcuts to the Podcast tab ---
 		# These work anywhere on the tab — the user does not need to be
@@ -4446,6 +4473,8 @@ class RadioDialog(wx.Dialog):
 		self._podcast_results.Bind(wx.EVT_LISTBOX, self._on_podcast_result_selected)
 		self._podcast_list.Bind(wx.EVT_LISTBOX, self._on_podcast_selected)
 		self._podcast_list.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._podcast_results.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._podcast_preview_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._podcast_list.Bind(wx.EVT_KEY_DOWN, self._on_podcast_list_key)
 		self._episode_filter.Bind(wx.EVT_TEXT,     self._on_episode_filter_changed)
 		self._episode_filter.Bind(wx.EVT_KEY_DOWN, self._on_episode_filter_key)
@@ -6496,6 +6525,8 @@ class RadioDialog(wx.Dialog):
 		self._jukebox_search_results.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_search_results_key)
 		self._jukebox_list.Bind(wx.EVT_LISTBOX, self._on_jukebox_entry_selected)
 		self._jukebox_list.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._jukebox_search_results.Bind(wx.EVT_CHAR, self._on_list_char)
+		self._jukebox_tracks_list.Bind(wx.EVT_CHAR, self._on_list_char)
 		self._jukebox_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_list_key)
 		self._jukebox_tracks_list.Bind(wx.EVT_KEY_DOWN, self._on_jukebox_tracks_key)
 		self._jukebox_add_file_btn.Bind(wx.EVT_BUTTON, self._on_jukebox_add_file)

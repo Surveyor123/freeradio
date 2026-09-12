@@ -6167,22 +6167,56 @@ class RadioDialog(wx.Dialog):
 		"""Called (via radioPlayer.RadioPlayer.on_podcast_finished, wired up
 		alongside on_podcast_progress_saved/on_device_lost) when whatever
 		was playing reached its end on its own - as opposed to being paused
-		or stopped by the user. For a GETEM audio book part, this is the cue
-		to automatically move on to the next part; regular podcast episodes
-		are left as-is (the user only asked for auto-advance on audio
-		books) and are still advanced manually via _play_next_episode()."""
-		if not station or station.get("media_kind") != "audiobook":
+		or stopped by the user. For a GETEM audio book part, or a track
+		played as part of a jukebox folder sequence (see
+		_on_jukebox_entry_play()), this is the cue to automatically move on
+		to the next part/track; regular podcast episodes and individually-
+		played jukebox tracks are left as-is (the user only asked for
+		auto-advance on audio books and jukebox folders) and are still
+		advanced manually.
+
+		Only called while this dialog is open and shown - see
+		GlobalPlugin._on_podcast_finished_ui() in __init__.py, which calls
+		playbackCoreMixin._advance_jukebox_folder_headless() instead
+		whenever it isn't, so a folder sequence keeps advancing even after
+		the window is closed. Both read the same
+		"jukebox_folder_path"/"jukebox_track_index" station-dict fields, so
+		which one handled the previous track doesn't matter to either."""
+		if not station:
 			return
-		playing = getattr(self, "_getem_now_playing", None)
-		if not playing:
+		media_kind = station.get("media_kind")
+		if media_kind == "audiobook":
+			playing = getattr(self, "_getem_now_playing", None)
+			if not playing:
+				return
+			book, idx = playing
+			# Make sure the finished item still belongs to the book we
+			# think is loaded - e.g. the user could have already skipped
+			# away from it by hand right as it ended.
+			if book.detail_url != station.get("getem_detail_url"):
+				return
+			self._play_next_getem_chapter(auto=True)
 			return
-		book, idx = playing
-		# Make sure the finished item still belongs to the book we think is
-		# loaded - e.g. the user could have already skipped away from it by
-		# hand right as it ended.
-		if book.detail_url != station.get("getem_detail_url"):
-			return
-		self._play_next_getem_chapter(auto=True)
+		if media_kind == "jukebox":
+			folder_path = station.get("jukebox_folder_path")
+			if not folder_path:
+				# A single file, or a track played directly from the
+				# tracks list rather than through a folder sequence -
+				# nothing to advance to.
+				return
+			try:
+				index = int(station.get("jukebox_track_index", -1))
+			except (TypeError, ValueError):
+				return
+			entry = self._jukebox_manager.get_folder_entry(folder_path)
+			if not entry:
+				return
+			tracks = entry.tracks()
+			next_index = index + 1
+			if next_index >= len(tracks):
+				ui.message(_("Finished: %s") % entry.title)
+				return
+			self._play_jukebox_folder_track(entry, tracks, next_index)
 
 	def _show_getem_library_context_menu(self):
 		"""Context menu for the selected item in the library list: play,
@@ -6689,7 +6723,7 @@ class RadioDialog(wx.Dialog):
 					self._jukebox_tracks_list.SetSelection(i)
 					break
 
-	def _play_jukebox_track(self, track, announce=True):
+	def _play_jukebox_track(self, track, announce=True, folder_path=None, folder_index=None):
 		"""Play *track*. Its per-file audio profile (if the user saved
 		one) is looked up here by absolute path and attached to the
 		station dict as "station_audio", so playbackCoreMixin._play_station()
@@ -6697,17 +6731,55 @@ class RadioDialog(wx.Dialog):
 		Every playback path funnels through here (Enter/Space on the
 		entries list, Enter/Space on the tracks list, F3/F4, and
 		Ctrl+Left/Right), so the profile is applied consistently
-		whichever way the track was started."""
+		whichever way the track was started.
+
+		*folder_path*/*folder_index* are set only when this track is being
+		played as part of a folder sequence (see _play_jukebox_folder_track()
+		below) - they're attached to the station dict as
+		"jukebox_folder_path"/"jukebox_track_index" so a natural finish can
+		auto-advance to the next track purely from the finished station's
+		own fields, exactly the way a GETEM chapter carries
+		"getem_detail_url"/"getem_chapter_index" for the same purpose (see
+		playbackCoreMixin._advance_getem_chapter_headless()). This also
+		means a track started any other way (tracks list, F3/F4, a single-
+		file entry) simply doesn't carry these fields, so
+		_on_playback_finished()/_advance_jukebox_folder_headless() have
+		nothing to advance and correctly leave it as a one-off play - no
+		separate "clear the folder state" bookkeeping needed."""
 		station_dict = track.to_dict()
 		profile = self._jukebox_manager.get_track_profile(track.path)
 		if profile:
 			station_dict["station_audio"] = profile
+		if folder_path is not None:
+			station_dict["jukebox_folder_path"] = folder_path
+			station_dict["jukebox_track_index"] = folder_index
 		self._play_callback(station_dict, [station_dict], 0, announce=announce)
 
+	def _play_jukebox_folder_track(self, entry, tracks, index, announce=True):
+		"""Play tracks[index] as part of *entry* (a folder), tagging the
+		station dict so it can auto-advance to the next track on its own
+		once this one plays through to the end - see _play_jukebox_track()'s
+		docstring for how, and _on_playback_finished()/
+		_advance_jukebox_folder_headless() for where that's picked back up.
+
+		*tracks* is the snapshot taken when the folder started playing (see
+		_on_jukebox_entry_play()); the advance path itself always re-reads
+		entry.tracks() fresh (see _on_playback_finished()), so a background
+		rescan mid-sequence only affects tracks not yet reached, never
+		shifts the one already playing."""
+		if index < 0 or index >= len(tracks):
+			return
+		self._play_jukebox_track(tracks[index], announce=announce, folder_path=entry.path, folder_index=index)
+
 	def _on_jukebox_entry_play(self, event):
-		"""Play the selected jukebox entry directly: for a file, the file
-		itself; for a folder, its first track - a folder isn't playable
-		on its own, see jukebox.JukeboxEntry's docstring."""
+		"""Play the selected jukebox entry: for a file, just that file; for
+		a folder, every track it contains in order, automatically advancing
+		to the next one as each finishes on its own - the same auto-advance
+		GETEM audio book parts get, and (like GETEM) it keeps advancing
+		even if this dialog is later closed - see
+		playbackCoreMixin._advance_jukebox_folder_headless(). See
+		jukebox.JukeboxEntry's docstring for why a folder itself isn't
+		directly playable."""
 		entry = self._get_selected_jukebox_entry()
 		if not entry:
 			return
@@ -6715,7 +6787,10 @@ class RadioDialog(wx.Dialog):
 		if not tracks:
 			ui.message(_("No playable audio in this item."))
 			return
-		self._play_jukebox_track(tracks[0])
+		if entry.kind == "folder":
+			self._play_jukebox_folder_track(entry, tracks, 0)
+		else:
+			self._play_jukebox_track(tracks[0])
 
 	def _on_jukebox_list_key(self, event):
 		"""Jukebox entries list - Space pauses if something is playing,

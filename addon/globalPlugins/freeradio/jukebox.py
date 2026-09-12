@@ -751,6 +751,21 @@ class JukeboxManager:
 			self._track_profiles.pop(path, None)
 		self._save()
 
+	def get_folder_entry(self, path):
+		"""Look up a folder entry by its absolute path. Used to headlessly
+		resume/advance a folder-sequence auto-advance (see
+		GlobalPlugin._advance_jukebox_folder_headless() in __init__.py and
+		RadioDialog._on_playback_finished() in radioDialog.py) from just
+		the path carried in a finished station's own "jukebox_folder_path"
+		field - the same way _rebuild_getem_resume_url()/
+		_advance_getem_chapter_headless() look a GETEM book back up by its
+		detail_url, without needing any dialog state to still exist."""
+		norm = os.path.normcase(os.path.normpath(path))
+		for e in self._entries:
+			if e.kind == "folder" and os.path.normcase(os.path.normpath(e.path)) == norm:
+				return e
+		return None
+
 	def get_entries(self):
 		return list(self._entries)
 

@@ -28,6 +28,7 @@ del _tr
 
 from . import _notify, _notifications_muted
 from . import getem
+from . import jukebox
 from . import librivox
 from . import podcast
 from .settingsPanel import FreeRadioSettingsPanel
@@ -425,6 +426,53 @@ class PlaybackCoreMixin:
 		station_dict["audiobook_chapter_title"] = chapter_title
 		self._play_station(station_dict)
 
+	def _advance_jukebox_folder_headless(self, station):
+		"""Auto-advance a jukebox folder to its next track when the
+		current one finishes on its own while the FreeRadio dialog isn't
+		open (or isn't shown) to do it itself via
+		RadioDialog._on_playback_finished() - see
+		GlobalPlugin._on_podcast_finished_ui() in __init__.py.
+
+		Mirrors _advance_getem_chapter_headless() above: uses only the
+		finished station's own "jukebox_folder_path"/"jukebox_track_index"
+		fields (set by RadioDialog._play_jukebox_track() when a track is
+		played as part of a folder sequence - see its docstring) plus a
+		fresh, dialog-independent jukebox.JukeboxManager lookup, rather
+		than any dialog state - so a folder keeps playing through in order
+		the same way a podcast's resume position keeps saving in the
+		background, regardless of whether the window happens to be open."""
+		if not station or station.get("media_kind") != "jukebox":
+			return
+		folder_path = station.get("jukebox_folder_path")
+		if not folder_path:
+			# A single file, or a track played directly from the tracks
+			# list rather than through a folder sequence - nothing to
+			# advance to.
+			return
+		try:
+			index = int(station.get("jukebox_track_index", -1))
+		except (TypeError, ValueError):
+			return
+
+		manager = jukebox.JukeboxManager()
+		entry = manager.get_folder_entry(folder_path)
+		if not entry:
+			return
+		tracks = entry.tracks()
+		next_index = index + 1
+		if next_index >= len(tracks):
+			# Reached the end of the folder - nothing further to advance to.
+			return
+		next_track = tracks[next_index]
+
+		station_dict = next_track.to_dict()
+		profile = manager.get_track_profile(next_track.path)
+		if profile:
+			station_dict["station_audio"] = profile
+		station_dict["jukebox_folder_path"] = entry.path
+		station_dict["jukebox_track_index"] = next_index
+		self._play_station(station_dict)
+
 	def _resume_last_station(self):
 		url  = config.conf["freeradio"].get("last_station_url", "").strip()
 		name = config.conf["freeradio"].get("last_station_name", "").strip()
@@ -471,6 +519,24 @@ class PlaybackCoreMixin:
 				"tags": tags, 
 				"votes": 0
 			}
+			# "tags" here is exactly "podcast" or "jukebox" - not the
+			# free-text, possibly-multi-value list a real Radio Browser
+			# station carries (see radioPlayer._is_seekable_media()'s own
+			# docstring for why that distinction matters) - because it was
+			# set verbatim from PodcastEpisode.to_dict()/JukeboxTrack.to_dict()
+			# by _play_station() below (config.conf["freeradio"]["last_station_tags"]
+			# = station.get("tags", "")) back when this item was last
+			# played. So it doubles as "media_kind" directly here. Without
+			# this, _is_seekable_media() - which only ever checks
+			# "media_kind", never "tags" - doesn't recognise the resumed
+			# item as podcast-like: seek/speed/pitch and resume-to-saved-
+			# position all silently stop working, and it plays back (and
+			# responds to commands) like an ordinary live station instead.
+			# The GETEM "audiobook" case just below replaces this whole
+			# dict with book.to_dict()'s own already-correct "media_kind",
+			# so it doesn't need this.
+			if tags in ("podcast", "jukebox"):
+				station["media_kind"] = tags
 
 		# GETEM audio books need their proxy URL rebuilt fresh every
 		# session - see _rebuild_getem_resume_url(). Bail out rather than

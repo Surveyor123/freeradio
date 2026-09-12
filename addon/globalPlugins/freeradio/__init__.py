@@ -474,9 +474,10 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 		# Refresh the podcast episode list's row when a position is saved
 		# due to a pause or the episode finishing (not the periodic autosave).
 		self._player.on_podcast_progress_saved = self._on_podcast_progress_saved
-		# Auto-advance to the next part when a GETEM audio book chapter
-		# reaches its end on its own (regular podcast episodes are left as
-		# manual advance - see RadioDialog._on_playback_finished()).
+		# Auto-advance to the next part/track when a GETEM audio book
+		# chapter or a jukebox folder reaches its end on its own (regular
+		# podcast episodes are left as manual advance - see
+		# RadioDialog._on_playback_finished()).
 		self._player.on_podcast_finished = self._on_podcast_finished
 		self._manager = stationManager.StationManager()
 		# Initialize Recorder with dll_dir, volume and main player reference
@@ -881,13 +882,18 @@ class GlobalPlugin(ObligatoMixin, MiscTogglesMixin, TrackInfoMixin, RecordingMix
 				pass
 		else:
 			# The dialog isn't open to react (e.g. auto-advance a GETEM
-			# audio book to its next part) - but playback should keep
-			# moving forward on its own regardless of whether the
-			# FreeRadio window happens to be open, the same way a
-			# podcast's resume position keeps saving in the background.
-			# Do the advance ourselves, independent of any dialog UI.
+			# audio book, or a jukebox folder, to its next
+			# part/track) - but playback should keep moving forward on its
+			# own regardless of whether the FreeRadio window happens to be
+			# open, the same way a podcast's resume position keeps saving
+			# in the background. Do the advance ourselves, independent of
+			# any dialog UI.
 			try:
 				self._advance_getem_chapter_headless(station)
+			except Exception:
+				pass
+			try:
+				self._advance_jukebox_folder_headless(station)
 			except Exception:
 				pass
 

@@ -453,7 +453,8 @@ class GetemBook:
 	deliberately only ever one GetemBook per work, in search results as
 	much as in the library; chapters never get their own row anywhere."""
 
-	def __init__(self, title, detail_url, author="", narrator="", format_label="", description="", publisher=""):
+	def __init__(self, title, detail_url, author="", narrator="", format_label="", description="", publisher="",
+			original_title="", director="", release_year="", imdb_rating="", actors=""):
 		self.title = title or _("Unknown")
 		self.detail_url = detail_url
 		self.author = author
@@ -461,6 +462,19 @@ class GetemBook:
 		self.format_label = format_label
 		self.description = description
 		self.publisher = publisher
+		# The following five only ever come back non-empty for GETEM's
+		# "Sesli Betimleme" (audio description) works - see
+		# getem._extract_audiobook_extra_fields() - and stay "" for a
+		# plain audiobook/talking-book entry, which doesn't carry them.
+		# Populated by resolve_media()/get_book_by_url() once the
+		# work's detail page has actually been fetched (not from a
+		# catalog search-result row alone - GETEM's listing columns
+		# don't include these).
+		self.original_title = original_title
+		self.director = director
+		self.release_year = release_year
+		self.imdb_rating = imdb_rating
+		self.actors = actors
 		# Populated lazily by resolve_media(): [{"title": str, "url": str}, ...]
 		self.chapters = []
 		# Which part was last played - see GetemLibrary.mark_progress().
@@ -508,7 +522,9 @@ class GetemBook:
 		podcast feed profiles.
 
 		Includes author/narrator/publisher/format_label, the book's total
-		part count, its description, and a fixed "audiobook_source" label
+		part count, its description, the "Sesli Betimleme"-only fields
+		(original_title/director/release_year/imdb_rating/actors - see
+		_extract_audiobook_extra_fields()), and a fixed "audiobook_source" label
 		so the station-details dialog
 		(trackInfoMixin._build_audiobook_details()) can show the same
 		Source/Author/Narrator/Publisher/Type/description fields the
@@ -547,6 +563,17 @@ class GetemBook:
 			"audiobook_chapter_count": len(self.chapters),
 			"description": self.description,
 			"audiobook_source": _("GETEM"),
+			# Only non-empty for "Sesli Betimleme" (audio description)
+			# works - see _extract_audiobook_extra_fields() - so a
+			# plain audiobook simply carries "" here, same as author/
+			# narrator/publisher above do when GETEM has nothing for
+			# them either. trackInfoMixin._build_audiobook_details()
+			# reads these back out under the same key names.
+			"audiobook_original_title": self.original_title,
+			"audiobook_director": self.director,
+			"audiobook_release_year": self.release_year,
+			"audiobook_imdb_rating": self.imdb_rating,
+			"audiobook_actors": self.actors,
 		}
 
 	def to_library_dict(self):
@@ -558,6 +585,11 @@ class GetemBook:
 			"description": self.description,
 			"publisher": self.publisher,
 			"detail_url": self.detail_url,
+			"original_title": self.original_title,
+			"director": self.director,
+			"release_year": self.release_year,
+			"imdb_rating": self.imdb_rating,
+			"actors": self.actors,
 			"chapters": self.chapters,
 			"last_chapter_index": self.last_chapter_index,
 			"audio_profile": self.audio_profile,
@@ -573,6 +605,11 @@ class GetemBook:
 			format_label=data.get("format_label", ""),
 			description=data.get("description", ""),
 			publisher=data.get("publisher", ""),
+			original_title=data.get("original_title", ""),
+			director=data.get("director", ""),
+			release_year=data.get("release_year", ""),
+			imdb_rating=data.get("imdb_rating", ""),
+			actors=data.get("actors", ""),
 		)
 		book.chapters = data.get("chapters", []) or []
 		book.last_chapter_index = data.get("last_chapter_index", 0) or 0
@@ -860,6 +897,17 @@ def resolve_media(book, session=None):
 	except Exception as e:
 		return book, str(e)
 
+	# Opportunistically fill in the "Sesli Betimleme"-only fields (see
+	# _extract_audiobook_extra_fields()) now that the detail page is
+	# already fetched - book.author/narrator/etc. came from the catalog
+	# search-result row, which doesn't carry these. Only fills fields
+	# that are still empty, so a value already set (e.g. by
+	# get_book_by_url()) is never overwritten.
+	extra = _extract_audiobook_extra_fields(detail_html)
+	for attr in ("original_title", "director", "release_year", "imdb_rating", "actors"):
+		if extra.get(attr) and not getattr(book, attr):
+			setattr(book, attr, extra[attr])
+
 	chapters = _parse_chapters_from_detail_html(detail_html)
 	if not chapters:
 		return book, _(
@@ -946,6 +994,95 @@ def _extract_node_field_text(html_text, field_class):
 	return _clean_html_text(field_node.text_excluding("field-label"))
 
 
+def _extract_node_field_by_label(html_text, *label_variants):
+	"""Pulls the visible value out of one of GETEM's node/detail page
+	field wrappers by matching the field's own rendered label text
+	(e.g. "Yönetmen:") instead of a guessed Drupal field machine name
+	the way _extract_node_field_text() above does (via a
+	"field-name-field-..." class). GETEM's "Sesli Betimleme" (audio
+	description) works carry several extra fields - Eser Özgün Adı/
+	Yönetmen/Gösterim Yılı/IMDB Puanı/Oyuncular among them - whose
+	machine names aren't known, so matching on the label actually shown
+	to the user is the reliable option here. *label_variants* lets a
+	caller offer more than one accepted spelling of that label; matching
+	is case/Turkish-character-fold-insensitive via _fold(). Returns ""
+	if no field with a matching label is found on the page - e.g. a
+	plain (non-audio-description) work simply doesn't have a "Yönetmen"
+	field at all, which is expected and not an error.
+
+	Like _extract_node_field_text(), this is unverified against a live
+	GETEM detail page's raw markup (see the note in get_book_by_url());
+	if a field comes back empty here the book is still fully usable via
+	its separately-verified chapter list, only this one extra detail is
+	missing."""
+	wanted = {_fold(label.rstrip(":").strip()) for label in label_variants}
+	root = _parse_html(html_text)
+	for el in root.iter_elements():
+		classes = (el.attrs.get("class") or "").split()
+		if not any(c.startswith("field-name-") for c in classes):
+			continue
+		label_node = el.find(class_name="field-label")
+		if label_node is None:
+			continue
+		label_text = _fold(_clean_html_text(label_node.text()).rstrip(":").strip())
+		if label_text in wanted:
+			return _clean_html_text(el.text_excluding("field-label"))
+	return ""
+
+
+def _extract_audiobook_extra_fields(html_text):
+	"""Best-effort extraction of the extra fields GETEM shows for
+	"Sesli Betimleme" (audio description) works - the original
+	(foreign-language) title, director, release year, IMDB rating and
+	cast - none of which a plain audiobook/talking-book entry carries.
+	Matched by label text via _extract_node_field_by_label(), so this
+	works whether the page belongs to an audio-described film/series or
+	an ordinary book; fields that aren't present on the page simply come
+	back as "". Called from both resolve_media() and get_book_by_url(),
+	the two places that already fetch a work's detail page HTML, so no
+	extra request is needed to populate these."""
+	return {
+		"original_title": _extract_node_field_by_label(html_text, "Eser Özgün Adı"),
+		"director":       _extract_node_field_by_label(html_text, "Yönetmen"),
+		"release_year":   _extract_node_field_by_label(html_text, "Gösterim Yılı"),
+		"imdb_rating":    _extract_node_field_by_label(html_text, "IMDB Puanı"),
+		"actors":         _extract_node_field_by_label(html_text, "Oyuncular"),
+	}
+
+
+def fetch_audiobook_extra_fields(book, session=None):
+	"""Fetches *book*'s GETEM detail page and fills in its "Sesli
+	Betimleme"-only fields (original_title/director/release_year/
+	imdb_rating/actors - see _extract_audiobook_extra_fields()), for
+	previewing a work's metadata as soon as it's selected in the UI -
+	before the user has added it to the library or played anything.
+
+	Unlike resolve_media(), this deliberately does NOT call
+	ensure_logged_in() and does NOT touch book.chapters: GETEM's detail
+	pages are publicly viewable on their own (confirmed against a live
+	page) - only the audio itself is member-only - so requiring a login
+	just to preview these fields would needlessly block a user who
+	hasn't entered GETEM credentials yet.
+
+	Returns (book, error_message); error_message is None on success,
+	including when the page simply has none of these fields (an
+	ordinary, non-audio-description work) - that's a normal outcome,
+	not a failure. No-ops immediately, without any network request, if
+	the fields are already populated - repeatedly selecting the same
+	book in the UI doesn't refetch the page every time."""
+	if any(getattr(book, attr, "") for attr in ("original_title", "director", "release_year", "imdb_rating", "actors")):
+		return book, None
+	session = session or get_session()
+	try:
+		detail_html = session.fetch(book.detail_url, timeout=REQUEST_TIMEOUT)
+	except Exception as e:
+		return book, str(e)
+	for attr, value in _extract_audiobook_extra_fields(detail_html).items():
+		if value:
+			setattr(book, attr, value)
+	return book, None
+
+
 def get_book_by_url(url, session=None):
 	"""Resolves a book directly from a GETEM work URL - e.g. one pasted
 	from a browser's address bar, or copied via this tab's own "Copy the
@@ -979,6 +1116,7 @@ def get_book_by_url(url, session=None):
 	narrator = _extract_node_field_text(detail_html, "field-name-field-seslendiren")
 	narrator = re.sub(r"^(?:Seslendiren:\s*)+", "", narrator, flags=re.IGNORECASE).strip()
 
+	extra = _extract_audiobook_extra_fields(detail_html)
 	book = GetemBook(
 		title=_extract_node_title(detail_html) or _("Unknown"),
 		detail_url=detail_url,
@@ -987,6 +1125,11 @@ def get_book_by_url(url, session=None):
 		format_label=_extract_node_field_text(detail_html, "field-name-field-formati"),
 		description=_extract_node_field_text(detail_html, "field-name-body"),
 		publisher=_extract_node_field_text(detail_html, "field-name-field-yayinevi"),
+		original_title=extra["original_title"],
+		director=extra["director"],
+		release_year=extra["release_year"],
+		imdb_rating=extra["imdb_rating"],
+		actors=extra["actors"],
 	)
 
 	chapters = _parse_chapters_from_detail_html(detail_html)

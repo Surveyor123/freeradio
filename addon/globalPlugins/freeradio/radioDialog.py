@@ -235,10 +235,12 @@ def _html_to_text(text):
 
 
 def _format_audiobook_lines(source_label="", author="", narrator="", publisher="",
-		format_label="", chapter_count=0, description=""):
+		format_label="", chapter_count=0, description="",
+		original_title="", director="", release_year="", imdb_rating="", actors=""):
 	"""Shared line-builder for GETEM/LibriVox audiobook metadata: Source/
-	Author/Narrator/Publisher/Type/part-count/description, in that
-	order, one per line (blank fields omitted). Reused by
+	Original title/Author/Director/Narrator/Cast/Publisher/Type/Release
+	year/IMDB rating/part-count/description, in that order, one per
+	line (blank fields omitted). Reused by
 	RadioDialog._format_getem_details() (the Audio Books tab's details
 	box) and trackInfoMixin._build_audiobook_details() (the station-
 	details dialog's "Audio book details" row), so both show identical,
@@ -246,18 +248,35 @@ def _format_audiobook_lines(source_label="", author="", narrator="", publisher="
 	each maintaining its own copy of these strings. Does NOT include the
 	book's title or detail_url - callers that want those (both current
 	callers do) add them themselves, since where those two lines belong
-	relative to the rest differs slightly between the two dialogs."""
+	relative to the rest differs slightly between the two dialogs.
+
+	original_title/director/release_year/imdb_rating/actors only ever
+	have a value for GETEM's "Sesli Betimleme" (audio description)
+	works - see getem._extract_audiobook_extra_fields() - and are
+	simply omitted, same as any other blank field, for a plain
+	audiobook/talking-book (or a LibriVox book, which never sets them
+	at all) that doesn't carry them."""
 	lines = []
 	if source_label:
 		lines.append(_("Source: %s") % source_label)
+	if original_title:
+		lines.append(_("Original title: %s") % original_title)
 	if author:
 		lines.append(_("Author: %s") % author)
+	if director:
+		lines.append(_("Director: %s") % director)
 	if narrator:
 		lines.append(_("Narrator: %s") % narrator)
+	if actors:
+		lines.append(_("Cast: %s") % actors)
 	if publisher:
 		lines.append(_("Publisher: %s") % publisher)
 	if format_label:
 		lines.append(_("Type: %s") % format_label)
+	if release_year:
+		lines.append(_("Release year: %s") % release_year)
+	if imdb_rating:
+		lines.append(_("IMDB rating: %s") % imdb_rating)
 	if chapter_count:
 		lines.append(ngettext("%d part", "%d parts", chapter_count) % chapter_count)
 	if description:
@@ -5714,6 +5733,13 @@ class RadioDialog(wx.Dialog):
 			format_label=book.format_label,
 			chapter_count=len(book.chapters),
 			description=book.description,
+			# LibriVox books never set these - getattr() with a
+			# default keeps this working for both sources.
+			original_title=getattr(book, "original_title", ""),
+			director=getattr(book, "director", ""),
+			release_year=getattr(book, "release_year", ""),
+			imdb_rating=getattr(book, "imdb_rating", ""),
+			actors=getattr(book, "actors", ""),
 		))
 		lines.append("")
 		lines.append(book.detail_url)
@@ -5849,11 +5875,47 @@ class RadioDialog(wx.Dialog):
 		self._getem_results.SetSelection(0)
 		self._on_getem_result_selected(None)
 
+	def _maybe_fetch_getem_extra_fields(self, book):
+		"""Kicks off a background fetch of *book*'s GETEM detail page to
+		fill in its "Sesli Betimleme"-only fields (original title/
+		director/release year/IMDB rating/cast - see
+		getem.fetch_audiobook_extra_fields()) and refresh the details box
+		once it lands - so these show up as soon as a search result or
+		library entry is selected, without requiring the book to be added
+		to the library or played first (only that resolves
+		getem.GetemBook.chapters, not these). No-ops for anything that
+		isn't a getem.GetemBook (LibriVox/Gutenberg books never carry
+		these fields) or that already has them filled in - see
+		getem.fetch_audiobook_extra_fields()'s own no-op check, which
+		this mirrors to avoid spinning up a thread for nothing."""
+		if not isinstance(book, getem.GetemBook):
+			return
+		if any(getattr(book, attr, "") for attr in
+				("original_title", "director", "release_year", "imdb_rating", "actors")):
+			return
+
+		self._getem_details_fetch_id = getattr(self, "_getem_details_fetch_id", 0) + 1
+		fetch_id = self._getem_details_fetch_id
+
+		def _worker():
+			getem.fetch_audiobook_extra_fields(book)
+			wx.CallAfter(_apply)
+
+		def _apply():
+			# Guards against a slow fetch for a book the user has since
+			# navigated away from landing on top of whatever is now shown.
+			if not self or fetch_id != self._getem_details_fetch_id:
+				return
+			self._getem_details.ChangeValue(self._format_getem_details(book))
+
+		threading.Thread(target=_worker, daemon=True).start()
+
 	def _on_getem_result_selected(self, event):
 		idx = self._getem_results.GetSelection()
 		results = getattr(self, "_getem_search_results", None) or []
 		book = results[idx] if idx != wx.NOT_FOUND and idx < len(results) else None
 		self._getem_details.ChangeValue(self._format_getem_details(book))
+		self._maybe_fetch_getem_extra_fields(book)
 
 	def _on_getem_add_to_library(self, event):
 		"""Adds the selected search result to the library. Reached via the
@@ -5964,6 +6026,7 @@ class RadioDialog(wx.Dialog):
 		books = self._merged_library_books()
 		book = books[idx] if idx != wx.NOT_FOUND and idx < len(books) else None
 		self._getem_details.ChangeValue(self._format_getem_details(book))
+		self._maybe_fetch_getem_extra_fields(book)
 
 	def _on_getem_library_key(self, event):
 		key = event.GetKeyCode()

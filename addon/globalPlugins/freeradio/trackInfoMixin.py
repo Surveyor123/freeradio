@@ -808,6 +808,15 @@ class TrackInfoMixin:
 			format_label=s.get("audiobook_format", "").strip(),
 			chapter_count=chapter_count,
 			description=s.get("description", "").strip(),
+			# Only set for GETEM "Sesli Betimleme" works - see
+			# getem.GetemBook.to_dict() - so this is "" for anything
+			# else, same as author/narrator/etc. above when GETEM had
+			# nothing for those either.
+			original_title=s.get("audiobook_original_title", "").strip(),
+			director=s.get("audiobook_director", "").strip(),
+			release_year=s.get("audiobook_release_year", "").strip(),
+			imdb_rating=s.get("audiobook_imdb_rating", "").strip(),
+			actors=s.get("audiobook_actors", "").strip(),
 		)
 		if lines:
 			rows.append((_("Audio book details"), "\n".join(lines)))

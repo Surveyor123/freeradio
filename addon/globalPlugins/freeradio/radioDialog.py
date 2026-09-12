@@ -2261,7 +2261,11 @@ class RadioDialog(wx.Dialog):
 		- Multiple chars typed quickly (within 600 ms s): prefix search.
 		"""
 		key = event.GetUnicodeKey()
-		if key == wx.WXK_NONE or key < 32:
+		# See _on_list_char for why space (32) is excluded rather than
+		# included. The country combo has no Space action of its own, but
+		# keeping the two checks identical avoids surprise later if one is
+		# changed without the other.
+		if key == wx.WXK_NONE or key <= 32:
 			event.Skip()
 			return
 
@@ -2326,7 +2330,12 @@ class RadioDialog(wx.Dialog):
 		- Multiple chars typed quickly (within 600 ms): prefix search.
 		"""
 		key = event.GetUnicodeKey()
-		if key == wx.WXK_NONE or key < 32:
+		# Strictly less than or equal to 32: space (32) is excluded here too,
+		# so it never reaches the type-ahead buffer even if EVT_CHAR somehow
+		# fires for it (some wx builds still dispatch EVT_CHAR after a
+		# handled EVT_KEY_DOWN). Space is a play/pause action key on several
+		# lists - see _on_list_key / _on_fav_list_key.
+		if key == wx.WXK_NONE or key <= 32:
 			event.Skip()
 			return
 
@@ -3512,13 +3521,20 @@ class RadioDialog(wx.Dialog):
 		# character first and the native control never gets a chance to
 		# interfere. See _typeahead_listboxes() for the authoritative list
 		# of widgets this covers.
+		#
+		# NOTE: strictly greater than 32 (not >=) - space (32) is a special
+		# action key on several of these lists (play/pause, preview toggle
+		# - see _on_list_key/_on_episode_key/_on_getem_results_key/
+		# _on_jukebox_tracks_key etc.) and must be allowed to fall through
+		# to those EVT_KEY_DOWN handlers instead of being consumed here as
+		# a type-ahead character.
 		if not event.ControlDown() and not event.AltDown():
 			typeahead_widgets = tuple(lb for lb, _ in self._typeahead_listboxes())
 			if focused in typeahead_widgets:
 				ukey = event.GetUnicodeKey()
-				if ukey != wx.WXK_NONE and ukey >= 32:
+				if ukey != wx.WXK_NONE and ukey > 32:
 					ch = chr(ukey).lower()
-				elif 32 <= key <= 126:
+				elif 32 < key <= 126:
 					ch = chr(key).lower()
 				else:
 					ch = None

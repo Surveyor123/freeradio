@@ -16,6 +16,7 @@ _ = _tr
 del _tr
 
 from . import _notify
+from .recorder import _next_active_start
 
 log = logging.getLogger(__name__)
 
@@ -40,21 +41,33 @@ class TimerManager:
 		self._thread          = threading.Thread(target=self._loop, daemon=True)
 		self._thread.start()
 
-	def add_sleep(self, stop_dt, notify_callback=None):
-		"""Schedule a stop at stop_dt (datetime). Returns entry id."""
+	def add_sleep(self, stop_dt, notify_callback=None, recurrence="once", active_days=None):
+		"""Schedule a stop at stop_dt (datetime). Returns entry id.
+
+		recurrence: "once" (default) fires once and is done; "weekly"
+		re-fires every week on active_days (same convention as
+		recorder.ScheduledRecording - a weekday-int list, 0=Monday..6=Sunday,
+		empty/None means every day) until removed.
+		"""
 		_stop = self._action_stop
 		def _sleep_action():
 			_stop()
 		# Translators: Fallback display label for a sleep timer in the pending-timers list, used when no station name applies (unlike an alarm timer, which is labelled with the station name instead).
 		return self._add(stop_dt, _sleep_action, _("Sleep timer"), notify_callback,
-						kind="sleep", station=None)
+						kind="sleep", station=None,
+						recurrence=recurrence, active_days=active_days)
 
-	def add_alarm(self, start_dt, station, play_callback, notify_callback=None):
-		"""Schedule playback of station at start_dt. Returns entry id."""
+	def add_alarm(self, start_dt, station, play_callback, notify_callback=None,
+	              recurrence="once", active_days=None):
+		"""Schedule playback of station at start_dt. Returns entry id.
+
+		recurrence/active_days: see add_sleep() above.
+		"""
 		def action():
 			play_callback(station, [station], 0)
 		return self._add(start_dt, action, station.get("name", "?"), notify_callback,
-						kind="alarm", station=station)
+						kind="alarm", station=station,
+						recurrence=recurrence, active_days=active_days)
 
 	def remove(self, entry_id):
 		with self._lock:
@@ -85,11 +98,13 @@ class TimerManager:
 				if meta is None:
 					continue
 				records.append({
-					"id":      entry_id,
-					"dt":      dt.isoformat(),
-					"label":   label,
-					"kind":    meta["kind"],
-					"station": meta.get("station"),
+					"id":           entry_id,
+					"dt":           dt.isoformat(),
+					"label":        label,
+					"kind":         meta["kind"],
+					"station":      meta.get("station"),
+					"recurrence":   meta.get("recurrence", "once"),
+					"active_days":  meta.get("active_days", []),
 				})
 		tmp_path = self._save_path + ".tmp"
 		try:
@@ -123,12 +138,26 @@ class TimerManager:
 				dt = _dt.datetime.fromisoformat(rec["dt"])
 			except Exception:
 				continue
+			kind        = rec.get("kind", "sleep")
+			label       = rec.get("label", "")
+			station     = rec.get("station")
+			entry_id    = rec.get("id")
+			recurrence  = rec.get("recurrence", "once")
+			active_days = rec.get("active_days") or []
 			if dt <= now:
-				continue  # past — skip
-			kind    = rec.get("kind", "sleep")
-			label   = rec.get("label", "")
-			station = rec.get("station")
-			entry_id = rec.get("id")
+				if recurrence != "weekly":
+					continue  # past, one-off — skip
+				# Past-due recurring entry (e.g. NVDA was off past its fire
+				# time) — roll forward to the next valid occurrence instead
+				# of silently dropping it, same idea as
+				# recorder._normalise_recurring_occurrence() for scheduled
+				# recordings.
+				for _ in range(7):
+					dt = _next_active_start(dt, active_days)
+					if dt is None or dt > now:
+						break
+				if dt is None or dt <= now:
+					continue
 			if not entry_id:
 				import uuid as _uuid
 				entry_id = str(_uuid.uuid4())
@@ -137,17 +166,23 @@ class TimerManager:
 				_stop = self._action_stop
 				def _sleep_action():
 					_stop()
-				_sleep_action._timer_meta = {"kind": "sleep", "station": None}
+				_sleep_action._timer_meta = {
+					"kind": "sleep", "station": None,
+					"recurrence": recurrence, "active_days": active_days,
+				}
 				action = _sleep_action
 			elif kind == "alarm" and station and self._play_callback:
 				_st = station
 				_cb = self._play_callback
-				def _make_alarm_action(s, cb):
+				def _make_alarm_action(s, cb, rec_, days_):
 					def _action():
 						cb(s, [s], 0)
-					_action._timer_meta = {"kind": "alarm", "station": s}
+					_action._timer_meta = {
+						"kind": "alarm", "station": s,
+						"recurrence": rec_, "active_days": days_,
+					}
 					return _action
-				action = _make_alarm_action(_st, _cb)
+				action = _make_alarm_action(_st, _cb, recurrence, active_days)
 			else:
 				continue
 
@@ -157,11 +192,15 @@ class TimerManager:
 		with self._lock:
 			self._timers.sort(key=lambda t: t[1])
 
-	def _add(self, dt, action, label, notify_callback, kind="sleep", station=None):
+	def _add(self, dt, action, label, notify_callback, kind="sleep", station=None,
+	         recurrence="once", active_days=None):
 		import uuid as _uuid
 		entry_id = str(_uuid.uuid4())
 		# Attach metadata to the callable for serialisation
-		action._timer_meta = {"kind": kind, "station": station}
+		action._timer_meta = {
+			"kind": kind, "station": station,
+			"recurrence": recurrence, "active_days": list(active_days or []),
+		}
 		with self._lock:
 			self._timers.append((entry_id, dt, action, label, notify_callback))
 			self._timers.sort(key=lambda t: t[1])
@@ -217,16 +256,24 @@ class TimerManager:
 			fired = []
 			with self._lock:
 				remaining = []
+				requeued = []
 				for entry in self._timers:
 					entry_id, dt, action, label, notify_cb = entry
 					if now >= dt:
 						fired.append(entry)
+						meta = getattr(action, "_timer_meta", None) or {}
+						if meta.get("recurrence") == "weekly":
+							next_dt = _next_active_start(dt, meta.get("active_days") or [])
+							if next_dt is not None:
+								requeued.append((entry_id, next_dt, action, label, notify_cb))
 					else:
 						remaining.append(entry)
+				remaining.extend(requeued)
+				remaining.sort(key=lambda t: t[1])
 				self._timers = remaining
 
 			if fired:
-				self._save()  # fired entries are gone from the list — update disk
+				self._save()  # timer list changed (removed and/or requeued) — update disk
 			for entry_id, dt, action, label, notify_cb in fired:
 				try:
 					wx.CallAfter(action)

@@ -1200,7 +1200,7 @@ class RadioDialog(wx.Dialog):
 		self._sched_rec_once = wx.RadioButton(
 			self._rec_panel,
 			# Translators: Radio button: schedule a single one-time recording.
-			label=_("Record &once"),
+			label=_("Only &once"),
 			style=wx.RB_GROUP,
 		)
 		# Repeats every week on the selected active days, with no end —
@@ -1328,6 +1328,56 @@ class RadioDialog(wx.Dialog):
 		self._timer_time.SetName(_("Start time (HH:MM):"))
 		sizer.Add(self._timer_time, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 
+		# --- Recurrence mode --- same two options, same strings, and the
+		# same underlying recurrence/active_days model as the Recording
+		# tab's scheduling section (recorder.ScheduledRecording) - see
+		# TimerManager.add_sleep()/add_alarm().
+		sizer.Add(
+			# Translators: Label above the two recurrence radio buttons (once vs. weekly) - same wording as the Recording tab's scheduling section.
+			wx.StaticText(self._timer_panel, label=_("Recurrence:")),
+			0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8,
+		)
+		self._timer_rec_once = wx.RadioButton(
+			self._timer_panel,
+			# Translators: Radio button: schedule a single one-time timer - same wording as the Recording tab's scheduling section.
+			label=_("Only &once"),
+			style=wx.RB_GROUP,
+		)
+		# Repeats every week on the selected active days, with no end - the
+		# user removes it from the pending-timers list to stop it, same
+		# convention as a recurring scheduled recording.
+		self._timer_rec_weekly = wx.RadioButton(
+			self._timer_panel,
+			# Translators: Radio button: repeat the recording every week indefinitely, on the days chosen below - same wording as the Recording tab's scheduling section.
+			label=_("Repeat &weekly"),
+		)
+		self._timer_rec_once.SetValue(True)
+		sizer.Add(self._timer_rec_once,   0, wx.LEFT | wx.RIGHT | wx.TOP, 8)
+		sizer.Add(self._timer_rec_weekly, 0, wx.LEFT | wx.RIGHT | wx.TOP, 4)
+
+		# --- Day-of-week selection --- shown only for weekly repeat; an
+		# empty selection means every day, same as the Recording tab.
+		self._timer_days_label = wx.StaticText(
+			# Translators: Label above the day-of-week checklist, shown only for the weekly-repeat recurrence mode - same wording as the Recording tab's scheduling section.
+			self._timer_panel, label=_("Active days:"),
+		)
+		sizer.Add(self._timer_days_label, 0, wx.EXPAND | wx.LEFT | wx.RIGHT | wx.TOP, 8)
+		_timer_day_labels = [
+			# Translators: Day-of-week checklist items, Monday through Sunday - same wording as the Recording tab's scheduling section.
+			_("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"),
+			_("Friday"), _("Saturday"), _("Sunday"),
+		]
+		self._timer_days_clb = nvdaControls.CustomCheckListBox(
+			self._timer_panel, choices=_timer_day_labels,
+		)
+		# Translators: Accessible name for the day-of-week checklist (same text as its static label).
+		self._timer_days_clb.SetName(_("Active days:"))
+		self._timer_days_clb.Checked = []
+		self._timer_days_clb.Select(0)
+		sizer.Add(self._timer_days_clb, 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
+		self._timer_days_label.Show(False)
+		self._timer_days_clb.Show(False)
+
 		self._timer_station_label = wx.StaticText(
 			# Translators: Label for the station-selection list, used for the 'start radio' timer action (also used as its accessible name below).
 			self._timer_panel, label=_("Station:")
@@ -1376,6 +1426,8 @@ class RadioDialog(wx.Dialog):
 
 		self._timer_rb_start.Bind(wx.EVT_RADIOBUTTON, self._on_timer_action_changed)
 		self._timer_rb_stop.Bind(wx.EVT_RADIOBUTTON,  self._on_timer_action_changed)
+		self._timer_rec_once.Bind(wx.EVT_RADIOBUTTON,   self._on_timer_recurrence_changed)
+		self._timer_rec_weekly.Bind(wx.EVT_RADIOBUTTON, self._on_timer_recurrence_changed)
 		self._timer_add_btn.Bind(wx.EVT_BUTTON,        self._on_timer_add)
 		self._timer_del_btn.Bind(wx.EVT_BUTTON,        self._on_timer_del)
 		self._timer_list.Bind(wx.EVT_LISTBOX,          self._on_timer_selected)
@@ -1476,6 +1528,10 @@ class RadioDialog(wx.Dialog):
 		elif sel == 3:
 			wx.CallLater(0, self._refresh_timer_stations)
 			wx.CallLater(0, self._refresh_timer_list)
+			# Defer focus change until after the tab panel is fully shown and
+			# the refresh calls above have been queued, so focus isn't stolen
+			# back by those refreshes.
+			wx.CallLater(0, self._focus_timer_action_group)
 		elif sel == 4:
 			wx.CallLater(0, self._refresh_liked_list)
 		elif sel == 5:
@@ -1492,6 +1548,19 @@ class RadioDialog(wx.Dialog):
 			wx.CallLater(0, self._refresh_jukebox_list)
 		if sel != 1 and hasattr(self, "_save_audio_btn"):
 			self._save_audio_btn.Enable(False)
+
+	def _focus_timer_action_group(self):
+		"""When the Timer tab is opened, move focus to the Timer action
+		(Start/Stop) radio buttons instead of the recurrence options."""
+		if not self:
+			return
+		try:
+			# Focus whichever radio button is currently selected so that
+			# screen readers announce it as "checked" rather than "not checked".
+			target = self._timer_rb_stop if self._timer_rb_stop.GetValue() else self._timer_rb_start
+			target.SetFocus()
+		except Exception:
+			pass
 
 	def _on_tab_changed_index(self, sel):
 		"""Switch tab programmatically (e.g. Alt+1..5) and apply all side-effects.
@@ -4742,6 +4811,14 @@ class RadioDialog(wx.Dialog):
 		self._timer_action_changed_update()
 		event.Skip()
 
+	def _on_timer_recurrence_changed(self, event):
+		"""Show/hide the active-days checklist based on recurrence mode."""
+		weekly = self._timer_rec_weekly.GetValue()
+		self._timer_days_label.Show(weekly)
+		self._timer_days_clb.Show(weekly)
+		self._timer_panel.Layout()
+		event.Skip()
+
 	def _refresh_timer_stations(self):
 		"""Timer tab: fill the station listbox from favourites.
 
@@ -4771,6 +4848,11 @@ class RadioDialog(wx.Dialog):
 
 	def _refresh_timer_list(self):
 		"""Write pending timers to the listbox."""
+		_FULL_DAY_NAMES = [
+			# Translators: Day names used when listing a recurring timer's active days - same wording as the Recording tab's scheduling section.
+			_("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"),
+			_("Friday"), _("Saturday"), _("Sunday"),
+		]
 		self._timer_list.Clear()
 		if self._timer_manager:
 			for entry in self._timer_manager.get_timers():
@@ -4786,6 +4868,16 @@ class RadioDialog(wx.Dialog):
 				else:
 					# Translators: One line of the pending-timers list for a sleep (stop-radio) timer; %(time)s is the HH:MM time.
 					text = _("Sleep %(time)s") % {"time": time_str}
+				meta = getattr(action, "_timer_meta", None) or {}
+				if meta.get("recurrence") == "weekly":
+					days = sorted(meta.get("active_days") or [])
+					if not days or days == list(range(7)):
+						# Translators: Recurrence description shown when a weekly timer has every day of the week checked (no day restriction) - same wording as the Recording tab's scheduling section.
+						when = _("Every day")
+					else:
+						# Translators: Recurrence description shown when a weekly timer is restricted to specific days; %s is a comma-joined list of day names - same wording as the Recording tab's scheduling section.
+						when = _("Every %s") % ", ".join(_FULL_DAY_NAMES[d] for d in days)
+					text += "  — " + when
 				self._timer_list.Append(text)
 		self._timer_del_btn.Enable(self._timer_list.GetCount() > 0)
 
@@ -4847,10 +4939,25 @@ class RadioDialog(wx.Dialog):
 		now  = datetime.datetime.now()
 		when = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
 		if when <= now:
-			when    += datetime.timedelta(days=1)
-			next_day = True
-		else:
-			next_day = False
+			when += datetime.timedelta(days=1)
+
+		# --- Recurrence mode --- same model as the Recording tab's
+		# scheduling section (recorder.ScheduledRecording): "weekly" repeats
+		# indefinitely on active_days ([] means every day) until removed.
+		recurrence  = "weekly" if self._timer_rec_weekly.GetValue() else "once"
+		active_days = list(self._timer_days_clb.Checked) if recurrence == "weekly" else []
+		if recurrence == "weekly" and active_days and when.weekday() not in active_days:
+			for _day in range(7):
+				when += datetime.timedelta(days=1)
+				if when.weekday() in active_days:
+					break
+
+		# Computed after any day-of-week rollover above, so it stays accurate
+		# even when a weekly timer's next active day is further out than
+		# literally tomorrow (in which case this is simply False and the
+		# day name inside the recurrence description below carries that
+		# information instead).
+		next_day = (when.date() - now.date()).days == 1
 
 		is_start = self._timer_rb_start.GetValue()
 
@@ -4882,6 +4989,8 @@ class RadioDialog(wx.Dialog):
 				start_dt=when,
 				station=station,
 				play_callback=self._play_callback,
+				recurrence=recurrence,
+				active_days=active_days,
 			)
 			name = station.get("name", "?").strip()
 			# Translators: Confirmation spoken after adding an alarm (start-radio) timer; %(station)s is the station name, %(time)s the HH:MM time it will fire.
@@ -4890,13 +4999,26 @@ class RadioDialog(wx.Dialog):
 				"time":    when.strftime("%H:%M"),
 			}
 		else:
-			self._timer_manager.add_sleep(stop_dt=when)
+			self._timer_manager.add_sleep(stop_dt=when, recurrence=recurrence, active_days=active_days)
 			# Translators: Confirmation spoken after adding a sleep (stop-radio) timer; %s is the HH:MM time it will fire.
 			msg = _("Sleep timer added: radio will stop at %s") % when.strftime("%H:%M")
 
 		if next_day:
 			# Translators: Appended to the confirmation message when the timer's time has rolled over to the next day (e.g. it's 23:00 and the timer is set for 01:00).
 			msg += "  " + _("(tomorrow)")
+		if recurrence == "weekly":
+			days_sorted = sorted(active_days) if active_days else list(range(7))
+			if days_sorted == list(range(7)):
+				# Translators: Recurrence description appended to the timer-added confirmation - same wording as the Recording tab's scheduling section.
+				when_desc = _("Every day")
+			else:
+				_FULL_DAY_NAMES = [
+					_("Monday"), _("Tuesday"), _("Wednesday"), _("Thursday"),
+					_("Friday"), _("Saturday"), _("Sunday"),
+				]
+				# Translators: Recurrence description appended to the timer-added confirmation - same wording as the Recording tab's scheduling section.
+				when_desc = _("Every %s") % ", ".join(_FULL_DAY_NAMES[d] for d in days_sorted)
+			msg += "  " + when_desc
 		ui.message(msg)
 		self._refresh_timer_list()
 
@@ -7704,8 +7826,13 @@ class RadioDialog(wx.Dialog):
 			# Translators: Spoken when every part of a book downloaded successfully; %s is the book title.
 			ui.message(_("Download complete: %s") % book.title)
 		elif saved > 0:
-			# Translators: Spoken when a book download partially fails; %d/%d are the saved/total part counts, first %s the book title, second %s the error from the last failed part.
-			ui.message(_("Downloaded %d of %d parts of %s. Last error: %s") % (saved, total, book.title, error))
+			# Translators: Spoken when a book download partially fails; %(saved)d is the number of parts saved, %(total)d the total number of parts, %(title)s the book title, %(error)s the error from the last failed part.
+			ui.message(_("Downloaded %(saved)d of %(total)d parts of %(title)s. Last error: %(error)s") % {
+				"saved": saved,
+				"total": total,
+				"title": book.title,
+				"error": error,
+			})
 		else:
 			# Translators: Spoken when a book download fails entirely (zero parts saved); %s is the error message, or the book title if no specific error was captured.
 			ui.message(_("Download failed: %s") % (error or book.title))
@@ -8791,7 +8918,7 @@ class EditScheduleDialog(wx.Dialog):
 		# Translators: Label above the recurrence radio buttons (once vs. weekly) - same wording as the Recording tab's scheduling section.
 		sizer.Add(wx.StaticText(self, label=_("Recurrence:")), 0, wx.EXPAND | wx.LEFT | wx.RIGHT, 8)
 		# Translators: Radio button: this is a single one-time recording.
-		self._rec_once  = wx.RadioButton(self, label=_("Record &once"), style=wx.RB_GROUP)
+		self._rec_once  = wx.RadioButton(self, label=_("Only &once"), style=wx.RB_GROUP)
 		# Repeats every week on the selected active days, with no end —
 		# the user removes it from the schedule list to stop it. Legacy
 		# entries saved with the old fixed-count "weekly" mode are treated

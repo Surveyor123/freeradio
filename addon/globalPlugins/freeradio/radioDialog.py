@@ -4751,7 +4751,7 @@ class RadioDialog(wx.Dialog):
 				"Removed %(count)d favourite from its group",
 				"Removed %(count)d favourites from their groups",
 				count,
-			) % count)
+			) % {"count": count})
 
 	def _on_fav_remove_selected(self, event=None):
 		"""Bulk-remove every favourite station currently marked with '.',

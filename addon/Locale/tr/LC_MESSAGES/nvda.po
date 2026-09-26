@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FreeRadio 2026.24.2\n"
 "Report-Msgid-Bugs-To: 'nvda-translations@groups.io'\n"
-"POT-Creation-Date: 2026-09-26 10:17+0300\n"
-"PO-Revision-Date: 2026-09-26 10:20+0300\n"
+"POT-Creation-Date: 2026-09-26 11:40+0300\n"
+"PO-Revision-Date: 2026-09-26 11:55+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: tr\n"
@@ -2316,12 +2316,12 @@ msgstr "%(name)s: akış kontrolü başarısız — %(detail)s"
 #: addon\globalPlugins\freeradio\radioDialog.py:7640
 #: addon\globalPlugins\freeradio\radioDialog.py:8712
 msgid "Remove &Selected"
-msgstr "Seçiliyi Kald&ır"
+msgstr "Seçilileri Kald&ır"
 
 #. Translators: Context-menu item; assigns a user-typed folder/group name to every '.'-marked favourite (or just the focused one if none are marked), so favourites can be organised into groups manually - not only ones imported with a group-title tag.
 #: addon\globalPlugins\freeradio\radioDialog.py:3743
 msgid "Assign to &Group..."
-msgstr "&Grub ata..."
+msgstr "&Grup ata..."
 
 #. --- Stream test ---
 #. Translators: Context-menu item; re-checks whether the station's stream URL is currently reachable.
@@ -2365,7 +2365,7 @@ msgstr "Taşındı: %s"
 msgid "Marked %d favourite"
 msgid_plural "Marked %d favourites"
 msgstr[0] "%d favori işaretli"
-msgstr[1] "Marked %d favourites"
+msgstr[1] "%d favori işaretli"
 
 #. Translators: Spoken after Shift+End/Shift+Home unmarks a range of favourites; %d is how many were unmarked.
 #: addon\globalPlugins\freeradio\radioDialog.py:4602
@@ -2373,7 +2373,7 @@ msgstr[1] "Marked %d favourites"
 msgid "Unmarked %d favourite"
 msgid_plural "Unmarked %d favourites"
 msgstr[0] "%d favori işaretli değil"
-msgstr[1] "Unmarked %d favourites"
+msgstr[1] "%d favori işaretli değil"
 
 #. Translators: Placeholder row shown when the liked-songs file is empty or has not been created yet.
 #. Translators: Same two placeholder rows as in _on_liked_remove (empty-list / filtered-to-nothing), excluded when counting real songs for the filter-result announcement below.
@@ -2407,7 +2407,7 @@ msgstr "Sonuç bulunamadı."
 msgid "Marked %d song"
 msgid_plural "Marked %d songs"
 msgstr[0] "%d şarkı işaretli"
-msgstr[1] "Marked %d songs"
+msgstr[1] "%d şarkı işaretli"
 
 #. Translators: Spoken after Shift+End/Shift+Home unmarks a range of liked songs; %d is how many were unmarked.
 #: addon\globalPlugins\freeradio\radioDialog.py:4627
@@ -2415,7 +2415,7 @@ msgstr[1] "Marked %d songs"
 msgid "Unmarked %d song"
 msgid_plural "Unmarked %d songs"
 msgstr[0] "%d şarkı işaretli değil"
-msgstr[1] "Unmarked %d songs"
+msgstr[1] "%d şarkı işaretli değil"
 
 #. Translators: Spoken after Shift+End/Shift+Home marks a range of audio books for the multi-select removal flow; %d is how many were newly marked.
 #: addon\globalPlugins\freeradio\radioDialog.py:4649
@@ -2423,7 +2423,7 @@ msgstr[1] "Unmarked %d songs"
 msgid "Marked %d book"
 msgid_plural "Marked %d books"
 msgstr[0] "%d kitap işaretli"
-msgstr[1] "Marked %d books"
+msgstr[1] "%d kitap işaretli"
 
 #. Translators: Spoken after Shift+End/Shift+Home unmarks a range of audio books; %d is how many were unmarked.
 #: addon\globalPlugins\freeradio\radioDialog.py:4652
@@ -2431,15 +2431,15 @@ msgstr[1] "Marked %d books"
 msgid "Unmarked %d book"
 msgid_plural "Unmarked %d books"
 msgstr[0] "%d kitap işaretli değil"
-msgstr[1] "Unmarked %d books"
+msgstr[1] "%d kitap işaretli değil"
 
 #. Translators: Spoken after Shift+End/Shift+Home marks a range of jukebox entries for the multi-select removal flow; %d is how many were newly marked.
 #: addon\globalPlugins\freeradio\radioDialog.py:4673
 #, python-format
 msgid "Marked %d jukebox entry"
 msgid_plural "Marked %d jukebox entries"
-msgstr[0] "%d müzik kutusu işaretli"
-msgstr[1] "Marked %d jukebox entries"
+msgstr[0] "%d müzik kutusu öğesi işaretli"
+msgstr[1] "%d müzik kutusu öğesi işaretli"
 
 #. Translators: Spoken after Shift+End/Shift+Home unmarks a range of jukebox entries; %d is how many were unmarked.
 #: addon\globalPlugins\freeradio\radioDialog.py:4676
@@ -2447,7 +2447,7 @@ msgstr[1] "Marked %d jukebox entries"
 msgid "Unmarked %d jukebox entry"
 msgid_plural "Unmarked %d jukebox entries"
 msgstr[0] "%d müzik kutusu girişi işaretli değil"
-msgstr[1] "Unmarked %d jukebox entries"
+msgstr[1] "%d müzik kutusu öğesi işaretli değil"
 
 #. Translators: Spoken after unmarking a favourite station in the multi-select removal flow; %s is the station name.
 #. Translators: Spoken after unmarking a liked song in the multi-select removal flow; %s is the song string.
@@ -2488,14 +2488,14 @@ msgstr "Grup Ata"
 msgid "Assigned %(count)d favourite to group \"%(group)s\""
 msgid_plural "Assigned %(count)d favourites to group \"%(group)s\""
 msgstr[0] "%(count)d favori için \"%(group)s\" grubu atandı"
-msgstr[1] "Assigned %(count)d favourites to group \"%(group)s\""
+msgstr[1] "%(count)d favori için \"%(group)s\" grubu atandı"
 
 #: addon\globalPlugins\freeradio\radioDialog.py:4751
 #, python-format
 msgid "Removed %(count)d favourite from its group"
 msgid_plural "Removed %(count)d favourites from their groups"
 msgstr[0] "%(count)d favori için atanmış grup silindi"
-msgstr[1] "Removed %(count)d favourites from their groups"
+msgstr[1] "%(count)d favori için atanmış grup silindi"
 
 #: addon\globalPlugins\freeradio\radioDialog.py:4770
 #, python-format
